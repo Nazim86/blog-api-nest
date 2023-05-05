@@ -1,16 +1,26 @@
-import { Controller, Get, HttpException, Param, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpException,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { QueryPaginationType } from '../types/query-pagination-type';
-import { BlogsViewType } from './blogs-view-type';
+import { BlogsViewType } from './types/blogs-view-type';
 import { BlogQueryRepo } from './blog.queryRepo';
 import { PaginationType } from '../types/pagination.type';
 import { PostsViewType } from '../post/types/posts-view-type';
 import { PostsQueryRepo } from '../post/posts-query-repo';
+import { BlogService } from './blog.service';
 
 @Controller('blogs')
 export class BlogController {
   constructor(
     protected blogQueryRepo: BlogQueryRepo,
-    protected postQueryRepo: PostsQueryRepo, // protected jwtService: JwtService, // protected blogService: BlogService, // protected postQueryRepo: PostsQueryRepo, // protected postService: PostService,
+    protected postQueryRepo: PostsQueryRepo,
+    protected blogService: BlogService, // protected jwtService: JwtService, // , // protected postQueryRepo: PostsQueryRepo, // protected postService: PostService,
   ) {}
 
   @Get()
@@ -66,22 +76,19 @@ export class BlogController {
     // res.status(200).send(getBlogByBlogId);
   }
 
-  // async createBlog(req: Request, res: Response) {
-  //   const name = req.body.name;
-  //   const description = req.body.description;
-  //   const websiteUrl = req.body.websiteUrl;
-  //
-  //   const newBlog: BlogsViewType = await this.blogService.createBlog(
-  //     name,
-  //     description,
-  //     websiteUrl,
-  //   );
-  //
-  //   if (newBlog) {
-  //     res.status(201).send(newBlog);
-  //   }
-  // }
-  //
+  @Post()
+  async createBlog(@Body() blogDto) {
+    // const name = req.body.name;
+    // const description = req.body.description;
+    // const websiteUrl = req.body.websiteUrl;
+
+    const newBlog: BlogsViewType = await this.blogService.createBlog(blogDto);
+
+    // if (newBlog) {
+    //   res.status(201).send(newBlog);
+    // }
+  }
+
   // async createPostByBlogId(req: Request, res: Response) {
   //   const title = req.body.title;
   //   const shortDescription = req.body.shortDescription;

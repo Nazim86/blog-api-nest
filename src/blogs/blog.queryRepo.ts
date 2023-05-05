@@ -1,6 +1,6 @@
-import { BlogsViewType } from './blogs-view-type';
+import { BlogsViewType } from './types/blogs-view-type';
 import { Injectable } from '@nestjs/common';
-import { Blog, BlogDocument } from './blog-schema';
+import { Blog, BlogDocument } from './blog.entity';
 import { Model } from 'mongoose';
 import { QueryPaginationType } from '../types/query-pagination-type';
 import { InjectModel } from '@nestjs/mongoose';
