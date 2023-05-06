@@ -4,19 +4,18 @@ import { BlogsViewType } from './types/blogs-view-type';
 
 import { CreateBlogDto } from './createBlog.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Models } from 'mongoose';
-import { Blog, BlogDocument } from './blog.entity';
+import { Blog, BlogModelType } from './blog.entity';
 
 @Injectable()
 export class BlogService {
-  @InjectModel(Blog.name) private BlogModel: Model<BlogDocument>;
-  // private blogRepository: BlogRepository
-  constructor(protected blogRepository: BlogRepository) {
-    // this.blogRepository = new BlogRepository()
-  }
+  constructor(
+    protected blogRepository: BlogRepository,
+    @InjectModel(Blog.name) private BlogModel: BlogModelType,
+  ) {}
 
   async createBlog(createBlogDto: CreateBlogDto): Promise<BlogsViewType> {
-    return await this.BlogModel.createBlog(createBlogDto);
+    const newBlog = this.BlogModel.createBlog(createBlogDto, this.BlogModel);
+    return this.blogRepository.createBlog(newBlog);
   }
 
   async getBlog(): Promise<BlogsViewType[]> {

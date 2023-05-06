@@ -1,24 +1,20 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Model } from 'mongoose';
-import { ObjectId } from 'mongodb';
 import { CreateBlogDto } from './createBlog.dto';
 
 export type BlogDocument = HydratedDocument<Blog>;
 
-type BlogModelStaticType = {
+export type BlogModelStaticType = {
   createBlog: (
     createdBlogDto: CreateBlogDto,
     BlogModel: BlogModelType,
   ) => BlogDocument;
 };
 
-type BlogModelType = Model<Blog> & BlogModelStaticType;
+export type BlogModelType = Model<Blog> & BlogModelStaticType;
 
 @Schema()
 export class Blog {
-  @Prop({ required: true })
-  _id: ObjectId;
-
   @Prop({ required: true })
   name: string;
 
@@ -34,7 +30,10 @@ export class Blog {
   @Prop({ required: true })
   isMembership: boolean;
 
-  static createBlog(createBlog: CreateBlogDto, BlogModel: BlogModelType) {
+  static createBlog(
+    createBlog: CreateBlogDto,
+    BlogModel: BlogModelType,
+  ): BlogDocument {
     const newBlog = {
       name: createBlog.name,
       description: createBlog.description,

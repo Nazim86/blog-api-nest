@@ -78,10 +78,6 @@ export class BlogController {
 
   @Post()
   async createBlog(@Body() blogDto) {
-    // const name = req.body.name;
-    // const description = req.body.description;
-    // const websiteUrl = req.body.websiteUrl;
-
     const newBlog: BlogsViewType = await this.blogService.createBlog(blogDto);
 
     // if (newBlog) {

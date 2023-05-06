@@ -9,6 +9,8 @@ import { Post, PostEntity } from './post/post.entity';
 import { PostMapping } from './post/mapper/post.mapping';
 import { PostsQueryRepo } from './post/posts-query-repo';
 import { PostLike, PostLikeSchema } from './like/post.like.schema';
+import { BlogService } from './blogs/blog.service';
+import { BlogRepository } from './blogs/blog.repository';
 
 @Module({
   imports: [
@@ -21,6 +23,13 @@ import { PostLike, PostLikeSchema } from './like/post.like.schema';
   ],
 
   controllers: [AppController, BlogController],
-  providers: [AppService, BlogQueryRepo, PostsQueryRepo, PostMapping],
+  providers: [
+    AppService,
+    BlogService,
+    BlogQueryRepo,
+    BlogRepository,
+    PostsQueryRepo,
+    PostMapping,
+  ],
 })
 export class AppModule {}
