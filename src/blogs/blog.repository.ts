@@ -10,7 +10,7 @@ import { blogsMapping } from './blogs.mapping';
 export class BlogRepository {
   constructor(@InjectModel(Blog.name) private BlogModel: Model<BlogDocument>) {}
   async createBlog(newBlog: BlogDocument): Promise<BlogsViewType> {
-    const blog = await newBlog.save();
+    const blog: BlogDocument = await newBlog.save();
 
     return {
       id: blog.id,
@@ -28,47 +28,46 @@ export class BlogRepository {
     return blogsMapping(array);
   }
 
-  async getBlogById(id: string): Promise<BlogsViewType | null> {
+  async getBlogById(id: string): Promise<BlogDocument | null> {
     try {
-      const foundBlog = await this.BlogModel.findOne({ _id: new ObjectId(id) });
+      const foundBlog: BlogDocument = await this.BlogModel.findOne({
+        _id: new ObjectId(id),
+      });
       if (!foundBlog) {
         return null;
       }
-      return {
-        id: foundBlog._id.toString(),
-        name: foundBlog.name,
-        description: foundBlog.description,
-        websiteUrl: foundBlog.websiteUrl,
-        createdAt: foundBlog.createdAt,
-        isMembership: foundBlog.isMembership,
-      };
+      return foundBlog;
     } catch (e) {
       return null;
     }
   }
 
-  async updateBlog(
-    id: string,
-    name: string,
-    description: string,
-    websiteUrl: string,
-  ): Promise<boolean> {
-    try {
-      const result = await this.BlogModel.updateOne(
-        { _id: new ObjectId(id) },
-        {
-          $set: {
-            name: name,
-            description: description,
-            websiteUrl: websiteUrl,
-          },
-        },
-      );
-      return result.matchedCount === 1;
-    } catch (e) {
-      return false;
-    }
+  async save(blog: BlogDocument): Promise<BlogDocument> {
+    return blog.save();
   }
+
+  // async updateBlog(
+  //   id: string,
+  //   name: string,
+  //   description: string,
+  //   websiteUrl: string,
+  // ): Promise<boolean> {
+  //   try {
+  //     const result = await this.BlogModel.updateOne(
+  //       { _id: new ObjectId(id) },
+  //       {
+  //         $set: {
+  //           name: name,
+  //           description: description,
+  //           websiteUrl: websiteUrl,
+  //         },
+  //       },
+  //     );
+  //     return result.matchedCount === 1;
+  //   } catch (e) {
+  //     return false;
+  //   }
+  // }
 
   async deleteBlogById(id: string): Promise<boolean> {
     try {

@@ -4,7 +4,7 @@ import { BlogsViewType } from './types/blogs-view-type';
 
 import { CreateBlogDto } from './createBlog.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { Blog, BlogModelType } from './blog.entity';
+import { Blog, BlogDocument, BlogModelType } from './blog.entity';
 
 @Injectable()
 export class BlogService {
@@ -14,7 +14,10 @@ export class BlogService {
   ) {}
 
   async createBlog(createBlogDto: CreateBlogDto): Promise<BlogsViewType> {
-    const newBlog = this.BlogModel.createBlog(createBlogDto, this.BlogModel);
+    const newBlog: BlogDocument = this.BlogModel.createBlog(
+      createBlogDto,
+      this.BlogModel,
+    );
     return this.blogRepository.createBlog(newBlog);
   }
 
@@ -22,25 +25,21 @@ export class BlogService {
     return await this.blogRepository.getBlog();
   }
 
-  async getBlogById(id: string): Promise<BlogsViewType | null> {
+  async getBlogById(id: string): Promise<BlogDocument | null> {
     return await this.blogRepository.getBlogById(id);
   }
 
   async updateBlog(
-    id: string,
-    name: string,
-    description: string,
-    websiteUrl: string,
-  ): Promise<boolean> {
-    return await this.blogRepository.updateBlog(
-      id,
-      name,
-      description,
-      websiteUrl,
-    );
+    blogId: string,
+    updateBlogDto: CreateBlogDto,
+  ): Promise<BlogDocument> {
+    const blog: BlogDocument = await this.blogRepository.getBlogById(blogId);
+    blog.updateBlog(updateBlogDto);
+
+    return await this.blogRepository.save(blog);
   }
 
-  async deleteBlogById(id: string): Promise<boolean> {
-    return await this.blogRepository.deleteBlogById(id);
+  async deleteBlogById(blogId: string): Promise<boolean> {
+    return await this.blogRepository.deleteBlogById(blogId);
   }
 }

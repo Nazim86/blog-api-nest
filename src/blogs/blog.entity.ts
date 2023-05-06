@@ -30,6 +30,12 @@ export class Blog {
   @Prop({ required: true })
   isMembership: boolean;
 
+  updateBlog(updateBlogDto: CreateBlogDto) {
+    this.name = updateBlogDto.name;
+    this.description = updateBlogDto.description;
+    this.websiteUrl = updateBlogDto.websiteUrl;
+  }
+
   static createBlog(
     createBlog: CreateBlogDto,
     BlogModel: BlogModelType,
@@ -46,6 +52,8 @@ export class Blog {
 }
 
 export const BlogSchema = SchemaFactory.createForClass(Blog);
+
+BlogSchema.methods = { updateBlog: Blog.prototype.updateBlog };
 
 const blogStaticMethods: BlogModelStaticType = {
   createBlog: Blog.createBlog,

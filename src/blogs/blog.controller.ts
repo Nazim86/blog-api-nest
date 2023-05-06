@@ -1,10 +1,12 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpException,
   Param,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
 import { QueryPaginationType } from '../types/query-pagination-type';
@@ -14,13 +16,18 @@ import { PaginationType } from '../types/pagination.type';
 import { PostsViewType } from '../post/types/posts-view-type';
 import { PostsQueryRepo } from '../post/posts-query-repo';
 import { BlogService } from './blog.service';
+import { CreateBlogDto } from './createBlog.dto';
+import { CreatePostDto } from '../post/createPostDto';
+import { PostService } from '../post/posts.service';
+import { BlogDocument } from './blog.entity';
 
 @Controller('blogs')
 export class BlogController {
   constructor(
     protected blogQueryRepo: BlogQueryRepo,
     protected postQueryRepo: PostsQueryRepo,
-    protected blogService: BlogService, // protected jwtService: JwtService, // , // protected postQueryRepo: PostsQueryRepo, // protected postService: PostService,
+    protected blogService: BlogService,
+    protected postService: PostService, // protected jwtService: JwtService, // , // protected postQueryRepo: PostsQueryRepo, // ,
   ) {}
 
   @Get()
@@ -77,62 +84,54 @@ export class BlogController {
   }
 
   @Post()
-  async createBlog(@Body() blogDto) {
-    const newBlog: BlogsViewType = await this.blogService.createBlog(blogDto);
+  async createBlog(@Body() createBlogDto: CreateBlogDto) {
+    const newBlog: BlogsViewType = await this.blogService.createBlog(
+      createBlogDto,
+    );
 
     // if (newBlog) {
     //   res.status(201).send(newBlog);
     // }
   }
 
-  // async createPostByBlogId(req: Request, res: Response) {
-  //   const title = req.body.title;
-  //   const shortDescription = req.body.shortDescription;
-  //   const content = req.body.content;
-  //   const blogId = req.params.blogId;
-  //
-  //   const newPostForBlog: PostsViewType | null =
-  //     await this.postService.createPostForBlog(
-  //       title,
-  //       shortDescription,
-  //       content,
-  //       blogId,
-  //     );
-  //
-  //   if (!newPostForBlog) {
-  //     return res.sendStatus(404);
-  //   }
-  //
-  //   res.status(201).send(newPostForBlog);
-  // }
-  //
+  @Post(':id/posts')
+  async createPostByBlogId(
+    @Param('id') blogId: string,
+    @Body() createPostDto: CreatePostDto,
+  ) {
+    const newPostForBlog: PostsViewType | null =
+      await this.postService.createPostForBlog(createPostDto);
 
-  // async updateBlog(req: Request, res: Response) {
-  //   const name = req.body.name;
-  //   const description = req.body.description;
-  //   const websiteUrl = req.body.websiteUrl;
-  //
-  //   const updateBlog: boolean = await this.blogService.updateBlog(
-  //     req.params.id,
-  //     name,
-  //     description,
-  //     websiteUrl,
-  //   );
-  //
-  //   if (!updateBlog) {
-  //     return res.sendStatus(404);
-  //   }
-  //   res.sendStatus(204);
-  // }
-  //
-  // async deleteBlog(req: Request, res: Response) {
-  //   const deleteBlog: boolean = await this.blogService.deleteBlogById(
-  //     req.params.id,
-  //   );
-  //
-  //   if (!deleteBlog) {
-  //     return res.sendStatus(404);
-  //   }
-  //   res.sendStatus(204);
-  // }
+    if (!newPostForBlog) {
+      throw new HttpException('Not Found', 404);
+    }
+
+    // res.status(201).send(newPostForBlog);
+  }
+
+  @Put(':id')
+  async updateBlog(
+    @Param('id') blogId: string,
+    @Body() updateBlogDto: CreateBlogDto,
+  ) {
+    const updateBlog: BlogDocument = await this.blogService.updateBlog(
+      blogId,
+      updateBlogDto,
+    );
+
+    if (!updateBlog) {
+      throw new HttpException('Not Found', 404);
+    }
+    // res.sendStatus(204);
+  }
+
+  @Delete(':id')
+  async deleteBlog(@Param('id') blogId) {
+    const deleteBlog: boolean = await this.blogService.deleteBlogById(blogId);
+
+    if (!deleteBlog) {
+      throw new HttpException('Not Found', 404);
+    }
+    // res.sendStatus(204);
+  }
 }
