@@ -2,7 +2,6 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Model } from 'mongoose';
 import { ObjectId } from 'mongodb';
 import { CreatePostDto } from './createPostDto';
-import { BlogDocument } from '../blogs/blog.entity';
 
 export type PostDocument = HydratedDocument<Post>;
 
@@ -10,6 +9,7 @@ export type PostModelStaticType = {
   createPost: (
     createPostDto: CreatePostDto,
     PostModel: PostModuleType,
+    blogName: string,
   ) => PostDocument;
 };
 
@@ -38,18 +38,25 @@ export class Post {
   @Prop({ required: true })
   createdAt: string;
 
+  updatePost(updatePostDto: CreatePostDto) {
+    (this.title = updatePostDto.title),
+      (this.shortDescription = updatePostDto.shortDescription),
+      (this.content = updatePostDto.content),
+      (this.blogId = updatePostDto.blogId);
+  }
+
   static createPost(
     createPostDto: CreatePostDto,
-    PostModule: PostModuleType,
-    Blog: BlogDocument,
+    PostModel: PostModuleType,
+    blogName: string,
   ): PostDocument {
     const newPost = {
       title: createPostDto.title,
       shortDescription: createPostDto.shortDescription,
       content: createPostDto.content,
-      blogId: Blog.id,
-      blogName: Blog.name,
-      createdAt: new Date(),
+      blogId: createPostDto.blogId,
+      blogName: blogName,
+      createdAt: new Date().toString(),
       extendedLikesInfo: {
         likesCount: 0,
         dislikesCount: 0,
@@ -63,11 +70,13 @@ export class Post {
         ],
       },
     };
-    return new PostModule(createPostDto);
+    return new PostModel(newPost);
   }
 }
 
 export const PostSchema = SchemaFactory.createForClass(Post);
+
+PostSchema.methods = { updatePost: Post.prototype.updatePost };
 
 const postStaticMethods = {
   createPost: Post.createPost,

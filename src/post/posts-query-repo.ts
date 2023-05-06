@@ -83,7 +83,7 @@ export class PostsQueryRepo {
     }
   }
 
-  async getPost(
+  async getPosts(
     pageNumber: number,
     pageSize: number,
     sortBy: string,
