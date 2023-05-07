@@ -30,7 +30,7 @@ export class BlogRepository {
 
   async getBlogById(id: string): Promise<BlogDocument | null> {
     try {
-      const foundBlog: BlogDocument = await this.BlogModel.findOne({
+      const foundBlog = await this.BlogModel.findOne({
         _id: new ObjectId(id),
       });
       if (!foundBlog) {

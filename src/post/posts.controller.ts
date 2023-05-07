@@ -55,6 +55,7 @@ export class PostsController {
     return getPost;
     // res.status(200).send(getPost);
   }
+
   @Get(':id')
   async getPostById(
     @Param('id') postId: string,
@@ -86,7 +87,7 @@ export class PostsController {
 
   @Get(':id/comments')
   async getCommentByPostId(
-    @Param() postId: string,
+    @Param('id') postId: string,
     @Query() query: PaginationType,
   ) {
     const getCommentsForPost: QueryPaginationType<CommentsViewType[]> | null =
@@ -142,7 +143,7 @@ export class PostsController {
 
   @Put(':id')
   async updatePost(
-    @Param('postId') postId: string,
+    @Param('id') postId: string,
     @Body() updatePostDto: CreatePostDto,
   ) {
     const updatePost: PostDocument | null = await this.postService.updatePost(

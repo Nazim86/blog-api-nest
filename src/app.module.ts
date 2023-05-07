@@ -23,6 +23,7 @@ import { UserService } from './users/users.service';
 import { UserQueryRepo } from './users/users.query.repo';
 import { UserRepository } from './users/users.repository';
 import { User, UserSchema } from './users/user.entity';
+import { DeleteController } from './delete/delete.controller';
 
 @Module({
   imports: [
@@ -39,7 +40,13 @@ import { User, UserSchema } from './users/user.entity';
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
   ],
 
-  controllers: [AppController, BlogController, PostsController, UserController],
+  controllers: [
+    AppController,
+    BlogController,
+    PostsController,
+    UserController,
+    DeleteController,
+  ],
   providers: [
     AppService,
     BlogService,

@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Model } from 'mongoose';
-import { ObjectId } from 'mongodb';
 import { CreatePostDto } from './createPostDto';
 
 export type PostDocument = HydratedDocument<Post>;
@@ -17,9 +16,6 @@ export type PostModuleType = Model<Post> & PostModelStaticType;
 
 @Schema()
 export class Post {
-  @Prop({ required: true })
-  _id: ObjectId;
-
   @Prop({ required: true })
   title: string;
 

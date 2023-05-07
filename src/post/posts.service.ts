@@ -4,18 +4,13 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Post, PostDocument, PostModuleType } from './post.entity';
 import { PostsViewType } from './types/posts-view-type';
 import { CreatePostDto } from './createPostDto';
-import { PostsQueryRepo } from './posts-query-repo';
 import { PostRepository } from './post.repository';
 import { BlogDocument } from '../blogs/blog.entity';
 
 @Injectable()
 export class PostService {
-  private blogRepository: BlogRepository;
-  // private postRepository:PostRepository
-  private postQueryRepo: PostsQueryRepo;
-  // private userRepository: UserRepository;
-
   constructor(
+    protected blogRepository: BlogRepository,
     protected postRepository: PostRepository,
     @InjectModel(Post.name) private PostModel: PostModuleType,
   ) {}
