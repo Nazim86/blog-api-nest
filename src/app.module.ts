@@ -18,6 +18,11 @@ import { CommentLike, CommentLikeSchema } from './like/commentLike.entity';
 import { CommentsQueryRepo } from './comments/comments.query.repo';
 import { CommentsMapping } from './comments/mapper/comments.mapping';
 import { Comment, CommentSchema } from './comments/comment.entity';
+import { UserController } from './users/users.controller';
+import { UserService } from './users/users.service';
+import { UserQueryRepo } from './users/users.query.repo';
+import { UserRepository } from './users/users.repository';
+import { User, UserSchema } from './users/user.entity';
 
 @Module({
   imports: [
@@ -31,9 +36,10 @@ import { Comment, CommentSchema } from './comments/comment.entity';
       { name: CommentLike.name, schema: CommentLikeSchema },
     ]),
     MongooseModule.forFeature([{ name: Comment.name, schema: CommentSchema }]),
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
   ],
 
-  controllers: [AppController, BlogController, PostsController],
+  controllers: [AppController, BlogController, PostsController, UserController],
   providers: [
     AppService,
     BlogService,
@@ -45,6 +51,9 @@ import { Comment, CommentSchema } from './comments/comment.entity';
     PostRepository,
     CommentsQueryRepo,
     CommentsMapping,
+    UserService,
+    UserQueryRepo,
+    UserRepository,
   ],
 })
 export class AppModule {}
