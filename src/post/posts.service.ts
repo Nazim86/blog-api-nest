@@ -38,7 +38,9 @@ export class PostService {
   async createPostForBlog(
     creatPostDto: CreatePostDto,
   ): Promise<PostsViewType | null> {
-    const blog = await this.blogRepository.getBlogById(creatPostDto.blogId);
+    const blog: BlogDocument = await this.blogRepository.getBlogById(
+      creatPostDto.blogId,
+    );
 
     if (!blog) return null;
 

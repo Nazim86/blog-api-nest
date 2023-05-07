@@ -16,12 +16,14 @@ import { PostService } from './posts.service';
 import { CreatePostDto } from './createPostDto';
 import { PostDocument } from './post.entity';
 import { PostsViewType } from './types/posts-view-type';
+import { CommentsViewType } from '../comments/types/comments-view-type';
+import { CommentsQueryRepo } from '../comments/comments.query.repo';
 
 @Controller('posts')
 export class PostsController {
   constructor(
     protected postQueryRepo: PostsQueryRepo,
-    // protected commentsQueryRepo: CommentsQueryRepo,
+    protected commentsQueryRepo: CommentsQueryRepo,
     protected postService: PostService, // protected commentService: CommentService, // protected jwtService: JwtService,
   ) {}
 
@@ -81,27 +83,27 @@ export class PostsController {
     return getPost;
     // res.status(200).send(getPost);
   }
-  //
-  // @Get(':id/comments')
-  // async getCommentByPostId(
-  //   @Param() postId: string,
-  //   @Query() query: PaginationType,
-  // ) {
-  //   const getCommentsForPost: QueryPaginationType<CommentsViewType[]> | null =
-  //     await this.commentsQueryRepo.getCommentsForPost(
-  //       postId,
-  //       query.pageNumber,
-  //       query.pageSize,
-  //       query.sortBy,
-  //       query.sortDirection,
-  //     );
-  //
-  //   if (!getCommentsForPost) {
-  //     throw new HttpException('Not Found', 404);
-  //   }
-  //   return getCommentsForPost;
-  //   // res.status(200).send(getCommentsForPost);
-  // }
+
+  @Get(':id/comments')
+  async getCommentByPostId(
+    @Param() postId: string,
+    @Query() query: PaginationType,
+  ) {
+    const getCommentsForPost: QueryPaginationType<CommentsViewType[]> | null =
+      await this.commentsQueryRepo.getCommentsForPost(
+        postId,
+        query.pageNumber,
+        query.pageSize,
+        query.sortBy,
+        query.sortDirection,
+      );
+
+    if (!getCommentsForPost) {
+      throw new HttpException('Not Found', 404);
+    }
+    return getCommentsForPost;
+    // res.status(200).send(getCommentsForPost);
+  }
 
   @Post()
   async createPost(@Body() createPostDto: CreatePostDto) {

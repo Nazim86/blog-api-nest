@@ -8,12 +8,16 @@ import { BlogQueryRepo } from './blogs/blog.queryRepo';
 import { Post, PostSchema } from './post/post.entity';
 import { PostMapping } from './post/mapper/post.mapping';
 import { PostsQueryRepo } from './post/posts-query-repo';
-import { PostLike, PostLikeSchema } from './like/post.like.schema';
+import { PostLike, PostLikeSchema } from './like/postLike.entity';
 import { BlogService } from './blogs/blog.service';
 import { BlogRepository } from './blogs/blog.repository';
 import { PostsController } from './post/posts.controller';
 import { PostService } from './post/posts.service';
 import { PostRepository } from './post/post.repository';
+import { CommentLike, CommentLikeSchema } from './like/commentLike.entity';
+import { CommentsQueryRepo } from './comments/comments.query.repo';
+import { CommentsMapping } from './comments/mapper/comments.mapping';
+import { Comment, CommentSchema } from './comments/comment.entity';
 
 @Module({
   imports: [
@@ -23,6 +27,10 @@ import { PostRepository } from './post/post.repository';
     MongooseModule.forFeature([
       { name: PostLike.name, schema: PostLikeSchema },
     ]),
+    MongooseModule.forFeature([
+      { name: CommentLike.name, schema: CommentLikeSchema },
+    ]),
+    MongooseModule.forFeature([{ name: Comment.name, schema: CommentSchema }]),
   ],
 
   controllers: [AppController, BlogController, PostsController],
@@ -35,6 +43,8 @@ import { PostRepository } from './post/post.repository';
     PostMapping,
     PostService,
     PostRepository,
+    CommentsQueryRepo,
+    CommentsMapping,
   ],
 })
 export class AppModule {}

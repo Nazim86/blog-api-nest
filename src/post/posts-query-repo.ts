@@ -5,11 +5,11 @@ import { Model } from 'mongoose';
 import { PostsViewType } from './types/posts-view-type';
 import { NewestLikesType, PostsDbType } from './types/posts-db-type';
 import { ObjectId } from 'mongodb';
-import { PostLike, PostLikeDocument } from '../like/post.like.schema';
-import { LikeEnum } from '../enums/like.enum';
-import { PostLikesDbType } from './types/post-likes-db-type';
+import { PostLike, PostLikeDocument } from '../like/postLike.entity';
+import { LikeEnum } from '../like/like.enum';
+import { PostLikesDbType } from '../like/post-likes-db-type';
 import { QueryPaginationType } from '../types/query-pagination-type';
-import { newestLikesMapping } from './mapper/post-likes.mapping';
+import { newestLikesMapping } from '../like/post-likes.mapping';
 import { PostMapping } from './mapper/post.mapping';
 
 @Injectable()

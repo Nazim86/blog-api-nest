@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongoose';
-import { LikeEnum } from '../../enums/like.enum';
+import { LikeEnum } from './like.enum';
 
 export type PostLikesDbType = {
   _id: ObjectId;
