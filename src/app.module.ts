@@ -24,9 +24,11 @@ import { UserQueryRepo } from './users/users.query.repo';
 import { UserRepository } from './users/users.repository';
 import { User, UserSchema } from './users/user.entity';
 import { DeleteController } from './delete/delete.controller';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
     MongooseModule.forRoot('mongodb://127.0.0.1:27017/blogApiNest'),
     MongooseModule.forFeature([{ name: Blog.name, schema: BlogSchema }]),
     MongooseModule.forFeature([{ name: Post.name, schema: PostSchema }]),

@@ -52,7 +52,7 @@ export class Post {
       content: createPostDto.content,
       blogId: createPostDto.blogId,
       blogName: blogName,
-      createdAt: new Date().toString(),
+      createdAt: new Date().toISOString(),
       extendedLikesInfo: {
         likesCount: 0,
         dislikesCount: 0,

@@ -43,7 +43,7 @@ export class BlogRepository {
   }
 
   async save(blog: BlogDocument): Promise<BlogDocument> {
-    return blog.save();
+    return await blog.save();
   }
 
   // async updateBlog(

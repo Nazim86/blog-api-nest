@@ -44,7 +44,7 @@ export class Blog {
       name: createBlog.name,
       description: createBlog.description,
       websiteUrl: createBlog.websiteUrl,
-      createdAt: new Date(),
+      createdAt: new Date().toISOString(),
       isMembership: false,
     };
     return new BlogModel(newBlog);
