@@ -41,7 +41,7 @@ export class BlogController {
 
     const getBlog: QueryPaginationType<BlogsViewType[]> =
       await this.blogQueryRepo.getBlog(
-        paginatedQuery.searchName,
+        paginatedQuery.searchNameTerm,
         paginatedQuery.sortBy,
         paginatedQuery.sortDirection,
         paginatedQuery.pageNumber,
