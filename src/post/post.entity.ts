@@ -34,6 +34,7 @@ export class Post {
   @Prop({ required: true })
   createdAt: string;
 
+  //instance method
   updatePost(updatePostDto: CreatePostDto) {
     (this.title = updatePostDto.title),
       (this.shortDescription = updatePostDto.shortDescription),
