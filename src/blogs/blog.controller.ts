@@ -21,6 +21,7 @@ import { CreateBlogDto } from './createBlog.dto';
 import { CreatePostDto } from '../post/createPostDto';
 import { PostService } from '../post/posts.service';
 import { BlogDocument } from './blog.entity';
+import { getPaginationValues } from '../pagination.values.function';
 
 @Controller('blogs')
 export class BlogController {
@@ -36,13 +37,15 @@ export class BlogController {
     @Query()
     query: PaginationType,
   ) {
+    const paginatedQuery: PaginationType = getPaginationValues(query);
+
     const getBlog: QueryPaginationType<BlogsViewType[]> =
       await this.blogQueryRepo.getBlog(
-        query.searchName,
-        query.sortBy,
-        query.sortDirection,
-        query.pageNumber,
-        query.pageSize,
+        paginatedQuery.searchName,
+        paginatedQuery.sortBy,
+        paginatedQuery.sortDirection,
+        paginatedQuery.pageNumber,
+        paginatedQuery.pageSize,
       );
 
     return getBlog;
@@ -67,12 +70,14 @@ export class BlogController {
   ) {
     const userId = undefined;
 
+    const paginatedQuery: PaginationType = getPaginationValues(query);
+
     const getBlogByBlogId: QueryPaginationType<PostsViewType[]> | boolean =
       await this.postQueryRepo.getPostsByBlogId(
-        query.pageNumber,
-        query.pageSize,
-        query.sortBy,
-        query.sortDirection,
+        paginatedQuery.pageNumber,
+        paginatedQuery.pageSize,
+        paginatedQuery.sortBy,
+        paginatedQuery.sortDirection,
         blogId,
         userId,
       );

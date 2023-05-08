@@ -12,6 +12,7 @@ import { UserQueryRepo } from './users.query.repo';
 import { UserService } from './users.service';
 import { PaginationType } from '../types/pagination.type';
 import { CreateUserDto } from './createUser.Dto';
+import { getPaginationValues } from '../pagination.values.function';
 
 @Controller('users')
 export class UserController {
@@ -22,13 +23,15 @@ export class UserController {
 
   @Get()
   async getUsers(@Query() query: PaginationType) {
+    const paginatedQuery: PaginationType = getPaginationValues(query);
+
     const users = await this.userQueryRepo.getUsers(
-      query.sortBy,
-      query.sortDirection,
-      query.pageNumber,
-      query.pageSize,
-      query.searchLoginTerm,
-      query.searchEmailTerm,
+      paginatedQuery.sortBy,
+      paginatedQuery.sortDirection,
+      paginatedQuery.pageNumber,
+      paginatedQuery.pageSize,
+      paginatedQuery.searchLoginTerm,
+      paginatedQuery.searchEmailTerm,
     );
     return users;
     // res.status(200).send(getUsers);

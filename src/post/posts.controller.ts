@@ -18,6 +18,7 @@ import { PostDocument } from './post.entity';
 import { PostsViewType } from './types/posts-view-type';
 import { CommentsViewType } from '../comments/types/comments-view-type';
 import { CommentsQueryRepo } from '../comments/comments.query.repo';
+import { getPaginationValues } from '../pagination.values.function';
 
 @Controller('posts')
 export class PostsController {
@@ -43,13 +44,14 @@ export class PostsController {
     //     userId = tokenData.userId;
     //   }
     // }
+    const paginatedQuery: PaginationType = getPaginationValues(query);
 
     const getPost: QueryPaginationType<PostsViewType[]> =
       await this.postQueryRepo.getPosts(
-        query.pageNumber,
-        query.pageSize,
-        query.sortBy,
-        query.sortDirection,
+        paginatedQuery.pageNumber,
+        paginatedQuery.pageSize,
+        paginatedQuery.sortBy,
+        paginatedQuery.sortDirection,
         userId,
       );
     return getPost;
