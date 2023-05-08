@@ -102,7 +102,7 @@ export class BlogController {
     @Body() createPostDto: CreatePostDto,
   ) {
     const newPostForBlog: PostsViewType | null =
-      await this.postService.createPostForBlog(createPostDto);
+      await this.postService.createPostForBlog(blogId, createPostDto);
 
     if (!newPostForBlog) {
       throw new HttpException('Not Found', 404);

@@ -24,25 +24,24 @@ export class PostService {
     const newPost: PostDocument = this.PostModel.createPost(
       createPostDto,
       this.PostModel,
-      blog.name,
+      blog,
     );
 
     return await this.postRepository.createPost(newPost);
   }
 
   async createPostForBlog(
+    blogId: string,
     creatPostDto: CreatePostDto,
   ): Promise<PostsViewType | null> {
-    const blog: BlogDocument = await this.blogRepository.getBlogById(
-      creatPostDto.blogId,
-    );
+    const blog: BlogDocument = await this.blogRepository.getBlogById(blogId);
 
     if (!blog) return null;
 
     const newPost = await this.PostModel.createPost(
       creatPostDto,
       this.PostModel,
-      blog.name,
+      blog,
     );
 
     return await this.postRepository.createPostForBlog(newPost);
