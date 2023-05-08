@@ -26,9 +26,9 @@ export class UserController {
   async getUsers(@Query() query: PaginationType) {
     const paginatedQuery: PaginationType = getPaginationValues({
       ...query,
-      sortBy: `accountData.${query.sortBy}`,
-      searchLoginTerm: `accountData.${query.searchLoginTerm}`,
-      searchEmailTerm: `accountData.${query.searchEmailTerm}`,
+      sortBy: `accountData.+${query.sortBy}`,
+      searchLoginTerm: `accountData.+${query.searchLoginTerm}`,
+      searchEmailTerm: `accountData.+${query.searchEmailTerm}`,
     });
 
     const users = await this.userQueryRepo.getUsers(
