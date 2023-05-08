@@ -1,4 +1,6 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+export const configModule = ConfigModule.forRoot();
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -24,12 +26,12 @@ import { UserQueryRepo } from './users/users.query.repo';
 import { UserRepository } from './users/users.repository';
 import { User, UserSchema } from './users/user.entity';
 import { DeleteController } from './delete/delete.controller';
-import { ConfigModule } from '@nestjs/config';
+
 import * as process from 'process';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    configModule,
     MongooseModule.forRoot(process.env.MONGOOSE_URL),
     MongooseModule.forFeature([{ name: Blog.name, schema: BlogSchema }]),
     MongooseModule.forFeature([{ name: Post.name, schema: PostSchema }]),
