@@ -8,4 +8,4 @@ export const getPaginationValues = (query: any) => {
     searchLoginTerm: query.searchLoginTerm ?? null,
     searchEmailTerm: query.searchEmailTerm ?? null,
   };
-}; // need more explanation
+};
