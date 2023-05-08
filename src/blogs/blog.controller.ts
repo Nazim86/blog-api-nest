@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   HttpException,
   Param,
   Post,
@@ -92,6 +93,7 @@ export class BlogController {
     // if (newBlog) {
     //   res.status(201).send(newBlog);
     // }
+    return newBlog;
   }
 
   @Post(':id/posts')
@@ -105,11 +107,12 @@ export class BlogController {
     if (!newPostForBlog) {
       throw new HttpException('Not Found', 404);
     }
-
+    return newPostForBlog;
     // res.status(201).send(newPostForBlog);
   }
 
   @Put(':id')
+  @HttpCode(204)
   async updateBlog(
     @Param('id') blogId: string,
     @Body() updateBlogDto: CreateBlogDto,
@@ -122,16 +125,19 @@ export class BlogController {
     if (!updateBlog) {
       throw new HttpException('Not Found', 404);
     }
+    return;
     // res.sendStatus(204);
   }
 
   @Delete(':id')
+  @HttpCode(204)
   async deleteBlog(@Param('id') blogId) {
     const deleteBlog: boolean = await this.blogService.deleteBlogById(blogId);
 
     if (!deleteBlog) {
       throw new HttpException('Not Found', 404);
     }
+    return;
     // res.sendStatus(204);
   }
 }
