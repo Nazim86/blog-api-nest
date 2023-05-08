@@ -1,5 +1,5 @@
 export type PaginationType = {
-  searchName?: string;
+  searchNameTerm?: string;
   sortBy: string;
   sortDirection: string;
   pageNumber: number;

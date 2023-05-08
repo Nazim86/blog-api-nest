@@ -1,6 +1,8 @@
-export const getPaginationValues = (query: any) => {
+import { PaginationType } from './types/pagination.type';
+
+export const getPaginationValues = (query: PaginationType) => {
   return {
-    searchName: query.searchNameTerm ?? '',
+    searchNameTerm: query.searchNameTerm ?? '',
     sortBy: query.sortBy ?? 'createdAt',
     sortDirection: query.sortDirection ?? 'desc',
     pageNumber: isNaN(+query.pageNumber) ? 1 : +query.pageNumber,
