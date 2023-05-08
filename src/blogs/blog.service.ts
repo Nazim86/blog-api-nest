@@ -32,8 +32,11 @@ export class BlogService {
   async updateBlog(
     blogId: string,
     updateBlogDto: CreateBlogDto,
-  ): Promise<BlogDocument> {
+  ): Promise<BlogDocument | null> {
     const blog: BlogDocument = await this.blogRepository.getBlogById(blogId);
+
+    if (!blog) return null;
+
     blog.updateBlog(updateBlogDto);
 
     return await this.blogRepository.save(blog);
