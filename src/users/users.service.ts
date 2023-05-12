@@ -15,27 +15,6 @@ export class UserService {
 
   async createNewUser(createUserDto: CreateUserDto): Promise<UserViewType> {
     const passwordHash = await bcrypt.hash(createUserDto.password, 10);
-    //
-    // const emailConfirmationType = new EmailConfirmation(
-    //   uuid(),
-    //   add(new Date(), {
-    //     hours: 1,
-    //     minutes: 3,
-    //   }),
-    //   true,
-    // );
-    //
-    // const accountData = new AccountData(
-    //   login,
-    //   passwordHash,
-    //   email,
-    //   new Date().toISOString(),
-    //   uuid(),
-    //   add(new Date(), {
-    //     hours: 1,
-    //     minutes: 3,
-    //   }),
-    // );
 
     const newUser: UserDocument = this.UserModel.createUser(
       createUserDto,

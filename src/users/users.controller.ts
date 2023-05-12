@@ -8,13 +8,15 @@ import {
   Param,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { UserQueryRepo } from './users.query.repo';
 import { UserService } from './users.service';
-import { PaginationType } from '../types/pagination.type';
 import { CreateUserDto } from './createUser.Dto';
-import { getPaginationValues } from '../pagination.values.function';
+import { AuthGuard } from '../auth.guard';
+import { UserPagination } from './user-pagination';
 
+@UseGuards(AuthGuard)
 @Controller('users')
 export class UserController {
   constructor(
@@ -23,26 +25,24 @@ export class UserController {
   ) {}
 
   @Get()
-  async getUsers(@Query() query: PaginationType) {
-    const paginatedQuery: PaginationType = getPaginationValues({
-      ...query,
-      sortBy: `accountData.${query.sortBy ?? 'createdAt'}`,
-    });
+  async getUsers(@Query() query: UserPagination) {
+    // const paginatedQuery: UserPagination = getPaginationValues({
+    //   ...query,
+    //   sortBy: `accountData.${query.sortBy ?? 'createdAt'}`,
+    // });
 
-    const users = await this.userQueryRepo.getUsers(
-      paginatedQuery.sortBy,
-      paginatedQuery.sortDirection,
-      paginatedQuery.pageNumber,
-      paginatedQuery.pageSize,
-      paginatedQuery.searchLoginTerm,
-      paginatedQuery.searchEmailTerm,
-    );
+    const users = await this.userQueryRepo.getUsers(query);
     return users;
     // res.status(200).send(getUsers);
   }
 
   @Post()
   async createUser(@Body() createUserDto: CreateUserDto) {
+    // if (11 > 10) {
+    //   throw new BadRequestException([
+    //     { message: 'Bad blogger id', field: 'blogger id' },
+    //   ]);
+    // }
     const newUser = await this.userService.createNewUser(createUserDto);
     if (newUser) {
       return newUser;

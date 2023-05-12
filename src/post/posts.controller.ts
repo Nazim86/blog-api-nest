@@ -10,7 +10,6 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { PaginationType } from '../types/pagination.type';
 import { QueryPaginationType } from '../types/query-pagination-type';
 import { PostsQueryRepo } from './posts-query-repo';
 import { PostService } from './posts.service';
@@ -19,7 +18,7 @@ import { PostDocument } from './post.entity';
 import { PostsViewType } from './types/posts-view-type';
 import { CommentsViewType } from '../comments/types/comments-view-type';
 import { CommentsQueryRepo } from '../comments/comments.query.repo';
-import { getPaginationValues } from '../pagination.values.function';
+import { Pagination, PaginationType } from '../common/pagination';
 
 @Controller('posts')
 export class PostsController {
@@ -30,7 +29,7 @@ export class PostsController {
   ) {}
 
   @Get()
-  async getPosts(@Query() query: PaginationType) {
+  async getPosts(@Query() query: Pagination<PaginationType>) {
     // const accessToken: string | undefined =
     //   req.headers.authorization?.split(' ')[1];
 
@@ -45,16 +44,9 @@ export class PostsController {
     //     userId = tokenData.userId;
     //   }
     // }
-    const paginatedQuery: PaginationType = getPaginationValues(query);
 
     const getPost: QueryPaginationType<PostsViewType[]> =
-      await this.postQueryRepo.getPosts(
-        paginatedQuery.pageNumber,
-        paginatedQuery.pageSize,
-        paginatedQuery.sortBy,
-        paginatedQuery.sortDirection,
-        userId,
-      );
+      await this.postQueryRepo.getPosts(query, userId);
     return getPost;
     // res.status(200).send(getPost);
   }
@@ -91,16 +83,10 @@ export class PostsController {
   @Get(':id/comments')
   async getCommentByPostId(
     @Param('id') postId: string,
-    @Query() query: PaginationType,
+    @Query() query: Pagination<PaginationType>,
   ) {
     const getCommentsForPost: QueryPaginationType<CommentsViewType[]> | null =
-      await this.commentsQueryRepo.getCommentsForPost(
-        postId,
-        query.pageNumber,
-        query.pageSize,
-        query.sortBy,
-        query.sortDirection,
-      );
+      await this.commentsQueryRepo.getCommentsForPost(postId, query);
 
     if (!getCommentsForPost) {
       throw new HttpException('Not Found', 404);

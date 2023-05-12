@@ -24,26 +24,23 @@ export class CommentsQueryRepo {
 
   async getCommentsForPost(
     postId: string,
-    pageNumber: number,
-    pageSize: number,
-    sortBy: string,
-    sortDirection: string,
+    query,
   ): Promise<QueryPaginationType<CommentsViewType[]> | null> {
     const postById: PostsViewType | boolean =
       await this.postQueryRepo.getPostById(postId);
     if (!postById) return null;
-    const skipSize = (pageNumber - 1) * pageSize;
+    const skipSize = (query.pageNumber - 1) * query.pageSize;
     const totalCount = await this.CommentModel.countDocuments({
       postId: postId,
     });
-    const pagesCount = Math.ceil(totalCount / pageSize);
+    const pagesCount = Math.ceil(totalCount / query.pageSize);
 
     const getCommentsForPost: CommentDocument[] = await this.CommentModel.find({
       postId: postId,
     })
-      .sort({ [sortBy]: sortDirection === 'asc' ? 1 : -1 })
+      .sort({ [query.sortBy]: query.sortDirection === 'asc' ? 1 : -1 })
       .skip(skipSize)
-      .limit(pageSize)
+      .limit(query.pageSize)
       .lean();
 
     const mappedComment: Promise<CommentsViewType>[] =
@@ -55,8 +52,8 @@ export class CommentsQueryRepo {
 
     return {
       pagesCount: pagesCount,
-      page: pageNumber,
-      pageSize: pageSize,
+      page: query.pageNumber,
+      pageSize: query.pageSize,
       totalCount: totalCount,
       items: resolvedComments,
     };

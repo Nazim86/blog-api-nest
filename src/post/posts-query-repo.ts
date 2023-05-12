@@ -11,6 +11,7 @@ import { PostLikesDbType } from '../like/post-likes-db-type';
 import { QueryPaginationType } from '../types/query-pagination-type';
 import { newestLikesMapping } from '../like/post-likes.mapping';
 import { PostMapping } from './mapper/post.mapping';
+import { Pagination, PaginationType } from '../common/pagination';
 
 @Injectable()
 export class PostsQueryRepo {
@@ -84,20 +85,23 @@ export class PostsQueryRepo {
   }
 
   async getPosts(
-    pageNumber: number,
-    pageSize: number,
-    sortBy: string,
-    sortDirection: string,
+    query,
     userId?: string,
   ): Promise<QueryPaginationType<PostsViewType[]>> {
-    const skipSize = (pageNumber - 1) * pageSize;
+    const paginatedQuery = new Pagination<PaginationType>(
+      query.pageNumber,
+      query.pageSize,
+      query.sortBy,
+      query.sortDirection,
+    );
+    const skipSize = paginatedQuery.skipSize;
     const totalCount = await this.PostModel.countDocuments({});
-    const pagesCount = Math.ceil(totalCount / pageSize);
+    const pagesCount = paginatedQuery.totalPages(totalCount);
 
     const getposts: PostsDbType[] = await this.PostModel.find({})
-      .sort({ [sortBy]: sortDirection === 'asc' ? 1 : -1 })
+      .sort({ [query.sortBy]: query.sortDirection === 'asc' ? 1 : -1 })
       .skip(skipSize)
-      .limit(pageSize)
+      .limit(query.pageSize)
       .lean();
 
     const mappedPost: Promise<PostsViewType>[] =
@@ -107,31 +111,37 @@ export class PostsQueryRepo {
 
     return {
       pagesCount: pagesCount,
-      page: pageNumber,
-      pageSize: pageSize,
+      page: query.pageNumber,
+      pageSize: query.pageSize,
       totalCount: totalCount,
       items: resolvedMappedPosts,
     };
   }
 
   async getPostsByBlogId(
-    pageNumber: number,
-    pageSize: number,
-    sortBy: string,
-    sortDirection: string,
+    query,
     blogId: string,
     userId?: string,
   ): Promise<QueryPaginationType<PostsViewType[]> | boolean> {
-    const skipSize = (pageNumber - 1) * pageSize;
+    const paginatedQuery = new Pagination<PaginationType>(
+      query.pageNumber,
+      query.pageSize,
+      query.sortBy,
+      query.sortDirection,
+    );
+    const skipSize = paginatedQuery.skipSize;
     const totalCount = await this.PostModel.countDocuments({ blogId: blogId });
-    const pagesCount = Math.ceil(totalCount / pageSize);
+    const pagesCount = paginatedQuery.totalPages(totalCount);
 
     const getPostsByBlogId: PostsDbType[] = await this.PostModel.find({
       blogId: blogId,
     })
-      .sort({ [sortBy]: sortDirection === 'asc' ? 1 : -1 })
+      .sort({
+        [paginatedQuery.sortBy]:
+          paginatedQuery.sortDirection === 'asc' ? 1 : -1,
+      })
       .skip(skipSize)
-      .limit(pageSize)
+      .limit(paginatedQuery.pageSize)
       .lean();
 
     if (getPostsByBlogId.length === 0) return false;
@@ -143,8 +153,8 @@ export class PostsQueryRepo {
 
     return {
       pagesCount: pagesCount,
-      page: pageNumber,
-      pageSize: pageSize,
+      page: paginatedQuery.pageNumber,
+      pageSize: paginatedQuery.pageSize,
       totalCount: totalCount,
       items: resolvedMappedPosts,
     };

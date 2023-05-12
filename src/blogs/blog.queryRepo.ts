@@ -6,6 +6,8 @@ import { QueryPaginationType } from '../types/query-pagination-type';
 import { InjectModel } from '@nestjs/mongoose';
 import { blogsMapping } from './blogs.mapping';
 import { ObjectId } from 'mongodb';
+import { PaginationType } from '../common/pagination';
+import { BlogPagination } from './blog-pagination';
 
 @Injectable()
 export class BlogQueryRepo {
@@ -31,29 +33,36 @@ export class BlogQueryRepo {
     }
   }
 
-  async getBlog(
-    searchNameTerm: string,
-    sortBy = 'createdAt',
-    sortDirection = 'desc',
-    pageNumber = 1,
-    pageSize = 10,
-  ): Promise<QueryPaginationType<BlogsViewType[]>> {
-    const filter = { name: { $regex: searchNameTerm ?? '', $options: 'i' } };
-    const skipSize = (pageNumber - 1) * pageSize;
+  async getBlog(query): Promise<QueryPaginationType<BlogsViewType[]>> {
+    const paginatedQuery = new BlogPagination<PaginationType>(
+      query.pageNumber,
+      query.pageSize,
+      query.sortBy,
+      query.sortDirection,
+      query.searchTerm,
+    );
+    const filter = {
+      name: { $regex: paginatedQuery.searchNameTerm ?? '', $options: 'i' },
+    };
+
+    const skipSize = paginatedQuery.skipSize;
     const totalCount = await this.BlogModel.countDocuments(filter);
-    const pagesCount = Math.ceil(totalCount / pageSize);
+    const pagesCount = paginatedQuery.totalPages(totalCount);
 
     const getBlog = await this.BlogModel.find(filter)
-      .sort({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }) // did not understand well
+      .sort({
+        [paginatedQuery.sortBy]:
+          paginatedQuery.sortDirection === 'asc' ? 1 : -1,
+      }) // did not understand well
       .skip(skipSize)
-      .limit(pageSize)
+      .limit(paginatedQuery.pageSize)
       .lean();
 
     const mappedBlog = blogsMapping(getBlog);
     return {
       pagesCount: pagesCount,
-      page: pageNumber,
-      pageSize: pageSize,
+      page: paginatedQuery.pageNumber,
+      pageSize: paginatedQuery.pageSize,
       totalCount: totalCount,
       items: mappedBlog,
     };

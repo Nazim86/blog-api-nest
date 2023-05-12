@@ -13,7 +13,6 @@ import {
 import { QueryPaginationType } from '../types/query-pagination-type';
 import { BlogsViewType } from './types/blogs-view-type';
 import { BlogQueryRepo } from './blog.queryRepo';
-import { PaginationType } from '../types/pagination.type';
 import { PostsViewType } from '../post/types/posts-view-type';
 import { PostsQueryRepo } from '../post/posts-query-repo';
 import { BlogService } from './blog.service';
@@ -21,7 +20,8 @@ import { CreateBlogDto } from './createBlog.dto';
 import { CreatePostDto } from '../post/createPostDto';
 import { PostService } from '../post/posts.service';
 import { BlogDocument } from './blog.entity';
-import { getPaginationValues } from '../pagination.values.function';
+import { BlogPagination } from './blog-pagination';
+import { PaginationType } from '../common/pagination';
 
 @Controller('blogs')
 export class BlogController {
@@ -35,18 +35,10 @@ export class BlogController {
   @Get()
   async getBlogs(
     @Query()
-    query: PaginationType,
+    query: BlogPagination<PaginationType>,
   ) {
-    const paginatedQuery: PaginationType = getPaginationValues(query);
-
     const getBlog: QueryPaginationType<BlogsViewType[]> =
-      await this.blogQueryRepo.getBlog(
-        paginatedQuery.searchNameTerm,
-        paginatedQuery.sortBy,
-        paginatedQuery.sortDirection,
-        paginatedQuery.pageNumber,
-        paginatedQuery.pageSize,
-      );
+      await this.blogQueryRepo.getBlog(query);
 
     return getBlog;
   }
@@ -66,21 +58,13 @@ export class BlogController {
   @Get(':id/posts')
   async getPostsByBlogId(
     @Param('id') blogId: string,
-    @Query() query: PaginationType,
+    @Query() query: BlogPagination<PaginationType>,
   ) {
+    // const paginatedQuery: BlogPagination = new BlogPagination(query);
     const userId = undefined;
 
-    const paginatedQuery: PaginationType = getPaginationValues(query);
-
     const getBlogByBlogId: QueryPaginationType<PostsViewType[]> | boolean =
-      await this.postQueryRepo.getPostsByBlogId(
-        paginatedQuery.pageNumber,
-        paginatedQuery.pageSize,
-        paginatedQuery.sortBy,
-        paginatedQuery.sortDirection,
-        blogId,
-        userId,
-      );
+      await this.postQueryRepo.getPostsByBlogId(query, blogId, userId);
 
     if (!getBlogByBlogId) {
       throw new HttpException('Not Found', 404);
