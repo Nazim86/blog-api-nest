@@ -3,6 +3,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from '../domain/user.entity';
 import { Model } from 'mongoose';
 import { userMapping } from '../user.mapping';
+import { ObjectId } from 'mongodb';
+import { UserViewType } from './types/user-view-type';
 
 @Injectable()
 export class UserQueryRepo {
@@ -45,6 +47,16 @@ export class UserQueryRepo {
       pageSize: paginatedQuery.pageSize,
       totalCount: totalCount,
       items: mappedUsers,
+    };
+  }
+
+  async getUserById(id: string): Promise<UserViewType> {
+    const user = await this.UserModel.findOne({ _id: new ObjectId(id) });
+    return {
+      id: user.id,
+      login: user.accountData.login,
+      email: user.accountData.email,
+      createdAt: user.accountData.createdAt,
     };
   }
 }

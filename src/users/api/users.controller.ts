@@ -42,9 +42,9 @@ export class UserController {
     //     { message: 'Bad blogger id', field: 'blogger id' },
     //   ]);
     // }
-    const newUser = await this.userService.createNewUser(createUserDto);
-    if (newUser) {
-      return newUser;
+    const userId = await this.userService.createNewUser(createUserDto);
+    if (userId) {
+      return await this.userQueryRepo.getUserById(userId);
       // res.status(201).send(newUser);
     }
   }

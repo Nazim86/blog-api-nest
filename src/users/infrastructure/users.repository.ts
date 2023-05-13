@@ -4,21 +4,10 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import add from 'date-fns/add';
 import { ObjectId } from 'mongodb';
-import { UserViewType } from './types/user-view-type';
 
 @Injectable()
 export class UserRepository {
   constructor(@InjectModel(User.name) private UserModel: Model<User>) {}
-  async createNewUser(newUser: UserDocument): Promise<UserViewType> {
-    const user: UserDocument = await newUser.save();
-
-    return {
-      id: user._id.toString(),
-      login: user.accountData.login,
-      email: user.accountData.email,
-      createdAt: user.accountData.createdAt,
-    };
-  }
 
   async findUserByConfirmationCode(code: string): Promise<UserDocument | null> {
     const user: UserDocument | null = await this.UserModel.findOne({
@@ -37,8 +26,8 @@ export class UserRepository {
     return this.UserModel.findOne({ 'accountData.email': email });
   }
 
-  async save(model: UserDocument) {
-    return await model.save();
+  async save(user: UserDocument) {
+    return await user.save();
   }
 
   async updateConfirmation(userId: ObjectId): Promise<boolean> {
