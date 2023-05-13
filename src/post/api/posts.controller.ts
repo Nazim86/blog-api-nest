@@ -10,22 +10,25 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { QueryPaginationType } from '../types/query-pagination-type';
-import { PostsQueryRepo } from './posts-query-repo';
-import { PostService } from './posts.service';
-import { CreatePostDto } from './createPostDto';
-import { PostDocument } from './post.entity';
-import { PostsViewType } from './types/posts-view-type';
-import { CommentsViewType } from '../comments/types/comments-view-type';
-import { CommentsQueryRepo } from '../comments/comments.query.repo';
-import { Pagination, PaginationType } from '../common/pagination';
+import { QueryPaginationType } from '../../types/query-pagination-type';
+import { PostsQueryRepo } from '../infrastructure/posts-query-repo';
+import { PostService } from '../application/posts.service';
+import { CreatePostDto } from '../createPostDto';
+import { PostDocument } from '../domain/post.entity';
+import { PostsViewType } from '../types/posts-view-type';
+import { CommentsViewType } from '../../comments/types/comments-view-type';
+import { CommentsQueryRepo } from '../../comments/infrastructure/comments.query.repo';
+import { Pagination, PaginationType } from '../../common/pagination';
+import { CommentService } from '../../comments/application/comments.service';
+import { CreateCommentDto } from '../../comments/createComment.Dto';
 
 @Controller('posts')
 export class PostsController {
   constructor(
     protected postQueryRepo: PostsQueryRepo,
     protected commentsQueryRepo: CommentsQueryRepo,
-    protected postService: PostService, // protected commentService: CommentService, // protected jwtService: JwtService,
+    protected postService: PostService,
+    protected commentService: CommentService, // protected jwtService: JwtService,
   ) {}
 
   @Get()
@@ -108,27 +111,27 @@ export class PostsController {
     // res.status(201).send(newPost);
   }
 
-  // @Post()
-  // async createCommentByPostId(req: Request, res: Response) {
-  //   const postId = req.params.postId;
-  //   const content = req.body.content;
-  //   const userId = req.context.user!._id.toString();
-  //   const userLogin = req.context.user!.accountData.login;
-  //
-  //   const postComment: CommentsViewType | null =
-  //     await this.commentService.createPostComment(
-  //       postId,
-  //       content,
-  //       userId,
-  //       userLogin,
-  //     );
-  //
-  //   if (!postComment) {
-  //     throw new HttpException('Not Found', 404);
-  //   }
-  //   return postComment;
-  //   // res.status(201).send(postComment);
-  // }
+  @Post(':id/comments')
+  async createCommentByPostId(
+    @Param('id') postId: string,
+    @Body() createCommentDto: CreateCommentDto,
+  ) {
+    const userId = req.context.user!._id.toString();
+    const userLogin = req.context.user!.accountData.login;
+
+    const commentId: string | null =
+      await this.commentService.createPostComment(
+        createCommentDto,
+        postId,
+        userId,
+        userLogin,
+      );
+
+    if (!commentId) {
+      throw new HttpException('Not Found', 404);
+    }
+    return await this.commentsQueryRepo.getComment(commentId);
+  }
 
   @Put(':id')
   @HttpCode(204)

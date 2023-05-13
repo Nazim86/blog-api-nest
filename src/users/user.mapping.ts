@@ -1,5 +1,5 @@
-import { UserDocument } from './user.entity';
-import { UserViewType } from './types/user-view-type';
+import { UserDocument } from './domain/user.entity';
+import { UserViewType } from './infrastructure/types/user-view-type';
 
 export const userMapping = (newUser: UserDocument[]): UserViewType[] => {
   return newUser.map((user: UserDocument): UserViewType => {

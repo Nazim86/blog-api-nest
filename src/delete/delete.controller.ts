@@ -1,10 +1,10 @@
 import { Controller, Delete, HttpCode } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Blog, BlogDocument } from '../blogs/blog.entity';
+import { Blog, BlogDocument } from '../blogs/domain/blog.entity';
 import { Model } from 'mongoose';
-import { Post, PostDocument } from '../post/post.entity';
+import { Post, PostDocument } from '../post/domain/post.entity';
 import { Comment, CommentDocument } from '../comments/comment.entity';
-import { User, UserDocument } from '../users/user.entity';
+import { User, UserDocument } from '../users/domain/user.entity';
 
 @Controller('testing/all-data')
 export class DeleteController {

@@ -1,4 +1,4 @@
-import { Pagination } from '../common/pagination';
+import { Pagination } from '../../common/pagination';
 
 export class BlogPagination<T> extends Pagination<T> {
   public readonly searchNameTerm: string;

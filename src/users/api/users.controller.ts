@@ -10,11 +10,11 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { UserQueryRepo } from './users.query.repo';
-import { UserService } from './users.service';
-import { CreateUserDto } from './createUser.Dto';
-import { AuthGuard } from '../auth.guard';
-import { UserPagination } from './user-pagination';
+import { UserQueryRepo } from '../infrastructure/users.query.repo';
+import { UserService } from '../application/users.service';
+import { CreateUserDto } from '../createUser.Dto';
+import { AuthGuard } from '../../auth.guard';
+import { UserPagination } from '../user-pagination';
 
 @UseGuards(AuthGuard)
 @Controller('users')
@@ -31,8 +31,7 @@ export class UserController {
     //   sortBy: `accountData.${query.sortBy ?? 'createdAt'}`,
     // });
 
-    const users = await this.userQueryRepo.getUsers(query);
-    return users;
+    return await this.userQueryRepo.getUsers(query);
     // res.status(200).send(getUsers);
   }
 

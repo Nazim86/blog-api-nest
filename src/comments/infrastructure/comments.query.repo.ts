@@ -1,15 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { PostsQueryRepo } from '../post/posts-query-repo';
-import { PostsViewType } from '../post/types/posts-view-type';
-import { QueryPaginationType } from '../types/query-pagination-type';
-import { CommentsViewType } from './types/comments-view-type';
+import { PostsQueryRepo } from '../../post/infrastructure/posts-query-repo';
+import { PostsViewType } from '../../post/types/posts-view-type';
+import { QueryPaginationType } from '../../types/query-pagination-type';
+import { CommentsViewType } from '../types/comments-view-type';
 import { InjectModel } from '@nestjs/mongoose';
-import { Comment, CommentDocument } from './comment.entity';
+import { Comment, CommentDocument } from '../comment.entity';
 import { Model } from 'mongoose';
-import { CommentsDbType } from './types/comments-db-type';
-import { CommentsMapping } from './mapper/comments.mapping';
-import { CommentLike, CommentLikeDocument } from '../like/commentLike.entity';
-import { LikeEnum } from '../like/like.enum';
+import { CommentsDbType } from '../types/comments-db-type';
+import { CommentsMapping } from '../mapper/comments.mapping';
+import {
+  CommentLike,
+  CommentLikeDocument,
+} from '../../like/commentLike.entity';
+import { LikeEnum } from '../../like/like.enum';
 import { ObjectId } from 'mongodb';
 
 @Injectable()

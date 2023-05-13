@@ -10,18 +10,18 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { QueryPaginationType } from '../types/query-pagination-type';
-import { BlogsViewType } from './types/blogs-view-type';
-import { BlogQueryRepo } from './blog.queryRepo';
-import { PostsViewType } from '../post/types/posts-view-type';
-import { PostsQueryRepo } from '../post/posts-query-repo';
-import { BlogService } from './blog.service';
-import { CreateBlogDto } from './createBlog.dto';
-import { CreatePostDto } from '../post/createPostDto';
-import { PostService } from '../post/posts.service';
-import { BlogDocument } from './blog.entity';
-import { BlogPagination } from './blog-pagination';
-import { PaginationType } from '../common/pagination';
+import { QueryPaginationType } from '../../types/query-pagination-type';
+import { BlogsViewType } from '../infrastructure/types/blogs-view-type';
+import { BlogQueryRepo } from '../infrastructure/blog.queryRepo';
+import { PostsViewType } from '../../post/types/posts-view-type';
+import { PostsQueryRepo } from '../../post/infrastructure/posts-query-repo';
+import { BlogService } from '../application/blog.service';
+import { CreateBlogDto } from '../createBlog.dto';
+import { CreatePostDto } from '../../post/createPostDto';
+import { PostService } from '../../post/application/posts.service';
+import { BlogDocument } from '../domain/blog.entity';
+import { BlogPagination } from '../domain/blog-pagination';
+import { PaginationType } from '../../common/pagination';
 
 @Controller('blogs')
 export class BlogController {
