@@ -10,25 +10,6 @@ export class PostRepository {
   async getPostById(postId: string): Promise<PostDocument | null> {
     return this.PostModel.findOne({ _id: new ObjectId(postId) });
   }
-  async createPost(newPost: PostDocument): Promise<PostsViewType> {
-    await newPost.save();
-
-    return {
-      id: newPost.id,
-      title: newPost.title,
-      shortDescription: newPost.shortDescription,
-      content: newPost.content,
-      blogId: newPost.blogId,
-      blogName: newPost.blogName,
-      createdAt: newPost.createdAt,
-      extendedLikesInfo: {
-        likesCount: 0,
-        dislikesCount: 0,
-        myStatus: 'None', //LikeEnum.None,
-        newestLikes: [],
-      },
-    };
-  }
 
   async save(post: PostDocument) {
     return post.save();

@@ -15,7 +15,7 @@ export class PostService {
     @InjectModel(Post.name) private PostModel: PostModuleType,
   ) {}
 
-  async createPost(createPostDto: CreatePostDto): Promise<PostsViewType> {
+  async createPost(createPostDto: CreatePostDto): Promise<string> {
     const blog: BlogDocument = await this.blogRepository.getBlogById(
       createPostDto.blogId,
     );
@@ -27,7 +27,9 @@ export class PostService {
       blog,
     );
 
-    return await this.postRepository.createPost(newPost);
+    await this.postRepository.save(newPost);
+
+    return newPost.id;
   }
 
   async createPostForBlog(

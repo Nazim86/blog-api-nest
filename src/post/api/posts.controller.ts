@@ -100,14 +100,14 @@ export class PostsController {
 
   @Post()
   async createPost(@Body() createPostDto: CreatePostDto) {
-    const newPost: PostsViewType | null = await this.postService.createPost(
+    const postId: string | null = await this.postService.createPost(
       createPostDto,
     );
-    if (!newPost) {
+    if (!postId) {
       throw new HttpException('Not Found', 404);
       // res.sendStatus(404);
     }
-    return newPost;
+    return await this.postQueryRepo.getPostById(postId);
     // res.status(201).send(newPost);
   }
 
