@@ -13,12 +13,14 @@ export class BlogService {
     @InjectModel(Blog.name) private BlogModel: BlogModelType,
   ) {}
 
-  async createBlog(createBlogDto: CreateBlogDto): Promise<BlogsViewType> {
+  async createBlog(createBlogDto: CreateBlogDto): Promise<string> {
     const newBlog: BlogDocument = this.BlogModel.createBlog(
       createBlogDto,
       this.BlogModel,
     );
-    return this.blogRepository.createBlog(newBlog);
+    await this.blogRepository.save(newBlog);
+
+    return newBlog.id;
   }
 
   async getBlog(): Promise<BlogsViewType[]> {

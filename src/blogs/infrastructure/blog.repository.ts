@@ -9,18 +9,6 @@ import { blogsMapping } from './blogs.mapping';
 @Injectable()
 export class BlogRepository {
   constructor(@InjectModel(Blog.name) private BlogModel: Model<BlogDocument>) {}
-  async createBlog(newBlog: BlogDocument): Promise<BlogsViewType> {
-    const blog: BlogDocument = await newBlog.save();
-
-    return {
-      id: blog.id,
-      name: blog.name,
-      description: blog.description,
-      websiteUrl: blog.websiteUrl,
-      createdAt: blog.createdAt,
-      isMembership: blog.isMembership,
-    };
-  }
 
   async getBlog(): Promise<BlogsViewType[]> {
     const array = await this.BlogModel.find({}).lean();

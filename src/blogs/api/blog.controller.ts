@@ -75,14 +75,9 @@ export class BlogController {
 
   @Post()
   async createBlog(@Body() createBlogDto: CreateBlogDto) {
-    const newBlog: BlogsViewType = await this.blogService.createBlog(
-      createBlogDto,
-    );
+    const blogId: string = await this.blogService.createBlog(createBlogDto);
 
-    // if (newBlog) {
-    //   res.status(201).send(newBlog);
-    // }
-    return newBlog;
+    return await this.blogQueryRepo.getBlogById(blogId);
   }
 
   @Post(':id/posts')
