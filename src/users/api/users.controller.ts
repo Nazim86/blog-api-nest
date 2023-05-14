@@ -11,7 +11,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { UserQueryRepo } from '../infrastructure/users.query.repo';
-import { UserService } from '../application/users.service';
+import { UsersService } from '../application/users.service';
 import { CreateUserDto } from '../createUser.Dto';
 import { AuthGuard } from '../../auth.guard';
 import { UserPagination } from '../user-pagination';
@@ -21,7 +21,7 @@ import { UserPagination } from '../user-pagination';
 export class UserController {
   constructor(
     protected userQueryRepo: UserQueryRepo,
-    protected userService: UserService,
+    protected userService: UsersService,
   ) {}
 
   @Get()

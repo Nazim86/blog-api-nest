@@ -6,7 +6,7 @@ import { User, UserDocument, UserModuleTYpe } from '../domain/user.entity';
 import { CreateUserDto } from '../createUser.Dto';
 
 @Injectable()
-export class UserService {
+export class UsersService {
   constructor(
     protected userRepository: UserRepository,
     @InjectModel(User.name) private UserModel: UserModuleTYpe,
@@ -35,22 +35,28 @@ export class UserService {
     return await this.userRepository.deleteUser(id);
   }
 
-  //   async checkCredentials(
-  //     loginOrEmail: string,
-  //     password: string,
-  //   ): Promise<boolean> {
-  //     const user: UserAccount | null =
-  //       await this.userRepository.findUserByLoginOrEmail(loginOrEmail);
-  //
-  //     if (!user) return false;
-  //
-  //     if (!user.emailConfirmation.isConfirmed) return false;
-  //
-  //     return bcrypt.compare(password, user.accountData.passwordHash);
-  //   }
-  //
-  //   async findUserById(userId: string): Promise<UserByIdType | null> {
-  //     return await userRepositoryOld.findUserById(userId);
-  //   }
+  async checkCredentials(
+    loginOrEmail: string,
+    password: string,
+  ): Promise<boolean> {
+    const user: UserDocument | null =
+      await this.userRepository.findUserByLoginOrEmail(loginOrEmail);
+
+    if (!user) return false;
+
+    if (!user.emailConfirmation.isConfirmed) return false;
+
+    return bcrypt.compare(password, user.accountData.passwordHash);
+  }
+
+  async findUserByUsername(login: string) {
+    const user: UserDocument = await this.userRepository.findUserByLoginOrEmail(
+      login,
+    );
+    return user;
+  }
+
+  // async findUserById(userId: string): Promise<UserByIdType | null> {
+  //   return await userRepositoryOld.findUserById(userId);
   // }
 }

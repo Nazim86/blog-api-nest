@@ -21,17 +21,19 @@ import { CommentsQueryRepo } from './comments/infrastructure/comments.query.repo
 import { CommentsMapping } from './comments/mapper/comments.mapping';
 import { Comment, CommentSchema } from './comments/comment.entity';
 import { UserController } from './users/api/users.controller';
-import { UserService } from './users/application/users.service';
+import { UsersService } from './users/application/users.service';
 import { UserQueryRepo } from './users/infrastructure/users.query.repo';
 import { UserRepository } from './users/infrastructure/users.repository';
 import { User, UserSchema } from './users/domain/user.entity';
 import { DeleteController } from './delete/delete.controller';
 
 import * as process from 'process';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
     configModule,
+    AuthModule,
     MongooseModule.forRoot(process.env.MONGOOSE_URL),
     MongooseModule.forFeature([{ name: Blog.name, schema: BlogSchema }]),
     MongooseModule.forFeature([{ name: Post.name, schema: PostSchema }]),
@@ -63,7 +65,7 @@ import * as process from 'process';
     PostRepository,
     CommentsQueryRepo,
     CommentsMapping,
-    UserService,
+    UsersService,
     UserQueryRepo,
     UserRepository,
   ],

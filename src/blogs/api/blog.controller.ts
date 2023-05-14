@@ -9,6 +9,7 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { QueryPaginationType } from '../../types/query-pagination-type';
 import { BlogsViewType } from '../infrastructure/types/blogs-view-type';
@@ -22,6 +23,7 @@ import { PostService } from '../../post/application/posts.service';
 import { BlogDocument } from '../domain/blog.entity';
 import { BlogPagination } from '../domain/blog-pagination';
 import { PaginationType } from '../../common/pagination';
+import { BasicAuthGuard } from '../../auth/guards/basic-auth.guard';
 
 @Controller('blogs')
 export class BlogController {
@@ -73,6 +75,7 @@ export class BlogController {
     // res.status(200).send(getBlogByBlogId);
   }
 
+  @UseGuards(BasicAuthGuard)
   @Post()
   async createBlog(@Body() createBlogDto: CreateBlogDto) {
     const blogId: string = await this.blogService.createBlog(createBlogDto);
@@ -80,6 +83,7 @@ export class BlogController {
     return await this.blogQueryRepo.getBlogById(blogId);
   }
 
+  @UseGuards(BasicAuthGuard)
   @Post(':id/posts')
   async createPostByBlogId(
     @Param('id') blogId: string,
@@ -95,6 +99,7 @@ export class BlogController {
     // res.status(201).send(newPostForBlog);
   }
 
+  @UseGuards(BasicAuthGuard)
   @Put(':id')
   @HttpCode(204)
   async updateBlog(
@@ -113,6 +118,7 @@ export class BlogController {
     // res.sendStatus(204);
   }
 
+  @UseGuards(BasicAuthGuard)
   @Delete(':id')
   @HttpCode(204)
   async deleteBlog(@Param('id') blogId) {

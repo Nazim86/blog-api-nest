@@ -6,7 +6,6 @@ import { CommentsViewType } from '../types/comments-view-type';
 import { InjectModel } from '@nestjs/mongoose';
 import { Comment, CommentDocument } from '../comment.entity';
 import { Model } from 'mongoose';
-import { CommentsDbType } from '../types/comments-db-type';
 import { CommentsMapping } from '../mapper/comments.mapping';
 import {
   CommentLike,
@@ -67,11 +66,10 @@ export class CommentsQueryRepo {
     userId?: string,
   ): Promise<CommentsViewType | null> {
     try {
-      const getComment: CommentsDbType | null = await this.CommentModel.findOne(
-        {
+      const getComment: CommentDocument | null =
+        await this.CommentModel.findOne({
           _id: new ObjectId(commentId),
-        },
-      );
+        });
 
       if (!getComment) return null;
 

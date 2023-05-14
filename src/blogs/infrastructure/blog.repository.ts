@@ -34,29 +34,6 @@ export class BlogRepository {
     return await blog.save();
   }
 
-  // async updateBlog(
-  //   id: string,
-  //   name: string,
-  //   description: string,
-  //   websiteUrl: string,
-  // ): Promise<boolean> {
-  //   try {
-  //     const result = await this.BlogModel.updateOne(
-  //       { _id: new ObjectId(id) },
-  //       {
-  //         $set: {
-  //           name: name,
-  //           description: description,
-  //           websiteUrl: websiteUrl,
-  //         },
-  //       },
-  //     );
-  //     return result.matchedCount === 1;
-  //   } catch (e) {
-  //     return false;
-  //   }
-  // }
-
   async deleteBlogById(id: string): Promise<boolean> {
     try {
       const result = await this.BlogModel.deleteOne({ _id: new ObjectId(id) });
