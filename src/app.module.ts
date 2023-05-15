@@ -23,17 +23,22 @@ import { Comment, CommentSchema } from './comments/comment.entity';
 import { UserController } from './users/api/users.controller';
 import { UsersService } from './users/application/users.service';
 import { UserQueryRepo } from './users/infrastructure/users.query.repo';
-import { UserRepository } from './users/infrastructure/users.repository';
+import { UsersRepository } from './users/infrastructure/users.repository';
 import { User, UserSchema } from './users/domain/user.entity';
 import { DeleteController } from './delete/delete.controller';
 
 import * as process from 'process';
 import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
+import { LikesRepository } from './like/likes.repository';
+import { CommentService } from './comments/application/comments.service';
+import { CommentsRepository } from './comments/infrastructure/comments.repository';
 
 @Module({
   imports: [
     configModule,
     AuthModule,
+    UsersModule,
     MongooseModule.forRoot(process.env.MONGOOSE_URL),
     MongooseModule.forFeature([{ name: Blog.name, schema: BlogSchema }]),
     MongooseModule.forFeature([{ name: Post.name, schema: PostSchema }]),
@@ -63,11 +68,14 @@ import { AuthModule } from './auth/auth.module';
     PostMapping,
     PostService,
     PostRepository,
+    CommentService,
     CommentsQueryRepo,
+    CommentsRepository,
     CommentsMapping,
     UsersService,
     UserQueryRepo,
-    UserRepository,
+    UsersRepository,
+    LikesRepository,
   ],
 })
 export class AppModule {}

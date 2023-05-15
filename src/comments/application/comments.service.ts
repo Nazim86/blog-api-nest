@@ -6,7 +6,7 @@ import { CommentsViewType } from '../types/comments-view-type';
 import { PostsViewType } from '../../post/types/posts-view-type';
 import { CreateCommentDto } from '../createComment.Dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { CommentDocument, CommentModelType } from '../comment.entity';
+import { Comment, CommentDocument, CommentModelType } from '../comment.entity';
 import { LikeEnum } from '../../like/like.enum';
 
 @Injectable()

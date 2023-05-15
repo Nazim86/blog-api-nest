@@ -6,13 +6,26 @@ import { PostsViewType } from '../types/posts-view-type';
 import { CreatePostDto } from '../createPostDto';
 import { PostRepository } from '../infrastructure/post.repository';
 import { BlogDocument } from '../../blogs/domain/blog.entity';
+import { PostsQueryRepo } from '../infrastructure/posts-query-repo';
+import { UsersRepository } from '../../users/infrastructure/users.repository';
+import {
+  PostLike,
+  PostLikeDocument,
+  PostLikeModelType,
+} from '../../like/postLike.entity';
+import { LikesRepository } from '../../like/likes.repository';
+import { LikeEnum } from '../../like/like.enum';
 
 @Injectable()
 export class PostService {
   constructor(
     protected blogRepository: BlogRepository,
     protected postRepository: PostRepository,
+    protected postQueryRepo: PostsQueryRepo,
+    protected userRepository: UsersRepository,
+    protected likesRepository: LikesRepository,
     @InjectModel(Post.name) private PostModel: PostModuleType,
+    @InjectModel(PostLike.name) private PostLikeModel: PostLikeModelType,
   ) {}
 
   async createPost(createPostDto: CreatePostDto): Promise<string> {
@@ -56,42 +69,50 @@ export class PostService {
   async updatePost(
     postId: string,
     updatePostDto: CreatePostDto,
-  ): Promise<PostDocument | null> {
+  ): Promise<boolean> {
     const post: PostDocument = await this.postRepository.getPostById(postId);
 
-    if (!post) return null;
+    if (!post) return false;
 
     post.updatePost(updatePostDto);
-    return this.postRepository.save(post);
+    await this.postRepository.save(post);
+    return true;
   }
 
-  // async updatePostLikeStatus(
-  //   postId: string,
-  //   userId: string,
-  //   likeStatus: string,
-  // ) {
-  //   const getPost: PostsViewType | boolean =
-  //     await this.postQueryRepo.getPostById(postId, userId);
-  //
-  //   if (!getPost) return false;
-  //
-  //   const getUser = await this.userRepository.findUserById(userId);
-  //
-  //   let login = 'undefined';
-  //
-  //   if (getUser) {
-  //     login = getUser.accountData.login;
-  //   }
-  //
-  //   return await this.postRepository.updatePostLikeStatus(
-  //     postId,
-  //     userId,
-  //     likeStatus,
-  //     login,
-  //   );
-  // }
+  async updatePostLikeStatus(
+    postId: string,
+    userId: string,
+    likeStatus: LikeEnum,
+  ): Promise<boolean> {
+    const post: PostDocument | boolean = await this.postRepository.getPostById(
+      postId,
+    );
+
+    if (!post) return false;
+
+    const user = await this.userRepository.findUserById(userId);
+
+    let login = 'undefined';
+
+    if (user) {
+      login = user.accountData.login;
+    }
+
+    const postLike: PostLikeDocument = await this.likesRepository.findPostLike(
+      postId,
+      userId,
+    );
+
+    if (!postLike) return false;
+
+    postLike.updatePostLikeStatus(postId, userId, likeStatus, login);
+
+    await this.likesRepository.save(postLike);
+
+    return true;
+  }
 
   async deletePostById(id: string): Promise<boolean> {
-    return this.postRepository.deletePostById(id);
+    return await this.postRepository.deletePostById(id);
   }
 }

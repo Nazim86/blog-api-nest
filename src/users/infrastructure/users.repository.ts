@@ -6,7 +6,7 @@ import add from 'date-fns/add';
 import { ObjectId } from 'mongodb';
 
 @Injectable()
-export class UserRepository {
+export class UsersRepository {
   constructor(@InjectModel(User.name) private UserModel: Model<User>) {}
 
   async findUserByConfirmationCode(code: string): Promise<UserDocument | null> {

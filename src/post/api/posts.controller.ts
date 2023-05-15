@@ -9,18 +9,23 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
+  Request,
 } from '@nestjs/common';
 import { QueryPaginationType } from '../../types/query-pagination-type';
 import { PostsQueryRepo } from '../infrastructure/posts-query-repo';
 import { PostService } from '../application/posts.service';
 import { CreatePostDto } from '../createPostDto';
-import { PostDocument } from '../domain/post.entity';
 import { PostsViewType } from '../types/posts-view-type';
 import { CommentsViewType } from '../../comments/types/comments-view-type';
 import { CommentsQueryRepo } from '../../comments/infrastructure/comments.query.repo';
 import { Pagination, PaginationType } from '../../common/pagination';
 import { CommentService } from '../../comments/application/comments.service';
 import { CreateCommentDto } from '../../comments/createComment.Dto';
+import { LikeEnum } from '../../like/like.enum';
+import { ResultCode } from '../../error-handler/result-code-enum';
+import { exceptionHandler } from '../../error-handler/exception-handler';
+import { BasicAuthGuard } from '../../auth/guards/basic-auth.guard';
 
 @Controller('posts')
 export class PostsController {
@@ -55,9 +60,7 @@ export class PostsController {
   }
 
   @Get(':id')
-  async getPostById(
-    @Param('id') postId: string,
-  ): Promise<PostsViewType | boolean> {
+  async getPostById(@Param('id') postId: string) {
     // const accessToken: string | undefined =
     //   req.headers.authorization?.split(' ')[1];
 
@@ -77,7 +80,7 @@ export class PostsController {
       await this.postQueryRepo.getPostById(postId);
 
     if (!getPost) {
-      throw new HttpException('Not Found', 404);
+      return exceptionHandler(ResultCode.NotFound);
     }
     return getPost;
     // res.status(200).send(getPost);
@@ -92,12 +95,12 @@ export class PostsController {
       await this.commentsQueryRepo.getCommentsForPost(postId, query);
 
     if (!getCommentsForPost) {
-      throw new HttpException('Not Found', 404);
+      return exceptionHandler(ResultCode.NotFound);
     }
     return getCommentsForPost;
-    // res.status(200).send(getCommentsForPost);
   }
 
+  @UseGuards(BasicAuthGuard)
   @Post()
   async createPost(@Body() createPostDto: CreatePostDto) {
     const postId: string | null = await this.postService.createPost(
@@ -111,13 +114,17 @@ export class PostsController {
     // res.status(201).send(newPost);
   }
 
+  @UseGuards(BasicAuthGuard) // should be logged user with refreshToken
   @Post(':id/comments')
   async createCommentByPostId(
+    @Request() req,
     @Param('id') postId: string,
     @Body() createCommentDto: CreateCommentDto,
   ) {
-    const userId = req.context.user!._id.toString();
-    const userLogin = req.context.user!.accountData.login;
+    const userId = req.user.id; //req.context.user!._id.toString();
+    const userLogin = req.user.login; //req.context.user!.accountData.login;
+
+    console.log(req.user, req.user.id, req.user.login);
 
     const commentId: string | null =
       await this.commentService.createPostComment(
@@ -128,53 +135,59 @@ export class PostsController {
       );
 
     if (!commentId) {
-      throw new HttpException('Not Found', 404);
+      return exceptionHandler(ResultCode.NotFound);
     }
     return await this.commentsQueryRepo.getComment(commentId);
   }
 
+  @UseGuards(BasicAuthGuard)
   @Put(':id')
   @HttpCode(204)
   async updatePost(
     @Param('id') postId: string,
     @Body() updatePostDto: CreatePostDto,
   ) {
-    const updatePost: PostDocument | null = await this.postService.updatePost(
+    const updatePost: boolean = await this.postService.updatePost(
       postId,
       updatePostDto,
     );
 
     if (!updatePost) {
-      throw new HttpException('Not Found', 404);
+      return exceptionHandler(ResultCode.NotFound);
     }
     return;
-    // res.sendStatus(204);
   }
 
-  // async updatePostLikeStatus(req: Request, res: Response) {
-  //   const likeStatus = req.body.likeStatus;
-  //   const postId = req.params.id;
-  //   const userId = req.context.user!._id.toString();
-  //
-  //   const updateLikeStatus: boolean =
-  //     await this.postService.updatePostLikeStatus(postId, userId, likeStatus);
-  //
-  //   if (!updateLikeStatus) {
-  //     throw new HttpException('Not Found', 404);
-  //   }
-  //   return;
-  //   // res.sendStatus(204);
-  // }
+  @UseGuards(BasicAuthGuard)
+  @Put(':id/like-status')
+  async updatePostLikeStatus(
+    @Request() req,
+    @Param('id') postId: string,
+    @Body() likeStatus: LikeEnum,
+  ) {
+    const userId = req.userId; //req.context.user!._id.toString();
 
+    const isUpdated: boolean = await this.postService.updatePostLikeStatus(
+      postId,
+      userId,
+      likeStatus,
+    );
+
+    if (!isUpdated) {
+      return exceptionHandler(ResultCode.NotFound);
+    }
+    return;
+  }
+
+  @UseGuards(BasicAuthGuard)
   @Delete(':id')
   @HttpCode(204)
   async deletePost(@Param() postId: string) {
-    const deletePost: boolean = await this.postService.deletePostById(postId);
+    const isDeleted: boolean = await this.postService.deletePostById(postId);
 
-    if (!deletePost) {
-      throw new HttpException('Not Found', 404);
+    if (!isDeleted) {
+      return exceptionHandler(ResultCode.NotFound);
     }
     return;
-    // res.sendStatus(204);
   }
 }

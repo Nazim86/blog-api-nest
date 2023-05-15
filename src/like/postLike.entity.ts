@@ -1,8 +1,21 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import { HydratedDocument, Model } from 'mongoose';
 import { ObjectId } from 'mongodb';
+import { LikeEnum } from './like.enum';
 
 export type PostLikeDocument = HydratedDocument<PostLike>;
+
+// export type PostLikeModelStaticType = {
+//   updatePostLikeStatus: (
+//     postId: string,
+//     userId: string,
+//     likeStatus: CreatePostLikeDto,
+//     login: string,
+//     PostLikeModel: PostLikeModelType,
+//   ) => PostLikeDocument;
+// };
+//
+export type PostLikeModelType = Model<PostLike> & PostLikeDocument;
 
 @Schema()
 export class PostLike {
@@ -16,13 +29,36 @@ export class PostLike {
   userId: string;
 
   @Prop({ required: true })
-  addedAt: string;
+  addedAt: Date;
 
   @Prop({ required: true })
   status: string;
 
   @Prop({ required: true })
   login: string;
+
+  updatePostLikeStatus(
+    postId: string,
+    userId: string,
+    likeStatus: LikeEnum,
+    login: string,
+  ) {
+    (this.postId = postId),
+      (this.userId = userId),
+      (this.status = likeStatus),
+      (this.addedAt = new Date()),
+      (this.login = login);
+  }
 }
 
 export const PostLikeSchema = SchemaFactory.createForClass(PostLike);
+
+// const postLikeStaticMethods = {
+//   updatePostLikeStatus: PostLike.updatePostLikeStatus,
+// };
+//
+// PostLikeSchema.statics = postLikeStaticMethods;
+
+PostLikeSchema.methods = {
+  updatePostLikeStatus: PostLike.prototype.updatePostLikeStatus,
+};

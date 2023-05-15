@@ -11,6 +11,7 @@ import { CommentService } from '../application/comments.service';
 import { CommentsQueryRepo } from '../infrastructure/comments.query.repo';
 import { JwtService } from '../../jwt/jwt.service';
 import { CommentsViewType } from '../types/comments-view-type';
+import { LikeEnum } from '../../like/like.enum';
 
 @Controller('comments')
 export class CommentsController {
@@ -79,7 +80,7 @@ export class CommentsController {
   @Put(':id/like-status')
   async updateCommentLikeStatus(
     @Param('id') commentId: string,
-    @Body() likeStatus: string,
+    @Body() likeStatus: LikeEnum,
   ) {
     // const userId = req.context.user!._id.toString();
     const userId = undefined; // temprorary solution till where to get userID
