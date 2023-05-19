@@ -58,17 +58,17 @@ export class UsersRepository {
     return result.matchedCount === 1;
   }
 
-  async setNewConfirmationCode(
-    userId: ObjectId,
-    confirmationCode: string,
-  ): Promise<boolean> {
-    const result = await this.UserModel.updateMany(
-      { _id: userId },
-      { $set: { 'emailConfirmation.confirmationCode': confirmationCode } },
-    );
-
-    return result.matchedCount === 1;
-  }
+  // async setNewConfirmationCode(
+  //   userId: ObjectId,
+  //   confirmationCode: string,
+  // ): Promise<boolean> {
+  //   const result = await this.UserModel.updateMany(
+  //     { _id: userId },
+  //     { $set: { 'emailConfirmation.confirmationCode': confirmationCode } },
+  //   );
+  //
+  //   return result.matchedCount === 1;
+  // }
 
   async updateUserAccountData(
     userId: ObjectId,

@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UsersModule } from '../users/users.module';
 import { AuthService } from './auth.service';
 import { jwtConstants } from './constants';
-import { JwtStrategy } from './strategies/jwt.strategy';
+import { AccessTokenStrategy } from './strategies/access-token.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
 
 describe('AuthService', () => {
@@ -20,7 +20,7 @@ describe('AuthService', () => {
           signOptions: { expiresIn: '60s' },
         }),
       ],
-      providers: [AuthService, LocalStrategy, JwtStrategy],
+      providers: [AuthService, LocalStrategy, AccessTokenStrategy],
     }).compile();
 
     service = moduleRef.get<AuthService>(AuthService);
@@ -44,7 +44,7 @@ describe('validateUser', () => {
           signOptions: { expiresIn: '60s' },
         }),
       ],
-      providers: [AuthService, LocalStrategy, JwtStrategy],
+      providers: [AuthService, LocalStrategy, AccessTokenStrategy],
     }).compile();
 
     service = moduleRef.get<AuthService>(AuthService);
@@ -74,7 +74,7 @@ describe('validateLogin', () => {
           signOptions: { expiresIn: '60s' },
         }),
       ],
-      providers: [AuthService, LocalStrategy, JwtStrategy],
+      providers: [AuthService, LocalStrategy, AccessTokenStrategy],
     }).compile();
 
     service = moduleRef.get<AuthService>(AuthService);

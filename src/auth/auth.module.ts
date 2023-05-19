@@ -4,7 +4,7 @@ import { PassportModule } from '@nestjs/passport';
 import { UsersModule } from '../users/users.module';
 import { AuthService } from './auth.service';
 import { jwtConstants } from './constants';
-import { JwtStrategy } from './strategies/jwt.strategy';
+import { AccessTokenStrategy } from './strategies/access-token.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
 import { ConfigModule } from '@nestjs/config';
 import { BasicStrategy } from './strategies/basic.strategy';
@@ -19,7 +19,7 @@ import { BasicStrategy } from './strategies/basic.strategy';
       signOptions: { expiresIn: '20m' },
     }),
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy, BasicStrategy],
+  providers: [AuthService, LocalStrategy, AccessTokenStrategy, BasicStrategy],
   exports: [AuthService],
 })
 export class AuthModule {}

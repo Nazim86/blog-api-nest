@@ -23,8 +23,8 @@ import { Pagination, PaginationType } from '../../common/pagination';
 import { CommentService } from '../../comments/application/comments.service';
 import { CreateCommentDto } from '../../comments/createComment.Dto';
 import { LikeEnum } from '../../like/like.enum';
-import { ResultCode } from '../../error-handler/result-code-enum';
-import { exceptionHandler } from '../../error-handler/exception-handler';
+import { ResultCode } from '../../exception-handler/result-code-enum';
+import { exceptionHandler } from '../../exception-handler/exception-handler';
 import { BasicAuthGuard } from '../../auth/guards/basic-auth.guard';
 
 @Controller('posts')
