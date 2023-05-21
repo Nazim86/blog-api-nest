@@ -3,6 +3,9 @@ import { JwtService } from '../jwt/jwt.service';
 import { InjectModel } from '@nestjs/mongoose';
 import { Device, DeviceModelType } from './domain/device.entity';
 import { DeviceRepository } from './device.repository';
+import { settings } from '../settings';
+import { ResultCode } from '../exception-handler/result-code-enum';
+import { Result } from '../exception-handler/result-type';
 
 @Injectable()
 export class DeviceService {
@@ -12,9 +15,9 @@ export class DeviceService {
     protected deviceRepository: DeviceRepository,
   ) {}
 
-  private deleteOldDevices() {
-    clearExpiredTokens.start();
-  }
+  // private deleteOldDevices() {
+  //   clearExpiredTokens.start();
+  // }
 
   async createDevice(refreshToken: string, ip: string, deviceName: string) {
     const { deviceId, lastActiveDate, userId, expiration } =
@@ -35,9 +38,9 @@ export class DeviceService {
     await this.deviceRepository.save(newDevice);
   }
 
-  async getDevices(ip: string, userId: string): Promise<DeviceViewType[]> {
-    return await this.deviceRepository.getDevices(ip, userId);
-  }
+  // async getDevices(ip: string, userId: string): Promise<DeviceViewType[]> {
+  //   return await this.deviceRepository.getDevices(ip, userId);
+  // }
 
   async updateDevice(refreshToken: string): Promise<boolean> {
     const { deviceId, lastActiveDate } = await this.jwtService.getTokenMetaData(
@@ -60,7 +63,6 @@ export class DeviceService {
 
     if (device && device.userId !== userId) {
       return {
-        data: false,
         code: ResultCode.Forbidden,
       };
     }

@@ -1,33 +1,26 @@
 import { Injectable } from '@nestjs/common';
-import { DeviceDocument } from './domain/device.entity';
+import { Device, DeviceDocument } from './domain/device.entity';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class DeviceRepository {
-  constructor() {}
+  constructor(
+    @InjectModel(Device.name) private DeviceModel: Model<DeviceDocument>,
+  ) {}
   async save(device: DeviceDocument) {
     return device.save();
   }
 
-  async getDevices(ip: string, userId: string): Promise<DeviceViewType[]> {
-    const deviceDataByUserId = await TokenModel.find({ userId: userId }).lean();
-    const mappedDevices: DeviceViewType[] = deviceMapping(
-      deviceDataByUserId,
-      ip,
-    );
-    return mappedDevices;
-  }
-
-  async getDevicesByDeviceId(
-    deviceId: string,
-  ): Promise<RefreshTokenMetaDbType | null> {
-    return TokenModel.findOne({ deviceId: deviceId });
+  async getDevicesByDeviceId(deviceId: string): Promise<DeviceDocument | null> {
+    return this.DeviceModel.findOne({ deviceId: deviceId });
   }
 
   async updateDevice(
     deviceId: string,
     lastActiveDate: string,
   ): Promise<boolean> {
-    const result = await TokenModel.updateOne(
+    const result = await this.DeviceModel.updateOne(
       { deviceId: deviceId },
       { $set: { lastActiveDate: lastActiveDate } },
     );
@@ -35,14 +28,14 @@ export class DeviceRepository {
   }
 
   async deleteDevices(deviceId: string): Promise<boolean> {
-    const result = await TokenModel.deleteMany({
+    const result = await this.DeviceModel.deleteMany({
       deviceId: { $not: { $eq: deviceId } },
     });
     return result.deletedCount === 1;
   }
 
   async deleteDeviceById(deviceId: string, userId: string) {
-    const result = await TokenModel.deleteOne({
+    const result = await this.DeviceModel.deleteOne({
       deviceId: deviceId,
       userId: userId,
     });

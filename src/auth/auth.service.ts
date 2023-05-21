@@ -10,18 +10,13 @@ import {
 import { CreateUserDto } from '../users/createUser.Dto';
 import bcrypt from 'bcrypt';
 import { v4 as uuid } from 'uuid';
-import {
-  passwordRecoveryMessage,
-  registrationMessage,
-} from '../email/managers/email-messages-repo';
-import { EmailManager } from '../email/managers/email.manager';
 import * as process from 'process';
 import { NewPasswordDto } from './dto/newPasswordDto';
 import { LoginDto } from './dto/loginDto';
 import { EmailDto } from './dto/emailDto';
-import { UserViewType } from '../users/infrastructure/types/user-view-type';
 import { CurrentUserType } from '../users/infrastructure/types/current-user-type';
 import { DeviceRepository } from '../securityDevices/device.repository';
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class AuthService {
@@ -29,8 +24,8 @@ export class AuthService {
     @InjectModel(User.name) private UserModel: UserModuleTYpe,
     protected userRepository: UsersRepository,
     protected jwtService: JwtService,
-    protected emailManager: EmailManager,
     protected deviceRepository: DeviceRepository,
+    protected mailService: MailService,
   ) {}
 
   async createNewUser(
@@ -51,10 +46,10 @@ export class AuthService {
     const result: UserDocument = await this.userRepository.save(newUser);
 
     try {
-      await this.emailManager.sendConfirmationEmail(
+      await this.mailService.sendUserConfirmationEmail(
         newUser.emailConfirmation.confirmationCode,
         newUser.accountData.email,
-        registrationMessage,
+        newUser.accountData.login,
       );
     } catch (e) {
       return null;
@@ -88,10 +83,10 @@ export class AuthService {
 
       await this.userRepository.save(user);
 
-      await this.emailManager.sendConfirmationEmail(
+      await this.mailService.sendUserConfirmationEmail(
         newCode,
         user.accountData.email,
-        registrationMessage,
+        user.accountData.login,
       );
     } catch (e) {
       return false;
@@ -111,10 +106,10 @@ export class AuthService {
 
         user.updateRecoveryCode(recoveryCode);
 
-        await this.emailManager.sendConfirmationEmail(
+        await this.mailService.passwordRecoveryEmail(
           recoveryCode,
           user.accountData.email,
-          passwordRecoveryMessage,
+          user.accountData.login,
         );
       } catch (e) {
         return true;

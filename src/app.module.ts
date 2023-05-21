@@ -33,6 +33,7 @@ import { UsersModule } from './users/users.module';
 import { LikesRepository } from './like/likes.repository';
 import { CommentService } from './comments/application/comments.service';
 import { CommentsRepository } from './comments/infrastructure/comments.repository';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { CommentsRepository } from './comments/infrastructure/comments.repositor
     ]),
     MongooseModule.forFeature([{ name: Comment.name, schema: CommentSchema }]),
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    MailModule,
   ],
 
   controllers: [

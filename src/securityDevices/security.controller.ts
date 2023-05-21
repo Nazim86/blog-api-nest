@@ -13,19 +13,21 @@ import { DeviceViewType } from '../types/device-view-type';
 import { RefreshTokenGuard } from '../auth/guards/refresh-token.guard';
 import { ResultCode } from '../exception-handler/result-code-enum';
 import { exceptionHandler } from '../exception-handler/exception-handler';
+import { DeviceQueryRepo } from './device-query.repo';
 
 @Controller('security/devices')
 export class SecurityController {
   constructor(
     protected jwtService: JwtService,
     protected securityService: DeviceService,
+    protected deviceQueryRepo: DeviceQueryRepo,
   ) {}
 
   @UseGuards(RefreshTokenGuard)
   @Get()
   @HttpCode(200)
   async getDevices(@Request() req) {
-    const devices: DeviceViewType[] = await this.securityService.getDevices(
+    const devices: DeviceViewType[] = await this.deviceQueryRepo.getDevices(
       req.payload.ip,
       req.payload.userId,
     );
