@@ -2,11 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UsersRepository } from '../users/infrastructure/users.repository';
 import { JwtService } from '../jwt/jwt.service';
 import { InjectModel } from '@nestjs/mongoose';
-import {
-  User,
-  UserDocument,
-  UserModuleTYpe,
-} from '../users/domain/user.entity';
+import { User, UserDocument, UserModelTYpe } from '../users/domain/user.entity';
 import { CreateUserDto } from '../users/createUser.Dto';
 import bcrypt from 'bcrypt';
 import { v4 as uuid } from 'uuid';
@@ -21,7 +17,7 @@ import { MailService } from '../mail/mail.service';
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectModel(User.name) private UserModel: UserModuleTYpe,
+    @InjectModel(User.name) private UserModel: UserModelTYpe,
     protected userRepository: UsersRepository,
     protected jwtService: JwtService,
     protected deviceRepository: DeviceRepository,

@@ -11,15 +11,23 @@ export type UserModelStaticType = {
   createUser: (
     createUserDto: CreateUserDto,
     passwordHash: string,
-    UserModel: UserModuleTYpe,
+    UserModel: UserModelTYpe,
     isConfirmed?: boolean,
   ) => UserDocument;
 };
 
-export type UserModuleTYpe = Model<User> & UserModelStaticType;
+export type UserModelTYpe = Model<User> & UserModelStaticType;
 
 @Schema({ timestamps: true })
 export class User extends Document {
+  constructor() {
+    super();
+    this.emailConfirmation = {
+      confirmationCode: '',
+      emailExpiration: new Date(),
+      isConfirmed: false,
+    };
+  }
   @Prop({
     required: true,
     type: {
@@ -57,7 +65,7 @@ export class User extends Document {
   static createUser(
     createUserDto: CreateUserDto,
     passwordHash: string,
-    UserModel: UserModuleTYpe,
+    UserModel: UserModelTYpe,
     isConfirmed?: boolean,
   ) {
     // const passwordSalt = await bcrypt.genSalt(10);
@@ -105,37 +113,50 @@ export class User extends Document {
         minutes: 3,
       }));
   }
-  resendEmailCanBeConfirmed() {
-    if (
-      this.emailConfirmation.isConfirmed ||
-      this.emailConfirmation.emailExpiration < new Date()
-    ) {
-      return false;
-    }
-    return true;
-  }
-
-  registrationCanBeConfirmed() {
-    if (
-      this.emailConfirmation.isConfirmed ||
-      this.emailConfirmation.emailExpiration < new Date()
-    ) {
-      return false;
-    }
-    return true;
-  }
+  // resendEmailCanBeConfirmed() {
+  //   if (
+  //     this.emailConfirmation.isConfirmed ||
+  //     this.emailConfirmation.emailExpiration < new Date()
+  //   ) {
+  //     return false;
+  //   }
+  //   return true;
+  // }
+  //
+  // registrationCanBeConfirmed() {
+  //   if (
+  //     this.emailConfirmation.isConfirmed ||
+  //     this.emailConfirmation.emailExpiration < new Date()
+  //   ) {
+  //     return false;
+  //   }
+  //   return true;
+  // }
 
   confirmRegistration() {
     this.emailConfirmation.isConfirmed = true;
   }
 
   newPasswordCanBeConfirmed() {
-    if (this.accountData.recoveryCodeExpiration < new Date()) return false;
-    return true;
+    return this.accountData.recoveryCodeExpiration >= new Date();
   }
 
   updateUserAccountData(passwordHash: string) {
     this.accountData.passwordHash = passwordHash;
+  }
+
+  resendEmailCanBeConfirmed() {
+    return (
+      !this.emailConfirmation.isConfirmed &&
+      this.emailConfirmation.emailExpiration >= new Date()
+    );
+  }
+
+  registrationCanBeConfirmed() {
+    return (
+      !this.emailConfirmation.isConfirmed &&
+      this.emailConfirmation.emailExpiration >= new Date()
+    );
   }
 }
 
@@ -148,7 +169,7 @@ UserSchema.statics = userStaticMethods;
 UserSchema.methods = {
   updateConfirmationCode: User.prototype.updateConfirmationCode,
   updateRecoveryCode: User.prototype.updateRecoveryCode,
-  resendEmailCanBeConfirmed: User.prototype.resendEmailCanBeConfirmed(),
+  resendEmailCanBeConfirmed: User.prototype.resendEmailCanBeConfirmed,
   canBeConfirmed: User.prototype.registrationCanBeConfirmed,
   confirm: User.prototype.confirmRegistration,
   newPasswordCanBeConfirmed: User.prototype.newPasswordCanBeConfirmed,
