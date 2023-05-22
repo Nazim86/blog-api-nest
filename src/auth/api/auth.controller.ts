@@ -107,27 +107,27 @@ export class AuthController {
 
     await this.deviceService.createDevice(refreshToken, ip, deviceName);
 
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      sameSite: 'strict',
-      secure: true,
-      maxAge: 24 * 60 * 60 * 1000,
-    });
-
-    res.status(200).send({ accessToken: accessToken });
+    res
+      .cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        //sameSite: 'strict',
+        //secure: true,
+        maxAge: 24 * 60 * 60 * 1000,
+      })
+      .json({ accessToken: accessToken });
   }
 
   @UseGuards(RefreshTokenGuard)
   @Post('refresh-token')
   @HttpCode(200)
   async getNewRefreshToken(@Request() req, @Response() res) {
-    const userId = req.payload.userId;
+    const userId = req.user.userId;
 
     // const { deviceId } = await this.jwtService.getTokenMetaData(
     //   req.cookies.refreshToken,
     //   settings.REFRESH_TOKEN_SECRET,
     // );
-    const deviceId = req.payload.deviceId;
+    const deviceId = req.user.deviceId;
 
     const accessToken = await this.jwtService.createJWT(
       userId,
@@ -144,14 +144,14 @@ export class AuthController {
 
     await this.deviceService.updateDevice(refreshToken);
 
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      sameSite: 'strict',
-      secure: true,
-      maxAge: 24 * 60 * 60 * 1000,
-    });
-
-    return { accessToken: accessToken };
+    res
+      .cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        //sameSite: 'strict',
+        //secure: true,
+        maxAge: 24 * 60 * 60 * 1000,
+      })
+      .json({ accessToken: accessToken }); //return { accessToken: accessToken };
     // res.status(200).send({ accessToken: accessToken });
   }
 
@@ -160,7 +160,7 @@ export class AuthController {
   @HttpCode(200)
   async getCurrentUser(@Request() req) {
     const currentUser: CurrentUserType = await this.authService.getCurrentUser(
-      req.payload.userId,
+      req.user.userId,
     );
     return currentUser;
     // res.status(200).send(getCurrentUser);
@@ -194,16 +194,18 @@ export class AuthController {
   @Post('logout')
   @HttpCode(204)
   async logout(@Request() req, @Response() res) {
-    const { deviceId, userId } = await this.jwtService.getTokenMetaData(
-      req.cookies.refreshToken,
-      settings.REFRESH_TOKEN_SECRET,
+    // const { deviceId, userId } = await this.jwtService.getTokenMetaData(
+    //   req.cookies.refreshToken,
+    //   settings.REFRESH_TOKEN_SECRET,
+    // );
+
+    await this.deviceService.deleteDeviceById(
+      req.user.deviceId,
+      req.user.userId,
     );
 
-    await this.deviceService.deleteDeviceById(deviceId, userId);
-
     try {
-      res.clearCookie('refreshToken');
-      return;
+      res.clearCookie('refreshToken').json();
     } catch (e) {
       return exceptionHandler(ResultCode.Unauthorized);
     }
