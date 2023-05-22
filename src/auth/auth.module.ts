@@ -25,6 +25,7 @@ import { PostLike, PostLikeSchema } from '../like/postLike.entity';
 import { CommentLike, CommentLikeSchema } from '../like/commentLike.entity';
 import { Comment, CommentSchema } from '../comments/comment.entity';
 import { RefreshTokenStrategy } from './strategies/refresh-token.strategy';
+import { UsersService } from '../users/application/users.service';
 
 @Module({
   imports: [
@@ -61,6 +62,7 @@ import { RefreshTokenStrategy } from './strategies/refresh-token.strategy';
     DeviceService,
     UserQueryRepo,
     RefreshTokenStrategy,
+    UsersService,
   ],
 
   controllers: [AuthController, UserController, DeleteController],

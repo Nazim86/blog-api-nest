@@ -9,8 +9,8 @@ import { ObjectId } from 'mongodb';
 export class UsersRepository {
   constructor(@InjectModel(User.name) private UserModel: Model<User>) {}
 
-  async findUserByConfirmationCode(code: string): Promise<UserDocument | null> {
-    const user: UserDocument | null = await this.UserModel.findOne({
+  async findUserByConfirmationCode(code: string) {
+    const user = await this.UserModel.findOne({
       'emailConfirmation.confirmationCode': code,
     });
     return user;

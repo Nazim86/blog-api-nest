@@ -23,8 +23,8 @@ import { UserDocument } from '../../users/domain/user.entity';
 import { settings } from '../../settings';
 import { RefreshTokenGuard } from '../guards/refresh-token.guard';
 import { EmailDto } from '../dto/emailDto';
-import { AccessTokenGuard } from '../guards/access-token.guard';
 import { CurrentUserType } from '../../users/infrastructure/types/current-user-type';
+import { ConfirmationCodeDto } from '../dto/confirmationCodeDto';
 
 @Controller('auth')
 export class AuthController {
@@ -35,7 +35,6 @@ export class AuthController {
     protected userRepository: UsersRepository,
   ) {}
 
-  @UseGuards(AccessTokenGuard)
   @Post('registration')
   async userRegistration(@Body() createUserDto: CreateUserDto) {
     const newUser = await this.authService.createNewUser(createUserDto);
@@ -47,9 +46,9 @@ export class AuthController {
 
   @Post('registration-email-resending')
   @HttpCode(204)
-  async reSendRegistrationEmail(@Body() email: string) {
+  async reSendRegistrationEmail(@Body() emailDto: EmailDto) {
     const emailResending: string | boolean =
-      await this.authService.resendEmailWithNewConfirmationCode(email);
+      await this.authService.resendEmailWithNewConfirmationCode(emailDto);
 
     if (!emailResending) {
       return exceptionHandler(ResultCode.BadRequest);
@@ -62,9 +61,9 @@ export class AuthController {
 
   @Post('registration-confirmation')
   @HttpCode(204)
-  async confirmRegistration(@Body() confirmationCode: string) {
+  async confirmRegistration(@Body() confirmationCodeDto: ConfirmationCodeDto) {
     const registrationConfirmation: boolean =
-      await this.authService.registrationConfirmation(confirmationCode);
+      await this.authService.registrationConfirmation(confirmationCodeDto);
 
     if (!registrationConfirmation) {
       return exceptionHandler(ResultCode.BadRequest);
@@ -77,7 +76,7 @@ export class AuthController {
 
   @Post('login')
   async login(
-    @Response() res,
+    @Response({ passthrough: true }) res,
     @Body() loginDto: LoginDto,
     @Ip() ip,
     @Headers() headers,
@@ -107,14 +106,13 @@ export class AuthController {
 
     await this.deviceService.createDevice(refreshToken, ip, deviceName);
 
-    res
-      .cookie('refreshToken', refreshToken, {
-        httpOnly: true,
-        //sameSite: 'strict',
-        //secure: true,
-        maxAge: 24 * 60 * 60 * 1000,
-      })
-      .json({ accessToken: accessToken });
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      //sameSite: 'strict',
+      //secure: true,
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+    return { accessToken: accessToken };
   }
 
   @UseGuards(RefreshTokenGuard)
@@ -165,7 +163,7 @@ export class AuthController {
     return currentUser;
     // res.status(200).send(getCurrentUser);
   }
-  @UseGuards(RefreshTokenGuard)
+
   @Post('password-recovery')
   async sendPasswordRecoveryCode(@Body() emailDto: EmailDto) {
     const isRecoveryEmailSent: boolean =

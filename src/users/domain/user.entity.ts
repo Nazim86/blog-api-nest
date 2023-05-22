@@ -3,10 +3,8 @@ import { HydratedDocument, Model } from 'mongoose';
 import { CreateUserDto } from '../createUser.Dto';
 import { v4 as uuid } from 'uuid';
 import { add } from 'date-fns';
-import { Document } from 'mongoose';
 
 export type UserDocument = HydratedDocument<User>;
-
 export type UserModelStaticType = {
   createUser: (
     createUserDto: CreateUserDto,
@@ -19,9 +17,8 @@ export type UserModelStaticType = {
 export type UserModelTYpe = Model<User> & UserModelStaticType;
 
 @Schema({ timestamps: true })
-export class User extends Document {
+export class User {
   constructor() {
-    super();
     this.emailConfirmation = {
       confirmationCode: '',
       emailExpiration: new Date(),
@@ -143,6 +140,7 @@ export class User extends Document {
 
   updateUserAccountData(passwordHash: string) {
     this.accountData.passwordHash = passwordHash;
+    this.accountData.recoveryCode = null;
   }
 
   resendEmailCanBeConfirmed() {

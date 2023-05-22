@@ -13,6 +13,7 @@ import { EmailDto } from './dto/emailDto';
 import { CurrentUserType } from '../users/infrastructure/types/current-user-type';
 import { DeviceRepository } from '../securityDevices/device.repository';
 import { MailService } from '../mail/mail.service';
+import { ConfirmationCodeDto } from './dto/confirmationCodeDto';
 
 @Injectable()
 export class AuthService {
@@ -29,7 +30,7 @@ export class AuthService {
   ): Promise<UserDocument | null> {
     const passwordHash = await bcrypt.hash(
       creatUserDto.password,
-      process.env.SALT_ROUND,
+      Number(process.env.SALT_ROUND),
     );
 
     const newUser: UserDocument = this.UserModel.createUser(
@@ -53,9 +54,13 @@ export class AuthService {
     return result;
   }
 
-  async registrationConfirmation(code: string): Promise<boolean> {
-    const user: UserDocument | null =
-      await this.userRepository.findUserByConfirmationCode(code);
+  async registrationConfirmation(
+    confirmationCodeDto: ConfirmationCodeDto,
+  ): Promise<boolean> {
+    const user: UserDocument =
+      await this.userRepository.findUserByConfirmationCode(
+        confirmationCodeDto.code,
+      );
     if (!user || !user.registrationCanBeConfirmed()) return false;
 
     user.confirmRegistration();
@@ -64,10 +69,10 @@ export class AuthService {
   }
 
   async resendEmailWithNewConfirmationCode(
-    email: string,
+    emailDto: EmailDto,
   ): Promise<string | boolean> {
     const user: UserDocument | null = await this.userRepository.findUserByEmail(
-      email,
+      emailDto.email,
     );
 
     if (!user || !user.resendEmailCanBeConfirmed()) return false;
