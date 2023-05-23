@@ -13,10 +13,10 @@ import {
 import { UserQueryRepo } from '../infrastructure/users.query.repo';
 import { UsersService } from '../application/users.service';
 import { CreateUserDto } from '../createUser.Dto';
-import { AuthGuard } from '../../auth.guard';
 import { UserPagination } from '../user-pagination';
+import { BasicAuthGuard } from '../../auth/guards/basic-auth.guard';
 
-@UseGuards(AuthGuard)
+@UseGuards(BasicAuthGuard)
 @Controller('users')
 export class UserController {
   constructor(
@@ -24,31 +24,22 @@ export class UserController {
     protected userService: UsersService,
   ) {}
 
+  @UseGuards(BasicAuthGuard)
   @Get()
   async getUsers(@Query() query: UserPagination) {
-    // const paginatedQuery: UserPagination = getPaginationValues({
-    //   ...query,
-    //   sortBy: `accountData.${query.sortBy ?? 'createdAt'}`,
-    // });
-
-    return await this.userQueryRepo.getUsers(query);
-    // res.status(200).send(getUsers);
+    const result = await this.userQueryRepo.getUsers(query);
+    console.log(typeof result.page);
+    console.log(typeof result.pageSize);
   }
-
+  @UseGuards(BasicAuthGuard)
   @Post()
   async createUser(@Body() createUserDto: CreateUserDto) {
-    // if (11 > 10) {
-    //   throw new BadRequestException([
-    //     { message: 'Bad blogger id', field: 'blogger id' },
-    //   ]);
-    // }
     const userId = await this.userService.createNewUser(createUserDto);
     if (userId) {
       return await this.userQueryRepo.getUserById(userId);
-      // res.status(201).send(newUser);
     }
   }
-
+  @UseGuards(BasicAuthGuard)
   @Delete(':id')
   @HttpCode(204)
   async deleteUser(@Param('id') userId: string) {
