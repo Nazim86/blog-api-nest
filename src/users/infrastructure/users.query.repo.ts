@@ -13,17 +13,21 @@ export class UserQueryRepo {
   constructor(@InjectModel(User.name) private UserModel: Model<UserDocument>) {}
   async getUsers(query: UserPagination<PaginationType>) {
     const paginatedQuery = new UserPagination<PaginationType>(
-      +query.pageNumber,
-      +query.pageSize,
+      query.pageNumber,
+      query.pageSize,
       query.sortBy,
       query.sortDirection,
       query.searchLoginTerm,
       query.searchEmailTerm,
     );
-    console.log(query);
     const skipSize = paginatedQuery.skipSize; //(paginatedQuery.pageNumber - 1) * paginatedQuery.pageSize;
 
-    const filter = { $or: [] };
+    const filter: any = {};
+
+    if (paginatedQuery.searchLoginTerm || paginatedQuery.searchEmailTerm) {
+      filter.$or = [];
+    }
+
     if (paginatedQuery.searchLoginTerm) {
       filter.$or.push({
         'accountData.login': {
@@ -36,51 +40,11 @@ export class UserQueryRepo {
     if (paginatedQuery.searchEmailTerm) {
       filter.$or.push({
         'accountData.email': {
-          $regex: paginatedQuery.searchEmailTerm ?? '',
+          $regex: paginatedQuery.searchEmailTerm,
           $options: 'i',
         },
       });
     }
-    // const filter = {
-    //   $or: [
-    //     {
-    //       'accountData.login': {
-    //         $regex: paginatedQuery.searchLoginTerm ?? '',
-    //         $options: 'i',
-    //       },
-    //     },
-    //     {
-    //       'accountData.email': {
-    //         $regex: paginatedQuery.searchEmailTerm ?? '',
-    //         $options: 'i',
-    //       },
-    //     },
-    //   ],
-    // };
-
-    // const filter = {
-    //   $or: [
-    //     paginatedQuery.searchLoginTerm
-    //       ? {
-    //           'accountData.login': {
-    //             $regex:
-    //               paginatedQuery.searchLoginTerm !== ''
-    //                 ? paginatedQuery.searchLoginTerm
-    //                 : '^$',
-    //             $options: 'i',
-    //           },
-    //         }
-    //       : {},
-    //     paginatedQuery.searchEmailTerm
-    //       ? {
-    //           'accountData.email': {
-    //             $regex: paginatedQuery.searchEmailTerm,
-    //             $options: 'i',
-    //           },
-    //         }
-    //       : {},
-    //   ],
-    // };
 
     const totalCount = await this.UserModel.countDocuments(filter);
     const pagesCount = paginatedQuery.totalPages(totalCount); //Math.ceil(totalCount / paginatedQuery.pageSize);
