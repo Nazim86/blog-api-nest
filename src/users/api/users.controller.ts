@@ -15,6 +15,7 @@ import { UsersService } from '../application/users.service';
 import { CreateUserDto } from '../createUser.Dto';
 import { UserPagination } from '../user-pagination';
 import { BasicAuthGuard } from '../../auth/guards/basic-auth.guard';
+import { PaginationType } from '../../common/pagination';
 
 @UseGuards(BasicAuthGuard)
 @Controller('users')
@@ -26,7 +27,7 @@ export class UserController {
 
   @UseGuards(BasicAuthGuard)
   @Get()
-  async getUsers(@Query() query: UserPagination) {
+  async getUsers(@Query() query: UserPagination<PaginationType>) {
     const result = await this.userQueryRepo.getUsers(query);
     console.log(typeof result.page);
     console.log(typeof result.pageSize);

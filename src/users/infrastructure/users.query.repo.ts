@@ -5,12 +5,23 @@ import { Model } from 'mongoose';
 import { userMapping } from '../user.mapping';
 import { ObjectId } from 'mongodb';
 import { UserViewType } from './types/user-view-type';
+import { UserPagination } from '../user-pagination';
+import { PaginationType } from '../../common/pagination';
 
 @Injectable()
 export class UserQueryRepo {
   constructor(@InjectModel(User.name) private UserModel: Model<UserDocument>) {}
-  async getUsers(paginatedQuery) {
-    const skipSize = (paginatedQuery.pageNumber - 1) * paginatedQuery.pageSize;
+  async getUsers(query: UserPagination<PaginationType>) {
+    const paginatedQuery = new UserPagination<PaginationType>(
+      query.pageNumber,
+      query.pageSize,
+      query.sortBy,
+      query.sortDirection,
+      query.searchLoginTerm,
+      query.searchEmailTerm,
+    );
+
+    const skipSize = paginatedQuery.skipSize; //(paginatedQuery.pageNumber - 1) * paginatedQuery.pageSize;
     const filter = {
       $or: [
         {
@@ -28,7 +39,7 @@ export class UserQueryRepo {
       ],
     };
     const totalCount = await this.UserModel.countDocuments(filter);
-    const pagesCount = Math.ceil(totalCount / paginatedQuery.pageSize);
+    const pagesCount = paginatedQuery.totalPages(totalCount); //Math.ceil(totalCount / paginatedQuery.pageSize);
 
     const getUsers: UserDocument[] = await this.UserModel.find(filter)
       .sort({
@@ -43,8 +54,8 @@ export class UserQueryRepo {
 
     return {
       pagesCount: pagesCount,
-      page: Number(paginatedQuery.pageNumber),
-      pageSize: Number(paginatedQuery.pageSize),
+      page: paginatedQuery.pageNumber,
+      pageSize: paginatedQuery.pageSize,
       totalCount: totalCount,
       items: mappedUsers,
     };

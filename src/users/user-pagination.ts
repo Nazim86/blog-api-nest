@@ -1,6 +1,19 @@
 import { Pagination, PaginationType } from '../common/pagination';
 
-export class UserPagination extends Pagination<PaginationType> {
-  searchLoginTerm: string;
-  searchEmailTerm: string;
+export class UserPagination<T> extends Pagination<PaginationType> {
+  public readonly searchLoginTerm: string;
+  public readonly searchEmailTerm: string;
+
+  constructor(
+    pageNumber = 1,
+    pageSize = 10,
+    sortBy = 'createdAt',
+    sortDirection: 'asc' | 'desc' = 'desc',
+    searchLoginTerm: string,
+    searchEmailTerm: string,
+  ) {
+    super(pageNumber, pageSize, sortBy, sortDirection);
+    this.searchLoginTerm = searchLoginTerm;
+    this.searchEmailTerm = searchEmailTerm;
+  }
 }
