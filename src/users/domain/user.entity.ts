@@ -110,25 +110,25 @@ export class User {
         minutes: 3,
       }));
   }
-  // resendEmailCanBeConfirmed() {
-  //   if (
-  //     this.emailConfirmation.isConfirmed ||
-  //     this.emailConfirmation.emailExpiration < new Date()
-  //   ) {
-  //     return false;
-  //   }
-  //   return true;
-  // }
-  //
-  // registrationCanBeConfirmed() {
-  //   if (
-  //     this.emailConfirmation.isConfirmed ||
-  //     this.emailConfirmation.emailExpiration < new Date()
-  //   ) {
-  //     return false;
-  //   }
-  //   return true;
-  // }
+  resendEmailCanBeConfirmed() {
+    if (
+      this.emailConfirmation.isConfirmed ||
+      this.emailConfirmation.emailExpiration < new Date()
+    ) {
+      return false;
+    }
+    return true;
+  }
+
+  registrationCanBeConfirmed() {
+    if (
+      this.emailConfirmation.isConfirmed ||
+      this.emailConfirmation.emailExpiration < new Date()
+    ) {
+      return false;
+    }
+    return true;
+  }
 
   confirmRegistration() {
     this.emailConfirmation.isConfirmed = true;
@@ -143,19 +143,19 @@ export class User {
     this.accountData.recoveryCode = null;
   }
 
-  resendEmailCanBeConfirmed() {
-    return (
-      !this.emailConfirmation.isConfirmed &&
-      this.emailConfirmation.emailExpiration >= new Date()
-    );
-  }
-
-  registrationCanBeConfirmed() {
-    return (
-      !this.emailConfirmation.isConfirmed &&
-      this.emailConfirmation.emailExpiration >= new Date()
-    );
-  }
+  //   resendEmailCanBeConfirmed() {
+  //     return (
+  //       !this.emailConfirmation.isConfirmed &&
+  //       this.emailConfirmation.emailExpiration >= new Date()
+  //     );
+  //   }
+  //
+  //   registrationCanBeConfirmed() {
+  //     return (
+  //       !this.emailConfirmation.isConfirmed &&
+  //       this.emailConfirmation.emailExpiration >= new Date()
+  //     );
+  //   }
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
