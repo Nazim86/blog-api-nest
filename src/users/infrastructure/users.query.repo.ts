@@ -49,10 +49,11 @@ export class UserQueryRepo {
     const totalCount = await this.UserModel.countDocuments(filter);
     const pagesCount = paginatedQuery.totalPages(totalCount); //Math.ceil(totalCount / paginatedQuery.pageSize);
 
+    const sortDirection = paginatedQuery.sortDirection === 'asc' ? 1 : -1;
+
     const getUsers: UserDocument[] = await this.UserModel.find(filter)
       .sort({
-        [paginatedQuery.sortBy]:
-          paginatedQuery.sortDirection === 'asc' ? 1 : -1,
+        [paginatedQuery.sortBy]: sortDirection,
       })
       .skip(skipSize)
       .limit(paginatedQuery.pageSize)

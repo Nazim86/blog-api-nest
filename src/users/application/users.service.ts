@@ -5,6 +5,8 @@ import * as bcrypt from 'bcrypt';
 import { User, UserDocument, UserModelTYpe } from '../domain/user.entity';
 import { CreateUserDto } from '../createUser.Dto';
 import * as process from 'process';
+import { exceptionHandler } from '../../exception-handler/exception-handler';
+import { ResultCode } from '../../exception-handler/result-code-enum';
 
 @Injectable()
 export class UsersService {
@@ -24,9 +26,12 @@ export class UsersService {
       passwordHash,
       this.UserModel,
     );
-    // return await userRepositoryOld.createNewUser(newUser) old version
 
-    await this.userRepository.save(newUser);
+    try {
+      await this.userRepository.save(newUser);
+    } catch (e) {
+      exceptionHandler(ResultCode.BadRequest);
+    }
 
     return newUser.id;
   }

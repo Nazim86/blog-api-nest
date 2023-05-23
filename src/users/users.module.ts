@@ -4,6 +4,7 @@ import { UsersRepository } from './infrastructure/users.repository';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from './domain/user.entity';
 import { configModule } from '../app.module';
+import { IsUserAlreadyExistConstraint } from './decorator/IsUserAlreadyExist';
 
 @Module({
   imports: [
@@ -11,7 +12,7 @@ import { configModule } from '../app.module';
 
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
   ],
-  providers: [UsersService, UsersRepository],
-  exports: [UsersService],
+  providers: [UsersService, UsersRepository, IsUserAlreadyExistConstraint],
+  exports: [UsersService, UsersRepository],
 })
 export class UsersModule {}

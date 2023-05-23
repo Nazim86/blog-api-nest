@@ -36,6 +36,7 @@ export class AuthController {
   ) {}
 
   @Post('registration')
+  @HttpCode(204)
   async userRegistration(@Body() createUserDto: CreateUserDto) {
     const newUser = await this.authService.createNewUser(createUserDto);
 
@@ -75,6 +76,7 @@ export class AuthController {
   }
 
   @Post('login')
+  @HttpCode(200)
   async login(
     @Response({ passthrough: true }) res,
     @Body() loginDto: LoginDto,

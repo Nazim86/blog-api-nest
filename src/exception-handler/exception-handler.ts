@@ -1,5 +1,6 @@
 import { ResultCode } from './result-code-enum';
 import { HttpException } from '@nestjs/common';
+import { ca } from 'date-fns/locale';
 
 export const exceptionHandler = (code: ResultCode, data?: any) => {
   switch (code) {
