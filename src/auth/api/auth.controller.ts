@@ -86,7 +86,7 @@ export class AuthController {
     );
 
     if (!user) {
-      exceptionHandler(ResultCode.Unauthorized);
+      return exceptionHandler(ResultCode.Unauthorized);
     }
 
     const accessToken = await this.jwtService.createJWT(

@@ -151,7 +151,7 @@ export class AuthService {
 
     if (!user || !user.emailConfirmation.isConfirmed) return null;
 
-    const result = bcrypt.compare(
+    const result = await bcrypt.compare(
       loginDto.password,
       user.accountData.passwordHash,
     );

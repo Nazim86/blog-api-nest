@@ -9,8 +9,8 @@ export class UserPagination<T> extends Pagination<PaginationType> {
     pageSize = 10,
     sortBy = 'createdAt',
     sortDirection: 'asc' | 'desc' = 'desc',
-    searchLoginTerm: string = null,
-    searchEmailTerm: string = null,
+    searchLoginTerm: string,
+    searchEmailTerm: string,
   ) {
     super(pageNumber, pageSize, sortBy, sortDirection);
     this.searchLoginTerm = searchLoginTerm;
