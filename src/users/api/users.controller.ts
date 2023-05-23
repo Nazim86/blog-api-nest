@@ -25,14 +25,12 @@ export class UserController {
     protected userService: UsersService,
   ) {}
 
-  //@UseGuards(BasicAuthGuard)
+  @UseGuards(BasicAuthGuard)
   @Get()
   async getUsers(@Query() query: UserPagination<PaginationType>) {
-    const result = await this.userQueryRepo.getUsers(query);
-    console.log(typeof result.page);
-    console.log(typeof result.pageSize);
+    return await this.userQueryRepo.getUsers(query);
   }
-  //@UseGuards(BasicAuthGuard)
+  @UseGuards(BasicAuthGuard)
   @Post()
   async createUser(@Body() createUserDto: CreateUserDto) {
     const userId = await this.userService.createNewUser(createUserDto);
@@ -40,7 +38,7 @@ export class UserController {
       return await this.userQueryRepo.getUserById(userId);
     }
   }
-  //@UseGuards(BasicAuthGuard)
+  @UseGuards(BasicAuthGuard)
   @Delete(':id')
   @HttpCode(204)
   async deleteUser(@Param('id') userId: string) {
