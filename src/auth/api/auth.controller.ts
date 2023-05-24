@@ -50,14 +50,11 @@ export class AuthController {
   async reSendRegistrationEmail(@Body() emailDto: EmailDto) {
     const emailResending: string | boolean =
       await this.authService.resendEmailWithNewConfirmationCode(emailDto);
-
     if (!emailResending) {
       const errorMessage = {
         message: [{ message: 'wrong email', field: 'email' }],
       };
       return exceptionHandler(ResultCode.BadRequest, errorMessage);
-
-      // throw new HttpException(errorMessage, 400); //TODO handle this error with exception handler
     }
     return;
   }
@@ -72,7 +69,6 @@ export class AuthController {
       const errorMessage = {
         message: [{ message: 'wrong code', field: 'code' }],
       };
-      // throw new HttpException(errorMessage, 400); //TODO handle this error with exception handler
 
       return exceptionHandler(ResultCode.BadRequest, errorMessage);
     }
@@ -127,10 +123,6 @@ export class AuthController {
   async getNewRefreshToken(@Request() req, @Response() res) {
     const userId = req.user.userId;
 
-    // const { deviceId } = await this.jwtService.getTokenMetaData(
-    //   req.cookies.refreshToken,
-    //   settings.REFRESH_TOKEN_SECRET,
-    // );
     const deviceId = req.user.deviceId;
 
     const accessToken = await this.jwtService.createJWT(
@@ -198,11 +190,6 @@ export class AuthController {
   @Post('logout')
   @HttpCode(204)
   async logout(@Request() req, @Response() res) {
-    // const { deviceId, userId } = await this.jwtService.getTokenMetaData(
-    //   req.cookies.refreshToken,
-    //   settings.REFRESH_TOKEN_SECRET,
-    // );
-
     await this.deviceService.deleteDeviceById(
       req.user.deviceId,
       req.user.userId,

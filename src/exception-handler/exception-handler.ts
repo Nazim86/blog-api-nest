@@ -14,8 +14,6 @@ export const exceptionHandler = (code: ResultCode, data?: any) => {
     case ResultCode.BadRequest:
       throw new HttpException(data, 400);
 
-    // throw new BadRequestException(data);
-
     //..
     default:
       return;
