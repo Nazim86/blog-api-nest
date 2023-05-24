@@ -4,7 +4,6 @@ import {
   Get,
   Headers,
   HttpCode,
-  HttpException,
   Ip,
   Post,
   Request,
@@ -56,7 +55,9 @@ export class AuthController {
       const errorMessage = {
         message: [{ message: 'wrong email', field: 'email' }],
       };
-      throw new HttpException(errorMessage, 400); //TODO handle this error with exception handler
+      return exceptionHandler(ResultCode.BadRequest, errorMessage);
+
+      // throw new HttpException(errorMessage, 400); //TODO handle this error with exception handler
     }
     return;
   }
@@ -71,9 +72,9 @@ export class AuthController {
       const errorMessage = {
         message: [{ message: 'wrong code', field: 'code' }],
       };
-      throw new HttpException(errorMessage, 400); //TODO handle this error with exception handler
+      // throw new HttpException(errorMessage, 400); //TODO handle this error with exception handler
 
-      //return exceptionHandler(ResultCode.BadRequest);
+      return exceptionHandler(ResultCode.BadRequest, errorMessage);
     }
     return;
   }
