@@ -52,8 +52,11 @@ export class AuthController {
       await this.authService.resendEmailWithNewConfirmationCode(emailDto);
 
     if (!emailResending) {
-      return exceptionHandler(ResultCode.BadRequest);
-
+      return exceptionHandler(ResultCode.BadRequest, {
+        message: 'Wrong email',
+        field: 'email',
+      });
+      //throw new HttpException('wrong email', 400);
       // return res.status(400).send(errorMessage('wrong email', 'email'));
     }
     return;

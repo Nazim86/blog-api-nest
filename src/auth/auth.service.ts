@@ -70,7 +70,7 @@ export class AuthService {
 
   async resendEmailWithNewConfirmationCode(
     emailDto: EmailDto,
-  ): Promise<string | boolean> {
+  ): Promise<boolean> {
     const user: UserDocument | null = await this.userRepository.findUserByEmail(
       emailDto.email,
     );

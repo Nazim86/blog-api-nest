@@ -28,9 +28,9 @@ export class User {
   @Prop({
     required: true,
     type: {
-      login: { type: String, required: true },
+      login: { type: String, required: true, unique: true },
       passwordHash: { type: String, required: true },
-      email: { type: String, required: true },
+      email: { type: String, required: true, unique: true },
       createdAt: { type: Date, required: true },
       recoveryCode: { type: String, required: true },
       recoveryCodeExpiration: { type: Date, required: true },
@@ -168,8 +168,8 @@ UserSchema.methods = {
   updateConfirmationCode: User.prototype.updateConfirmationCode,
   updateRecoveryCode: User.prototype.updateRecoveryCode,
   resendEmailCanBeConfirmed: User.prototype.resendEmailCanBeConfirmed,
-  canBeConfirmed: User.prototype.registrationCanBeConfirmed,
-  confirm: User.prototype.confirmRegistration,
+  registrationCanBeConfirmed: User.prototype.registrationCanBeConfirmed,
+  confirmRegistration: User.prototype.confirmRegistration,
   newPasswordCanBeConfirmed: User.prototype.newPasswordCanBeConfirmed,
   updateUserAccountData: User.prototype.updateUserAccountData,
 };

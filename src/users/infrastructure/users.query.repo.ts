@@ -53,7 +53,7 @@ export class UserQueryRepo {
 
     const getUsers: UserDocument[] = await this.UserModel.find(filter)
       .sort({
-        [paginatedQuery.sortBy]: sortDirection,
+        [`accountData.${paginatedQuery.sortBy}`]: sortDirection,
       })
       .skip(skipSize)
       .limit(paginatedQuery.pageSize)

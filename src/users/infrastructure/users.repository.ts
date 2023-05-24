@@ -23,7 +23,8 @@ export class UsersRepository {
   }
 
   async findUserByEmail(email: string) {
-    return this.UserModel.findOne({ 'accountData.email': email });
+    const result = await this.UserModel.findOne({ 'accountData.email': email });
+    return result;
   }
 
   async save(user: UserDocument) {
