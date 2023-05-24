@@ -1,5 +1,5 @@
 import { ResultCode } from './result-code-enum';
-import { BadRequestException, HttpException } from '@nestjs/common';
+import { HttpException } from '@nestjs/common';
 
 export const exceptionHandler = (code: ResultCode, data?: any) => {
   switch (code) {
@@ -12,7 +12,9 @@ export const exceptionHandler = (code: ResultCode, data?: any) => {
     case ResultCode.Unauthorized:
       throw new HttpException('Unauthorized', 401);
     case ResultCode.BadRequest:
-      throw new BadRequestException(data);
+      throw new HttpException(data, 400);
+
+    // throw new BadRequestException(data);
 
     //..
     default:

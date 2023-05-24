@@ -4,6 +4,7 @@ import {
   Get,
   Headers,
   HttpCode,
+  HttpException,
   Ip,
   Post,
   Request,
@@ -52,15 +53,12 @@ export class AuthController {
       await this.authService.resendEmailWithNewConfirmationCode(emailDto);
 
     if (!emailResending) {
-      return exceptionHandler(ResultCode.BadRequest, {
-        message: 'Wrong email',
-        field: 'email',
-      });
-      //throw new HttpException('wrong email', 400);
-      // return res.status(400).send(errorMessage('wrong email', 'email'));
+      const errorMessage = {
+        message: [{ message: 'wrong email', field: 'email' }],
+      };
+      throw new HttpException(errorMessage, 400); //TODO handle this error with exception handler
     }
     return;
-    // res.sendStatus(204);
   }
 
   @Post('registration-confirmation')
@@ -70,12 +68,14 @@ export class AuthController {
       await this.authService.registrationConfirmation(confirmationCodeDto);
 
     if (!registrationConfirmation) {
-      return exceptionHandler(ResultCode.BadRequest);
+      const errorMessage = {
+        message: [{ message: 'wrong code', field: 'code' }],
+      };
+      throw new HttpException(errorMessage, 400); //TODO handle this error with exception handler
 
-      // return res.status(400).send(errorMessage('Wrong code', 'code'));
+      //return exceptionHandler(ResultCode.BadRequest);
     }
     return;
-    // res.sendStatus(204);
   }
 
   @Post('login')

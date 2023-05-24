@@ -40,6 +40,8 @@ export class AuthService {
       false,
     );
 
+    console.log(newUser.emailConfirmation.confirmationCode);
+
     const result: UserDocument = await this.userRepository.save(newUser);
 
     try {
