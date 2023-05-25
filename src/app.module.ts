@@ -34,6 +34,7 @@ import { LikesRepository } from './like/likes.repository';
 import { CommentService } from './comments/application/comments.service';
 import { CommentsRepository } from './comments/infrastructure/comments.repository';
 import { MailModule } from './mail/mail.module';
+import { JwtService } from './jwt/jwt.service';
 
 @Module({
   imports: [
@@ -78,6 +79,7 @@ import { MailModule } from './mail/mail.module';
     UserQueryRepo,
     UsersRepository,
     LikesRepository,
+    JwtService,
   ],
 })
 export class AppModule {}
