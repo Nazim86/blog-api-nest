@@ -89,13 +89,15 @@ export class BlogController {
     @Param('id') blogId: string,
     @Body() createPostDto: CreatePostDto,
   ) {
-    const newPostForBlog: PostsViewType | null =
-      await this.postService.createPostForBlog(blogId, createPostDto);
+    const postId: string | null = await this.postService.createPostForBlog(
+      blogId,
+      createPostDto,
+    );
 
-    if (!newPostForBlog) {
+    if (!postId) {
       throw new HttpException('Not Found', 404);
     }
-    return newPostForBlog;
+    return await this.postQueryRepo.getPostById(postId);
     // res.status(201).send(newPostForBlog);
   }
 

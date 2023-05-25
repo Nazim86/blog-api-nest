@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Comment, CommentDocument } from '../comment.entity';
+import { Comment, CommentDocument } from '../domain/comment.entity';
 import { Model } from 'mongoose';
 import {
   CommentLike,
@@ -27,6 +27,13 @@ export class CommentsRepository {
     );
 
     return result.matchedCount === 1;
+  }
+
+  async getComment(commentId, userId): Promise<CommentDocument | null> {
+    return this.CommentModel.findOne({
+      commentId,
+      'commentatorInfo.userId': userId,
+    });
   }
 
   async updateCommentLikeStatus(

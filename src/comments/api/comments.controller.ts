@@ -15,7 +15,7 @@ import { JwtService } from '../../jwt/jwt.service';
 import { CommentsViewType } from '../types/comments-view-type';
 import { settings } from '../../settings';
 import { AccessTokenGuard } from '../../auth/guards/access-token.guard';
-import { UpdateLikeDto } from '../../like/updateLikeDto';
+import { CreateLikeDto } from '../../like/createLikeDto';
 
 @Controller('comments')
 export class CommentsController {
@@ -87,7 +87,7 @@ export class CommentsController {
   @Put(':id/like-status')
   async updateCommentLikeStatus(
     @Param('id') commentId: string,
-    @Body() updateLikeDto: UpdateLikeDto,
+    @Body() createLikeDto: CreateLikeDto,
     @Request() req,
   ) {
     const userId = req.user.userId;
@@ -97,7 +97,7 @@ export class CommentsController {
       await this.commentService.updateCommentLikeStatus(
         commentId,
         userId,
-        updateLikeDto,
+        createLikeDto,
       );
 
     if (!updateComment) {

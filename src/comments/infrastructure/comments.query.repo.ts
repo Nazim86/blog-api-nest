@@ -4,7 +4,7 @@ import { PostsViewType } from '../../post/types/posts-view-type';
 import { QueryPaginationType } from '../../types/query-pagination-type';
 import { CommentsViewType } from '../types/comments-view-type';
 import { InjectModel } from '@nestjs/mongoose';
-import { Comment, CommentDocument } from '../comment.entity';
+import { Comment, CommentDocument } from '../domain/comment.entity';
 import { Model } from 'mongoose';
 import { CommentsMapping } from '../mapper/comments.mapping';
 import {

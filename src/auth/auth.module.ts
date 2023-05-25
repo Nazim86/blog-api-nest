@@ -23,7 +23,7 @@ import { Blog, BlogSchema } from '../blogs/domain/blog.entity';
 import { Post, PostSchema } from '../post/domain/post.entity';
 import { PostLike, PostLikeSchema } from '../like/postLike.entity';
 import { CommentLike, CommentLikeSchema } from '../like/commentLike.entity';
-import { Comment, CommentSchema } from '../comments/comment.entity';
+import { Comment, CommentSchema } from '../comments/domain/comment.entity';
 import { RefreshTokenStrategy } from './strategies/refresh-token.strategy';
 import { UsersService } from '../users/application/users.service';
 

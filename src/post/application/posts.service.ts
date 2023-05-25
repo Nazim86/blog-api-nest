@@ -2,7 +2,6 @@ import { BlogRepository } from '../../blogs/infrastructure/blog.repository';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Post, PostDocument, PostModuleType } from '../domain/post.entity';
-import { PostsViewType } from '../types/posts-view-type';
 import { CreatePostDto } from '../createPostDto';
 import { PostRepository } from '../infrastructure/post.repository';
 import { BlogDocument } from '../../blogs/domain/blog.entity';
@@ -14,7 +13,7 @@ import {
   PostLikeModelType,
 } from '../../like/postLike.entity';
 import { LikesRepository } from '../../like/likes.repository';
-import { UpdateLikeDto } from '../../like/updateLikeDto';
+import { CreateLikeDto } from '../../like/createLikeDto';
 
 @Injectable()
 export class PostService {
@@ -48,7 +47,7 @@ export class PostService {
   async createPostForBlog(
     blogId: string,
     creatPostDto: CreatePostDto,
-  ): Promise<PostsViewType | null> {
+  ): Promise<string | null> {
     const blog: BlogDocument = await this.blogRepository.getBlogById(blogId);
 
     if (!blog) return null;
@@ -59,7 +58,9 @@ export class PostService {
       blog,
     );
 
-    return await this.postRepository.createPostForBlog(newPost);
+    await this.postRepository.save(newPost);
+
+    return newPost.id;
   }
 
   // async getPostById(postId:string,userId?:string): Promise<PostsViewType |boolean> {
@@ -82,7 +83,7 @@ export class PostService {
   async updatePostLikeStatus(
     postId: string,
     userId: string,
-    updatePostLikeDto: UpdateLikeDto,
+    createPostLikeDto: CreateLikeDto,
   ): Promise<boolean> {
     const post: PostDocument | boolean = await this.postRepository.getPostById(
       postId,
@@ -103,14 +104,20 @@ export class PostService {
       userId,
     );
 
-    if (!postLike) return false;
+    if (!postLike) {
+      const postLike = this.PostLikeModel.createPostLike(
+        postId,
+        userId,
+        createPostLikeDto,
+        login,
+        this.PostLikeModel,
+      );
 
-    postLike.updatePostLikeStatus(
-      postId,
-      userId,
-      updatePostLikeDto.likeStatus,
-      login,
-    );
+      await this.likesRepository.save(postLike);
+      return true;
+    }
+
+    postLike.updatePostLikeStatus(postId, userId, createPostLikeDto, login);
 
     await this.likesRepository.save(postLike);
 

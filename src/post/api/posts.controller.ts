@@ -28,7 +28,7 @@ import { BasicAuthGuard } from '../../auth/guards/basic-auth.guard';
 import { AccessTokenGuard } from '../../auth/guards/access-token.guard';
 import { settings } from '../../settings';
 import { JwtService } from '../../jwt/jwt.service';
-import { UpdateLikeDto } from '../../like/updateLikeDto';
+import { CreateLikeDto } from '../../like/createLikeDto';
 
 @Controller('posts')
 export class PostsController {
@@ -165,9 +165,9 @@ export class PostsController {
   async updatePostLikeStatus(
     @Request() req,
     @Param('id') postId: string,
-    @Body() updateLikeDto: UpdateLikeDto,
+    @Body() updateLikeDto: CreateLikeDto,
   ) {
-    const userId = req.userId; //req.context.user!._id.toString();
+    const userId = req.user.userId; //req.context.user!._id.toString();
 
     const isUpdated: boolean = await this.postService.updatePostLikeStatus(
       postId,

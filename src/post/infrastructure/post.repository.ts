@@ -1,5 +1,4 @@
 import { ObjectId } from 'mongodb';
-import { PostsViewType } from '../types/posts-view-type';
 import { Post, PostDocument, PostModuleType } from '../domain/post.entity';
 import { InjectModel } from '@nestjs/mongoose';
 import { Injectable } from '@nestjs/common';
@@ -15,25 +14,25 @@ export class PostRepository {
     return post.save();
   }
 
-  async createPostForBlog(newPost: PostDocument): Promise<PostsViewType> {
-    await newPost.save();
-
-    return {
-      id: newPost.id,
-      title: newPost.title,
-      shortDescription: newPost.shortDescription,
-      content: newPost.content,
-      blogId: newPost.blogId,
-      blogName: newPost.blogName,
-      createdAt: newPost.createdAt,
-      extendedLikesInfo: {
-        likesCount: 0,
-        dislikesCount: 0,
-        myStatus: 'None', //LikeEnum.None,
-        newestLikes: [],
-      },
-    };
-  }
+  // async createPostForBlog(newPost: PostDocument): Promise<PostsViewType> {
+  //   await newPost.save();
+  //
+  //   return {
+  //     id: newPost.id,
+  //     title: newPost.title,
+  //     shortDescription: newPost.shortDescription,
+  //     content: newPost.content,
+  //     blogId: newPost.blogId,
+  //     blogName: newPost.blogName,
+  //     createdAt: newPost.createdAt,
+  //     extendedLikesInfo: {
+  //       likesCount: 0,
+  //       dislikesCount: 0,
+  //       myStatus: 'None', //LikeEnum.None,
+  //       newestLikes: [],
+  //     },
+  //   };
+  // }
 
   // async updatePost(
   //   id: string,

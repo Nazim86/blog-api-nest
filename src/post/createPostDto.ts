@@ -1,4 +1,4 @@
-import { IsString, Length } from 'class-validator';
+import { IsString, Length, ValidateIf } from 'class-validator';
 
 export class CreatePostDto {
   @IsString()
@@ -14,5 +14,6 @@ export class CreatePostDto {
   content: string;
 
   @IsString()
+  @ValidateIf((object, value) => value !== undefined) // Only validate if blogId is defined
   blogId?: string;
 }

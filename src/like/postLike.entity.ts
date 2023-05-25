@@ -1,26 +1,23 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Model } from 'mongoose';
-import { ObjectId } from 'mongodb';
+import { CreateLikeDto } from './createLikeDto';
 
 export type PostLikeDocument = HydratedDocument<PostLike>;
 
-// export type PostLikeModelStaticType = {
-//   updatePostLikeStatus: (
-//     postId: string,
-//     userId: string,
-//     likeStatus: CreatePostLikeDto,
-//     login: string,
-//     PostLikeModel: PostLikeModelType,
-//   ) => PostLikeDocument;
-// };
-//
-export type PostLikeModelType = Model<PostLike> & PostLikeDocument;
+export type PostLikeModelStaticType = {
+  createPostLike: (
+    postId: string,
+    userId: string,
+    createLikeDto: CreateLikeDto,
+    login: string,
+    PostLikeModel: PostLikeModelType,
+  ) => PostLikeDocument;
+};
+
+export type PostLikeModelType = Model<PostLike> & PostLikeModelStaticType;
 
 @Schema()
 export class PostLike {
-  @Prop({ required: true })
-  _id: ObjectId;
-
   @Prop({ required: true })
   postId: string;
 
@@ -35,16 +32,31 @@ export class PostLike {
 
   @Prop({ required: true })
   login: string;
-
+  static createPostLike(
+    postId: string,
+    userId: string,
+    createLikeDto: CreateLikeDto,
+    login: string,
+    PostLikeModel: PostLikeModelType,
+  ) {
+    const postLike = {
+      postId: postId,
+      userId: userId,
+      addedAt: new Date(),
+      status: createLikeDto.likeStatus,
+      login: login,
+    };
+    return new PostLikeModel(postLike);
+  }
   updatePostLikeStatus(
     postId: string,
     userId: string,
-    likeStatus: string,
+    createLikeDto: CreateLikeDto,
     login: string,
   ) {
     (this.postId = postId),
       (this.userId = userId),
-      (this.status = likeStatus),
+      (this.status = createLikeDto.likeStatus),
       (this.addedAt = new Date()),
       (this.login = login);
   }
@@ -52,11 +64,11 @@ export class PostLike {
 
 export const PostLikeSchema = SchemaFactory.createForClass(PostLike);
 
-// const postLikeStaticMethods = {
-//   updatePostLikeStatus: PostLike.updatePostLikeStatus,
-// };
-//
-// PostLikeSchema.statics = postLikeStaticMethods;
+const postLikeStaticMethods = {
+  createPostLike: PostLike.createPostLike,
+};
+
+PostLikeSchema.statics = postLikeStaticMethods;
 
 PostLikeSchema.methods = {
   updatePostLikeStatus: PostLike.prototype.updatePostLikeStatus,

@@ -1,4 +1,4 @@
-import { Comment, CommentDocument } from '../comment.entity';
+import { CommentDocument } from '../domain/comment.entity';
 import { CommentsViewType } from '../types/comments-view-type';
 import { InjectModel } from '@nestjs/mongoose';
 import {

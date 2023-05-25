@@ -39,7 +39,7 @@ export class BlogQueryRepo {
       query.pageSize,
       query.sortBy,
       query.sortDirection,
-      query.searchTerm,
+      query.searchNameTerm,
     );
     let filter = {};
 

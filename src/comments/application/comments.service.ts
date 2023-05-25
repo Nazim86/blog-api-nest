@@ -1,21 +1,31 @@
 import { Injectable } from '@nestjs/common';
-import { CommentsQueryRepo } from '../infrastructure/comments.query.repo';
 import { PostsQueryRepo } from '../../post/infrastructure/posts-query-repo';
 import { CommentsRepository } from '../infrastructure/comments.repository';
-import { CommentsViewType } from '../types/comments-view-type';
 import { PostsViewType } from '../../post/types/posts-view-type';
 import { CreateCommentDto } from '../createComment.Dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { Comment, CommentDocument, CommentModelType } from '../comment.entity';
-import { UpdateLikeDto } from '../../like/updateLikeDto';
+import {
+  Comment,
+  CommentDocument,
+  CommentModelType,
+} from '../domain/comment.entity';
+import { CreateLikeDto } from '../../like/createLikeDto';
+import {
+  CommentLike,
+  CommentLikeDocument,
+  CommentLikeModelType,
+} from '../../like/commentLike.entity';
+import { LikesRepository } from '../../like/likes.repository';
 
 @Injectable()
 export class CommentService {
   constructor(
     @InjectModel(Comment.name) private CommentModel: CommentModelType,
-    protected commentsQueryRepo: CommentsQueryRepo,
+    @InjectModel(CommentLike.name)
+    private CommentLikeModel: CommentLikeModelType,
     protected postQueryRepo: PostsQueryRepo,
     protected commentsRepository: CommentsRepository,
+    protected likesRepository: LikesRepository,
   ) {}
 
   async createPostComment(
@@ -48,18 +58,29 @@ export class CommentService {
   async updateCommentLikeStatus(
     commentId: string,
     userId: string,
-    updateLikeDto: UpdateLikeDto,
+    createLikeDto: CreateLikeDto,
   ): Promise<boolean> {
-    const getComment: CommentsViewType | null =
-      await this.commentsQueryRepo.getComment(commentId, userId);
+    const comment: CommentDocument | null =
+      await this.commentsRepository.getComment(commentId, userId);
 
-    if (!getComment) return false;
+    if (!comment) return false;
 
-    return await this.commentsRepository.updateCommentLikeStatus(
-      commentId,
-      userId,
-      updateLikeDto.likeStatus,
-    );
+    const commentLike: CommentLikeDocument | null =
+      await this.likesRepository.findCommentLike(commentId, userId);
+
+    if (!commentLike) {
+      const newCommentLike = this.CommentLikeModel.createCommentLike(
+        commentId,
+        userId,
+        createLikeDto,
+        this.CommentLikeModel,
+      );
+      await this.likesRepository.save(newCommentLike);
+      return true;
+    }
+    commentLike.updateCommentLikeStatus(commentId, userId, createLikeDto);
+    await this.likesRepository.save(comment);
+    return true;
   }
 
   async deleteComment(commentId: string): Promise<boolean> {

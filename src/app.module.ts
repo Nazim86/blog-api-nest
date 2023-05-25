@@ -19,7 +19,7 @@ import { PostRepository } from './post/infrastructure/post.repository';
 import { CommentLike, CommentLikeSchema } from './like/commentLike.entity';
 import { CommentsQueryRepo } from './comments/infrastructure/comments.query.repo';
 import { CommentsMapping } from './comments/mapper/comments.mapping';
-import { Comment, CommentSchema } from './comments/comment.entity';
+import { Comment, CommentSchema } from './comments/domain/comment.entity';
 import { UserController } from './users/api/users.controller';
 import { UsersService } from './users/application/users.service';
 import { UserQueryRepo } from './users/infrastructure/users.query.repo';
