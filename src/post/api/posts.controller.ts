@@ -22,11 +22,13 @@ import { CommentsQueryRepo } from '../../comments/infrastructure/comments.query.
 import { Pagination, PaginationType } from '../../common/pagination';
 import { CommentService } from '../../comments/application/comments.service';
 import { CreateCommentDto } from '../../comments/createComment.Dto';
-import { LikeEnum } from '../../like/like.enum';
 import { ResultCode } from '../../exception-handler/result-code-enum';
 import { exceptionHandler } from '../../exception-handler/exception-handler';
 import { BasicAuthGuard } from '../../auth/guards/basic-auth.guard';
 import { AccessTokenGuard } from '../../auth/guards/access-token.guard';
+import { settings } from '../../settings';
+import { JwtService } from '../../jwt/jwt.service';
+import { UpdateLikeDto } from '../../like/updateLikeDto';
 
 @Controller('posts')
 export class PostsController {
@@ -34,25 +36,26 @@ export class PostsController {
     protected postQueryRepo: PostsQueryRepo,
     protected commentsQueryRepo: CommentsQueryRepo,
     protected postService: PostService,
-    protected commentService: CommentService, // protected jwtService: JwtService,
+    protected commentService: CommentService,
+    protected jwtService: JwtService,
   ) {}
 
   @Get()
-  async getPosts(@Query() query: Pagination<PaginationType>) {
-    // const accessToken: string | undefined =
-    //   req.headers.authorization?.split(' ')[1];
+  async getPosts(@Query() query: Pagination<PaginationType>, @Request() req) {
+    const accessToken: string | undefined =
+      req.headers.authorization?.split(' ')[1];
 
-    const userId = undefined;
+    let userId = undefined;
 
-    // if (accessToken) {
-    //   const tokenData = await this.jwtService.getTokenMetaData(
-    //     accessToken,
-    //     settings.ACCESS_TOKEN_SECRET,
-    //   );
-    //   if (tokenData) {
-    //     userId = tokenData.userId;
-    //   }
-    // }
+    if (accessToken) {
+      const tokenData = await this.jwtService.getTokenMetaData(
+        accessToken,
+        settings.ACCESS_TOKEN_SECRET,
+      );
+      if (tokenData) {
+        userId = tokenData.userId;
+      }
+    }
 
     const getPost: QueryPaginationType<PostsViewType[]> =
       await this.postQueryRepo.getPosts(query, userId);
@@ -61,21 +64,21 @@ export class PostsController {
   }
 
   @Get(':id')
-  async getPostById(@Param('id') postId: string) {
-    // const accessToken: string | undefined =
-    //   req.headers.authorization?.split(' ')[1];
+  async getPostById(@Param('id') postId: string, @Request() req) {
+    const accessToken: string | undefined =
+      req.headers.authorization?.split(' ')[1];
 
-    const userId = undefined;
+    let userId = undefined;
 
-    // if (accessToken) {
-    //   const tokenData = await this.jwtService.getTokenMetaData(
-    //     accessToken,
-    //     settings.ACCESS_TOKEN_SECRET,
-    //   );
-    //   if (tokenData) {
-    //     userId = tokenData.userId;
-    //   }
-    // }
+    if (accessToken) {
+      const tokenData = await this.jwtService.getTokenMetaData(
+        accessToken,
+        settings.ACCESS_TOKEN_SECRET,
+      );
+      if (tokenData) {
+        userId = tokenData.userId;
+      }
+    }
 
     const getPost: PostsViewType | boolean =
       await this.postQueryRepo.getPostById(postId);
@@ -125,8 +128,6 @@ export class PostsController {
     const userId = req.user.id; //req.context.user!._id.toString();
     const userLogin = req.user.login; //req.context.user!.accountData.login;
 
-    console.log(req.user, req.user.id, req.user.login);
-
     const commentId: string | null =
       await this.commentService.createPostComment(
         createCommentDto,
@@ -164,14 +165,14 @@ export class PostsController {
   async updatePostLikeStatus(
     @Request() req,
     @Param('id') postId: string,
-    @Body() likeStatus: LikeEnum,
+    @Body() updateLikeDto: UpdateLikeDto,
   ) {
     const userId = req.userId; //req.context.user!._id.toString();
 
     const isUpdated: boolean = await this.postService.updatePostLikeStatus(
       postId,
       userId,
-      likeStatus,
+      updateLikeDto,
     );
 
     if (!isUpdated) {

@@ -14,7 +14,7 @@ import {
   PostLikeModelType,
 } from '../../like/postLike.entity';
 import { LikesRepository } from '../../like/likes.repository';
-import { LikeEnum } from '../../like/like.enum';
+import { UpdateLikeDto } from '../../like/updateLikeDto';
 
 @Injectable()
 export class PostService {
@@ -82,7 +82,7 @@ export class PostService {
   async updatePostLikeStatus(
     postId: string,
     userId: string,
-    likeStatus: LikeEnum,
+    updatePostLikeDto: UpdateLikeDto,
   ): Promise<boolean> {
     const post: PostDocument | boolean = await this.postRepository.getPostById(
       postId,
@@ -105,7 +105,12 @@ export class PostService {
 
     if (!postLike) return false;
 
-    postLike.updatePostLikeStatus(postId, userId, likeStatus, login);
+    postLike.updatePostLikeStatus(
+      postId,
+      userId,
+      updatePostLikeDto.likeStatus,
+      login,
+    );
 
     await this.likesRepository.save(postLike);
 

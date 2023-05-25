@@ -11,10 +11,25 @@ export class CommentLike {
   userId: string;
 
   @Prop({ required: true })
-  addedAt: string;
+  addedAt: Date;
 
   @Prop({ required: true })
   status: string;
+
+  updateCommentLikeStatus(
+    commentId: string,
+    userId: string,
+    likeStatus: string,
+  ) {
+    (this.commentId = commentId),
+      (this.userId = userId),
+      (this.addedAt = new Date()),
+      (this.status = likeStatus);
+  }
 }
 
 export const CommentLikeSchema = SchemaFactory.createForClass(CommentLike);
+
+CommentLikeSchema.methods = {
+  updateCommentLikeStatus: CommentLike.prototype.updateCommentLikeStatus,
+};

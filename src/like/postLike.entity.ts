@@ -1,7 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Model } from 'mongoose';
 import { ObjectId } from 'mongodb';
-import { LikeEnum } from './like.enum';
 
 export type PostLikeDocument = HydratedDocument<PostLike>;
 
@@ -40,7 +39,7 @@ export class PostLike {
   updatePostLikeStatus(
     postId: string,
     userId: string,
-    likeStatus: LikeEnum,
+    likeStatus: string,
     login: string,
   ) {
     (this.postId = postId),

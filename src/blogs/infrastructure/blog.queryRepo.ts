@@ -41,9 +41,13 @@ export class BlogQueryRepo {
       query.sortDirection,
       query.searchTerm,
     );
-    const filter = {
-      name: { $regex: paginatedQuery.searchNameTerm ?? '', $options: 'i' },
-    };
+    let filter = {};
+
+    if (paginatedQuery.searchNameTerm) {
+      filter = {
+        name: { $regex: paginatedQuery.searchNameTerm, $options: 'i' },
+      };
+    }
 
     const skipSize = paginatedQuery.skipSize;
     const totalCount = await this.BlogModel.countDocuments(filter);

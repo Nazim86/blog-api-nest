@@ -7,7 +7,7 @@ import { PostsViewType } from '../../post/types/posts-view-type';
 import { CreateCommentDto } from '../createComment.Dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Comment, CommentDocument, CommentModelType } from '../comment.entity';
-import { LikeEnum } from '../../like/like.enum';
+import { UpdateLikeDto } from '../../like/updateLikeDto';
 
 @Injectable()
 export class CommentService {
@@ -48,7 +48,7 @@ export class CommentService {
   async updateCommentLikeStatus(
     commentId: string,
     userId: string,
-    likeStatus: LikeEnum,
+    updateLikeDto: UpdateLikeDto,
   ): Promise<boolean> {
     const getComment: CommentsViewType | null =
       await this.commentsQueryRepo.getComment(commentId, userId);
@@ -58,7 +58,7 @@ export class CommentService {
     return await this.commentsRepository.updateCommentLikeStatus(
       commentId,
       userId,
-      likeStatus,
+      updateLikeDto.likeStatus,
     );
   }
 

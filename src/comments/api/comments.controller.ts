@@ -6,12 +6,16 @@ import {
   HttpException,
   Param,
   Put,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
 import { CommentService } from '../application/comments.service';
 import { CommentsQueryRepo } from '../infrastructure/comments.query.repo';
 import { JwtService } from '../../jwt/jwt.service';
 import { CommentsViewType } from '../types/comments-view-type';
-import { LikeEnum } from '../../like/like.enum';
+import { settings } from '../../settings';
+import { AccessTokenGuard } from '../../auth/guards/access-token.guard';
+import { UpdateLikeDto } from '../../like/updateLikeDto';
 
 @Controller('comments')
 export class CommentsController {
@@ -21,6 +25,7 @@ export class CommentsController {
     protected jwtService: JwtService,
   ) {}
 
+  @UseGuards(AccessTokenGuard)
   @Put(':id')
   async updateCommentByCommentId(
     @Param('id') commentId: string,
@@ -38,6 +43,7 @@ export class CommentsController {
     // res.sendStatus(204);
   }
 
+  @UseGuards(AccessTokenGuard)
   @Delete(':id')
   async deleteCommentByCommentId(@Param('id') commentId: string) {
     const deleteComment: boolean = await this.commentService.deleteComment(
@@ -52,21 +58,21 @@ export class CommentsController {
   }
 
   @Get(':id')
-  async getCommentByCommentId(@Param('id') commentId: string) {
-    // const accessToken: string | undefined =
-    //   req.headers.authorization?.split(' ')[1];
+  async getCommentByCommentId(@Param('id') commentId: string, @Request() req) {
+    const accessToken: string | undefined =
+      req.headers.authorization?.split(' ')[1];
 
-    const userId = undefined;
+    let userId = undefined;
 
-    // if (accessToken) {
-    //   const tokenData = await this.jwtService.getTokenMetaData(
-    //     accessToken,
-    //     settings.ACCESS_TOKEN_SECRET,
-    //   );
-    //   if (tokenData) {
-    //     userId = tokenData.userId;
-    //   }
-    // }
+    if (accessToken) {
+      const tokenData = await this.jwtService.getTokenMetaData(
+        accessToken,
+        settings.ACCESS_TOKEN_SECRET,
+      );
+      if (tokenData) {
+        userId = tokenData.userId;
+      }
+    }
     const getComment: CommentsViewType | null =
       await this.commentsQueryRepo.getComment(commentId, userId);
 
@@ -77,19 +83,21 @@ export class CommentsController {
     // res.status(200).send(getComment);
   }
 
+  @UseGuards(AccessTokenGuard)
   @Put(':id/like-status')
   async updateCommentLikeStatus(
     @Param('id') commentId: string,
-    @Body() likeStatus: LikeEnum,
+    @Body() updateLikeDto: UpdateLikeDto,
+    @Request() req,
   ) {
-    // const userId = req.context.user!._id.toString();
-    const userId = undefined; // temprorary solution till where to get userID
+    const userId = req.user.userId;
+    // const userId = undefined; // temprorary solution till where to get userID
 
     const updateComment: boolean =
       await this.commentService.updateCommentLikeStatus(
         commentId,
         userId,
-        likeStatus,
+        updateLikeDto,
       );
 
     if (!updateComment) {
