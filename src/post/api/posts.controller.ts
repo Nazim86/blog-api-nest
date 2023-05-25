@@ -26,6 +26,7 @@ import { LikeEnum } from '../../like/like.enum';
 import { ResultCode } from '../../exception-handler/result-code-enum';
 import { exceptionHandler } from '../../exception-handler/exception-handler';
 import { BasicAuthGuard } from '../../auth/guards/basic-auth.guard';
+import { AccessTokenGuard } from '../../auth/guards/access-token.guard';
 
 @Controller('posts')
 export class PostsController {
@@ -114,7 +115,7 @@ export class PostsController {
     // res.status(201).send(newPost);
   }
 
-  @UseGuards(BasicAuthGuard) // should be logged user with refreshToken
+  @UseGuards(AccessTokenGuard) // should be logged user with refreshToken
   @Post(':id/comments')
   async createCommentByPostId(
     @Request() req,
@@ -158,7 +159,7 @@ export class PostsController {
     return;
   }
 
-  @UseGuards(BasicAuthGuard)
+  @UseGuards(AccessTokenGuard)
   @Put(':id/like-status')
   async updatePostLikeStatus(
     @Request() req,

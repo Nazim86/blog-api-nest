@@ -111,7 +111,7 @@ export class AuthController {
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       //sameSite: 'strict',
-      //secure: true,
+      secure: true,
       maxAge: 24 * 60 * 60 * 1000,
     });
     return { accessToken: accessToken };
@@ -144,11 +144,10 @@ export class AuthController {
       .cookie('refreshToken', refreshToken, {
         httpOnly: true,
         //sameSite: 'strict',
-        //secure: true,
+        secure: true,
         maxAge: 24 * 60 * 60 * 1000,
       })
-      .json({ accessToken: accessToken }); //return { accessToken: accessToken };
-    // res.status(200).send({ accessToken: accessToken });
+      .json({ accessToken: accessToken });
   }
 
   @UseGuards(RefreshTokenGuard)
@@ -159,7 +158,6 @@ export class AuthController {
       req.user.userId,
     );
     return currentUser;
-    // res.status(200).send(getCurrentUser);
   }
 
   @Post('password-recovery')

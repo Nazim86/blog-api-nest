@@ -111,8 +111,8 @@ export class PostsQueryRepo {
 
     return {
       pagesCount: pagesCount,
-      page: query.pageNumber,
-      pageSize: query.pageSize,
+      page: Number(query.pageNumber),
+      pageSize: Number(query.pageSize),
       totalCount: totalCount,
       items: resolvedMappedPosts,
     };
@@ -153,8 +153,8 @@ export class PostsQueryRepo {
 
     return {
       pagesCount: pagesCount,
-      page: paginatedQuery.pageNumber,
-      pageSize: paginatedQuery.pageSize,
+      page: Number(paginatedQuery.pageNumber),
+      pageSize: Number(paginatedQuery.pageSize),
       totalCount: totalCount,
       items: resolvedMappedPosts,
     };

@@ -54,8 +54,8 @@ export class CommentsQueryRepo {
 
     return {
       pagesCount: pagesCount,
-      page: query.pageNumber,
-      pageSize: query.pageSize,
+      page: Number(query.pageNumber),
+      pageSize: Number(query.pageSize),
       totalCount: totalCount,
       items: resolvedComments,
     };

@@ -61,8 +61,8 @@ export class BlogQueryRepo {
     const mappedBlog = blogsMapping(getBlog);
     return {
       pagesCount: pagesCount,
-      page: paginatedQuery.pageNumber,
-      pageSize: paginatedQuery.pageSize,
+      page: Number(paginatedQuery.pageNumber),
+      pageSize: Number(paginatedQuery.pageSize),
       totalCount: totalCount,
       items: mappedBlog,
     };
