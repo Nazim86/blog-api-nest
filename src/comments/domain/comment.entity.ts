@@ -65,7 +65,7 @@ export class Comment {
         userId: userId,
         userLogin: userLogin,
       },
-      createdAt: new Date().toString(),
+      createdAt: new Date().toISOString(),
     };
     return new CommentModel(newComment);
   }

@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   HttpException,
   Param,
   Put,
@@ -28,6 +29,7 @@ export class CommentsController {
 
   @UseGuards(AccessTokenGuard)
   @Put(':id')
+  @HttpCode(204)
   async updateCommentByCommentId(
     @Param('id') commentId: string,
     @Body() createCommentDto: CreateCommentDto,
@@ -41,11 +43,11 @@ export class CommentsController {
       throw new HttpException('Not Found', 404);
     }
     return;
-    // res.sendStatus(204);
   }
 
   @UseGuards(AccessTokenGuard)
   @Delete(':id')
+  @HttpCode(204)
   async deleteCommentByCommentId(@Param('id') commentId: string) {
     const deleteComment: boolean = await this.commentService.deleteComment(
       commentId,
@@ -55,7 +57,6 @@ export class CommentsController {
       throw new HttpException('Not Found', 404);
     }
     return;
-    // res.sendStatus(204);
   }
 
   @Get(':id')
@@ -87,6 +88,7 @@ export class CommentsController {
 
   @UseGuards(AccessTokenGuard)
   @Put(':id/like-status')
+  @HttpCode(204)
   async updateCommentLikeStatus(
     @Param('id') commentId: string,
     @Body() createLikeDto: CreateLikeDto,

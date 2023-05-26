@@ -16,11 +16,12 @@ export class BlogRepository {
     return blogsMapping(array);
   }
 
-  async getBlogById(id: string): Promise<BlogDocument | null> {
+  async getBlogById(blogId: string): Promise<BlogDocument | null> {
     try {
       const foundBlog = await this.BlogModel.findOne({
-        _id: new ObjectId(id),
+        _id: new ObjectId(blogId),
       });
+
       if (!foundBlog) {
         return null;
       }

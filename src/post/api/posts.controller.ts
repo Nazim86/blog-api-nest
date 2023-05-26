@@ -137,7 +137,6 @@ export class PostsController {
     @Body() createCommentDto: CreateCommentDto,
   ) {
     const userId = req.user.userId; //req.context.user!._id.toString();
-
     const commentId: string | null =
       await this.commentService.createPostComment(
         createCommentDto,

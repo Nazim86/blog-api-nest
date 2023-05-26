@@ -41,7 +41,11 @@ export class CommentService {
 
     if (!postById || typeof postById === 'boolean') return null;
 
-    const user: UserDocument = await this.usersRepository.findUserById(userId);
+    const user: UserDocument | null = await this.usersRepository.findUserById(
+      userId,
+    );
+
+    if (!user) return null;
 
     const newComment: CommentDocument = this.CommentModel.createComment(
       createCommentDto,
@@ -72,12 +76,11 @@ export class CommentService {
   ): Promise<boolean> {
     const comment: CommentDocument | null =
       await this.commentsRepository.getComment(commentId, userId);
-
+    console.log(comment);
     if (!comment) return false;
 
     const commentLike: CommentLikeDocument | null =
       await this.likesRepository.findCommentLike(commentId, userId);
-
     if (!commentLike) {
       const newCommentLike = this.CommentLikeModel.createCommentLike(
         commentId,

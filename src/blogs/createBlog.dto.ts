@@ -1,10 +1,11 @@
-import { IsNotEmpty, IsString, Length, Matches } from 'class-validator';
+import { IsNotEmpty, IsString, IsUrl, Length } from 'class-validator';
 import { Transform } from 'class-transformer';
 
 export class CreateBlogDto {
   @Transform(({ value }) => value.trim())
-  @IsNotEmpty()
   @Length(0, 15)
+  @IsNotEmpty()
+  @IsString()
   name: string;
 
   @IsNotEmpty()
@@ -13,6 +14,6 @@ export class CreateBlogDto {
 
   @IsString()
   @Length(0, 100)
-  @Matches('^https://([a-zA-Z0-9_-]+.)+[a-zA-Z0-9_-]+(/[a-zA-Z0-9_-]+)*/?$')
+  @IsUrl()
   websiteUrl: string;
 }

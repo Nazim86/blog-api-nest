@@ -36,6 +36,7 @@ import { CommentsRepository } from './comments/infrastructure/comments.repositor
 import { MailModule } from './mail/mail.module';
 import { JwtService } from './jwt/jwt.service';
 import { CommentsController } from './comments/api/comments.controller';
+import { IsBlogExistConstraint } from './decorators/IsBlogIdExist';
 
 @Module({
   imports: [
@@ -82,6 +83,7 @@ import { CommentsController } from './comments/api/comments.controller';
     UsersRepository,
     LikesRepository,
     JwtService,
+    IsBlogExistConstraint,
   ],
 })
 export class AppModule {}

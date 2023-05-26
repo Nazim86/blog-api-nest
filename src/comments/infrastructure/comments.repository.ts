@@ -29,11 +29,8 @@ export class CommentsRepository {
     return result.matchedCount === 1;
   }
 
-  async getComment(commentId, userId): Promise<CommentDocument | null> {
-    return this.CommentModel.findOne({
-      commentId,
-      'commentatorInfo.userId': userId,
-    });
+  async getComment(commentId): Promise<CommentDocument | null> {
+    return this.CommentModel.findOne({ _id: new ObjectId(commentId) });
   }
 
   async updateCommentLikeStatus(

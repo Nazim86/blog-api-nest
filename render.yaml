@@ -1,0 +1,8 @@
+services:
+  - name: blog-api-nest
+    type: web
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    env:
+      - key: NODE_ENV
+        value: production
