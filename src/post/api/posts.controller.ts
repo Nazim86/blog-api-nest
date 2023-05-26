@@ -41,6 +41,7 @@ export class PostsController {
   ) {}
 
   @Get()
+  @HttpCode(204)
   async getPosts(@Query() query: Pagination<PaginationType>, @Request() req) {
     const accessToken: string | undefined =
       req.headers.authorization?.split(' ')[1];
@@ -162,6 +163,7 @@ export class PostsController {
 
   @UseGuards(AccessTokenGuard)
   @Put(':id/like-status')
+  @HttpCode(204)
   async updatePostLikeStatus(
     @Request() req,
     @Param('id') postId: string,
