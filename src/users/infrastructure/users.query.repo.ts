@@ -20,6 +20,7 @@ export class UserQueryRepo {
       query.searchLoginTerm,
       query.searchEmailTerm,
     );
+
     const skipSize = paginatedQuery.skipSize; //(paginatedQuery.pageNumber - 1) * paginatedQuery.pageSize;
 
     const filter: any = {};

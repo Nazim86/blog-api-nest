@@ -33,7 +33,9 @@ export class BlogQueryRepo {
     }
   }
 
-  async getBlog(query): Promise<QueryPaginationType<BlogsViewType[]>> {
+  async getBlog(
+    query: BlogPagination<PaginationType>,
+  ): Promise<QueryPaginationType<BlogsViewType[]>> {
     const paginatedQuery = new BlogPagination<PaginationType>(
       query.pageNumber,
       query.pageSize,
@@ -41,6 +43,7 @@ export class BlogQueryRepo {
       query.sortDirection,
       query.searchNameTerm,
     );
+
     let filter = {};
 
     if (paginatedQuery.searchNameTerm) {
