@@ -41,7 +41,7 @@ export class PostsController {
   ) {}
 
   @Get()
-  @HttpCode(204)
+  @HttpCode(200)
   async getPosts(@Query() query: Pagination<PaginationType>, @Request() req) {
     const accessToken: string | undefined =
       req.headers.authorization?.split(' ')[1];
@@ -82,7 +82,7 @@ export class PostsController {
     }
 
     const getPost: PostsViewType | boolean =
-      await this.postQueryRepo.getPostById(postId);
+      await this.postQueryRepo.getPostById(postId, userId);
 
     if (!getPost) {
       return exceptionHandler(ResultCode.NotFound);

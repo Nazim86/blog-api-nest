@@ -37,19 +37,19 @@ export class Comment {
   @Prop({ required: true })
   createdAt: string;
 
-  @Prop({
-    required: true,
-    type: {
-      likesCount: Number,
-      dislikesCount: Number,
-      myStatus: String,
-    },
-  })
-  likesInfo: {
-    likesCount: number;
-    dislikesCount: number;
-    myStatus: string;
-  };
+  // @Prop({
+  //   required: true,
+  //   type: {
+  //     likesCount: Number,
+  //     dislikesCount: Number,
+  //     myStatus: String,
+  //   },
+  // })
+  // likesInfo: {
+  //   likesCount: number;
+  //   dislikesCount: number;
+  //   myStatus: string;
+  // };
 
   static createComment(
     createCommentDto: CreateCommentDto,

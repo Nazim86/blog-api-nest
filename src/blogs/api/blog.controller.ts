@@ -58,6 +58,7 @@ export class BlogController {
   }
 
   @Get(':id/posts')
+  @HttpCode(200)
   async getPostsByBlogId(
     @Param('id') blogId: string,
     @Query() query: BlogPagination<PaginationType>,
@@ -85,7 +86,7 @@ export class BlogController {
 
   @UseGuards(BasicAuthGuard)
   @Post(':id/posts')
-  @HttpCode(204)
+  @HttpCode(201)
   async createPostByBlogId(
     @Param('id') blogId: string,
     @Body() createPostDto: CreatePostDto,
