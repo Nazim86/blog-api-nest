@@ -1,11 +1,13 @@
-import { IsString, Length, Matches } from 'class-validator';
+import { IsNotEmpty, IsString, Length, Matches } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 export class CreateBlogDto {
-  @IsString()
+  @Transform(({ value }) => value.trim())
+  @IsNotEmpty()
   @Length(0, 15)
   name: string;
 
-  @IsString()
+  @IsNotEmpty()
   @Length(0, 500)
   description: string;
 
