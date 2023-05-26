@@ -59,7 +59,6 @@ export class BlogController {
       return exceptionHandler(ResultCode.NotFound);
     }
     return getBlog;
-    // res.status(200).send(getBlog);
   }
 
   @Get(':id/posts')
@@ -93,7 +92,6 @@ export class BlogController {
       return exceptionHandler(ResultCode.NotFound);
     }
     return getBlogByBlogId;
-    // res.status(200).send(getBlogByBlogId);
   }
 
   @UseGuards(BasicAuthGuard)
@@ -120,7 +118,6 @@ export class BlogController {
       return exceptionHandler(ResultCode.NotFound);
     }
     return await this.postQueryRepo.getPostById(postId);
-    // res.status(201).send(newPostForBlog);
   }
 
   @UseGuards(BasicAuthGuard)
@@ -152,6 +149,5 @@ export class BlogController {
       return exceptionHandler(ResultCode.NotFound);
     }
     return;
-    // res.sendStatus(204);
   }
 }

@@ -4,7 +4,6 @@ import {
   Delete,
   Get,
   HttpCode,
-  HttpException,
   Param,
   Post,
   Query,
@@ -16,6 +15,8 @@ import { CreateUserDto } from '../createUser.Dto';
 import { UserPagination } from '../user-pagination';
 import { BasicAuthGuard } from '../../auth/guards/basic-auth.guard';
 import { PaginationType } from '../../common/pagination';
+import { exceptionHandler } from '../../exception-handler/exception-handler';
+import { ResultCode } from '../../exception-handler/result-code-enum';
 
 //@UseGuards(BasicAuthGuard)
 @Controller('users')
@@ -45,7 +46,7 @@ export class UserController {
     const deleteUser = await this.userService.deleteUser(userId);
 
     if (!deleteUser) {
-      throw new HttpException('Not Found', 404);
+      return exceptionHandler(ResultCode.NotFound);
     }
     return;
     // res.sendStatus(204);

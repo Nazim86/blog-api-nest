@@ -117,7 +117,7 @@ export class PostService {
       return true;
     }
 
-    postLike.updatePostLikeStatus(postId, userId, createPostLikeDto, login);
+    postLike.updatePostLikeStatus(createPostLikeDto);
 
     await this.likesRepository.save(postLike);
 

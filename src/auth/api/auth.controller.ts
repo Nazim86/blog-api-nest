@@ -167,7 +167,6 @@ export class AuthController {
 
     if (!isRecoveryEmailSent) {
       return exceptionHandler(ResultCode.BadRequest);
-      // return res.status(400).send(errorMessage('wrong email', 'email'));
     }
     return;
   }
@@ -179,7 +178,6 @@ export class AuthController {
 
     if (!isNewPasswordSet) {
       return exceptionHandler(ResultCode.BadRequest);
-      // return res.status(400).send(errorMessage('Wrong code', 'recoveryCode'));
     }
     return;
   }

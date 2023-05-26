@@ -4,7 +4,6 @@ import {
   Delete,
   Get,
   HttpCode,
-  HttpException,
   Param,
   Post,
   Put,
@@ -61,7 +60,6 @@ export class PostsController {
     const getPost: QueryPaginationType<PostsViewType[]> =
       await this.postQueryRepo.getPosts(query, userId);
     return getPost;
-    // res.status(200).send(getPost);
   }
 
   @Get(':id')
@@ -88,7 +86,6 @@ export class PostsController {
       return exceptionHandler(ResultCode.NotFound);
     }
     return getPost;
-    // res.status(200).send(getPost);
   }
 
   @Get(':id/comments')
@@ -112,21 +109,11 @@ export class PostsController {
       createPostDto,
     );
 
-    const errorMessage = {
-      message: [
-        {
-          message: 'Post with this blogId not found',
-          field: 'blogId',
-        },
-      ],
-    };
-
     if (!postId) {
-      throw new HttpException(errorMessage, 404);
+      return exceptionHandler(ResultCode.NotFound);
       // res.sendStatus(404);
     }
     return await this.postQueryRepo.getPostById(postId);
-    // res.status(201).send(newPost);
   }
 
   @UseGuards(AccessTokenGuard) // should be logged user with refreshToken
@@ -136,7 +123,7 @@ export class PostsController {
     @Param('id') postId: string,
     @Body() createCommentDto: CreateCommentDto,
   ) {
-    const userId = req.user.userId; //req.context.user!._id.toString();
+    const userId = req.user.userId;
     const commentId: string | null =
       await this.commentService.createPostComment(
         createCommentDto,

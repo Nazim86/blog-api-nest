@@ -44,11 +44,7 @@ export class CommentLike {
     return new CommentLikeModel(newCommentLike);
   }
 
-  updateCommentLikeStatus(
-    //commentId: string,
-    //userId: string,
-    createLikeDto: CreateLikeDto,
-  ) {
+  updateCommentLikeStatus(createLikeDto: CreateLikeDto) {
     (this.addedAt = new Date()), (this.status = createLikeDto.likeStatus);
   }
 }

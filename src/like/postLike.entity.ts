@@ -48,17 +48,8 @@ export class PostLike {
     };
     return new PostLikeModel(postLike);
   }
-  updatePostLikeStatus(
-    postId: string,
-    userId: string,
-    createLikeDto: CreateLikeDto,
-    login: string,
-  ) {
-    (this.postId = postId),
-      (this.userId = userId),
-      (this.status = createLikeDto.likeStatus),
-      (this.addedAt = new Date()),
-      (this.login = login);
+  updatePostLikeStatus(createLikeDto: CreateLikeDto) {
+    (this.status = createLikeDto.likeStatus), (this.addedAt = new Date());
   }
 }
 

@@ -4,7 +4,6 @@ import {
   Delete,
   Get,
   HttpCode,
-  HttpException,
   Param,
   Put,
   Request,
@@ -88,10 +87,9 @@ export class CommentsController {
       await this.commentsQueryRepo.getComment(commentId, userId);
 
     if (!getComment) {
-      throw new HttpException('Not Found', 404);
+      return exceptionHandler(ResultCode.NotFound);
     }
     return getComment;
-    // res.status(200).send(getComment);
   }
 
   @UseGuards(AccessTokenGuard)
@@ -112,9 +110,8 @@ export class CommentsController {
       );
 
     if (!updateComment) {
-      throw new HttpException('Not Found', 404);
+      return exceptionHandler(ResultCode.NotFound);
     }
     return;
-    // res.sendStatus(204);
   }
 }

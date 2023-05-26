@@ -4,7 +4,7 @@ import { UsersRepository } from './infrastructure/users.repository';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from './domain/user.entity';
 import { configModule } from '../app.module';
-import { IsUserAlreadyExistConstraint } from './decorator/IsUserAlreadyExist';
+import { IsUserAlreadyExistConstraint } from '../decorators/IsUserAlreadyExist';
 
 @Module({
   imports: [
