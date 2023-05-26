@@ -18,6 +18,8 @@ import { PostRepository } from '../../post/infrastructure/post.repository';
 import { PostDocument } from '../../post/domain/post.entity';
 import { UsersRepository } from '../../users/infrastructure/users.repository';
 import { UserDocument } from '../../users/domain/user.entity';
+import { ResultCode } from '../../exception-handler/result-code-enum';
+import { Result } from '../../exception-handler/result-type';
 
 @Injectable()
 export class CommentService {
@@ -62,11 +64,26 @@ export class CommentService {
   async updateComment(
     commentId: string,
     createCommentDto: CreateCommentDto,
-  ): Promise<boolean> {
-    return await this.commentsRepository.updateComment(
+    userId: string,
+  ): Promise<Result<ResultCode>> {
+    const comment: CommentDocument = await this.commentsRepository.getComment(
+      commentId,
+    );
+
+    if (comment && comment.commentatorInfo.userId !== userId) {
+      return {
+        code: ResultCode.Forbidden,
+      };
+    }
+
+    const isUpdated: boolean = await this.commentsRepository.updateComment(
       commentId,
       createCommentDto.content,
     );
+
+    return {
+      code: isUpdated ? ResultCode.Success : ResultCode.NotFound,
+    };
   }
 
   async updateCommentLikeStatus(
@@ -75,12 +92,13 @@ export class CommentService {
     createLikeDto: CreateLikeDto,
   ): Promise<boolean> {
     const comment: CommentDocument | null =
-      await this.commentsRepository.getComment(commentId, userId);
-    console.log(comment);
+      await this.commentsRepository.getComment(commentId);
+
     if (!comment) return false;
 
     const commentLike: CommentLikeDocument | null =
       await this.likesRepository.findCommentLike(commentId, userId);
+
     if (!commentLike) {
       const newCommentLike = this.CommentLikeModel.createCommentLike(
         commentId,
@@ -91,12 +109,34 @@ export class CommentService {
       await this.likesRepository.save(newCommentLike);
       return true;
     }
-    commentLike.updateCommentLikeStatus(commentId, userId, createLikeDto);
-    await this.likesRepository.save(comment);
+
+    commentLike.updateCommentLikeStatus(
+      //commentLike._id.toString(),
+      //userId,
+      createLikeDto,
+    );
+    await this.likesRepository.save(commentLike);
     return true;
   }
 
-  async deleteComment(commentId: string): Promise<boolean> {
-    return await this.commentsRepository.deleteComment(commentId);
+  async deleteComment(
+    commentId: string,
+    userId: string,
+  ): Promise<Result<ResultCode>> {
+    const comment: CommentDocument = await this.commentsRepository.getComment(
+      commentId,
+    );
+
+    if (comment && comment.commentatorInfo.userId !== userId) {
+      return {
+        code: ResultCode.Forbidden,
+      };
+    }
+
+    const isDeleted: boolean = await this.commentsRepository.deleteComment(
+      commentId,
+    );
+
+    return { code: isDeleted ? ResultCode.Success : ResultCode.NotFound };
   }
 }

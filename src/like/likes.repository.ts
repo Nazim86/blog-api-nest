@@ -25,10 +25,10 @@ export class LikesRepository {
   }
 
   async findCommentLike(
-    postId: string,
+    commentId: string,
     userId: string,
   ): Promise<CommentLikeDocument | null> {
-    return this.CommentLikeModel.findOne({ postId, userId });
+    return this.CommentLikeModel.findOne({ commentId, userId });
   }
 
   async save(likeDocument: any) {

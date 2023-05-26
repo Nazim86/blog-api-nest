@@ -1,19 +1,24 @@
 import { IsNotEmpty, IsString, Length, ValidateIf } from 'class-validator';
 import { IsBlogAlreadyExist } from '../decorators/IsBlogIdExist';
+import { Transform } from 'class-transformer';
 
 export class CreatePostDto {
   @Length(0, 30)
-  @IsNotEmpty()
   @IsString()
-  @ValidateIf((object, value) => value !== undefined) // Only validate if blogId is defined
+  @IsNotEmpty()
+  @Transform(({ value }) => value.trim())
   title: string;
 
-  @IsString()
   @Length(0, 100)
+  @IsString()
+  @IsNotEmpty()
+  @Transform(({ value }) => value.trim())
   shortDescription: string;
 
-  @IsString()
   @Length(0, 1000)
+  @IsString()
+  @IsNotEmpty()
+  @Transform(({ value }) => value.trim())
   content: string;
 
   @IsBlogAlreadyExist()

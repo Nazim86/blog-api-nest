@@ -45,14 +45,11 @@ export class CommentLike {
   }
 
   updateCommentLikeStatus(
-    commentId: string,
-    userId: string,
+    //commentId: string,
+    //userId: string,
     createLikeDto: CreateLikeDto,
   ) {
-    (this.commentId = commentId),
-      (this.userId = userId),
-      (this.addedAt = new Date()),
-      (this.status = createLikeDto.likeStatus);
+    (this.addedAt = new Date()), (this.status = createLikeDto.likeStatus);
   }
 }
 

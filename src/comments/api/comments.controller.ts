@@ -18,6 +18,9 @@ import { settings } from '../../settings';
 import { AccessTokenGuard } from '../../auth/guards/access-token.guard';
 import { CreateLikeDto } from '../../like/createLikeDto';
 import { CreateCommentDto } from '../createComment.Dto';
+import { Result } from '../../exception-handler/result-type';
+import { ResultCode } from '../../exception-handler/result-code-enum';
+import { exceptionHandler } from '../../exception-handler/exception-handler';
 
 @Controller('comments')
 export class CommentsController {
@@ -33,14 +36,17 @@ export class CommentsController {
   async updateCommentByCommentId(
     @Param('id') commentId: string,
     @Body() createCommentDto: CreateCommentDto,
+    @Request() req,
   ) {
-    const updateComment: boolean = await this.commentService.updateComment(
-      commentId,
-      createCommentDto,
-    );
+    const isUpdated: Result<ResultCode> =
+      await this.commentService.updateComment(
+        commentId,
+        createCommentDto,
+        req.user.userId,
+      );
 
-    if (!updateComment) {
-      throw new HttpException('Not Found', 404);
+    if (isUpdated.code !== ResultCode.Success) {
+      return exceptionHandler(isUpdated.code);
     }
     return;
   }
@@ -48,13 +54,15 @@ export class CommentsController {
   @UseGuards(AccessTokenGuard)
   @Delete(':id')
   @HttpCode(204)
-  async deleteCommentByCommentId(@Param('id') commentId: string) {
-    const deleteComment: boolean = await this.commentService.deleteComment(
-      commentId,
-    );
+  async deleteCommentByCommentId(
+    @Param('id') commentId: string,
+    @Request() req,
+  ) {
+    const isDeleted: Result<ResultCode> =
+      await this.commentService.deleteComment(commentId, req.user.userId);
 
-    if (!deleteComment) {
-      throw new HttpException('Not Found', 404);
+    if (isDeleted.code !== ResultCode.Success) {
+      return exceptionHandler(isDeleted.code);
     }
     return;
   }
@@ -95,7 +103,6 @@ export class CommentsController {
     @Request() req,
   ) {
     const userId = req.user.userId;
-    // const userId = undefined; // temprorary solution till where to get userID
 
     const updateComment: boolean =
       await this.commentService.updateCommentLikeStatus(
