@@ -35,7 +35,7 @@ export class Comment {
   commentatorInfo: { userId: string; userLogin: string };
 
   @Prop({ required: true })
-  createdAt: Date;
+  createdAt: string;
 
   // @Prop({
   //   required: true,
@@ -65,7 +65,7 @@ export class Comment {
         userId: userId,
         userLogin: userLogin,
       },
-      createdAt: new Date(),
+      createdAt: new Date().toString(),
     };
     return new CommentModel(newComment);
   }
