@@ -16,6 +16,7 @@ import { CommentsViewType } from '../types/comments-view-type';
 import { settings } from '../../settings';
 import { AccessTokenGuard } from '../../auth/guards/access-token.guard';
 import { CreateLikeDto } from '../../like/createLikeDto';
+import { CreateCommentDto } from '../createComment.Dto';
 
 @Controller('comments')
 export class CommentsController {
@@ -29,11 +30,11 @@ export class CommentsController {
   @Put(':id')
   async updateCommentByCommentId(
     @Param('id') commentId: string,
-    @Body() content: string,
+    @Body() createCommentDto: CreateCommentDto,
   ) {
     const updateComment: boolean = await this.commentService.updateComment(
       commentId,
-      content,
+      createCommentDto,
     );
 
     if (!updateComment) {
@@ -73,6 +74,7 @@ export class CommentsController {
         userId = tokenData.userId;
       }
     }
+
     const getComment: CommentsViewType | null =
       await this.commentsQueryRepo.getComment(commentId, userId);
 

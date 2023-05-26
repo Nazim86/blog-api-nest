@@ -35,6 +35,7 @@ import { CommentService } from './comments/application/comments.service';
 import { CommentsRepository } from './comments/infrastructure/comments.repository';
 import { MailModule } from './mail/mail.module';
 import { JwtService } from './jwt/jwt.service';
+import { CommentsController } from './comments/api/comments.controller';
 
 @Module({
   imports: [
@@ -61,6 +62,7 @@ import { JwtService } from './jwt/jwt.service';
     PostsController,
     UserController,
     DeleteController,
+    CommentsController,
   ],
   providers: [
     AppService,

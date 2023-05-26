@@ -1,7 +1,9 @@
-import { IsString, Length, ValidateIf } from 'class-validator';
+import { IsNotEmpty, IsString, Length, ValidateIf } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 export class CreatePostDto {
-  @IsString()
+  @Transform(({ value }) => value.trim())
+  @IsNotEmpty()
   @Length(0, 30)
   title: string;
 

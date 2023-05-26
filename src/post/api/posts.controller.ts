@@ -111,8 +111,18 @@ export class PostsController {
     const postId: string | null = await this.postService.createPost(
       createPostDto,
     );
+
+    const errorMessage = {
+      message: [
+        {
+          message: 'Post with this blogId not found',
+          field: 'blogId',
+        },
+      ],
+    };
+
     if (!postId) {
-      throw new HttpException('Not Found', 404);
+      throw new HttpException(errorMessage, 404);
       // res.sendStatus(404);
     }
     return await this.postQueryRepo.getPostById(postId);
@@ -126,15 +136,13 @@ export class PostsController {
     @Param('id') postId: string,
     @Body() createCommentDto: CreateCommentDto,
   ) {
-    const userId = req.user.id; //req.context.user!._id.toString();
-    const userLogin = req.user.login; //req.context.user!.accountData.login;
+    const userId = req.user.userId; //req.context.user!._id.toString();
 
     const commentId: string | null =
       await this.commentService.createPostComment(
         createCommentDto,
         postId,
         userId,
-        userLogin,
       );
 
     if (!commentId) {

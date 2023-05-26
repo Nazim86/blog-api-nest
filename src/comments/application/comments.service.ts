@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PostsQueryRepo } from '../../post/infrastructure/posts-query-repo';
 import { CommentsRepository } from '../infrastructure/comments.repository';
-import { PostsViewType } from '../../post/types/posts-view-type';
 import { CreateCommentDto } from '../createComment.Dto';
 import { InjectModel } from '@nestjs/mongoose';
 import {
@@ -16,6 +14,10 @@ import {
   CommentLikeModelType,
 } from '../../like/commentLike.entity';
 import { LikesRepository } from '../../like/likes.repository';
+import { PostRepository } from '../../post/infrastructure/post.repository';
+import { PostDocument } from '../../post/domain/post.entity';
+import { UsersRepository } from '../../users/infrastructure/users.repository';
+import { UserDocument } from '../../users/domain/user.entity';
 
 @Injectable()
 export class CommentService {
@@ -23,27 +25,29 @@ export class CommentService {
     @InjectModel(Comment.name) private CommentModel: CommentModelType,
     @InjectModel(CommentLike.name)
     private CommentLikeModel: CommentLikeModelType,
-    protected postQueryRepo: PostsQueryRepo,
+    protected postsRepository: PostRepository,
     protected commentsRepository: CommentsRepository,
     protected likesRepository: LikesRepository,
+    protected usersRepository: UsersRepository,
   ) {}
 
   async createPostComment(
     createCommentDto: CreateCommentDto,
     postId: string,
     userId: string,
-    userLogin: string,
   ): Promise<string | null> {
-    const postById: PostsViewType | boolean =
-      await this.postQueryRepo.getPostById(postId);
+    const postById: PostDocument | boolean =
+      await this.postsRepository.getPostById(postId);
 
     if (!postById || typeof postById === 'boolean') return null;
+
+    const user: UserDocument = await this.usersRepository.findUserById(userId);
 
     const newComment: CommentDocument = this.CommentModel.createComment(
       createCommentDto,
       postId,
       userId,
-      userLogin,
+      user.accountData.login,
       this.CommentModel,
     );
 
@@ -51,8 +55,14 @@ export class CommentService {
     return newComment.id;
   }
 
-  async updateComment(commentId: string, content: string): Promise<boolean> {
-    return await this.commentsRepository.updateComment(commentId, content);
+  async updateComment(
+    commentId: string,
+    createCommentDto: CreateCommentDto,
+  ): Promise<boolean> {
+    return await this.commentsRepository.updateComment(
+      commentId,
+      createCommentDto.content,
+    );
   }
 
   async updateCommentLikeStatus(

@@ -4,11 +4,11 @@ import {
   Delete,
   Get,
   HttpCode,
-  HttpException,
   Param,
   Post,
   Put,
   Query,
+  Request,
   UseGuards,
 } from '@nestjs/common';
 import { QueryPaginationType } from '../../types/query-pagination-type';
@@ -24,6 +24,10 @@ import { BlogDocument } from '../domain/blog.entity';
 import { BlogPagination } from '../domain/blog-pagination';
 import { PaginationType } from '../../common/pagination';
 import { BasicAuthGuard } from '../../auth/guards/basic-auth.guard';
+import { settings } from '../../settings';
+import { JwtService } from '../../jwt/jwt.service';
+import { exceptionHandler } from '../../exception-handler/exception-handler';
+import { ResultCode } from '../../exception-handler/result-code-enum';
 
 @Controller('blogs')
 export class BlogController {
@@ -31,7 +35,8 @@ export class BlogController {
     protected blogQueryRepo: BlogQueryRepo,
     protected postQueryRepo: PostsQueryRepo,
     protected blogService: BlogService,
-    protected postService: PostService, // protected jwtService: JwtService, // , // protected postQueryRepo: PostsQueryRepo, // ,
+    protected postService: PostService,
+    protected jwtService: JwtService, // , // protected postQueryRepo: PostsQueryRepo, // ,
   ) {}
 
   @Get()
@@ -51,7 +56,7 @@ export class BlogController {
       await this.blogQueryRepo.getBlogById(blogId);
 
     if (!getBlog) {
-      throw new HttpException('Not Found', 404);
+      return exceptionHandler(ResultCode.NotFound);
     }
     return getBlog;
     // res.status(200).send(getBlog);
@@ -62,15 +67,30 @@ export class BlogController {
   async getPostsByBlogId(
     @Param('id') blogId: string,
     @Query() query: BlogPagination<PaginationType>,
+    @Request() req,
   ) {
     // const paginatedQuery: BlogPagination = new BlogPagination(query);
-    const userId = undefined;
+
+    const accessToken: string | undefined =
+      req.headers.authorization?.split(' ')[1];
+
+    let userId = undefined;
+
+    if (accessToken) {
+      const tokenData = await this.jwtService.getTokenMetaData(
+        accessToken,
+        settings.ACCESS_TOKEN_SECRET,
+      );
+      if (tokenData) {
+        userId = tokenData.userId;
+      }
+    }
 
     const getBlogByBlogId: QueryPaginationType<PostsViewType[]> | boolean =
       await this.postQueryRepo.getPostsByBlogId(query, blogId, userId);
 
     if (!getBlogByBlogId) {
-      throw new HttpException('Not Found', 404);
+      return exceptionHandler(ResultCode.NotFound);
     }
     return getBlogByBlogId;
     // res.status(200).send(getBlogByBlogId);
@@ -97,7 +117,7 @@ export class BlogController {
     );
 
     if (!postId) {
-      throw new HttpException('Not Found', 404);
+      return exceptionHandler(ResultCode.NotFound);
     }
     return await this.postQueryRepo.getPostById(postId);
     // res.status(201).send(newPostForBlog);
@@ -116,7 +136,7 @@ export class BlogController {
     );
 
     if (!updateBlog) {
-      throw new HttpException('Not Found', 404);
+      return exceptionHandler(ResultCode.NotFound);
     }
     return;
     // res.sendStatus(204);
@@ -129,7 +149,7 @@ export class BlogController {
     const deleteBlog: boolean = await this.blogService.deleteBlogById(blogId);
 
     if (!deleteBlog) {
-      throw new HttpException('Not Found', 404);
+      return exceptionHandler(ResultCode.NotFound);
     }
     return;
     // res.sendStatus(204);
