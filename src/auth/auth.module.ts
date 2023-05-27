@@ -28,6 +28,8 @@ import { RefreshTokenStrategy } from './strategies/refresh-token.strategy';
 import { UsersService } from '../users/application/users.service';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import { DevicesController } from '../securityDevices/devices.controller';
+import { DeviceQueryRepo } from '../securityDevices/device-query.repo';
 
 @Module({
   imports: [
@@ -69,13 +71,19 @@ import { APP_GUARD } from '@nestjs/core';
     UserQueryRepo,
     RefreshTokenStrategy,
     UsersService,
+    DeviceQueryRepo,
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
     },
   ],
 
-  controllers: [AuthController, UserController, DeleteController],
+  controllers: [
+    AuthController,
+    UserController,
+    DeleteController,
+    DevicesController,
+  ],
   exports: [AuthService],
 })
 export class AuthModule {}

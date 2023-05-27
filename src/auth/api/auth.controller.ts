@@ -116,7 +116,7 @@ export class AuthController {
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       //sameSite: 'strict',
-      secure: true,
+      //secure: true,
       maxAge: 24 * 60 * 60 * 1000,
     });
     return { accessToken: accessToken };
@@ -149,7 +149,7 @@ export class AuthController {
       .cookie('refreshToken', refreshToken, {
         httpOnly: true,
         //sameSite: 'strict',
-        secure: true,
+        //secure: true,
         maxAge: 24 * 60 * 60 * 1000,
       })
       .json({ accessToken: accessToken });
