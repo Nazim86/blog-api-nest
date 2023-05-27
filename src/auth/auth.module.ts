@@ -26,9 +26,15 @@ import { CommentLike, CommentLikeSchema } from '../like/commentLike.entity';
 import { Comment, CommentSchema } from '../comments/domain/comment.entity';
 import { RefreshTokenStrategy } from './strategies/refresh-token.strategy';
 import { UsersService } from '../users/application/users.service';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
+    ThrottlerModule.forRoot({
+      ttl: 10,
+      limit: 5,
+    }),
     UsersModule,
     PassportModule,
     ConfigModule,
@@ -63,6 +69,10 @@ import { UsersService } from '../users/application/users.service';
     UserQueryRepo,
     RefreshTokenStrategy,
     UsersService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
   ],
 
   controllers: [AuthController, UserController, DeleteController],

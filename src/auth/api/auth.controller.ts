@@ -25,6 +25,7 @@ import { RefreshTokenGuard } from '../guards/refresh-token.guard';
 import { EmailDto } from '../dto/emailDto';
 import { CurrentUserType } from '../../users/infrastructure/types/current-user-type';
 import { ConfirmationCodeDto } from '../dto/confirmationCodeDto';
+import { Throttle } from '@nestjs/throttler';
 
 @Controller('auth')
 export class AuthController {
@@ -35,6 +36,7 @@ export class AuthController {
     protected userRepository: UsersRepository,
   ) {}
 
+  @Throttle()
   @Post('registration')
   @HttpCode(204)
   async userRegistration(@Body() createUserDto: CreateUserDto) {
@@ -45,6 +47,7 @@ export class AuthController {
     }
   }
 
+  @Throttle()
   @Post('registration-email-resending')
   @HttpCode(204)
   async reSendRegistrationEmail(@Body() emailDto: EmailDto) {
@@ -59,6 +62,7 @@ export class AuthController {
     return;
   }
 
+  @Throttle()
   @Post('registration-confirmation')
   @HttpCode(204)
   async confirmRegistration(@Body() confirmationCodeDto: ConfirmationCodeDto) {
@@ -75,6 +79,7 @@ export class AuthController {
     return;
   }
 
+  @Throttle(5, 10)
   @Post('login')
   @HttpCode(200)
   async login(
@@ -94,13 +99,13 @@ export class AuthController {
     const accessToken = await this.jwtService.createJWT(
       user.id!,
       settings.ACCESS_TOKEN_SECRET,
-      '10m',
+      '10s',
     );
 
     const refreshToken = await this.jwtService.createJWT(
       user._id,
       settings.REFRESH_TOKEN_SECRET,
-      '20m',
+      '20s',
     );
 
     // const ipAddress = req.ip;
@@ -160,6 +165,7 @@ export class AuthController {
     return currentUser;
   }
 
+  @Throttle()
   @Post('password-recovery')
   async sendPasswordRecoveryCode(@Body() emailDto: EmailDto) {
     const isRecoveryEmailSent: boolean =
@@ -170,6 +176,8 @@ export class AuthController {
     }
     return;
   }
+
+  @Throttle()
   @Post('new-password')
   @HttpCode(204)
   async setNewPassword(@Body() newPasswordDto: NewPasswordDto) {
