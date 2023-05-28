@@ -131,14 +131,9 @@ export class AuthController {
 
     const deviceId = req.user.deviceId;
 
-    const iat = req.user.iat; // I did not ge
-
-    const isTokenValid: boolean = await this.jwtService.checkTokenVersion(
-      deviceId,
-      iat,
+    const isTokenValid = await this.jwtService.checkTokenVersion(
+      req.cookies.refreshToken,
     );
-
-    // const isTokenValid = await this.jwtService.checkTokenVersion(req.cookies);
 
     if (!isTokenValid) {
       return exceptionHandler(ResultCode.Unauthorized);

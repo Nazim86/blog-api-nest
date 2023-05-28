@@ -29,16 +29,16 @@ export class JwtService {
   async getTokenMetaData(
     refreshToken: string,
     secretKey: string = settings.REFRESH_TOKEN_SECRET,
-  ): Promise<any> {
+  ) {
     try {
       const decoded: any = jwt.verify(refreshToken, secretKey);
       // console.log('decoded', decoded);
-      console.log(
-        decoded.deviceId,
-        new Date(decoded.iat * 1000).toISOString(),
-        decoded.userId,
-        decoded.exp,
-      );
+      // console.log(
+      //   decoded.deviceId,
+      //   new Date(decoded.iat * 1000).toISOString(),
+      //   decoded.userId,
+      //   decoded.exp,
+      // );
       return {
         deviceId: decoded.deviceId,
         lastActiveDate: new Date(decoded.iat * 1000).toISOString(),
@@ -49,6 +49,7 @@ export class JwtService {
       return null;
     }
   }
+
   // async testingThis() {
   //   try {
   //     return 'helloThis';
@@ -56,29 +57,29 @@ export class JwtService {
   //     return 'notWelcome';
   //   }
   // }
-  // async checkTokenVersion(token: string): Promise<any> {
-  //   // const testing = await this.testingThis();
-  //   // console.log(testing);
-  //
-  //   console.log(token);
-  //   const result: any = await this.getTokenMetaData(token);
-  //
-  //   console.log(result);
-  //   // const isTokenValid: boolean = await this.deviceRepository.checkTokenVersion(
-  //   //   deviceId,
-  //   //   lastActiveDate,
-  //   // );
-  //   // return isTokenValid;
-  //   return;
-  // }
-  async checkTokenVersion(deviceId: string, iat: number): Promise<any> {
+
+  async checkTokenVersion(token: string) {
     // const testing = await this.testingThis();
     // console.log(testing);
 
+    // console.log(token);
+    const result = await this.getTokenMetaData(token);
+    console.log(result);
     const isTokenValid: boolean = await this.deviceRepository.checkTokenVersion(
-      deviceId,
-      iat,
+      result.deviceId,
+      result.lastActiveDate,
     );
     return isTokenValid;
   }
+
+  // async checkTokenVersion(deviceId: string, iat: number): Promise<any> {
+  //   // const testing = await this.testingThis();
+  //   // console.log(testing);
+  //
+  //   const isTokenValid: boolean = await this.deviceRepository.checkTokenVersion(
+  //     deviceId,
+  //     iat,
+  //   );
+  //   return isTokenValid;
+  // }
 }

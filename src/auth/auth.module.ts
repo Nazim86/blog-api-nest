@@ -30,6 +30,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { DevicesController } from '../securityDevices/devices.controller';
 import { DeviceQueryRepo } from '../securityDevices/device-query.repo';
+import { ScheduleModule } from '@nestjs/schedule';
 
 const mongooseModels = [
   { name: Device.name, schema: DeviceSchema },
@@ -47,6 +48,7 @@ const mongooseModels = [
       ttl: 1,
       limit: 1000,
     }),
+    ScheduleModule.forRoot(),
     UsersModule,
     PassportModule,
     ConfigModule,

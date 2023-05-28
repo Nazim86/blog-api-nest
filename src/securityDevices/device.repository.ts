@@ -42,20 +42,10 @@ export class DeviceRepository {
     return result.deletedCount === 1;
   }
 
-  // async checkTokenVersion(
-  //   deviceId: string,
-  //   lastActiveDate: string,
-  // ): Promise<boolean> {
-  //   const isTokenValid: DeviceDocument | null = await this.DeviceModel.findOne({
-  //     deviceId,
-  //     lastActiveDate,
-  //   });
-  //
-  //   if (!isTokenValid) return false;
-  //   return true;
-  // }
-  async checkTokenVersion(deviceId: string, iat: number): Promise<boolean> {
-    const lastActiveDate = new Date(iat * 1000).toISOString();
+  async checkTokenVersion(
+    deviceId: string,
+    lastActiveDate: string,
+  ): Promise<boolean> {
     const isTokenValid: DeviceDocument | null = await this.DeviceModel.findOne({
       deviceId,
       lastActiveDate,
@@ -64,6 +54,16 @@ export class DeviceRepository {
     if (!isTokenValid) return false;
     return true;
   }
+  // async checkTokenVersion(deviceId: string, iat: number): Promise<boolean> {
+  //   const lastActiveDate = new Date(iat * 1000).toISOString();
+  //   const isTokenValid: DeviceDocument | null = await this.DeviceModel.findOne({
+  //     deviceId,
+  //     lastActiveDate,
+  //   });
+  //
+  //   if (!isTokenValid) return false;
+  //   return true;
+  // }
 
   async deleteOldSession() {
     try {
