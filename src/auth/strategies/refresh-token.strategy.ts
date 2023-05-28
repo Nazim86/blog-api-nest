@@ -15,7 +15,7 @@ export class RefreshTokenStrategy extends PassportStrategy(
       secretOrKey: refreshTokenSecret.secret,
       jwtFromRequest: ExtractJwt.fromExtractors([
         (request: Request) => {
-          const token = request?.cookies['refreshToken'];
+          const token = request.cookies['refreshToken'];
           if (!token) {
             return null;
           }
@@ -26,7 +26,7 @@ export class RefreshTokenStrategy extends PassportStrategy(
   }
 
   async validate(payload: any) {
-    if (payload === null) {
+    if (!payload) {
       throw new UnauthorizedException();
     }
     return payload;

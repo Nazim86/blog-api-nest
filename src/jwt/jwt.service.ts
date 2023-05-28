@@ -3,9 +3,13 @@ import { ObjectId } from 'mongodb';
 import { v4 as uuid } from 'uuid';
 import jwt from 'jsonwebtoken';
 import { settings } from '../settings';
+import { DeviceRepository } from '../securityDevices/device.repository';
 
 @Injectable()
 export class JwtService {
+  constructor(
+    private readonly deviceRepository: DeviceRepository, //private readonly jwtService: JwtService,
+  ) {}
   async createJWT(
     userId: ObjectId,
     secretKey: string,
@@ -28,6 +32,13 @@ export class JwtService {
   ): Promise<any> {
     try {
       const decoded: any = jwt.verify(refreshToken, secretKey);
+      // console.log('decoded', decoded);
+      console.log(
+        decoded.deviceId,
+        new Date(decoded.iat * 1000).toISOString(),
+        decoded.userId,
+        decoded.exp,
+      );
       return {
         deviceId: decoded.deviceId,
         lastActiveDate: new Date(decoded.iat * 1000).toISOString(),
@@ -37,5 +48,37 @@ export class JwtService {
     } catch (e) {
       return null;
     }
+  }
+  // async testingThis() {
+  //   try {
+  //     return 'helloThis';
+  //   } catch (e) {
+  //     return 'notWelcome';
+  //   }
+  // }
+  // async checkTokenVersion(token: string): Promise<any> {
+  //   // const testing = await this.testingThis();
+  //   // console.log(testing);
+  //
+  //   console.log(token);
+  //   const result: any = await this.getTokenMetaData(token);
+  //
+  //   console.log(result);
+  //   // const isTokenValid: boolean = await this.deviceRepository.checkTokenVersion(
+  //   //   deviceId,
+  //   //   lastActiveDate,
+  //   // );
+  //   // return isTokenValid;
+  //   return;
+  // }
+  async checkTokenVersion(deviceId: string, iat: number): Promise<any> {
+    // const testing = await this.testingThis();
+    // console.log(testing);
+
+    const isTokenValid: boolean = await this.deviceRepository.checkTokenVersion(
+      deviceId,
+      iat,
+    );
+    return isTokenValid;
   }
 }

@@ -31,26 +31,26 @@ import { APP_GUARD } from '@nestjs/core';
 import { DevicesController } from '../securityDevices/devices.controller';
 import { DeviceQueryRepo } from '../securityDevices/device-query.repo';
 
+const mongooseModels = [
+  { name: Device.name, schema: DeviceSchema },
+  { name: Blog.name, schema: BlogSchema },
+  { name: Post.name, schema: PostSchema },
+  { name: PostLike.name, schema: PostLikeSchema },
+  { name: CommentLike.name, schema: CommentLikeSchema },
+  { name: Comment.name, schema: CommentSchema },
+  { name: User.name, schema: UserSchema },
+];
+
 @Module({
   imports: [
     ThrottlerModule.forRoot({
-      ttl: 10,
-      limit: 5,
+      ttl: 1,
+      limit: 1000,
     }),
     UsersModule,
     PassportModule,
     ConfigModule,
-    MongooseModule.forFeature([{ name: Device.name, schema: DeviceSchema }]),
-    MongooseModule.forFeature([{ name: Blog.name, schema: BlogSchema }]),
-    MongooseModule.forFeature([{ name: Post.name, schema: PostSchema }]),
-    MongooseModule.forFeature([
-      { name: PostLike.name, schema: PostLikeSchema },
-    ]),
-    MongooseModule.forFeature([
-      { name: CommentLike.name, schema: CommentLikeSchema },
-    ]),
-    MongooseModule.forFeature([{ name: Comment.name, schema: CommentSchema }]),
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    MongooseModule.forFeature(mongooseModels),
 
     // JwtModule.register({
     //   secret: refreshTokenSecret.secret,

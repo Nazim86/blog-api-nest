@@ -26,6 +26,7 @@ import { EmailDto } from '../dto/emailDto';
 import { CurrentUserType } from '../../users/infrastructure/types/current-user-type';
 import { ConfirmationCodeDto } from '../dto/confirmationCodeDto';
 import { Throttle } from '@nestjs/throttler';
+import { AccessTokenGuard } from '../guards/access-token.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -116,7 +117,7 @@ export class AuthController {
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       //sameSite: 'strict',
-      secure: true,
+      //secure: true,
       maxAge: 24 * 60 * 60 * 1000,
     });
     return { accessToken: accessToken };
@@ -129,6 +130,19 @@ export class AuthController {
     const userId = req.user.userId;
 
     const deviceId = req.user.deviceId;
+
+    const iat = req.user.iat; // I did not ge
+
+    const isTokenValid: boolean = await this.jwtService.checkTokenVersion(
+      deviceId,
+      iat,
+    );
+
+    // const isTokenValid = await this.jwtService.checkTokenVersion(req.cookies);
+
+    if (!isTokenValid) {
+      return exceptionHandler(ResultCode.Unauthorized);
+    }
 
     const accessToken = await this.jwtService.createJWT(
       userId,
@@ -149,13 +163,13 @@ export class AuthController {
       .cookie('refreshToken', refreshToken, {
         httpOnly: true,
         //sameSite: 'strict',
-        secure: true,
+        //secure: true,
         maxAge: 24 * 60 * 60 * 1000,
       })
       .json({ accessToken: accessToken });
   }
 
-  @UseGuards(RefreshTokenGuard)
+  @UseGuards(AccessTokenGuard)
   @Get('me')
   @HttpCode(200)
   async getCurrentUser(@Request() req) {

@@ -37,23 +37,28 @@ import { MailModule } from './mail/mail.module';
 import { JwtService } from './jwt/jwt.service';
 import { CommentsController } from './comments/api/comments.controller';
 import { IsBlogExistConstraint } from './decorators/IsBlogIdExist';
+import { ScheduleModule } from '@nestjs/schedule';
+import { DeviceRepository } from './securityDevices/device.repository';
+import { Device, DeviceSchema } from './securityDevices/domain/device.entity';
+
+const mongooseModels = [
+  { name: Device.name, schema: DeviceSchema },
+  { name: Blog.name, schema: BlogSchema },
+  { name: Post.name, schema: PostSchema },
+  { name: PostLike.name, schema: PostLikeSchema },
+  { name: CommentLike.name, schema: CommentLikeSchema },
+  { name: Comment.name, schema: CommentSchema },
+  { name: User.name, schema: UserSchema },
+];
 
 @Module({
   imports: [
     configModule,
+    ScheduleModule.forRoot(),
     AuthModule,
     UsersModule,
     MongooseModule.forRoot(process.env.MONGOOSE_URL),
-    MongooseModule.forFeature([{ name: Blog.name, schema: BlogSchema }]),
-    MongooseModule.forFeature([{ name: Post.name, schema: PostSchema }]),
-    MongooseModule.forFeature([
-      { name: PostLike.name, schema: PostLikeSchema },
-    ]),
-    MongooseModule.forFeature([
-      { name: CommentLike.name, schema: CommentLikeSchema },
-    ]),
-    MongooseModule.forFeature([{ name: Comment.name, schema: CommentSchema }]),
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    MongooseModule.forFeature(mongooseModels),
     MailModule,
   ],
 
@@ -84,6 +89,7 @@ import { IsBlogExistConstraint } from './decorators/IsBlogIdExist';
     LikesRepository,
     JwtService,
     IsBlogExistConstraint,
+    DeviceRepository,
   ],
 })
 export class AppModule {}

@@ -6,6 +6,7 @@ import { DeviceRepository } from './device.repository';
 import { settings } from '../settings';
 import { ResultCode } from '../exception-handler/result-code-enum';
 import { Result } from '../exception-handler/result-type';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class DeviceService {
@@ -77,4 +78,7 @@ export class DeviceService {
       code: isDeleted ? ResultCode.Success : ResultCode.NotFound,
     };
   }
+
+  // @Cron(CronExpression.EVERY_SECOND)
+  // private deleteOldSession() {}
 }
