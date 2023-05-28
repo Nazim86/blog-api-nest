@@ -64,7 +64,6 @@ export class JwtService {
 
     // console.log(token);
     const result = await this.getTokenMetaData(token);
-    console.log(result);
     const isTokenValid: boolean = await this.deviceRepository.checkTokenVersion(
       result.deviceId,
       result.lastActiveDate,

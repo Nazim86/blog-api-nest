@@ -100,13 +100,13 @@ export class AuthController {
     const accessToken = await this.jwtService.createJWT(
       user.id!,
       settings.ACCESS_TOKEN_SECRET,
-      '10s',
+      '10m',
     );
 
     const refreshToken = await this.jwtService.createJWT(
       user._id,
       settings.REFRESH_TOKEN_SECRET,
-      '20s',
+      '20m',
     );
 
     // const ipAddress = req.ip;
@@ -117,7 +117,7 @@ export class AuthController {
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       //sameSite: 'strict',
-      secure: true,
+      //secure: true,
       maxAge: 24 * 60 * 60 * 1000,
     });
     return { accessToken: accessToken };
@@ -142,13 +142,13 @@ export class AuthController {
     const accessToken = await this.jwtService.createJWT(
       userId,
       settings.ACCESS_TOKEN_SECRET,
-      '10s',
+      '10m',
       deviceId,
     );
     const refreshToken = await this.jwtService.createJWT(
       userId,
       settings.REFRESH_TOKEN_SECRET,
-      '20s',
+      '20m',
       deviceId,
     );
 
@@ -158,7 +158,7 @@ export class AuthController {
       .cookie('refreshToken', refreshToken, {
         httpOnly: true,
         //sameSite: 'strict',
-        secure: true,
+        //secure: true,
         maxAge: 24 * 60 * 60 * 1000,
       })
       .json({ accessToken: accessToken });
@@ -203,6 +203,14 @@ export class AuthController {
   @Post('logout')
   @HttpCode(204)
   async logout(@Request() req, @Response() res) {
+    const isTokenValid = await this.jwtService.checkTokenVersion(
+      req.cookies.refreshToken,
+    );
+
+    if (!isTokenValid) {
+      return exceptionHandler(ResultCode.Unauthorized);
+    }
+
     await this.deviceService.deleteDeviceById(
       req.user.deviceId,
       req.user.userId,
