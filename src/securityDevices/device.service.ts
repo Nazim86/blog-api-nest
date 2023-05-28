@@ -79,6 +79,8 @@ export class DeviceService {
     };
   }
 
-  // @Cron(CronExpression.EVERY_SECOND)
-  // private deleteOldSession() {}
+  @Cron(CronExpression.EVERY_SECOND)
+  private deleteOldSession() {
+    this.deviceRepository.deleteOldSession();
+  }
 }
