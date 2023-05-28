@@ -100,13 +100,13 @@ export class AuthController {
     const accessToken = await this.jwtService.createJWT(
       user.id!,
       settings.ACCESS_TOKEN_SECRET,
-      '10m',
+      '10s',
     );
 
     const refreshToken = await this.jwtService.createJWT(
       user._id,
       settings.REFRESH_TOKEN_SECRET,
-      '20m',
+      '20s',
     );
 
     // const ipAddress = req.ip;
@@ -117,7 +117,7 @@ export class AuthController {
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       //sameSite: 'strict',
-      //secure: true,
+      secure: true,
       maxAge: 24 * 60 * 60 * 1000,
     });
     return { accessToken: accessToken };
@@ -142,13 +142,13 @@ export class AuthController {
     const accessToken = await this.jwtService.createJWT(
       userId,
       settings.ACCESS_TOKEN_SECRET,
-      '10m',
+      '10s',
       deviceId,
     );
     const refreshToken = await this.jwtService.createJWT(
       userId,
       settings.REFRESH_TOKEN_SECRET,
-      '20m',
+      '20s',
       deviceId,
     );
 
@@ -158,7 +158,7 @@ export class AuthController {
       .cookie('refreshToken', refreshToken, {
         httpOnly: true,
         //sameSite: 'strict',
-        //secure: true,
+        secure: true,
         maxAge: 24 * 60 * 60 * 1000,
       })
       .json({ accessToken: accessToken });
