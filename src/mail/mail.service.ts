@@ -10,6 +10,7 @@ export class MailService {
     email: string,
     login: string,
   ) {
+    console.log('Mail service with inputs', confirmationCode, email, login);
     const url = `https://somesite.com/confirm-email?code=${confirmationCode}`;
 
     await this.mailerService.sendMail({

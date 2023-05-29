@@ -77,6 +77,8 @@ export class AuthService {
       emailDto.email,
     );
 
+    console.log('Found user by email dto', user);
+
     if (!user || !user.resendEmailCanBeConfirmed()) return false;
 
     try {
@@ -92,6 +94,7 @@ export class AuthService {
         user.accountData.login,
       );
     } catch (e) {
+      console.log('catch initiated');
       return false;
     }
 

@@ -52,9 +52,11 @@ export class AuthController {
   @Post('registration-email-resending')
   @HttpCode(204)
   async reSendRegistrationEmail(@Body() emailDto: EmailDto) {
-    const emailResending: string | boolean =
+    console.log('Email Dto from body', emailDto);
+
+    const isEmailSent: boolean =
       await this.authService.resendEmailWithNewConfirmationCode(emailDto);
-    if (!emailResending) {
+    if (!isEmailSent) {
       const errorMessage = {
         message: [{ message: 'wrong email', field: 'email' }],
       };
