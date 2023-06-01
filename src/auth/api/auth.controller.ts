@@ -6,7 +6,6 @@ import {
   HttpCode,
   Ip,
   Post,
-  Request,
   Response,
   UseGuards,
 } from '@nestjs/common';
@@ -27,6 +26,9 @@ import { CurrentUserType } from '../../users/infrastructure/types/current-user-t
 import { ConfirmationCodeDto } from '../dto/confirmationCodeDto';
 import { Throttle } from '@nestjs/throttler';
 import { AccessTokenGuard } from '../guards/access-token.guard';
+import { UserId } from '../../decorators/UserId';
+import { RefreshToken } from '../../decorators/RefreshToken';
+import { DeviceId } from '../../decorators/DeviceId';
 
 @Controller('auth')
 export class AuthController {
@@ -52,8 +54,6 @@ export class AuthController {
   @Post('registration-email-resending')
   @HttpCode(204)
   async reSendRegistrationEmail(@Body() emailDto: EmailDto) {
-    console.log('Email Dto from body', emailDto);
-
     const isEmailSent: boolean =
       await this.authService.resendEmailWithNewConfirmationCode(emailDto);
     if (!isEmailSent) {
@@ -119,7 +119,7 @@ export class AuthController {
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       //sameSite: 'strict',
-      secure: true,
+      //secure: true,
       maxAge: 24 * 60 * 60 * 1000,
     });
     return { accessToken: accessToken };
@@ -128,50 +128,53 @@ export class AuthController {
   @UseGuards(RefreshTokenGuard)
   @Post('refresh-token')
   @HttpCode(200)
-  async getNewRefreshToken(@Request() req, @Response() res) {
-    const userId = req.user.userId;
+  async getNewRefreshToken(
+    @UserId() userId,
+    @RefreshToken() refreshToken,
+    @DeviceId() deviceId,
+    @Response() res,
+  ) {
+    //const userId = req.user.userId;
 
-    const deviceId = req.user.deviceId;
+    //const deviceId = req.user.deviceId;
 
-    const isTokenValid = await this.jwtService.checkTokenVersion(
-      req.cookies.refreshToken,
-    );
+    const isTokenValid = await this.jwtService.checkTokenVersion(refreshToken);
 
     if (!isTokenValid) {
       return exceptionHandler(ResultCode.Unauthorized);
     }
 
-    const accessToken = await this.jwtService.createJWT(
+    const newAccessToken = await this.jwtService.createJWT(
       userId,
       settings.ACCESS_TOKEN_SECRET,
       '10s',
       deviceId,
     );
-    const refreshToken = await this.jwtService.createJWT(
+    const newRefreshToken = await this.jwtService.createJWT(
       userId,
       settings.REFRESH_TOKEN_SECRET,
       '20s',
       deviceId,
     );
 
-    await this.deviceService.updateDevice(refreshToken);
+    await this.deviceService.updateDevice(newRefreshToken);
 
     res
-      .cookie('refreshToken', refreshToken, {
+      .cookie('refreshToken', newRefreshToken, {
         httpOnly: true,
         //sameSite: 'strict',
-        secure: true,
+        //secure: true,
         maxAge: 24 * 60 * 60 * 1000,
       })
-      .json({ accessToken: accessToken });
+      .json({ accessToken: newAccessToken });
   }
 
   @UseGuards(AccessTokenGuard)
   @Get('me')
   @HttpCode(200)
-  async getCurrentUser(@Request() req) {
+  async getCurrentUser(@UserId() userId) {
     const currentUser: CurrentUserType = await this.authService.getCurrentUser(
-      req.user.userId,
+      userId,
     );
     return currentUser;
   }
@@ -204,19 +207,19 @@ export class AuthController {
   @UseGuards(RefreshTokenGuard)
   @Post('logout')
   @HttpCode(204)
-  async logout(@Request() req, @Response() res) {
-    const isTokenValid = await this.jwtService.checkTokenVersion(
-      req.cookies.refreshToken,
-    );
+  async logout(
+    @UserId() userId,
+    @DeviceId() deviceId,
+    @RefreshToken() refreshToken,
+    @Response() res,
+  ) {
+    const isTokenValid = await this.jwtService.checkTokenVersion(refreshToken);
 
     if (!isTokenValid) {
       return exceptionHandler(ResultCode.Unauthorized);
     }
 
-    await this.deviceService.deleteDeviceById(
-      req.user.deviceId,
-      req.user.userId,
-    );
+    await this.deviceService.deleteDeviceById(deviceId, userId);
 
     try {
       res.clearCookie('refreshToken').json();

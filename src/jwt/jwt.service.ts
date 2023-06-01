@@ -32,7 +32,6 @@ export class JwtService {
   ) {
     try {
       const decoded: any = jwt.verify(refreshToken, secretKey);
-
       return {
         deviceId: decoded.deviceId,
         lastActiveDate: new Date(decoded.iat * 1000).toISOString(),
