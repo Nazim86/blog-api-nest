@@ -32,8 +32,8 @@ export class Blog {
 
   @Prop({
     type: {
-      userId: { type: String, required: true },
-      userLogin: { type: String, required: true },
+      userId: { type: String },
+      userLogin: { type: String },
     },
   })
   blogOwnerInfo: {
@@ -51,6 +51,10 @@ export class Blog {
       websiteUrl: createBlog.websiteUrl,
       createdAt: new Date().toISOString(),
       isMembership: false,
+      blogOwnerInfo: {
+        userId: null,
+        userLogin: null,
+      },
     };
     return new BlogModel(newBlog);
   }
@@ -62,11 +66,8 @@ export class Blog {
   }
 
   bindBlogWithUser(userId: string, userLogin: string) {
-    console.log(userId, userLogin);
     this.blogOwnerInfo.userId = userId;
     this.blogOwnerInfo.userLogin = userLogin;
-
-    console.log('exiting bindBlogWithUser');
   }
 }
 

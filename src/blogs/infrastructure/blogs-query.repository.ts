@@ -36,8 +36,8 @@ export class BlogsQueryRepo {
         createdAt: blog.createdAt,
         isMembership: blog.isMembership,
         blogOwnerInfo: {
-          userId: blog.blogOwnerInfo.userId ?? null,
-          userLogin: blog.blogOwnerInfo.userLogin ?? null,
+          userId: blog.blogOwnerInfo.userId,
+          userLogin: blog.blogOwnerInfo.userLogin,
         },
       };
     });
@@ -91,11 +91,11 @@ export class BlogsQueryRepo {
       .sort({
         [paginatedQuery.sortBy]:
           paginatedQuery.sortDirection === 'asc' ? 1 : -1,
-      }) // did not understand well
+      })
       .skip(skipSize)
       .limit(paginatedQuery.pageSize);
 
-    let mappedBlog: BlogsViewType[] = [];
+    let mappedBlog: BlogsViewType[];
     if (requestType === 'SA') {
       mappedBlog = this.blogsMappingForSA(blog);
     } else {

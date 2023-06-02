@@ -35,12 +35,6 @@ export class BindBlogUseCase {
 
     blog.bindBlogWithUser(user.id, user.accountData.login);
 
-    console.log(
-      'In UseCase',
-      blog.blogOwnerInfo.userId,
-      blog.blogOwnerInfo.userLogin,
-    );
-
     return await this.blogRepository.save(blog);
   }
 }

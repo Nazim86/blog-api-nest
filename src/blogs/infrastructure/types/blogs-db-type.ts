@@ -18,4 +18,8 @@ export type BlogsDbType = {
   websiteUrl: string;
   createdAt: string;
   isMembership: boolean;
+  blogOwnerInfo?: {
+    userId: string;
+    userLogin: string;
+  };
 };
