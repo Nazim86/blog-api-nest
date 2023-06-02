@@ -7,14 +7,13 @@ import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
 import { PaginationType } from '../../common/pagination';
 import { BlogPagination } from '../domain/blog-pagination';
-import { BlogsDbType } from './types/blogs-db-type';
 
 @Injectable()
 export class BlogsQueryRepo {
   constructor(@InjectModel(Blog.name) private BlogModel: Model<BlogDocument>) {}
 
-  private blogsMapping = (array: BlogsDbType[]): BlogsViewType[] => {
-    return array.map((blog: BlogsDbType): BlogsViewType => {
+  private blogsMapping = (array: BlogDocument[]): BlogsViewType[] => {
+    return array.map((blog: BlogDocument): BlogsViewType => {
       return {
         id: blog._id.toString(),
         name: blog.name,
