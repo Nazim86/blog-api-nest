@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { QueryPaginationType } from '../../types/query-pagination-type';
 import { BlogsViewType } from '../infrastructure/types/blogs-view-type';
-import { BlogQueryRepo } from '../infrastructure/blog.queryRepo';
+import { BlogsQueryRepo } from '../infrastructure/blogs-query.repository';
 import { PostsViewType } from '../../post/types/posts-view-type';
 import { PostsQueryRepo } from '../../post/infrastructure/posts-query-repo';
 import { BlogService } from '../application/blog.service';
@@ -28,15 +28,19 @@ import { settings } from '../../settings';
 import { JwtService } from '../../jwt/jwt.service';
 import { exceptionHandler } from '../../exception-handler/exception-handler';
 import { ResultCode } from '../../exception-handler/result-code-enum';
+import { CommandBus } from '@nestjs/cqrs';
+import { BlogCreateCommand } from '../use-cases/blog-create-use-case';
+import { BlogUpdateCommand } from '../use-cases/blog-update-use-case';
 
 @Controller('blogs')
 export class BlogController {
   constructor(
-    protected blogQueryRepo: BlogQueryRepo,
-    protected postQueryRepo: PostsQueryRepo,
-    protected blogService: BlogService,
-    protected postService: PostService,
-    protected jwtService: JwtService, // , // protected postQueryRepo: PostsQueryRepo, // ,
+    private commandBus: CommandBus,
+    private readonly blogQueryRepo: BlogsQueryRepo,
+    private readonly postQueryRepo: PostsQueryRepo,
+    private readonly blogService: BlogService,
+    private readonly postService: PostService,
+    private readonly jwtService: JwtService, // , // protected postQueryRepo: PostsQueryRepo, // ,
   ) {}
 
   @Get()
@@ -68,8 +72,6 @@ export class BlogController {
     @Query() query: BlogPagination<PaginationType>,
     @Request() req,
   ) {
-    // const paginatedQuery: BlogPagination = new BlogPagination(query);
-
     const accessToken: string | undefined =
       req.headers.authorization?.split(' ')[1];
 
@@ -97,7 +99,9 @@ export class BlogController {
   @UseGuards(BasicAuthGuard)
   @Post()
   async createBlog(@Body() createBlogDto: CreateBlogDto) {
-    const blogId: string = await this.blogService.createBlog(createBlogDto);
+    const blogId: string = await this.commandBus.execute(
+      new BlogCreateCommand(createBlogDto),
+    );
 
     return await this.blogQueryRepo.getBlogById(blogId);
   }
@@ -127,16 +131,14 @@ export class BlogController {
     @Param('id') blogId: string,
     @Body() updateBlogDto: CreateBlogDto,
   ) {
-    const updateBlog: BlogDocument = await this.blogService.updateBlog(
-      blogId,
-      updateBlogDto,
+    const updateBlog: BlogDocument = await this.commandBus.execute(
+      new BlogUpdateCommand(blogId, updateBlogDto),
     );
 
     if (!updateBlog) {
       return exceptionHandler(ResultCode.NotFound);
     }
     return;
-    // res.sendStatus(204);
   }
 
   @UseGuards(BasicAuthGuard)

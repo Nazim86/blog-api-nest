@@ -6,7 +6,7 @@ import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Blog, BlogSchema } from './blogs/domain/blog.entity';
 import { BlogController } from './blogs/api/blog.controller';
-import { BlogQueryRepo } from './blogs/infrastructure/blog.queryRepo';
+import { BlogsQueryRepo } from './blogs/infrastructure/blogs-query.repository';
 import { Post, PostSchema } from './post/domain/post.entity';
 import { PostMapping } from './post/mapper/post.mapping';
 import { PostsQueryRepo } from './post/infrastructure/posts-query-repo';
@@ -40,6 +40,11 @@ import { IsBlogExistConstraint } from './decorators/IsBlogIdExist';
 import { ScheduleModule } from '@nestjs/schedule';
 import { DeviceRepository } from './securityDevices/device.repository';
 import { Device, DeviceSchema } from './securityDevices/domain/device.entity';
+import { SuperAdminBlogsController } from './api/superadmin/blogs/sa.blogs.controller';
+import { BlogCreateUseCase } from './blogs/use-cases/blog-create-use-case';
+import { CqrsModule } from '@nestjs/cqrs';
+import { BlogUpdateUseCase } from './blogs/use-cases/blog-update-use-case';
+import { BindBlogUseCase } from './api/superadmin/blogs/bind-blog-use-case';
 
 const mongooseModels = [
   { name: Device.name, schema: DeviceSchema },
@@ -50,7 +55,7 @@ const mongooseModels = [
   { name: Comment.name, schema: CommentSchema },
   { name: User.name, schema: UserSchema },
 ];
-
+const useCases = [BlogCreateUseCase, BlogUpdateUseCase, BindBlogUseCase];
 @Module({
   imports: [
     configModule,
@@ -60,6 +65,7 @@ const mongooseModels = [
     MongooseModule.forRoot(process.env.MONGOOSE_URL),
     MongooseModule.forFeature(mongooseModels),
     MailModule,
+    CqrsModule,
   ],
 
   controllers: [
@@ -69,11 +75,12 @@ const mongooseModels = [
     UserController,
     DeleteController,
     CommentsController,
+    SuperAdminBlogsController,
   ],
   providers: [
     AppService,
     BlogService,
-    BlogQueryRepo,
+    BlogsQueryRepo,
     BlogRepository,
     PostsQueryRepo,
     PostMapping,
@@ -90,6 +97,7 @@ const mongooseModels = [
     JwtService,
     IsBlogExistConstraint,
     DeviceRepository,
+    ...useCases,
   ],
 })
 export class AppModule {}

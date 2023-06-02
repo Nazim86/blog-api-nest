@@ -30,11 +30,16 @@ export class Blog {
   @Prop({ required: true })
   isMembership: boolean;
 
-  updateBlog(updateBlogDto: CreateBlogDto) {
-    this.name = updateBlogDto.name;
-    this.description = updateBlogDto.description;
-    this.websiteUrl = updateBlogDto.websiteUrl;
-  }
+  @Prop({
+    type: {
+      userId: { type: String, required: true },
+      userLogin: { type: String, required: true },
+    },
+  })
+  blogOwnerInfo: {
+    userId: string;
+    userLogin: string;
+  };
 
   static createBlog(
     createBlog: CreateBlogDto,
@@ -49,11 +54,28 @@ export class Blog {
     };
     return new BlogModel(newBlog);
   }
+
+  updateBlog(updateBlogDto: CreateBlogDto) {
+    this.name = updateBlogDto.name;
+    this.description = updateBlogDto.description;
+    this.websiteUrl = updateBlogDto.websiteUrl;
+  }
+
+  bindBlogWithUser(userId: string, userLogin: string) {
+    console.log(userId, userLogin);
+    this.blogOwnerInfo.userId = userId;
+    this.blogOwnerInfo.userLogin = userLogin;
+
+    console.log('exiting bindBlogWithUser');
+  }
 }
 
 export const BlogSchema = SchemaFactory.createForClass(Blog);
 
-BlogSchema.methods = { updateBlog: Blog.prototype.updateBlog };
+BlogSchema.methods = {
+  updateBlog: Blog.prototype.updateBlog,
+  bindBlogWithUser: Blog.prototype.bindBlogWithUser,
+};
 
 const blogStaticMethods: BlogModelStaticType = {
   createBlog: Blog.createBlog,
