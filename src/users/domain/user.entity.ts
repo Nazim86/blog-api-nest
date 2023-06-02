@@ -3,6 +3,7 @@ import { HydratedDocument, Model } from 'mongoose';
 import { CreateUserDto } from '../createUser.Dto';
 import { v4 as uuid } from 'uuid';
 import { add } from 'date-fns';
+import { BanUserDto } from '../../api/superadmin/users/banUserDto';
 
 export type UserDocument = HydratedDocument<User>;
 export type UserModelStaticType = {
@@ -59,18 +60,25 @@ export class User {
     isConfirmed: boolean;
   };
 
+  @Prop({
+    type: {
+      isBanned: { type: Boolean, required: true },
+      banDate: { type: String, required: true },
+      banReason: { type: String, required: true },
+    },
+  })
+  banInfo: {
+    isBanned: boolean;
+    banDate: string;
+    banReason: string;
+  };
+
   static createUser(
     createUserDto: CreateUserDto,
     passwordHash: string,
     UserModel: UserModelTYpe,
     isConfirmed?: boolean,
   ) {
-    // const passwordSalt = await bcrypt.genSalt(10);
-    // const passwordHash = await bcrypt.hash(
-    //   createUserDto.password,
-    //   passwordSalt,
-    // );
-
     const newUser = {
       accountData: {
         login: createUserDto.login,
@@ -90,6 +98,11 @@ export class User {
           minutes: 3,
         }),
         isConfirmed: isConfirmed ?? true,
+      },
+      banInfo: {
+        isBanned: true,
+        banDate: new Date().toISOString(),
+        banReason: 'string',
       },
     };
     return new UserModel(newUser);
@@ -142,20 +155,11 @@ export class User {
     this.accountData.passwordHash = passwordHash;
     this.accountData.recoveryCode = null;
   }
-
-  //   resendEmailCanBeConfirmed() {
-  //     return (
-  //       !this.emailConfirmation.isConfirmed &&
-  //       this.emailConfirmation.emailExpiration >= new Date()
-  //     );
-  //   }
-  //
-  //   registrationCanBeConfirmed() {
-  //     return (
-  //       !this.emailConfirmation.isConfirmed &&
-  //       this.emailConfirmation.emailExpiration >= new Date()
-  //     );
-  //   }
+  banUser(banUserDto: BanUserDto) {
+    (this.banInfo.isBanned = banUserDto.isBanned),
+      (this.banInfo.banDate = new Date().toISOString()),
+      (this.banInfo.banReason = banUserDto.banReason);
+  }
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
@@ -172,4 +176,5 @@ UserSchema.methods = {
   confirmRegistration: User.prototype.confirmRegistration,
   newPasswordCanBeConfirmed: User.prototype.newPasswordCanBeConfirmed,
   updateUserAccountData: User.prototype.updateUserAccountData,
+  banUser: User.prototype.banUser,
 };

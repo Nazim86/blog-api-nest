@@ -45,6 +45,8 @@ import { BlogCreateUseCase } from './blogs/use-cases/blog-create-use-case';
 import { CqrsModule } from '@nestjs/cqrs';
 import { BlogUpdateUseCase } from './blogs/use-cases/blog-update-use-case';
 import { BindBlogUseCase } from './api/superadmin/blogs/bind-blog-use-case';
+import { SuperAdminUsersController } from './api/superadmin/users/sa.users.controller';
+import { BanUserUserCase } from './api/superadmin/users/ban-user-user-case';
 
 const mongooseModels = [
   { name: Device.name, schema: DeviceSchema },
@@ -55,7 +57,12 @@ const mongooseModels = [
   { name: Comment.name, schema: CommentSchema },
   { name: User.name, schema: UserSchema },
 ];
-const useCases = [BlogCreateUseCase, BlogUpdateUseCase, BindBlogUseCase];
+const useCases = [
+  BlogCreateUseCase,
+  BlogUpdateUseCase,
+  BindBlogUseCase,
+  BanUserUserCase,
+];
 @Module({
   imports: [
     configModule,
@@ -76,6 +83,7 @@ const useCases = [BlogCreateUseCase, BlogUpdateUseCase, BindBlogUseCase];
     DeleteController,
     CommentsController,
     SuperAdminBlogsController,
+    SuperAdminUsersController,
   ],
   providers: [
     AppService,
