@@ -105,10 +105,14 @@ export class UsersRepository {
   }
 
   async findUserById(userId: string): Promise<UserDocument | null> {
-    const user: UserDocument = await this.UserModel.findOne({
-      _id: new ObjectId(userId),
-    });
-    if (!user) return null;
-    return user;
+    try {
+      const user: UserDocument = await this.UserModel.findOne({
+        _id: new ObjectId(userId),
+      });
+      if (!user) return null;
+      return user;
+    } catch (e) {
+      return null;
+    }
   }
 }

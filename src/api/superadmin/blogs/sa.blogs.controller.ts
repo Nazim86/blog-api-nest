@@ -20,12 +20,13 @@ export class SuperAdminBlogsController {
 
   @Put(':blogId/bind-with-user/:userId')
   async bindBlogWithUser(@Param() params) {
-    const isBlogBinded = await this.commandBus.execute(
+    const isBlogBound = await this.commandBus.execute(
       new BindBlogCommand(params.blogId, params.userId),
     );
 
-    if (!isBlogBinded) {
-      return exceptionHandler(ResultCode.BadRequest);
+    if (isBlogBound.code !== ResultCode.Success) {
+      return exceptionHandler(ResultCode.BadRequest, isBlogBound.data);
     }
+    return;
   }
 }

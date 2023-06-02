@@ -37,29 +37,12 @@ export class HttpExceptionFilter implements ExceptionFilter {
         errorsMessages: [],
       };
       const responseBody: any = exception.getResponse();
-      if (typeof responseBody.message !== 'string') {
-        responseBody.message.forEach((m) =>
-          errorResponse.errorsMessages.push(m),
-        );
-        response.status(status).json(errorResponse);
-      }
-      // responseBody.message.forEach((m) => errorResponse.errorsMessages.push(m));
-
-      // response.status(status).json(errorResponse);
-    }
-    // else if (status === 404) {
-    //   const errorResponse = {
-    //     errorsMessages: [],
-    //   };
-    //   const responseBody: any = exception.getResponse();
-    //   if (typeof responseBody.message !== 'string') {
-    //     responseBody.message.forEach((m) =>
-    //       errorResponse.errorsMessages.push(m),
-    //     );
-    //     response.status(status).json(errorResponse);
-    //   }
-    // }
-    else {
+      console.log(responseBody);
+      // if (typeof responseBody.message !== 'string') {
+      responseBody.message.forEach((m) => errorResponse.errorsMessages.push(m));
+      response.status(status).json(errorResponse);
+      //}
+    } else {
       response.status(status).json({
         statusCode: status,
         timestamp: new Date().toISOString(),
