@@ -30,7 +30,7 @@ export class PostCreateUseCase {
 
   async execute(command: PostCreateCommand): Promise<Result<ResultCode>> {
     const blog: BlogDocument = await this.blogRepository.getBlogById(
-      command.createPostDto.blogId,
+      command.blogId,
     );
     if (!blog) return { code: ResultCode.NotFound };
 

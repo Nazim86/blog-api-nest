@@ -102,13 +102,13 @@ export class AuthController {
     const accessToken = await this.jwtService.createJWT(
       user.id!,
       settings.ACCESS_TOKEN_SECRET,
-      '10s',
+      '10h',
     );
 
     const refreshToken = await this.jwtService.createJWT(
       user._id,
       settings.REFRESH_TOKEN_SECRET,
-      '20s',
+      '20h',
     );
 
     // const ipAddress = req.ip;
@@ -147,13 +147,13 @@ export class AuthController {
     const newAccessToken = await this.jwtService.createJWT(
       userId,
       settings.ACCESS_TOKEN_SECRET,
-      '10s',
+      '10h',
       deviceId,
     );
     const newRefreshToken = await this.jwtService.createJWT(
       userId,
       settings.REFRESH_TOKEN_SECRET,
-      '20s',
+      '20h',
       deviceId,
     );
 
