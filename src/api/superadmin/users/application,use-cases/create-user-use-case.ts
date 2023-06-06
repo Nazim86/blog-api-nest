@@ -33,6 +33,7 @@ export class CreateUsersUseCase {
     try {
       await this.usersRepository.save(newUser);
     } catch (e) {
+      console.log(e);
       exceptionHandler(ResultCode.BadRequest);
     }
 

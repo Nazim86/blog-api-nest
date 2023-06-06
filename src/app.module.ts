@@ -61,6 +61,7 @@ import { BlogDeleteUseCase } from './api/blogger/application,use-cases/blog-dele
 import { PostDeleteUseCase } from './api/blogger/application,use-cases/post-delete-use-case';
 import { DeviceUpdateUseCase } from './api/public/securityDevices/application,use-cases/device-update-use-case';
 import { DeviceCreateUseCase } from './api/public/securityDevices/application,use-cases/device-create-use-case';
+import { PostLikeUpdateUseCase } from './api/public/like/use-cases/like-update-use-case';
 
 const mongooseModels = [
   { name: Device.name, schema: DeviceSchema },
@@ -83,6 +84,7 @@ const useCases = [
   PostDeleteUseCase,
   DeviceUpdateUseCase,
   DeviceCreateUseCase,
+  PostLikeUpdateUseCase,
 ];
 @Module({
   imports: [

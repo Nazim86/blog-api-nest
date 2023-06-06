@@ -111,6 +111,11 @@ export class UserQueryRepo {
       login: user.accountData.login,
       email: user.accountData.email,
       createdAt: user.accountData.createdAt,
+      banInfo: {
+        isBanned: user.banInfo.isBanned,
+        banDate: user.banInfo.banDate,
+        banReason: user.banInfo.banReason,
+      },
     };
   }
 }

@@ -62,9 +62,9 @@ export class User {
 
   @Prop({
     type: {
-      isBanned: { type: Boolean, required: true },
-      banDate: { type: String, required: true },
-      banReason: { type: String, required: true },
+      isBanned: { type: Boolean },
+      banDate: { type: String },
+      banReason: { type: String },
     },
   })
   banInfo: {
@@ -101,8 +101,8 @@ export class User {
       },
       banInfo: {
         isBanned: false,
-        banDate: new Date().toISOString(),
-        banReason: 'string',
+        banDate: null,
+        banReason: null,
       },
     };
     return new UserModel(newUser);
