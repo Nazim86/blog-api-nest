@@ -32,6 +32,8 @@ import { DeviceQueryRepo } from '../securityDevices/device-query.repo';
 import { ScheduleModule } from '@nestjs/schedule';
 import { SuperAdminUsersController } from '../../superadmin/users/sa.users.controller';
 import { CqrsModule } from '@nestjs/cqrs';
+import { DeviceCreateUseCase } from '../securityDevices/application,use-cases/device-create-use-case';
+import { DeviceUpdateUseCase } from '../securityDevices/application,use-cases/device-update-use-case';
 
 const mongooseModels = [
   { name: Device.name, schema: DeviceSchema },
@@ -42,7 +44,7 @@ const mongooseModels = [
   { name: Comment.name, schema: CommentSchema },
   { name: User.name, schema: UserSchema },
 ];
-// const useCases = [CreateUsersUseCase];
+const useCases = [DeviceCreateUseCase, DeviceUpdateUseCase];
 @Module({
   imports: [
     ThrottlerModule.forRoot({
@@ -80,6 +82,7 @@ const mongooseModels = [
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
     },
+    ...useCases,
   ],
 
   controllers: [
