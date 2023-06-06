@@ -44,7 +44,7 @@ export class AuthController {
     private commandBus: CommandBus,
   ) {}
 
-  @Throttle(5, 10)
+  //@Throttle(5, 10)
   @Post('registration')
   @HttpCode(204)
   async userRegistration(@Body() createUserDto: CreateUserDto) {
@@ -55,7 +55,7 @@ export class AuthController {
     }
   }
 
-  @Throttle(5, 10)
+  //@Throttle(5, 10)
   @Post('registration-email-resending')
   @HttpCode(204)
   async reSendRegistrationEmail(@Body() emailDto: EmailDto) {
@@ -70,7 +70,7 @@ export class AuthController {
     return;
   }
 
-  @Throttle(5, 10)
+  //@Throttle(5, 10)
   @Post('registration-confirmation')
   @HttpCode(204)
   async confirmRegistration(@Body() confirmationCodeDto: ConfirmationCodeDto) {
@@ -87,7 +87,7 @@ export class AuthController {
     return;
   }
 
-  @Throttle(5, 10)
+  //@Throttle(5, 10)
   @Post('login')
   @HttpCode(200)
   async login(
@@ -180,7 +180,7 @@ export class AuthController {
     return currentUser;
   }
 
-  @Throttle(5, 10)
+  //@Throttle(5, 10)
   @Post('password-recovery')
   async sendPasswordRecoveryCode(@Body() emailDto: EmailDto) {
     const isRecoveryEmailSent: boolean =
@@ -192,7 +192,7 @@ export class AuthController {
     return;
   }
 
-  @Throttle(5, 10)
+  //@Throttle(5, 10)
   @Post('new-password')
   @HttpCode(204)
   async setNewPassword(@Body() newPasswordDto: NewPasswordDto) {
