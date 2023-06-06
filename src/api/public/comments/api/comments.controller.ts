@@ -15,7 +15,7 @@ import { JwtService } from '../../../../jwt/jwt.service';
 import { CommentsViewType } from '../types/comments-view-type';
 import { settings } from '../../../../settings';
 import { AccessTokenGuard } from '../../auth/guards/access-token.guard';
-import { CreateLikeDto } from '../../../../like/createLikeDto';
+import { CreateLikeDto } from '../../like/createLikeDto';
 import { CreateCommentDto } from '../createComment.Dto';
 import { Result } from '../../../../exception-handler/result-type';
 import { ResultCode } from '../../../../exception-handler/result-code-enum';

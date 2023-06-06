@@ -29,14 +29,19 @@ import { AccessTokenGuard } from '../guards/access-token.guard';
 import { UserId } from '../../../../decorators/UserId';
 import { RefreshToken } from '../../../../decorators/RefreshToken';
 import { DeviceId } from '../../../../decorators/DeviceId';
+import { CommandBus } from '@nestjs/cqrs';
+import { DeviceCreateCommand } from '../../securityDevices/application,use-cases/device-create-use-case';
+import { DeviceUpdateCommand } from '../../securityDevices/application,use-cases/device-update-use-case';
+import { DeviceDeleteByIdCommand } from '../../securityDevices/application,use-cases/device-deleteByDeviceId-use-case';
 
 @Controller('auth')
 export class AuthController {
   constructor(
-    protected jwtService: JwtService,
-    protected authService: AuthService,
-    protected deviceService: DeviceService,
-    protected userRepository: UsersRepository,
+    private readonly jwtService: JwtService,
+    private readonly authService: AuthService,
+    private readonly deviceService: DeviceService,
+    private readonly userRepository: UsersRepository,
+    private commandBus: CommandBus,
   ) {}
 
   @Throttle(5, 10)
@@ -114,11 +119,12 @@ export class AuthController {
     // const ipAddress = req.ip;
     const deviceName = headers['user-agent'] ?? 'chrome';
 
-    await this.deviceService.createDevice(refreshToken, ip, deviceName);
+    await this.commandBus.execute(
+      new DeviceCreateCommand(refreshToken, ip, deviceName),
+    );
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      //sameSite: 'strict',
       //secure: true,
       maxAge: 24 * 60 * 60 * 1000,
     });
@@ -134,10 +140,6 @@ export class AuthController {
     @DeviceId() deviceId,
     @Response() res,
   ) {
-    //const userId = req.user.userId;
-
-    //const deviceId = req.user.deviceId;
-
     const isTokenValid = await this.jwtService.checkTokenVersion(refreshToken);
 
     if (!isTokenValid) {
@@ -157,12 +159,11 @@ export class AuthController {
       deviceId,
     );
 
-    await this.deviceService.updateDevice(newRefreshToken);
+    await this.commandBus.execute(new DeviceUpdateCommand(newRefreshToken));
 
     res
       .cookie('refreshToken', newRefreshToken, {
         httpOnly: true,
-        //sameSite: 'strict',
         //secure: true,
         maxAge: 24 * 60 * 60 * 1000,
       })
@@ -219,7 +220,9 @@ export class AuthController {
       return exceptionHandler(ResultCode.Unauthorized);
     }
 
-    await this.deviceService.deleteDeviceById(deviceId, userId);
+    await this.commandBus.execute(
+      new DeviceDeleteByIdCommand(deviceId, userId),
+    );
 
     try {
       res.clearCookie('refreshToken').json();

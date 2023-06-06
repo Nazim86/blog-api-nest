@@ -10,12 +10,15 @@ import { BlogsQueryRepo } from './api/public/blogs/infrastructure/blogs-query.re
 import { Post, PostSchema } from './api/public/post/domain/post.entity';
 import { PostMapping } from './api/public/post/mapper/post.mapping';
 import { PostsQueryRepo } from './api/public/post/infrastructure/posts-query-repo';
-import { PostLike, PostLikeSchema } from './like/postLike.entity';
+import { PostLike, PostLikeSchema } from './api/public/like/postLike.entity';
 import { BlogRepository } from './api/public/blogs/infrastructure/blog.repository';
 import { PostsController } from './api/public/post/api/posts.controller';
 import { PostService } from './api/public/post/application/posts.service';
 import { PostRepository } from './api/public/post/infrastructure/post.repository';
-import { CommentLike, CommentLikeSchema } from './like/commentLike.entity';
+import {
+  CommentLike,
+  CommentLikeSchema,
+} from './api/public/like/commentLike.entity';
 import { CommentsQueryRepo } from './api/public/comments/infrastructure/comments.query.repo';
 import { CommentsMapping } from './api/public/comments/mapper/comments.mapping';
 import {
@@ -31,7 +34,7 @@ import { DeleteController } from './delete/delete.controller';
 import * as process from 'process';
 import { AuthModule } from './api/public/auth/auth.module';
 import { UsersModule } from './api/superadmin/users/users.module';
-import { LikesRepository } from './like/likes.repository';
+import { LikesRepository } from './api/public/like/likes.repository';
 import { CommentService } from './api/public/comments/application/comments.service';
 import { CommentsRepository } from './api/public/comments/infrastructure/comments.repository';
 import { MailModule } from './mail/mail.module';

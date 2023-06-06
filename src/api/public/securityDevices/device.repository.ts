@@ -16,15 +16,9 @@ export class DeviceRepository {
     return this.DeviceModel.findOne({ deviceId: deviceId });
   }
 
-  async updateDevice(
-    deviceId: string,
-    lastActiveDate: string,
-  ): Promise<boolean> {
-    const result = await this.DeviceModel.updateOne(
-      { deviceId: deviceId },
-      { $set: { lastActiveDate: lastActiveDate } },
-    );
-    return result.modifiedCount === 1;
+  async deleteDeviceByUserId(userId: string) {
+    const result = await this.DeviceModel.deleteMany({ userId });
+    return result.deletedCount === 1;
   }
 
   async deleteDevices(deviceId: string): Promise<boolean> {

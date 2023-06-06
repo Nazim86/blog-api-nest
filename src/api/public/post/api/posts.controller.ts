@@ -26,7 +26,7 @@ import { BasicAuthGuard } from '../../auth/guards/basic-auth.guard';
 import { AccessTokenGuard } from '../../auth/guards/access-token.guard';
 import { settings } from '../../../../settings';
 import { JwtService } from '../../../../jwt/jwt.service';
-import { CreateLikeDto } from '../../../../like/createLikeDto';
+import { CreateLikeDto } from '../../like/createLikeDto';
 
 @Controller('posts')
 export class PostsController {

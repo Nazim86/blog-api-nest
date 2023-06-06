@@ -4,9 +4,9 @@ import { InjectModel } from '@nestjs/mongoose';
 import {
   CommentLike,
   CommentLikeDocument,
-} from '../../../../like/commentLike.entity';
+} from '../../like/commentLike.entity';
 import { Model } from 'mongoose';
-import { LikeEnum } from '../../../../like/like.enum';
+import { LikeEnum } from '../../like/like.enum';
 
 export class CommentsMapping {
   constructor(

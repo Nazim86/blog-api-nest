@@ -15,13 +15,16 @@ import { RefreshTokenGuard } from '../auth/guards/refresh-token.guard';
 import { ResultCode } from '../../../exception-handler/result-code-enum';
 import { exceptionHandler } from '../../../exception-handler/exception-handler';
 import { DeviceQueryRepo } from './device-query.repo';
+import { DeviceDeleteByIdCommand } from './application,use-cases/device-deleteByDeviceId-use-case';
+import { CommandBus } from '@nestjs/cqrs';
 
 @Controller('security/devices')
 export class DevicesController {
   constructor(
-    protected jwtService: JwtService,
-    protected securityService: DeviceService,
-    protected deviceQueryRepo: DeviceQueryRepo,
+    private readonly jwtService: JwtService,
+    private readonly securityService: DeviceService,
+    private readonly deviceQueryRepo: DeviceQueryRepo,
+    private commandBus: CommandBus,
   ) {}
 
   @UseGuards(RefreshTokenGuard)
@@ -54,9 +57,8 @@ export class DevicesController {
       req.cookies.refreshToken,
     );
 
-    const result = await this.securityService.deleteDeviceById(
-      req.params.id,
-      userId,
+    const result = await this.commandBus.execute(
+      new DeviceDeleteByIdCommand(deviceId, userId),
     );
 
     if (result.code !== ResultCode.Success) {

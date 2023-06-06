@@ -3,13 +3,17 @@ import { BanUserDto } from '../banUserDto';
 import { UsersRepository } from '../infrastructure/users.repository';
 import { ResultCode } from '../../../../exception-handler/result-code-enum';
 import { UserDocument } from '../domain/user.entity';
+import { DeviceRepository } from '../../../public/securityDevices/device.repository';
 
 export class BanUserCommand {
   constructor(public userId: string, public banUserDto: BanUserDto) {}
 }
 @CommandHandler(BanUserCommand)
 export class BanUserUseCase {
-  constructor(private readonly usersRepository: UsersRepository) {}
+  constructor(
+    private readonly usersRepository: UsersRepository,
+    private readonly deviceRepository: DeviceRepository,
+  ) {}
 
   async execute(command: BanUserCommand) {
     const user: UserDocument | null = await this.usersRepository.findUserById(
@@ -28,6 +32,9 @@ export class BanUserUseCase {
     user.banUser(command.banUserDto);
 
     await this.usersRepository.save(user);
+
+    await this.deviceRepository.deleteDeviceByUserId(user.id);
+
     return { code: ResultCode.Success };
   }
 }

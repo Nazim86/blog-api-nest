@@ -7,13 +7,13 @@ import {
   CommentDocument,
   CommentModelType,
 } from '../domain/comment.entity';
-import { CreateLikeDto } from '../../../../like/createLikeDto';
+import { CreateLikeDto } from '../../like/createLikeDto';
 import {
   CommentLike,
   CommentLikeDocument,
   CommentLikeModelType,
-} from '../../../../like/commentLike.entity';
-import { LikesRepository } from '../../../../like/likes.repository';
+} from '../../like/commentLike.entity';
+import { LikesRepository } from '../../like/likes.repository';
 import { PostRepository } from '../../post/infrastructure/post.repository';
 import { PostDocument } from '../../post/domain/post.entity';
 import { UsersRepository } from '../../../superadmin/users/infrastructure/users.repository';

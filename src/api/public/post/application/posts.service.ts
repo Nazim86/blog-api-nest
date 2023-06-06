@@ -11,9 +11,9 @@ import {
   PostLike,
   PostLikeDocument,
   PostLikeModelType,
-} from '../../../../like/postLike.entity';
-import { LikesRepository } from '../../../../like/likes.repository';
-import { CreateLikeDto } from '../../../../like/createLikeDto';
+} from '../../like/postLike.entity';
+import { LikesRepository } from '../../like/likes.repository';
+import { CreateLikeDto } from '../../like/createLikeDto';
 
 @Injectable()
 export class PostService {
@@ -66,19 +66,6 @@ export class PostService {
   // async getPostById(postId:string,userId?:string): Promise<PostsViewType |boolean> {
   //     return await this.postQueryRepo.getPostById(postId,userId)
   // }
-
-  async updatePost(
-    postId: string,
-    updatePostDto: CreatePostDto,
-  ): Promise<boolean> {
-    const post: PostDocument = await this.postRepository.getPostById(postId);
-
-    if (!post) return false;
-
-    post.updatePost(updatePostDto);
-    await this.postRepository.save(post);
-    return true;
-  }
 
   async updatePostLikeStatus(
     postId: string,

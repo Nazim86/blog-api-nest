@@ -47,10 +47,16 @@ export class Device {
     };
     return new DeviceModel(newDevice);
   }
+
+  updateDevice(deviceId: string, lastActiveDate: string) {
+    (this.deviceId = deviceId), (this.lastActiveDate = lastActiveDate);
+  }
 }
 
 export const DeviceSchema = SchemaFactory.createForClass(Device);
 
 const deviceStaticMethods = { createDevice: Device.createDevice };
+
+DeviceSchema.methods = { updateDevice: Device.prototype.updateDevice };
 
 DeviceSchema.statics = deviceStaticMethods;

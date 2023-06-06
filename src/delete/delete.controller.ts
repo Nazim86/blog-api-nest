@@ -8,8 +8,11 @@ import {
   CommentDocument,
 } from '../api/public/comments/domain/comment.entity';
 import { User, UserDocument } from '../api/superadmin/users/domain/user.entity';
-import { PostLike, PostLikeDocument } from '../like/postLike.entity';
-import { CommentLike, CommentLikeDocument } from '../like/commentLike.entity';
+import { PostLike, PostLikeDocument } from '../api/public/like/postLike.entity';
+import {
+  CommentLike,
+  CommentLikeDocument,
+} from '../api/public/like/commentLike.entity';
 
 @Controller('testing/all-data')
 export class DeleteController {

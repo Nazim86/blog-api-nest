@@ -155,7 +155,8 @@ export class AuthService {
     const user: UserDocument | null =
       await this.userRepository.findUserByLoginOrEmail(loginDto.loginOrEmail);
 
-    if (!user || !user.emailConfirmation.isConfirmed) return null;
+    if (!user || !user.emailConfirmation.isConfirmed || user.banInfo.isBanned)
+      return null;
 
     const result = await bcrypt.compare(
       loginDto.password,
