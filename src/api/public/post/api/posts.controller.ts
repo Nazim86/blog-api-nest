@@ -11,23 +11,22 @@ import {
   UseGuards,
   Request,
 } from '@nestjs/common';
-import { QueryPaginationType } from '../../types/query-pagination-type';
+import { QueryPaginationType } from '../../../../types/query-pagination-type';
 import { PostsQueryRepo } from '../infrastructure/posts-query-repo';
 import { PostService } from '../application/posts.service';
-import { CreatePostDto } from '../createPostDto';
 import { PostsViewType } from '../types/posts-view-type';
-import { CommentsViewType } from '../../api/public/comments/types/comments-view-type';
-import { CommentsQueryRepo } from '../../api/public/comments/infrastructure/comments.query.repo';
-import { Pagination, PaginationType } from '../../common/pagination';
-import { CommentService } from '../../api/public/comments/application/comments.service';
-import { CreateCommentDto } from '../../api/public/comments/createComment.Dto';
-import { ResultCode } from '../../exception-handler/result-code-enum';
-import { exceptionHandler } from '../../exception-handler/exception-handler';
-import { BasicAuthGuard } from '../../api/public/auth/guards/basic-auth.guard';
-import { AccessTokenGuard } from '../../api/public/auth/guards/access-token.guard';
-import { settings } from '../../settings';
-import { JwtService } from '../../jwt/jwt.service';
-import { CreateLikeDto } from '../../like/createLikeDto';
+import { CommentsViewType } from '../../comments/types/comments-view-type';
+import { CommentsQueryRepo } from '../../comments/infrastructure/comments.query.repo';
+import { Pagination, PaginationType } from '../../../../common/pagination';
+import { CommentService } from '../../comments/application/comments.service';
+import { CreateCommentDto } from '../../comments/createComment.Dto';
+import { ResultCode } from '../../../../exception-handler/result-code-enum';
+import { exceptionHandler } from '../../../../exception-handler/exception-handler';
+import { BasicAuthGuard } from '../../auth/guards/basic-auth.guard';
+import { AccessTokenGuard } from '../../auth/guards/access-token.guard';
+import { settings } from '../../../../settings';
+import { JwtService } from '../../../../jwt/jwt.service';
+import { CreateLikeDto } from '../../../../like/createLikeDto';
 
 @Controller('posts')
 export class PostsController {
@@ -102,20 +101,6 @@ export class PostsController {
     return getCommentsForPost;
   }
 
-  @UseGuards(BasicAuthGuard)
-  @Post()
-  async createPost(@Body() createPostDto: CreatePostDto) {
-    const postId: string | null = await this.postService.createPost(
-      createPostDto,
-    );
-
-    if (!postId) {
-      return exceptionHandler(ResultCode.NotFound);
-      // res.sendStatus(404);
-    }
-    return await this.postQueryRepo.getPostById(postId);
-  }
-
   @UseGuards(AccessTokenGuard) // should be logged user with refreshToken
   @Post(':id/comments')
   async createCommentByPostId(
@@ -135,24 +120,6 @@ export class PostsController {
       return exceptionHandler(ResultCode.NotFound);
     }
     return await this.commentsQueryRepo.getComment(commentId);
-  }
-
-  @UseGuards(BasicAuthGuard)
-  @Put(':id')
-  @HttpCode(204)
-  async updatePost(
-    @Param('id') postId: string,
-    @Body() updatePostDto: CreatePostDto,
-  ) {
-    const updatePost: boolean = await this.postService.updatePost(
-      postId,
-      updatePostDto,
-    );
-
-    if (!updatePost) {
-      return exceptionHandler(ResultCode.NotFound);
-    }
-    return;
   }
 
   @UseGuards(AccessTokenGuard)

@@ -4,18 +4,17 @@ export const configModule = ConfigModule.forRoot();
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Blog, BlogSchema } from './blogs/domain/blog.entity';
+import { Blog, BlogSchema } from './api/public/blogs/domain/blog.entity';
 import { BloggerController } from './api/blogger/blogger.controller';
-import { BlogsQueryRepo } from './blogs/infrastructure/blogs-query.repository';
-import { Post, PostSchema } from './post/domain/post.entity';
-import { PostMapping } from './post/mapper/post.mapping';
-import { PostsQueryRepo } from './post/infrastructure/posts-query-repo';
+import { BlogsQueryRepo } from './api/public/blogs/infrastructure/blogs-query.repository';
+import { Post, PostSchema } from './api/public/post/domain/post.entity';
+import { PostMapping } from './api/public/post/mapper/post.mapping';
+import { PostsQueryRepo } from './api/public/post/infrastructure/posts-query-repo';
 import { PostLike, PostLikeSchema } from './like/postLike.entity';
-import { BlogService } from './api/blogger/application,use-cases/blog.service';
-import { BlogRepository } from './blogs/infrastructure/blog.repository';
-import { PostsController } from './post/api/posts.controller';
-import { PostService } from './post/application/posts.service';
-import { PostRepository } from './post/infrastructure/post.repository';
+import { BlogRepository } from './api/public/blogs/infrastructure/blog.repository';
+import { PostsController } from './api/public/post/api/posts.controller';
+import { PostService } from './api/public/post/application/posts.service';
+import { PostRepository } from './api/public/post/infrastructure/post.repository';
 import { CommentLike, CommentLikeSchema } from './like/commentLike.entity';
 import { CommentsQueryRepo } from './api/public/comments/infrastructure/comments.query.repo';
 import { CommentsMapping } from './api/public/comments/mapper/comments.mapping';
@@ -23,7 +22,7 @@ import {
   Comment,
   CommentSchema,
 } from './api/public/comments/domain/comment.entity';
-import { UsersService } from './api/superadmin/users/application&use-cases/users.service';
+import { UsersService } from './api/superadmin/users/application,use-cases/users.service';
 import { UserQueryRepo } from './api/superadmin/users/infrastructure/users.query.repo';
 import { UsersRepository } from './api/superadmin/users/infrastructure/users.repository';
 import { User, UserSchema } from './api/superadmin/users/domain/user.entity';
@@ -51,8 +50,12 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { BlogUpdateUseCase } from './api/blogger/application,use-cases/blog-update-use-case';
 import { BindBlogUseCase } from './api/superadmin/blogs/bind-blog-use-case';
 import { SuperAdminUsersController } from './api/superadmin/users/sa.users.controller';
-import { BanUserUseCase } from './api/superadmin/users/application&use-cases/ban-user-use-case';
-import { CreateUsersUseCase } from './api/superadmin/users/application&use-cases/create-user-use-case';
+import { BanUserUseCase } from './api/superadmin/users/application,use-cases/ban-user-use-case';
+import { CreateUsersUseCase } from './api/superadmin/users/application,use-cases/create-user-use-case';
+import { PostCreateUseCase } from './api/blogger/application,use-cases/post-create-use-case';
+import { PostUpdateUseCase } from './api/blogger/application,use-cases/post-update-use-case';
+import { BlogDeleteUseCase } from './api/blogger/application,use-cases/blog-delete-use-case';
+import { PostDeleteUseCase } from './api/blogger/application,use-cases/post-delete-use-case';
 
 const mongooseModels = [
   { name: Device.name, schema: DeviceSchema },
@@ -69,6 +72,10 @@ const useCases = [
   BindBlogUseCase,
   BanUserUseCase,
   CreateUsersUseCase,
+  PostCreateUseCase,
+  PostUpdateUseCase,
+  BlogDeleteUseCase,
+  PostDeleteUseCase,
 ];
 @Module({
   imports: [
@@ -94,7 +101,6 @@ const useCases = [
   ],
   providers: [
     AppService,
-    BlogService,
     BlogsQueryRepo,
     BlogRepository,
     PostsQueryRepo,

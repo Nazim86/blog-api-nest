@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsString, Length, ValidateIf } from 'class-validator';
-import { IsBlogAlreadyExist } from '../decorators/IsBlogIdExist';
+import { IsBlogAlreadyExist } from '../../../decorators/IsBlogIdExist';
 import { Transform } from 'class-transformer';
 
 export class CreatePostDto {

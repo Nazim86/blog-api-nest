@@ -14,8 +14,8 @@ import {
   CommentLikeModelType,
 } from '../../../../like/commentLike.entity';
 import { LikesRepository } from '../../../../like/likes.repository';
-import { PostRepository } from '../../../../post/infrastructure/post.repository';
-import { PostDocument } from '../../../../post/domain/post.entity';
+import { PostRepository } from '../../post/infrastructure/post.repository';
+import { PostDocument } from '../../post/domain/post.entity';
 import { UsersRepository } from '../../../superadmin/users/infrastructure/users.repository';
 import { UserDocument } from '../../../superadmin/users/domain/user.entity';
 import { ResultCode } from '../../../../exception-handler/result-code-enum';

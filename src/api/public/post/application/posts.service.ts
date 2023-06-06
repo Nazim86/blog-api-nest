@@ -6,14 +6,14 @@ import { CreatePostDto } from '../createPostDto';
 import { PostRepository } from '../infrastructure/post.repository';
 import { BlogDocument } from '../../blogs/domain/blog.entity';
 import { PostsQueryRepo } from '../infrastructure/posts-query-repo';
-import { UsersRepository } from '../../api/superadmin/users/infrastructure/users.repository';
+import { UsersRepository } from '../../../superadmin/users/infrastructure/users.repository';
 import {
   PostLike,
   PostLikeDocument,
   PostLikeModelType,
-} from '../../like/postLike.entity';
-import { LikesRepository } from '../../like/likes.repository';
-import { CreateLikeDto } from '../../like/createLikeDto';
+} from '../../../../like/postLike.entity';
+import { LikesRepository } from '../../../../like/likes.repository';
+import { CreateLikeDto } from '../../../../like/createLikeDto';
 
 @Injectable()
 export class PostService {

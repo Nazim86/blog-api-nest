@@ -1,6 +1,6 @@
 import { CommandHandler } from '@nestjs/cqrs';
-import { BlogDocument } from '../../../blogs/domain/blog.entity';
-import { BlogRepository } from '../../../blogs/infrastructure/blog.repository';
+import { BlogDocument } from '../../public/blogs/domain/blog.entity';
+import { BlogRepository } from '../../public/blogs/infrastructure/blog.repository';
 import { ResultCode } from '../../../exception-handler/result-code-enum';
 import { Result } from '../../../exception-handler/result-type';
 

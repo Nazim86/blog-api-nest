@@ -1,6 +1,6 @@
-import { BlogRepository } from '../../../blogs/infrastructure/blog.repository';
-import { BlogDocument } from '../../../blogs/domain/blog.entity';
-import { CreateBlogDto } from '../../../blogs/createBlog.dto';
+import { BlogRepository } from '../../public/blogs/infrastructure/blog.repository';
+import { BlogDocument } from '../../public/blogs/domain/blog.entity';
+import { CreateBlogDto } from '../createBlog.dto';
 import { CommandHandler } from '@nestjs/cqrs';
 
 export class BlogUpdateCommand {

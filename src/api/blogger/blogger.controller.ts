@@ -11,13 +11,13 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { QueryPaginationType } from '../../types/query-pagination-type';
-import { BlogsViewType } from '../../blogs/infrastructure/types/blogs-view-type';
-import { BlogsQueryRepo } from '../../blogs/infrastructure/blogs-query.repository';
-import { PostsQueryRepo } from '../../post/infrastructure/posts-query-repo';
-import { CreateBlogDto } from '../../blogs/createBlog.dto';
-import { CreatePostDto } from '../../post/createPostDto';
-import { BlogDocument } from '../../blogs/domain/blog.entity';
-import { BlogPagination } from '../../blogs/domain/blog-pagination';
+import { BlogsViewType } from '../public/blogs/infrastructure/types/blogs-view-type';
+import { BlogsQueryRepo } from '../public/blogs/infrastructure/blogs-query.repository';
+import { PostsQueryRepo } from '../public/post/infrastructure/posts-query-repo';
+import { CreateBlogDto } from './createBlog.dto';
+import { CreatePostDto } from '../public/post/createPostDto';
+import { BlogDocument } from '../public/blogs/domain/blog.entity';
+import { BlogPagination } from '../public/blogs/domain/blog-pagination';
 import { PaginationType } from '../../common/pagination';
 import { exceptionHandler } from '../../exception-handler/exception-handler';
 import { ResultCode } from '../../exception-handler/result-code-enum';

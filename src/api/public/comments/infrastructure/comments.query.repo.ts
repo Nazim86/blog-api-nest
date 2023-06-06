@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { PostsQueryRepo } from '../../../../post/infrastructure/posts-query-repo';
-import { PostsViewType } from '../../../../post/types/posts-view-type';
+import { PostsQueryRepo } from '../../post/infrastructure/posts-query-repo';
+import { PostsViewType } from '../../post/types/posts-view-type';
 import { QueryPaginationType } from '../../../../types/query-pagination-type';
 import { CommentsViewType } from '../types/comments-view-type';
 import { InjectModel } from '@nestjs/mongoose';

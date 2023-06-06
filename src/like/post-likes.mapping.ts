@@ -1,5 +1,5 @@
 import { PostLikesDbType } from './post-likes-db-type';
-import { NewestLikesType } from '../post/types/posts-db-type';
+import { NewestLikesType } from '../api/public/post/types/posts-db-type';
 
 export const newestLikesMapping = (
   postLikes: PostLikesDbType[],

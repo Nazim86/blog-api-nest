@@ -2,10 +2,10 @@ import { BlogsViewType } from './types/blogs-view-type';
 import { Injectable } from '@nestjs/common';
 import { Blog, BlogDocument } from '../domain/blog.entity';
 import { Model } from 'mongoose';
-import { QueryPaginationType } from '../../types/query-pagination-type';
+import { QueryPaginationType } from '../../../../types/query-pagination-type';
 import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
-import { PaginationType } from '../../common/pagination';
+import { PaginationType } from '../../../../common/pagination';
 import { BlogPagination } from '../domain/blog-pagination';
 
 @Injectable()

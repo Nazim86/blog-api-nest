@@ -1,11 +1,11 @@
-import { BlogRepository } from '../../../blogs/infrastructure/blog.repository';
-import { BlogDocument } from '../../../blogs/domain/blog.entity';
+import { BlogRepository } from '../../public/blogs/infrastructure/blog.repository';
+import { BlogDocument } from '../../public/blogs/domain/blog.entity';
 import { CommandHandler } from '@nestjs/cqrs';
-import { PostRepository } from '../../../post/infrastructure/post.repository';
-import { CreatePostDto } from '../../../post/createPostDto';
+import { PostRepository } from '../../public/post/infrastructure/post.repository';
+import { CreatePostDto } from '../../public/post/createPostDto';
 import { ResultCode } from '../../../exception-handler/result-code-enum';
 import { Result } from '../../../exception-handler/result-type';
-import { PostDocument } from '../../../post/domain/post.entity';
+import { PostDocument } from '../../public/post/domain/post.entity';
 
 export class PostUpdateCommand {
   constructor(

@@ -6,18 +6,18 @@ import {
   Query,
   Request,
 } from '@nestjs/common';
-import { QueryPaginationType } from '../../types/query-pagination-type';
-import { BlogsViewType } from '../../blogs/infrastructure/types/blogs-view-type';
-import { BlogsQueryRepo } from '../../blogs/infrastructure/blogs-query.repository';
+import { QueryPaginationType } from '../../../../types/query-pagination-type';
+import { BlogsViewType } from '../infrastructure/types/blogs-view-type';
+import { BlogsQueryRepo } from '../infrastructure/blogs-query.repository';
 import { PostsViewType } from '../../post/types/posts-view-type';
 import { PostsQueryRepo } from '../../post/infrastructure/posts-query-repo';
 import { PostService } from '../../post/application/posts.service';
-import { BlogPagination } from '../../blogs/domain/blog-pagination';
-import { PaginationType } from '../../common/pagination';
-import { settings } from '../../settings';
-import { JwtService } from '../../jwt/jwt.service';
-import { exceptionHandler } from '../../exception-handler/exception-handler';
-import { ResultCode } from '../../exception-handler/result-code-enum';
+import { BlogPagination } from '../domain/blog-pagination';
+import { PaginationType } from '../../../../common/pagination';
+import { settings } from '../../../../settings';
+import { JwtService } from '../../../../jwt/jwt.service';
+import { exceptionHandler } from '../../../../exception-handler/exception-handler';
+import { ResultCode } from '../../../../exception-handler/result-code-enum';
 import { CommandBus } from '@nestjs/cqrs';
 
 @Controller('blogs')

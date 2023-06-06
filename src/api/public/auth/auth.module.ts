@@ -18,8 +18,8 @@ import { DeleteController } from '../../../delete/delete.controller';
 import { AuthController } from './api/auth.controller';
 import { DeviceService } from '../securityDevices/device.service';
 import { UserQueryRepo } from '../../superadmin/users/infrastructure/users.query.repo';
-import { Blog, BlogSchema } from '../../../blogs/domain/blog.entity';
-import { Post, PostSchema } from '../../../post/domain/post.entity';
+import { Blog, BlogSchema } from '../blogs/domain/blog.entity';
+import { Post, PostSchema } from '../post/domain/post.entity';
 import { PostLike, PostLikeSchema } from '../../../like/postLike.entity';
 import {
   CommentLike,
@@ -27,7 +27,7 @@ import {
 } from '../../../like/commentLike.entity';
 import { Comment, CommentSchema } from '../comments/domain/comment.entity';
 import { RefreshTokenStrategy } from './strategies/refresh-token.strategy';
-import { UsersService } from '../../superadmin/users/application&use-cases/users.service';
+import { UsersService } from '../../superadmin/users/application,use-cases/users.service';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { DevicesController } from '../securityDevices/devices.controller';

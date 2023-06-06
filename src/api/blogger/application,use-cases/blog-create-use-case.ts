@@ -1,11 +1,11 @@
-import { BlogRepository } from '../../../blogs/infrastructure/blog.repository';
+import { BlogRepository } from '../../public/blogs/infrastructure/blog.repository';
 import { InjectModel } from '@nestjs/mongoose';
 import {
   Blog,
   BlogDocument,
   BlogModelType,
-} from '../../../blogs/domain/blog.entity';
-import { CreateBlogDto } from '../../../blogs/createBlog.dto';
+} from '../../public/blogs/domain/blog.entity';
+import { CreateBlogDto } from '../createBlog.dto';
 import { CommandHandler } from '@nestjs/cqrs';
 import { UsersRepository } from '../../superadmin/users/infrastructure/users.repository';
 import { UserDocument } from '../../superadmin/users/domain/user.entity';
