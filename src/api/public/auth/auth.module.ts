@@ -45,10 +45,10 @@ const mongooseModels = [
 // const useCases = [CreateUsersUseCase];
 @Module({
   imports: [
-    ThrottlerModule.forRoot({
-      ttl: 1,
-      limit: 1000,
-    }),
+    // ThrottlerModule.forRoot({
+    //   ttl: 1,
+    //   limit: 1000,
+    // }),
     ScheduleModule.forRoot(),
     UsersModule,
     PassportModule,
