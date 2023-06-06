@@ -29,6 +29,8 @@ import { UserId } from '../../decorators/UserId';
 import { BlogDeleteCommand } from './application,use-cases/blog-delete-use-case';
 import { Result } from '../../exception-handler/result-type';
 import { PostCreateCommand } from './application,use-cases/post-create-use-case';
+import { PostUpdateCommand } from './application,use-cases/post-update-use-case';
+import { PostDeleteCommand } from './application,use-cases/post-delete-use-case';
 
 @UseGuards(AccessTokenGuard)
 @Controller('blogger/blogs')
@@ -96,6 +98,23 @@ export class BloggerController {
     return;
   }
 
+  @Put(':blogId/posts/:postId')
+  @HttpCode(204)
+  async updatePost(
+    @Param() params,
+    @Body() updatePostDto: CreatePostDto,
+    @UserId() userId: string,
+  ) {
+    const isPostUpdated: Result<ResultCode> = await this.commandBus.execute(
+      new PostUpdateCommand(userId, params, updatePostDto),
+    );
+
+    if (isPostUpdated.code !== ResultCode.Success) {
+      return exceptionHandler(isPostUpdated.code);
+    }
+    return;
+  }
+
   //@UseGuards(BasicAuthGuard)
   @Delete(':id')
   @HttpCode(204)
@@ -106,6 +125,19 @@ export class BloggerController {
 
     if (isBlogDeleted.code !== ResultCode.Success) {
       return exceptionHandler(isBlogDeleted.code);
+    }
+    return;
+  }
+
+  @Delete(':blogId/posts/:postId')
+  @HttpCode(204)
+  async deletePost(@Param() params, @UserId() userId: string) {
+    const isPostDeleted: Result<ResultCode> = await this.commandBus.execute(
+      new PostDeleteCommand(userId, params),
+    );
+
+    if (isPostDeleted.code !== ResultCode.Success) {
+      return exceptionHandler(isPostDeleted.code);
     }
     return;
   }
