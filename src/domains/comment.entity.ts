@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Model } from 'mongoose';
-import { CreateCommentDto } from '../createComment.Dto';
+import { CreateCommentDto } from '../api/public/comments/createComment.Dto';
 
 export type CommentDocument = HydratedDocument<Comment>;
 
@@ -69,10 +69,16 @@ export class Comment {
     };
     return new CommentModel(newComment);
   }
+
+  updateComment(createCommentDto: CreateCommentDto) {
+    this.content = createCommentDto.content;
+  }
 }
 
 export const CommentSchema = SchemaFactory.createForClass(Comment);
 
 const commentStaticMethods = { createComment: Comment.createComment };
+
+CommentSchema.methods = { updateComment: Comment.prototype.updateComment };
 
 CommentSchema.statics = commentStaticMethods;

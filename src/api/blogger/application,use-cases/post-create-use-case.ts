@@ -8,7 +8,7 @@ import {
   Post,
   PostDocument,
   PostModelType,
-} from '../../public/post/domain/post.entity';
+} from '../../../domains/post.entity';
 import { PostRepository } from '../../public/post/infrastructure/post.repository';
 import { ResultCode } from '../../../exception-handler/result-code-enum';
 import { Result } from '../../../exception-handler/result-type';

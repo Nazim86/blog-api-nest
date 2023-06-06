@@ -1,11 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Post, PostDocument } from '../domain/post.entity';
+import { Post, PostDocument } from '../../../../domains/post.entity';
 import { Model } from 'mongoose';
 import { PostsViewType } from '../types/posts-view-type';
 import { NewestLikesType, PostsDbType } from '../types/posts-db-type';
 import { ObjectId } from 'mongodb';
-import { PostLike, PostLikeDocument } from '../../like/postLike.entity';
+import {
+  PostLike,
+  PostLikeDocument,
+} from '../../../../domains/postLike.entity';
 import { LikeEnum } from '../../like/like.enum';
 import { PostLikesDbType } from '../../like/post-likes-db-type';
 import { QueryPaginationType } from '../../../../types/query-pagination-type';

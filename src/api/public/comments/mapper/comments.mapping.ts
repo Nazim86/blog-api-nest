@@ -1,10 +1,10 @@
-import { CommentDocument } from '../domain/comment.entity';
+import { CommentDocument } from '../../../../domains/comment.entity';
 import { CommentsViewType } from '../types/comments-view-type';
 import { InjectModel } from '@nestjs/mongoose';
 import {
   CommentLike,
   CommentLikeDocument,
-} from '../../like/commentLike.entity';
+} from '../../../../domains/commentLike.entity';
 import { Model } from 'mongoose';
 import { LikeEnum } from '../../like/like.enum';
 

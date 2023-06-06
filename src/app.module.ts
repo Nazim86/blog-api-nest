@@ -7,35 +7,29 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Blog, BlogSchema } from './api/public/blogs/domain/blog.entity';
 import { BloggerController } from './api/blogger/blogger.controller';
 import { BlogsQueryRepo } from './api/public/blogs/infrastructure/blogs-query.repository';
-import { Post, PostSchema } from './api/public/post/domain/post.entity';
+import { Post, PostSchema } from './domains/post.entity';
 import { PostMapping } from './api/public/post/mapper/post.mapping';
 import { PostsQueryRepo } from './api/public/post/infrastructure/posts-query-repo';
-import { PostLike, PostLikeSchema } from './api/public/like/postLike.entity';
+import { PostLike, PostLikeSchema } from './domains/postLike.entity';
 import { BlogRepository } from './api/public/blogs/infrastructure/blog.repository';
 import { PostsController } from './api/public/post/api/posts.controller';
 import { PostService } from './api/public/post/application/posts.service';
 import { PostRepository } from './api/public/post/infrastructure/post.repository';
-import {
-  CommentLike,
-  CommentLikeSchema,
-} from './api/public/like/commentLike.entity';
+import { CommentLike, CommentLikeSchema } from './domains/commentLike.entity';
 import { CommentsQueryRepo } from './api/public/comments/infrastructure/comments.query.repo';
 import { CommentsMapping } from './api/public/comments/mapper/comments.mapping';
-import {
-  Comment,
-  CommentSchema,
-} from './api/public/comments/domain/comment.entity';
+import { Comment, CommentSchema } from './domains/comment.entity';
 import { UsersService } from './api/superadmin/users/application,use-cases/users.service';
 import { UserQueryRepo } from './api/superadmin/users/infrastructure/users.query.repo';
 import { UsersRepository } from './api/superadmin/users/infrastructure/users.repository';
-import { User, UserSchema } from './api/superadmin/users/domain/user.entity';
+import { User, UserSchema } from './domains/user.entity';
 import { DeleteController } from './delete/delete.controller';
 
 import * as process from 'process';
 import { AuthModule } from './api/public/auth/auth.module';
 import { UsersModule } from './api/superadmin/users/users.module';
 import { LikesRepository } from './api/public/like/likes.repository';
-import { CommentService } from './api/public/comments/application/comments.service';
+import { CommentService } from './api/public/comments/application,use-cases/comments.service';
 import { CommentsRepository } from './api/public/comments/infrastructure/comments.repository';
 import { MailModule } from './mail/mail.module';
 import { JwtService } from './jwt/jwt.service';
@@ -43,10 +37,7 @@ import { CommentsController } from './api/public/comments/api/comments.controlle
 import { IsBlogExistConstraint } from './decorators/IsBlogIdExist';
 import { ScheduleModule } from '@nestjs/schedule';
 import { DeviceRepository } from './api/public/securityDevices/device.repository';
-import {
-  Device,
-  DeviceSchema,
-} from './api/public/securityDevices/domain/device.entity';
+import { Device, DeviceSchema } from './domains/device.entity';
 import { SuperAdminBlogsController } from './api/superadmin/blogs/sa.blogs.controller';
 import { BlogCreateUseCase } from './api/blogger/application,use-cases/blog-create-use-case';
 import { CqrsModule } from '@nestjs/cqrs';
@@ -62,6 +53,8 @@ import { PostDeleteUseCase } from './api/blogger/application,use-cases/post-dele
 import { DeviceUpdateUseCase } from './api/public/securityDevices/application,use-cases/device-update-use-case';
 import { DeviceCreateUseCase } from './api/public/securityDevices/application,use-cases/device-create-use-case';
 import { PostLikeUpdateUseCase } from './api/public/like/use-cases/like-update-use-case';
+import { CommentUpdateUseCase } from './api/public/comments/application,use-cases/comment-update-use-case';
+import { CommentCreateUseCase } from './api/public/comments/application,use-cases/comment-create-use-case';
 
 const mongooseModels = [
   { name: Device.name, schema: DeviceSchema },
@@ -85,6 +78,8 @@ const useCases = [
   DeviceUpdateUseCase,
   DeviceCreateUseCase,
   PostLikeUpdateUseCase,
+  CommentUpdateUseCase,
+  CommentCreateUseCase,
 ];
 @Module({
   imports: [

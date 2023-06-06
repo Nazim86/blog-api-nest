@@ -8,7 +8,7 @@ import {
 import { CreateBlogDto } from '../createBlog.dto';
 import { CommandHandler } from '@nestjs/cqrs';
 import { UsersRepository } from '../../superadmin/users/infrastructure/users.repository';
-import { UserDocument } from '../../superadmin/users/domain/user.entity';
+import { UserDocument } from '../../../domains/user.entity';
 
 export class BlogCreateCommand {
   constructor(public userId: string, public createBlogDto: CreateBlogDto) {}

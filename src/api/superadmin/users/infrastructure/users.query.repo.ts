@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { User, UserDocument } from '../domain/user.entity';
+import { User, UserDocument } from '../../../../domains/user.entity';
 import { Model } from 'mongoose';
 import { ObjectId } from 'mongodb';
 import { UserViewType } from './types/user-view-type';

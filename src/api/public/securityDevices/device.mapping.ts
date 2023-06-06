@@ -1,4 +1,4 @@
-import { DeviceDocument } from './domain/device.entity';
+import { DeviceDocument } from '../../../domains/device.entity';
 import { DeviceViewType } from '../../../types/device-view-type';
 
 export const deviceMapping = (

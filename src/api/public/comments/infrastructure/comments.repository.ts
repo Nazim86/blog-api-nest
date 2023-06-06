@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Comment, CommentDocument } from '../domain/comment.entity';
+import { Comment, CommentDocument } from '../../../../domains/comment.entity';
 import { Model } from 'mongoose';
 import {
   CommentLike,
   CommentLikeDocument,
-} from '../../like/commentLike.entity';
+} from '../../../../domains/commentLike.entity';
 import { LikeEnum } from '../../like/like.enum';
 import { ObjectId } from 'mongodb';
 

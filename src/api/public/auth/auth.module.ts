@@ -11,18 +11,21 @@ import { DeviceRepository } from '../securityDevices/device.repository';
 import { MailService } from '../../../mail/mail.service';
 import { UsersRepository } from '../../superadmin/users/infrastructure/users.repository';
 import { MongooseModule } from '@nestjs/mongoose';
-import { User, UserSchema } from '../../superadmin/users/domain/user.entity';
+import { User, UserSchema } from '../../../domains/user.entity';
 import { JwtService } from '../../../jwt/jwt.service';
-import { Device, DeviceSchema } from '../securityDevices/domain/device.entity';
+import { Device, DeviceSchema } from '../../../domains/device.entity';
 import { DeleteController } from '../../../delete/delete.controller';
 import { AuthController } from './api/auth.controller';
 import { DeviceService } from '../securityDevices/device.service';
 import { UserQueryRepo } from '../../superadmin/users/infrastructure/users.query.repo';
 import { Blog, BlogSchema } from '../blogs/domain/blog.entity';
-import { Post, PostSchema } from '../post/domain/post.entity';
-import { PostLike, PostLikeSchema } from '../like/postLike.entity';
-import { CommentLike, CommentLikeSchema } from '../like/commentLike.entity';
-import { Comment, CommentSchema } from '../comments/domain/comment.entity';
+import { Post, PostSchema } from '../../../domains/post.entity';
+import { PostLike, PostLikeSchema } from '../../../domains/postLike.entity';
+import {
+  CommentLike,
+  CommentLikeSchema,
+} from '../../../domains/commentLike.entity';
+import { Comment, CommentSchema } from '../../../domains/comment.entity';
 import { RefreshTokenStrategy } from './strategies/refresh-token.strategy';
 import { UsersService } from '../../superadmin/users/application,use-cases/users.service';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';

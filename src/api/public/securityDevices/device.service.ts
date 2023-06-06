@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '../../../jwt/jwt.service';
 import { InjectModel } from '@nestjs/mongoose';
-import { Device, DeviceModelType } from './domain/device.entity';
+import { Device, DeviceModelType } from '../../../domains/device.entity';
 import { DeviceRepository } from './device.repository';
 
 @Injectable()

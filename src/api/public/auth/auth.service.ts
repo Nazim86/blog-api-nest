@@ -6,7 +6,7 @@ import {
   User,
   UserDocument,
   UserModelTYpe,
-} from '../../superadmin/users/domain/user.entity';
+} from '../../../domains/user.entity';
 import { CreateUserDto } from '../../superadmin/users/createUser.Dto';
 import bcrypt from 'bcrypt';
 import { v4 as uuid } from 'uuid';

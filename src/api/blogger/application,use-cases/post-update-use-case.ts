@@ -5,7 +5,7 @@ import { PostRepository } from '../../public/post/infrastructure/post.repository
 import { CreatePostDto } from '../../public/post/createPostDto';
 import { ResultCode } from '../../../exception-handler/result-code-enum';
 import { Result } from '../../../exception-handler/result-type';
-import { PostDocument } from '../../public/post/domain/post.entity';
+import { PostDocument } from '../../../domains/post.entity';
 
 export class PostUpdateCommand {
   constructor(

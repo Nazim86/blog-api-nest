@@ -1,4 +1,4 @@
-import { DeviceDocument } from '../domain/device.entity';
+import { DeviceDocument } from '../../../../domains/device.entity';
 import { DeviceRepository } from '../device.repository';
 import { CommandHandler } from '@nestjs/cqrs';
 import { Result } from '../../../../exception-handler/result-type';

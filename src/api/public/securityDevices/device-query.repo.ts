@@ -1,7 +1,7 @@
 import { DeviceViewType } from '../../../types/device-view-type';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Device, DeviceDocument } from './domain/device.entity';
+import { Device, DeviceDocument } from '../../../domains/device.entity';
 import { Model } from 'mongoose';
 import { deviceMapping } from './device.mapping';
 

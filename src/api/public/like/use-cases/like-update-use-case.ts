@@ -1,16 +1,16 @@
 import { CommandHandler } from '@nestjs/cqrs';
 import { CreateLikeDto } from '../createLikeDto';
-import { PostDocument } from '../../post/domain/post.entity';
+import { PostDocument } from '../../../../domains/post.entity';
 import {
   PostLike,
   PostLikeDocument,
   PostLikeModelType,
-} from '../postLike.entity';
+} from '../../../../domains/postLike.entity';
 import { PostRepository } from '../../post/infrastructure/post.repository';
 import { UsersRepository } from '../../../superadmin/users/infrastructure/users.repository';
 import { LikesRepository } from '../likes.repository';
 import { InjectModel } from '@nestjs/mongoose';
-import { UserDocument } from '../../../superadmin/users/domain/user.entity';
+import { UserDocument } from '../../../../domains/user.entity';
 
 export class PostLikeUpdateCommand {
   constructor(

@@ -18,7 +18,7 @@ import { exceptionHandler } from '../../../../exception-handler/exception-handle
 import { ResultCode } from '../../../../exception-handler/result-code-enum';
 import { NewPasswordDto } from '../dto/newPasswordDto';
 import { LoginDto } from '../dto/loginDto';
-import { UserDocument } from '../../../superadmin/users/domain/user.entity';
+import { UserDocument } from '../../../../domains/user.entity';
 import { settings } from '../../../../settings';
 import { RefreshTokenGuard } from '../guards/refresh-token.guard';
 import { EmailDto } from '../dto/emailDto';

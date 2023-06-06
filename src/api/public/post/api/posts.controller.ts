@@ -18,7 +18,7 @@ import { PostsViewType } from '../types/posts-view-type';
 import { CommentsViewType } from '../../comments/types/comments-view-type';
 import { CommentsQueryRepo } from '../../comments/infrastructure/comments.query.repo';
 import { Pagination, PaginationType } from '../../../../common/pagination';
-import { CommentService } from '../../comments/application/comments.service';
+import { CommentService } from '../../comments/application,use-cases/comments.service';
 import { CreateCommentDto } from '../../comments/createComment.Dto';
 import { ResultCode } from '../../../../exception-handler/result-code-enum';
 import { exceptionHandler } from '../../../../exception-handler/exception-handler';
@@ -29,6 +29,7 @@ import { JwtService } from '../../../../jwt/jwt.service';
 import { CreateLikeDto } from '../../like/createLikeDto';
 import { CommandBus } from '@nestjs/cqrs';
 import { PostLikeUpdateCommand } from '../../like/use-cases/like-update-use-case';
+import { CommentCreateCommand } from '../../comments/application,use-cases/comment-create-use-case';
 
 @Controller('posts')
 export class PostsController {
@@ -112,12 +113,9 @@ export class PostsController {
     @Body() createCommentDto: CreateCommentDto,
   ) {
     const userId = req.user.userId;
-    const commentId: string | null =
-      await this.commentService.createPostComment(
-        createCommentDto,
-        postId,
-        userId,
-      );
+    const commentId: string | null = await this.commandBus.execute(
+      new CommentCreateCommand(createCommentDto, postId, userId),
+    );
 
     if (!commentId) {
       return exceptionHandler(ResultCode.NotFound);

@@ -4,13 +4,13 @@ import { PostsViewType } from '../../post/types/posts-view-type';
 import { QueryPaginationType } from '../../../../types/query-pagination-type';
 import { CommentsViewType } from '../types/comments-view-type';
 import { InjectModel } from '@nestjs/mongoose';
-import { Comment, CommentDocument } from '../domain/comment.entity';
+import { Comment, CommentDocument } from '../../../../domains/comment.entity';
 import { Model } from 'mongoose';
 import { CommentsMapping } from '../mapper/comments.mapping';
 import {
   CommentLike,
   CommentLikeDocument,
-} from '../../like/commentLike.entity';
+} from '../../../../domains/commentLike.entity';
 import { LikeEnum } from '../../like/like.enum';
 import { ObjectId } from 'mongodb';
 

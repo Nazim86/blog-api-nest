@@ -9,7 +9,7 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { CommentService } from '../application/comments.service';
+import { CommentService } from '../application,use-cases/comments.service';
 import { CommentsQueryRepo } from '../infrastructure/comments.query.repo';
 import { JwtService } from '../../../../jwt/jwt.service';
 import { CommentsViewType } from '../types/comments-view-type';
@@ -20,13 +20,16 @@ import { CreateCommentDto } from '../createComment.Dto';
 import { Result } from '../../../../exception-handler/result-type';
 import { ResultCode } from '../../../../exception-handler/result-code-enum';
 import { exceptionHandler } from '../../../../exception-handler/exception-handler';
+import { CommandBus } from '@nestjs/cqrs';
+import { CommentCreateCommand } from '../application,use-cases/comment-create-use-case';
 
 @Controller('comments')
 export class CommentsController {
   constructor(
-    protected commentService: CommentService,
-    protected commentsQueryRepo: CommentsQueryRepo,
-    protected jwtService: JwtService,
+    private readonly commentService: CommentService,
+    private readonly commentsQueryRepo: CommentsQueryRepo,
+    private readonly jwtService: JwtService,
+    private commandBus: CommandBus,
   ) {}
 
   @UseGuards(AccessTokenGuard)
@@ -37,12 +40,9 @@ export class CommentsController {
     @Body() createCommentDto: CreateCommentDto,
     @Request() req,
   ) {
-    const isUpdated: Result<ResultCode> =
-      await this.commentService.updateComment(
-        commentId,
-        createCommentDto,
-        req.user.userId,
-      );
+    const isUpdated: Result<ResultCode> = await this.commandBus.execute(
+      new CommentCreateCommand(commentId, createCommentDto, req.user.userId),
+    );
 
     if (isUpdated.code !== ResultCode.Success) {
       return exceptionHandler(isUpdated.code);

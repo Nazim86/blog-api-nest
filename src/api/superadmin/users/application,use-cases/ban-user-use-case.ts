@@ -2,7 +2,7 @@ import { CommandHandler } from '@nestjs/cqrs';
 import { BanUserDto } from '../banUserDto';
 import { UsersRepository } from '../infrastructure/users.repository';
 import { ResultCode } from '../../../../exception-handler/result-code-enum';
-import { UserDocument } from '../domain/user.entity';
+import { UserDocument } from '../../../../domains/user.entity';
 import { DeviceRepository } from '../../../public/securityDevices/device.repository';
 
 export class BanUserCommand {

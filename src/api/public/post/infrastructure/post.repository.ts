@@ -1,5 +1,9 @@
 import { ObjectId } from 'mongodb';
-import { Post, PostDocument, PostModelType } from '../domain/post.entity';
+import {
+  Post,
+  PostDocument,
+  PostModelType,
+} from '../../../../domains/post.entity';
 import { InjectModel } from '@nestjs/mongoose';
 import { Injectable } from '@nestjs/common';
 

@@ -3,7 +3,7 @@ import { BlogDocument } from '../../public/blogs/domain/blog.entity';
 import { BlogRepository } from '../../public/blogs/infrastructure/blog.repository';
 import { ResultCode } from '../../../exception-handler/result-code-enum';
 import { Result } from '../../../exception-handler/result-type';
-import { PostDocument } from '../../public/post/domain/post.entity';
+import { PostDocument } from '../../../domains/post.entity';
 import { PostRepository } from '../../public/post/infrastructure/post.repository';
 
 export class PostDeleteCommand {

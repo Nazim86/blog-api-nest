@@ -3,12 +3,12 @@ import {
   PostLike,
   PostLikeDocument,
   PostLikeModelType,
-} from './postLike.entity';
+} from '../../../domains/postLike.entity';
 import {
   CommentLike,
   CommentLikeDocument,
   CommentLikeModelType,
-} from './commentLike.entity';
+} from '../../../domains/commentLike.entity';
 
 export class LikesRepository {
   constructor(

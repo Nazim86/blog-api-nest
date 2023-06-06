@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Device, DeviceDocument } from './domain/device.entity';
+import { Device, DeviceDocument } from '../../../domains/device.entity';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 

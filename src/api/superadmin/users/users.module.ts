@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { UsersService } from './application,use-cases/users.service';
 import { UsersRepository } from './infrastructure/users.repository';
 import { MongooseModule } from '@nestjs/mongoose';
-import { User, UserSchema } from './domain/user.entity';
+import { User, UserSchema } from '../../../domains/user.entity';
 import { configModule } from '../../../app.module';
 import { IsUserAlreadyExistConstraint } from '../../../decorators/IsUserAlreadyExist';
 

@@ -4,7 +4,11 @@ import { ResultCode } from '../../../../exception-handler/result-code-enum';
 import { CreateUserDto } from '../createUser.Dto';
 import * as bcrypt from 'bcrypt';
 import process from 'process';
-import { User, UserDocument, UserModelTYpe } from '../domain/user.entity';
+import {
+  User,
+  UserDocument,
+  UserModelTYpe,
+} from '../../../../domains/user.entity';
 import { exceptionHandler } from '../../../../exception-handler/exception-handler';
 import { InjectModel } from '@nestjs/mongoose';
 
