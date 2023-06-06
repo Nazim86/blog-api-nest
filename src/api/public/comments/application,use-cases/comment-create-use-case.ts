@@ -2,6 +2,7 @@ import { CommandHandler } from '@nestjs/cqrs';
 import { PostDocument } from '../../../../domains/post.entity';
 import { UserDocument } from '../../../../domains/user.entity';
 import {
+  Comment,
   CommentDocument,
   CommentModelType,
 } from '../../../../domains/comment.entity';

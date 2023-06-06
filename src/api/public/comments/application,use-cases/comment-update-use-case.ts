@@ -1,9 +1,10 @@
 import { CommandHandler } from '@nestjs/cqrs';
 import { CreateCommentDto } from '../createComment.Dto';
 import {
+  Comment,
   CommentDocument,
-  CommentModelType,
-} from '../../../../domains/comment.entity';
+  CommentModelType
+} from "../../../../domains/comment.entity";
 import { PostRepository } from '../../post/infrastructure/post.repository';
 import { UsersRepository } from '../../../superadmin/users/infrastructure/users.repository';
 import { InjectModel } from '@nestjs/mongoose';
