@@ -29,6 +29,25 @@ export class BlogRepository {
     }
   }
 
+  async getBlogByIdAndUserId(
+    userId: string,
+    blogId: string,
+  ): Promise<BlogDocument | null> {
+    try {
+      const foundBlog = await this.BlogModel.findOne({
+        _id: new ObjectId(blogId),
+        'blogOwnerInfo.userId': userId,
+      });
+
+      if (!foundBlog) {
+        return null;
+      }
+      return foundBlog;
+    } catch (e) {
+      return null;
+    }
+  }
+
   async save(blog: BlogDocument): Promise<BlogDocument> {
     return await blog.save();
   }

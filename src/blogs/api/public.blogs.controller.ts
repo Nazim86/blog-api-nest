@@ -1,44 +1,31 @@
 import {
-  Body,
   Controller,
-  Delete,
   Get,
   HttpCode,
   Param,
-  Post,
-  Put,
   Query,
   Request,
-  UseGuards,
 } from '@nestjs/common';
 import { QueryPaginationType } from '../../types/query-pagination-type';
-import { BlogsViewType } from '../infrastructure/types/blogs-view-type';
-import { BlogsQueryRepo } from '../infrastructure/blogs-query.repository';
+import { BlogsViewType } from '../../blogs/infrastructure/types/blogs-view-type';
+import { BlogsQueryRepo } from '../../blogs/infrastructure/blogs-query.repository';
 import { PostsViewType } from '../../post/types/posts-view-type';
 import { PostsQueryRepo } from '../../post/infrastructure/posts-query-repo';
-import { BlogService } from '../application/blog.service';
-import { CreateBlogDto } from '../createBlog.dto';
-import { CreatePostDto } from '../../post/createPostDto';
 import { PostService } from '../../post/application/posts.service';
-import { BlogDocument } from '../domain/blog.entity';
-import { BlogPagination } from '../domain/blog-pagination';
+import { BlogPagination } from '../../blogs/domain/blog-pagination';
 import { PaginationType } from '../../common/pagination';
-import { BasicAuthGuard } from '../../api/public/auth/guards/basic-auth.guard';
 import { settings } from '../../settings';
 import { JwtService } from '../../jwt/jwt.service';
 import { exceptionHandler } from '../../exception-handler/exception-handler';
 import { ResultCode } from '../../exception-handler/result-code-enum';
 import { CommandBus } from '@nestjs/cqrs';
-import { BlogCreateCommand } from '../use-cases/blog-create-use-case';
-import { BlogUpdateCommand } from '../use-cases/blog-update-use-case';
 
 @Controller('blogs')
-export class BlogController {
+export class BloggerController {
   constructor(
     private commandBus: CommandBus,
     private readonly blogQueryRepo: BlogsQueryRepo,
     private readonly postQueryRepo: PostsQueryRepo,
-    private readonly blogService: BlogService,
     private readonly postService: PostService,
     private readonly jwtService: JwtService, // , // protected postQueryRepo: PostsQueryRepo, // ,
   ) {}
@@ -94,62 +81,5 @@ export class BlogController {
       return exceptionHandler(ResultCode.NotFound);
     }
     return getBlogByBlogId;
-  }
-
-  @UseGuards(BasicAuthGuard)
-  @Post()
-  async createBlog(@Body() createBlogDto: CreateBlogDto) {
-    const blogId: string = await this.commandBus.execute(
-      new BlogCreateCommand(createBlogDto),
-    );
-
-    return await this.blogQueryRepo.getBlogById(blogId);
-  }
-
-  @UseGuards(BasicAuthGuard)
-  @Post(':id/posts')
-  @HttpCode(201)
-  async createPostByBlogId(
-    @Param('id') blogId: string,
-    @Body() createPostDto: CreatePostDto,
-  ) {
-    const postId: string | null = await this.postService.createPostForBlog(
-      blogId,
-      createPostDto,
-    );
-
-    if (!postId) {
-      return exceptionHandler(ResultCode.NotFound);
-    }
-    return await this.postQueryRepo.getPostById(postId);
-  }
-
-  @UseGuards(BasicAuthGuard)
-  @Put(':id')
-  @HttpCode(204)
-  async updateBlog(
-    @Param('id') blogId: string,
-    @Body() updateBlogDto: CreateBlogDto,
-  ) {
-    const updateBlog: BlogDocument = await this.commandBus.execute(
-      new BlogUpdateCommand(blogId, updateBlogDto),
-    );
-
-    if (!updateBlog) {
-      return exceptionHandler(ResultCode.NotFound);
-    }
-    return;
-  }
-
-  @UseGuards(BasicAuthGuard)
-  @Delete(':id')
-  @HttpCode(204)
-  async deleteBlog(@Param('id') blogId) {
-    const deleteBlog: boolean = await this.blogService.deleteBlogById(blogId);
-
-    if (!deleteBlog) {
-      return exceptionHandler(ResultCode.NotFound);
-    }
-    return;
   }
 }

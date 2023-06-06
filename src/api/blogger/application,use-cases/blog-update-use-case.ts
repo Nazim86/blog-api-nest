@@ -1,22 +1,31 @@
-import { BlogRepository } from '../infrastructure/blog.repository';
+import { BlogRepository } from '../../../blogs/infrastructure/blog.repository';
 import { InjectModel } from '@nestjs/mongoose';
-import { Blog, BlogDocument, BlogModelType } from '../domain/blog.entity';
-import { CreateBlogDto } from '../createBlog.dto';
+import {
+  Blog,
+  BlogDocument,
+  BlogModelType,
+} from '../../../blogs/domain/blog.entity';
+import { CreateBlogDto } from '../../../blogs/createBlog.dto';
 import { CommandHandler } from '@nestjs/cqrs';
 
 export class BlogUpdateCommand {
-  constructor(public blogId: string, public updateBlogDto: CreateBlogDto) {}
+  constructor(
+    public userId: string,
+    public blogId: string,
+    public updateBlogDto: CreateBlogDto,
+  ) {}
 }
 
 @CommandHandler(BlogUpdateCommand)
 export class BlogUpdateUseCase {
   constructor(
-    protected blogRepository: BlogRepository,
+    private readonly blogRepository: BlogRepository,
     @InjectModel(Blog.name) private BlogModel: BlogModelType,
   ) {}
 
   async execute(command: BlogUpdateCommand): Promise<BlogDocument | null> {
-    const blog: BlogDocument = await this.blogRepository.getBlogById(
+    const blog: BlogDocument = await this.blogRepository.getBlogByIdAndUserId(
+      command.userId,
       command.blogId,
     );
 

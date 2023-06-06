@@ -3,7 +3,10 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Blog, BlogDocument } from '../blogs/domain/blog.entity';
 import { Model } from 'mongoose';
 import { Post, PostDocument } from '../post/domain/post.entity';
-import { Comment, CommentDocument } from '../comments/domain/comment.entity';
+import {
+  Comment,
+  CommentDocument,
+} from '../api/public/comments/domain/comment.entity';
 import { User, UserDocument } from '../api/superadmin/users/domain/user.entity';
 import { PostLike, PostLikeDocument } from '../like/postLike.entity';
 import { CommentLike, CommentLikeDocument } from '../like/commentLike.entity';

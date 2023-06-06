@@ -10,10 +10,9 @@ export class UsersRepository {
   constructor(@InjectModel(User.name) private UserModel: Model<User>) {}
 
   async findUserByConfirmationCode(code: string) {
-    const user = await this.UserModel.findOne({
+    return this.UserModel.findOne({
       'emailConfirmation.confirmationCode': code,
     });
-    return user;
   }
 
   async findUserByRecoveryCode(
@@ -23,8 +22,7 @@ export class UsersRepository {
   }
 
   async findUserByEmail(email: string) {
-    const result = await this.UserModel.findOne({ 'accountData.email': email });
-    return result;
+    return this.UserModel.findOne({ 'accountData.email': email });
   }
 
   async save(user: UserDocument) {

@@ -6,6 +6,8 @@ export type BlogDocument = HydratedDocument<Blog>;
 
 export type BlogModelStaticType = {
   createBlog: (
+    userId: string,
+    userLogin: string,
     createdBlogDto: CreateBlogDto,
     BlogModel: BlogModelType,
   ) => BlogDocument;
@@ -42,6 +44,8 @@ export class Blog {
   };
 
   static createBlog(
+    userId: string,
+    userLogin: string,
     createBlog: CreateBlogDto,
     BlogModel: BlogModelType,
   ): BlogDocument {
@@ -52,8 +56,8 @@ export class Blog {
       createdAt: new Date().toISOString(),
       isMembership: false,
       blogOwnerInfo: {
-        userId: null,
-        userLogin: null,
+        userId: userId,
+        userLogin: userLogin,
       },
     };
     return new BlogModel(newBlog);

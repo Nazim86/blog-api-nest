@@ -1,5 +1,5 @@
 import { DeviceDocument } from './domain/device.entity';
-import { DeviceViewType } from '../types/device-view-type';
+import { DeviceViewType } from '../../../types/device-view-type';
 
 export const deviceMapping = (
   array: DeviceDocument[],

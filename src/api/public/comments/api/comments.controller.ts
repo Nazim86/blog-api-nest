@@ -11,15 +11,15 @@ import {
 } from '@nestjs/common';
 import { CommentService } from '../application/comments.service';
 import { CommentsQueryRepo } from '../infrastructure/comments.query.repo';
-import { JwtService } from '../../jwt/jwt.service';
+import { JwtService } from '../../../../jwt/jwt.service';
 import { CommentsViewType } from '../types/comments-view-type';
-import { settings } from '../../settings';
-import { AccessTokenGuard } from '../../api/public/auth/guards/access-token.guard';
-import { CreateLikeDto } from '../../like/createLikeDto';
+import { settings } from '../../../../settings';
+import { AccessTokenGuard } from '../../auth/guards/access-token.guard';
+import { CreateLikeDto } from '../../../../like/createLikeDto';
 import { CreateCommentDto } from '../createComment.Dto';
-import { Result } from '../../exception-handler/result-type';
-import { ResultCode } from '../../exception-handler/result-code-enum';
-import { exceptionHandler } from '../../exception-handler/exception-handler';
+import { Result } from '../../../../exception-handler/result-type';
+import { ResultCode } from '../../../../exception-handler/result-code-enum';
+import { exceptionHandler } from '../../../../exception-handler/exception-handler';
 
 @Controller('comments')
 export class CommentsController {

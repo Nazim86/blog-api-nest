@@ -8,12 +8,12 @@ import {
   Param,
   Ip,
 } from '@nestjs/common';
-import { JwtService } from '../jwt/jwt.service';
+import { JwtService } from '../../../jwt/jwt.service';
 import { DeviceService } from './device.service';
-import { DeviceViewType } from '../types/device-view-type';
-import { RefreshTokenGuard } from '../api/public/auth/guards/refresh-token.guard';
-import { ResultCode } from '../exception-handler/result-code-enum';
-import { exceptionHandler } from '../exception-handler/exception-handler';
+import { DeviceViewType } from '../../../types/device-view-type';
+import { RefreshTokenGuard } from '../auth/guards/refresh-token.guard';
+import { ResultCode } from '../../../exception-handler/result-code-enum';
+import { exceptionHandler } from '../../../exception-handler/exception-handler';
 import { DeviceQueryRepo } from './device-query.repo';
 
 @Controller('security/devices')

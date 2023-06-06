@@ -7,19 +7,19 @@ import {
   CommentDocument,
   CommentModelType,
 } from '../domain/comment.entity';
-import { CreateLikeDto } from '../../like/createLikeDto';
+import { CreateLikeDto } from '../../../../like/createLikeDto';
 import {
   CommentLike,
   CommentLikeDocument,
   CommentLikeModelType,
-} from '../../like/commentLike.entity';
-import { LikesRepository } from '../../like/likes.repository';
-import { PostRepository } from '../../post/infrastructure/post.repository';
-import { PostDocument } from '../../post/domain/post.entity';
-import { UsersRepository } from '../../api/superadmin/users/infrastructure/users.repository';
-import { UserDocument } from '../../api/superadmin/users/domain/user.entity';
-import { ResultCode } from '../../exception-handler/result-code-enum';
-import { Result } from '../../exception-handler/result-type';
+} from '../../../../like/commentLike.entity';
+import { LikesRepository } from '../../../../like/likes.repository';
+import { PostRepository } from '../../../../post/infrastructure/post.repository';
+import { PostDocument } from '../../../../post/domain/post.entity';
+import { UsersRepository } from '../../../superadmin/users/infrastructure/users.repository';
+import { UserDocument } from '../../../superadmin/users/domain/user.entity';
+import { ResultCode } from '../../../../exception-handler/result-code-enum';
+import { Result } from '../../../../exception-handler/result-type';
 
 @Injectable()
 export class CommentService {

@@ -5,8 +5,8 @@ import { Model } from 'mongoose';
 import {
   CommentLike,
   CommentLikeDocument,
-} from '../../like/commentLike.entity';
-import { LikeEnum } from '../../like/like.enum';
+} from '../../../../like/commentLike.entity';
+import { LikeEnum } from '../../../../like/like.enum';
 import { ObjectId } from 'mongodb';
 
 @Injectable()

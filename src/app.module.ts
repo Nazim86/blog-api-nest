@@ -5,21 +5,24 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Blog, BlogSchema } from './blogs/domain/blog.entity';
-import { BlogController } from './blogs/api/blog.controller';
+import { BloggerController } from './api/blogger/blogger.controller';
 import { BlogsQueryRepo } from './blogs/infrastructure/blogs-query.repository';
 import { Post, PostSchema } from './post/domain/post.entity';
 import { PostMapping } from './post/mapper/post.mapping';
 import { PostsQueryRepo } from './post/infrastructure/posts-query-repo';
 import { PostLike, PostLikeSchema } from './like/postLike.entity';
-import { BlogService } from './blogs/application/blog.service';
+import { BlogService } from './api/blogger/application,use-cases/blog.service';
 import { BlogRepository } from './blogs/infrastructure/blog.repository';
 import { PostsController } from './post/api/posts.controller';
 import { PostService } from './post/application/posts.service';
 import { PostRepository } from './post/infrastructure/post.repository';
 import { CommentLike, CommentLikeSchema } from './like/commentLike.entity';
-import { CommentsQueryRepo } from './comments/infrastructure/comments.query.repo';
-import { CommentsMapping } from './comments/mapper/comments.mapping';
-import { Comment, CommentSchema } from './comments/domain/comment.entity';
+import { CommentsQueryRepo } from './api/public/comments/infrastructure/comments.query.repo';
+import { CommentsMapping } from './api/public/comments/mapper/comments.mapping';
+import {
+  Comment,
+  CommentSchema,
+} from './api/public/comments/domain/comment.entity';
 import { UsersService } from './api/superadmin/users/application&use-cases/users.service';
 import { UserQueryRepo } from './api/superadmin/users/infrastructure/users.query.repo';
 import { UsersRepository } from './api/superadmin/users/infrastructure/users.repository';
@@ -30,19 +33,22 @@ import * as process from 'process';
 import { AuthModule } from './api/public/auth/auth.module';
 import { UsersModule } from './api/superadmin/users/users.module';
 import { LikesRepository } from './like/likes.repository';
-import { CommentService } from './comments/application/comments.service';
-import { CommentsRepository } from './comments/infrastructure/comments.repository';
+import { CommentService } from './api/public/comments/application/comments.service';
+import { CommentsRepository } from './api/public/comments/infrastructure/comments.repository';
 import { MailModule } from './mail/mail.module';
 import { JwtService } from './jwt/jwt.service';
-import { CommentsController } from './comments/api/comments.controller';
+import { CommentsController } from './api/public/comments/api/comments.controller';
 import { IsBlogExistConstraint } from './decorators/IsBlogIdExist';
 import { ScheduleModule } from '@nestjs/schedule';
-import { DeviceRepository } from './securityDevices/device.repository';
-import { Device, DeviceSchema } from './securityDevices/domain/device.entity';
+import { DeviceRepository } from './api/public/securityDevices/device.repository';
+import {
+  Device,
+  DeviceSchema,
+} from './api/public/securityDevices/domain/device.entity';
 import { SuperAdminBlogsController } from './api/superadmin/blogs/sa.blogs.controller';
-import { BlogCreateUseCase } from './blogs/use-cases/blog-create-use-case';
+import { BlogCreateUseCase } from './api/blogger/application,use-cases/blog-create-use-case';
 import { CqrsModule } from '@nestjs/cqrs';
-import { BlogUpdateUseCase } from './blogs/use-cases/blog-update-use-case';
+import { BlogUpdateUseCase } from './api/blogger/application,use-cases/blog-update-use-case';
 import { BindBlogUseCase } from './api/superadmin/blogs/bind-blog-use-case';
 import { SuperAdminUsersController } from './api/superadmin/users/sa.users.controller';
 import { BanUserUseCase } from './api/superadmin/users/application&use-cases/ban-user-use-case';
@@ -78,7 +84,7 @@ const useCases = [
 
   controllers: [
     AppController,
-    BlogController,
+    BloggerController,
     PostsController,
     SuperAdminUsersController,
     DeleteController,

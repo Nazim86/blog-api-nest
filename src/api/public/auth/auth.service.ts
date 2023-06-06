@@ -15,7 +15,7 @@ import { NewPasswordDto } from './dto/newPasswordDto';
 import { LoginDto } from './dto/loginDto';
 import { EmailDto } from './dto/emailDto';
 import { CurrentUserType } from '../../superadmin/users/infrastructure/types/current-user-type';
-import { DeviceRepository } from '../../../securityDevices/device.repository';
+import { DeviceRepository } from '../securityDevices/device.repository';
 import { MailService } from '../../../mail/mail.service';
 import { ConfirmationCodeDto } from './dto/confirmationCodeDto';
 

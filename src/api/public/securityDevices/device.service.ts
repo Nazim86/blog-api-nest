@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { JwtService } from '../jwt/jwt.service';
+import { JwtService } from '../../../jwt/jwt.service';
 import { InjectModel } from '@nestjs/mongoose';
 import { Device, DeviceModelType } from './domain/device.entity';
 import { DeviceRepository } from './device.repository';
-import { settings } from '../settings';
-import { ResultCode } from '../exception-handler/result-code-enum';
-import { Result } from '../exception-handler/result-type';
+import { settings } from '../../../settings';
+import { ResultCode } from '../../../exception-handler/result-code-enum';
+import { Result } from '../../../exception-handler/result-type';
 
 @Injectable()
 export class DeviceService {
