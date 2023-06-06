@@ -27,15 +27,18 @@ import { AccessTokenGuard } from '../../auth/guards/access-token.guard';
 import { settings } from '../../../../settings';
 import { JwtService } from '../../../../jwt/jwt.service';
 import { CreateLikeDto } from '../../like/createLikeDto';
+import { CommandBus } from '@nestjs/cqrs';
+import { PostLikeUpdateCommand } from '../../like/use-cases/like-update-use-case';
 
 @Controller('posts')
 export class PostsController {
   constructor(
-    protected postQueryRepo: PostsQueryRepo,
-    protected commentsQueryRepo: CommentsQueryRepo,
-    protected postService: PostService,
-    protected commentService: CommentService,
-    protected jwtService: JwtService,
+    private readonly postQueryRepo: PostsQueryRepo,
+    private readonly commentsQueryRepo: CommentsQueryRepo,
+    private readonly postService: PostService,
+    private readonly commentService: CommentService,
+    private readonly jwtService: JwtService,
+    private commandBus: CommandBus,
   ) {}
 
   @Get()
@@ -130,12 +133,10 @@ export class PostsController {
     @Param('id') postId: string,
     @Body() updateLikeDto: CreateLikeDto,
   ) {
-    const userId = req.user.userId; //req.context.user!._id.toString();
+    const userId = req.user.userId;
 
-    const isUpdated: boolean = await this.postService.updatePostLikeStatus(
-      postId,
-      userId,
-      updateLikeDto,
+    const isUpdated: boolean = await this.commandBus.execute(
+      new PostLikeUpdateCommand(postId, userId, updateLikeDto),
     );
 
     if (!isUpdated) {

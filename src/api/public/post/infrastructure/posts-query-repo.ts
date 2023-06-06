@@ -52,8 +52,6 @@ export class PostsQueryRepo {
         status: LikeEnum.Dislike,
       });
 
-      // const getLikeInfoForPost = await PostLikeModel.findOne({postId})
-
       const getLast3Likes: PostLikesDbType[] = await this.PostLikeModel.find({
         postId,
         status: LikeEnum.Like,
