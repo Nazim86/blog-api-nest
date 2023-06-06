@@ -100,7 +100,7 @@ export class User {
         isConfirmed: isConfirmed ?? true,
       },
       banInfo: {
-        isBanned: true,
+        isBanned: false,
         banDate: new Date().toISOString(),
         banReason: 'string',
       },

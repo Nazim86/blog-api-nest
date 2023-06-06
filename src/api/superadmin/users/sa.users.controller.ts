@@ -37,7 +37,7 @@ export class SuperAdminUsersController {
       new BanUserCommand(userId, banUserDto),
     );
 
-    if (!isUserBanned && isUserBanned.code !== ResultCode.Success) {
+    if (isUserBanned.code !== ResultCode.Success) {
       return exceptionHandler(ResultCode.BadRequest, isUserBanned.data);
     }
 
