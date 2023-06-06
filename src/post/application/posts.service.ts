@@ -1,7 +1,7 @@
 import { BlogRepository } from '../../blogs/infrastructure/blog.repository';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Post, PostDocument, PostModuleType } from '../domain/post.entity';
+import { Post, PostDocument, PostModelType } from '../domain/post.entity';
 import { CreatePostDto } from '../createPostDto';
 import { PostRepository } from '../infrastructure/post.repository';
 import { BlogDocument } from '../../blogs/domain/blog.entity';
@@ -23,7 +23,7 @@ export class PostService {
     protected postQueryRepo: PostsQueryRepo,
     protected userRepository: UsersRepository,
     protected likesRepository: LikesRepository,
-    @InjectModel(Post.name) private PostModel: PostModuleType,
+    @InjectModel(Post.name) private PostModel: PostModelType,
     @InjectModel(PostLike.name) private PostLikeModel: PostLikeModelType,
   ) {}
 

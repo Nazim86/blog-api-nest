@@ -1,11 +1,11 @@
 import { ObjectId } from 'mongodb';
-import { Post, PostDocument, PostModuleType } from '../domain/post.entity';
+import { Post, PostDocument, PostModelType } from '../domain/post.entity';
 import { InjectModel } from '@nestjs/mongoose';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class PostRepository {
-  constructor(@InjectModel(Post.name) private PostModel: PostModuleType) {}
+  constructor(@InjectModel(Post.name) private PostModel: PostModelType) {}
   async getPostById(postId: string): Promise<PostDocument | null> {
     return this.PostModel.findOne({ _id: new ObjectId(postId) });
   }

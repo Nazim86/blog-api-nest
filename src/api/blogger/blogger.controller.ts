@@ -16,11 +16,9 @@ import { BlogsQueryRepo } from '../../blogs/infrastructure/blogs-query.repositor
 import { PostsQueryRepo } from '../../post/infrastructure/posts-query-repo';
 import { CreateBlogDto } from '../../blogs/createBlog.dto';
 import { CreatePostDto } from '../../post/createPostDto';
-import { PostService } from '../../post/application/posts.service';
 import { BlogDocument } from '../../blogs/domain/blog.entity';
 import { BlogPagination } from '../../blogs/domain/blog-pagination';
 import { PaginationType } from '../../common/pagination';
-import { JwtService } from '../../jwt/jwt.service';
 import { exceptionHandler } from '../../exception-handler/exception-handler';
 import { ResultCode } from '../../exception-handler/result-code-enum';
 import { CommandBus } from '@nestjs/cqrs';
@@ -30,6 +28,7 @@ import { AccessTokenGuard } from '../public/auth/guards/access-token.guard';
 import { UserId } from '../../decorators/UserId';
 import { BlogDeleteCommand } from './application,use-cases/blog-delete-use-case';
 import { Result } from '../../exception-handler/result-type';
+import { PostCreateCommand } from './application,use-cases/post-create-use-case';
 
 @UseGuards(AccessTokenGuard)
 @Controller('blogger/blogs')
@@ -37,9 +36,7 @@ export class BloggerController {
   constructor(
     private commandBus: CommandBus,
     private readonly blogQueryRepo: BlogsQueryRepo,
-    private readonly postQueryRepo: PostsQueryRepo,
-    private readonly postService: PostService,
-    private readonly jwtService: JwtService, // , // protected postQueryRepo: PostsQueryRepo, // ,
+    private readonly postQueryRepo: PostsQueryRepo, //private readonly jwtService: JwtService, // , // protected postQueryRepo: PostsQueryRepo, // ,
   ) {}
 
   @Get()
@@ -70,16 +67,16 @@ export class BloggerController {
   async createPostByBlogId(
     @Param('id') blogId: string,
     @Body() createPostDto: CreatePostDto,
+    @UserId() userId: string,
   ) {
-    const postId: string | null = await this.postService.createPostForBlog(
-      blogId,
-      createPostDto,
+    const post: Result<ResultCode> = await this.commandBus.execute(
+      new PostCreateCommand(userId, blogId, createPostDto),
     );
 
-    if (!postId) {
-      return exceptionHandler(ResultCode.NotFound);
+    if (post.code !== ResultCode.Success) {
+      return exceptionHandler(post.code);
     }
-    return await this.postQueryRepo.getPostById(postId);
+    return await this.postQueryRepo.getPostById(post.data.toString());
   }
 
   @HttpCode(204)

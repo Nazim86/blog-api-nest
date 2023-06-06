@@ -8,12 +8,12 @@ export type PostDocument = HydratedDocument<Post>;
 export type PostModelStaticType = {
   createPost: (
     createPostDto: CreatePostDto,
-    PostModel: PostModuleType,
+    PostModel: PostModelType,
     blog: BlogDocument,
   ) => PostDocument;
 };
 
-export type PostModuleType = Model<Post> & PostModelStaticType;
+export type PostModelType = Model<Post> & PostModelStaticType;
 
 @Schema()
 export class Post {
@@ -45,7 +45,7 @@ export class Post {
 
   static createPost(
     createPostDto: CreatePostDto,
-    PostModel: PostModuleType,
+    PostModel: PostModelType,
     blog: BlogDocument,
   ): PostDocument {
     const newPost = {
