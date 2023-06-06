@@ -1,4 +1,4 @@
-import { Pagination, PaginationType } from '../common/pagination';
+import { Pagination, PaginationType } from '../../../common/pagination';
 
 export class UserPagination<T> extends Pagination<PaginationType> {
   public readonly searchLoginTerm: string;

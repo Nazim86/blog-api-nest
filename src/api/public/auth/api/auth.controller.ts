@@ -9,26 +9,26 @@ import {
   Response,
   UseGuards,
 } from '@nestjs/common';
-import { JwtService } from '../../jwt/jwt.service';
+import { JwtService } from '../../../../jwt/jwt.service';
 import { AuthService } from '../auth.service';
-import { UsersRepository } from '../../users/infrastructure/users.repository';
-import { DeviceService } from '../../securityDevices/device.service';
-import { CreateUserDto } from '../../users/createUser.Dto';
-import { exceptionHandler } from '../../exception-handler/exception-handler';
-import { ResultCode } from '../../exception-handler/result-code-enum';
+import { UsersRepository } from '../../../superadmin/users/infrastructure/users.repository';
+import { DeviceService } from '../../../../securityDevices/device.service';
+import { CreateUserDto } from '../../../superadmin/users/createUser.Dto';
+import { exceptionHandler } from '../../../../exception-handler/exception-handler';
+import { ResultCode } from '../../../../exception-handler/result-code-enum';
 import { NewPasswordDto } from '../dto/newPasswordDto';
 import { LoginDto } from '../dto/loginDto';
-import { UserDocument } from '../../users/domain/user.entity';
-import { settings } from '../../settings';
+import { UserDocument } from '../../../superadmin/users/domain/user.entity';
+import { settings } from '../../../../settings';
 import { RefreshTokenGuard } from '../guards/refresh-token.guard';
 import { EmailDto } from '../dto/emailDto';
-import { CurrentUserType } from '../../users/infrastructure/types/current-user-type';
+import { CurrentUserType } from '../../../superadmin/users/infrastructure/types/current-user-type';
 import { ConfirmationCodeDto } from '../dto/confirmationCodeDto';
 import { Throttle } from '@nestjs/throttler';
 import { AccessTokenGuard } from '../guards/access-token.guard';
-import { UserId } from '../../decorators/UserId';
-import { RefreshToken } from '../../decorators/RefreshToken';
-import { DeviceId } from '../../decorators/DeviceId';
+import { UserId } from '../../../../decorators/UserId';
+import { RefreshToken } from '../../../../decorators/RefreshToken';
+import { DeviceId } from '../../../../decorators/DeviceId';
 
 @Controller('auth')
 export class AuthController {

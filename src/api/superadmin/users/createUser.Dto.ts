@@ -1,5 +1,5 @@
 import { IsEmail, IsString, Length } from 'class-validator';
-import { IsUserAlreadyExist } from '../decorators/IsUserAlreadyExist';
+import { IsUserAlreadyExist } from '../../../decorators/IsUserAlreadyExist';
 
 export class CreateUserDto {
   @IsString()

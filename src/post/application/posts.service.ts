@@ -6,7 +6,7 @@ import { CreatePostDto } from '../createPostDto';
 import { PostRepository } from '../infrastructure/post.repository';
 import { BlogDocument } from '../../blogs/domain/blog.entity';
 import { PostsQueryRepo } from '../infrastructure/posts-query-repo';
-import { UsersRepository } from '../../users/infrastructure/users.repository';
+import { UsersRepository } from '../../api/superadmin/users/infrastructure/users.repository';
 import {
   PostLike,
   PostLikeDocument,

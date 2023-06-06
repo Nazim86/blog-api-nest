@@ -20,16 +20,15 @@ import { CommentLike, CommentLikeSchema } from './like/commentLike.entity';
 import { CommentsQueryRepo } from './comments/infrastructure/comments.query.repo';
 import { CommentsMapping } from './comments/mapper/comments.mapping';
 import { Comment, CommentSchema } from './comments/domain/comment.entity';
-import { UserController } from './users/api/users.controller';
-import { UsersService } from './users/application/users.service';
-import { UserQueryRepo } from './users/infrastructure/users.query.repo';
-import { UsersRepository } from './users/infrastructure/users.repository';
-import { User, UserSchema } from './users/domain/user.entity';
+import { UsersService } from './api/superadmin/users/application&use-cases/users.service';
+import { UserQueryRepo } from './api/superadmin/users/infrastructure/users.query.repo';
+import { UsersRepository } from './api/superadmin/users/infrastructure/users.repository';
+import { User, UserSchema } from './api/superadmin/users/domain/user.entity';
 import { DeleteController } from './delete/delete.controller';
 
 import * as process from 'process';
-import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
+import { AuthModule } from './api/public/auth/auth.module';
+import { UsersModule } from './api/superadmin/users/users.module';
 import { LikesRepository } from './like/likes.repository';
 import { CommentService } from './comments/application/comments.service';
 import { CommentsRepository } from './comments/infrastructure/comments.repository';
@@ -46,7 +45,8 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { BlogUpdateUseCase } from './blogs/use-cases/blog-update-use-case';
 import { BindBlogUseCase } from './api/superadmin/blogs/bind-blog-use-case';
 import { SuperAdminUsersController } from './api/superadmin/users/sa.users.controller';
-import { BanUserUserCase } from './api/superadmin/users/ban-user-user-case';
+import { BanUserUseCase } from './api/superadmin/users/application&use-cases/ban-user-use-case';
+import { CreateUsersUseCase } from './api/superadmin/users/application&use-cases/create-user-use-case';
 
 const mongooseModels = [
   { name: Device.name, schema: DeviceSchema },
@@ -61,7 +61,8 @@ const useCases = [
   BlogCreateUseCase,
   BlogUpdateUseCase,
   BindBlogUseCase,
-  BanUserUserCase,
+  BanUserUseCase,
+  CreateUsersUseCase,
 ];
 @Module({
   imports: [
@@ -79,7 +80,7 @@ const useCases = [
     AppController,
     BlogController,
     PostsController,
-    UserController,
+    SuperAdminUsersController,
     DeleteController,
     CommentsController,
     SuperAdminBlogsController,

@@ -3,10 +3,6 @@ import { Injectable } from '@nestjs/common';
 import { UsersRepository } from '../infrastructure/users.repository';
 import * as bcrypt from 'bcrypt';
 import { User, UserDocument, UserModelTYpe } from '../domain/user.entity';
-import { CreateUserDto } from '../createUser.Dto';
-import * as process from 'process';
-import { exceptionHandler } from '../../exception-handler/exception-handler';
-import { ResultCode } from '../../exception-handler/result-code-enum';
 
 @Injectable()
 export class UsersService {
@@ -14,31 +10,6 @@ export class UsersService {
     protected userRepository: UsersRepository,
     @InjectModel(User.name) private UserModel: UserModelTYpe,
   ) {}
-
-  async createNewUser(createUserDto: CreateUserDto): Promise<string> {
-    const passwordHash = await bcrypt.hash(
-      createUserDto.password,
-      Number(process.env.SALT_ROUND),
-    );
-
-    const newUser: UserDocument = this.UserModel.createUser(
-      createUserDto,
-      passwordHash,
-      this.UserModel,
-    );
-
-    try {
-      await this.userRepository.save(newUser);
-    } catch (e) {
-      exceptionHandler(ResultCode.BadRequest);
-    }
-
-    return newUser.id;
-  }
-
-  async _generateHash(password: string, passwordSalt: string): Promise<string> {
-    return await bcrypt.hash(password, passwordSalt);
-  }
 
   async deleteUser(id: string): Promise<boolean> {
     return await this.userRepository.deleteUser(id);

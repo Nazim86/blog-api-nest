@@ -23,7 +23,7 @@ import { PostService } from '../../post/application/posts.service';
 import { BlogDocument } from '../domain/blog.entity';
 import { BlogPagination } from '../domain/blog-pagination';
 import { PaginationType } from '../../common/pagination';
-import { BasicAuthGuard } from '../../auth/guards/basic-auth.guard';
+import { BasicAuthGuard } from '../../api/public/auth/guards/basic-auth.guard';
 import { settings } from '../../settings';
 import { JwtService } from '../../jwt/jwt.service';
 import { exceptionHandler } from '../../exception-handler/exception-handler';

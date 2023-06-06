@@ -3,7 +3,7 @@ import { HydratedDocument, Model } from 'mongoose';
 import { CreateUserDto } from '../createUser.Dto';
 import { v4 as uuid } from 'uuid';
 import { add } from 'date-fns';
-import { BanUserDto } from '../../api/superadmin/users/banUserDto';
+import { BanUserDto } from '../banUserDto';
 
 export type UserDocument = HydratedDocument<User>;
 export type UserModelStaticType = {

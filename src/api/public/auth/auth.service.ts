@@ -1,18 +1,22 @@
 import { Injectable } from '@nestjs/common';
-import { UsersRepository } from '../users/infrastructure/users.repository';
-import { JwtService } from '../jwt/jwt.service';
+import { UsersRepository } from '../../superadmin/users/infrastructure/users.repository';
+import { JwtService } from '../../../jwt/jwt.service';
 import { InjectModel } from '@nestjs/mongoose';
-import { User, UserDocument, UserModelTYpe } from '../users/domain/user.entity';
-import { CreateUserDto } from '../users/createUser.Dto';
+import {
+  User,
+  UserDocument,
+  UserModelTYpe,
+} from '../../superadmin/users/domain/user.entity';
+import { CreateUserDto } from '../../superadmin/users/createUser.Dto';
 import bcrypt from 'bcrypt';
 import { v4 as uuid } from 'uuid';
 import * as process from 'process';
 import { NewPasswordDto } from './dto/newPasswordDto';
 import { LoginDto } from './dto/loginDto';
 import { EmailDto } from './dto/emailDto';
-import { CurrentUserType } from '../users/infrastructure/types/current-user-type';
-import { DeviceRepository } from '../securityDevices/device.repository';
-import { MailService } from '../mail/mail.service';
+import { CurrentUserType } from '../../superadmin/users/infrastructure/types/current-user-type';
+import { DeviceRepository } from '../../../securityDevices/device.repository';
+import { MailService } from '../../../mail/mail.service';
 import { ConfirmationCodeDto } from './dto/confirmationCodeDto';
 
 @Injectable()

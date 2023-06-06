@@ -14,7 +14,7 @@ import { BlogPagination } from '../../../blogs/domain/blog-pagination';
 import { BlogsQueryRepo } from '../../../blogs/infrastructure/blogs-query.repository';
 import { exceptionHandler } from '../../../exception-handler/exception-handler';
 import { ResultCode } from '../../../exception-handler/result-code-enum';
-import { BasicAuthGuard } from '../../../auth/guards/basic-auth.guard';
+import { BasicAuthGuard } from '../../public/auth/guards/basic-auth.guard';
 
 @Controller('sa/blogs')
 @UseGuards(BasicAuthGuard)
