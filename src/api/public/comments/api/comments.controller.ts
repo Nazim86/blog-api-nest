@@ -22,6 +22,7 @@ import { ResultCode } from '../../../../exception-handler/result-code-enum';
 import { exceptionHandler } from '../../../../exception-handler/exception-handler';
 import { CommandBus } from '@nestjs/cqrs';
 import { CommentCreateCommand } from '../application,use-cases/comment-create-use-case';
+import { CommentLikeStatusUpdateCommand } from '../application,use-cases/comment-like-status-update-use-case';
 
 @Controller('comments')
 export class CommentsController {
@@ -102,12 +103,9 @@ export class CommentsController {
   ) {
     const userId = req.user.userId;
 
-    const updateComment: boolean =
-      await this.commentService.updateCommentLikeStatus(
-        commentId,
-        userId,
-        createLikeDto,
-      );
+    const updateComment: boolean = await this.commandBus.execute(
+      new CommentLikeStatusUpdateCommand(commentId, userId, createLikeDto),
+    );
 
     if (!updateComment) {
       return exceptionHandler(ResultCode.NotFound);
