@@ -12,7 +12,7 @@ import {
 import { JwtService } from '../../../../jwt/jwt.service';
 import { AuthService } from '../auth.service';
 import { UsersRepository } from '../../../superadmin/users/infrastructure/users.repository';
-import { DeviceService } from '../../securityDevices/device.service';
+import { DeviceService } from '../../securityDevices/application,use-cases/device.service';
 import { CreateUserDto } from '../../../superadmin/users/createUser.Dto';
 import { exceptionHandler } from '../../../../exception-handler/exception-handler';
 import { ResultCode } from '../../../../exception-handler/result-code-enum';
@@ -24,7 +24,6 @@ import { RefreshTokenGuard } from '../guards/refresh-token.guard';
 import { EmailDto } from '../dto/emailDto';
 import { CurrentUserType } from '../../../superadmin/users/infrastructure/types/current-user-type';
 import { ConfirmationCodeDto } from '../dto/confirmationCodeDto';
-import { Throttle } from '@nestjs/throttler';
 import { AccessTokenGuard } from '../guards/access-token.guard';
 import { UserId } from '../../../../decorators/UserId';
 import { RefreshToken } from '../../../../decorators/RefreshToken';

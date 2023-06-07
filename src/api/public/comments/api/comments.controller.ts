@@ -9,7 +9,6 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { CommentService } from '../application,use-cases/comments.service';
 import { CommentsQueryRepo } from '../infrastructure/comments.query.repo';
 import { JwtService } from '../../../../jwt/jwt.service';
 import { CommentsViewType } from '../types/comments-view-type';
@@ -23,11 +22,11 @@ import { exceptionHandler } from '../../../../exception-handler/exception-handle
 import { CommandBus } from '@nestjs/cqrs';
 import { CommentCreateCommand } from '../application,use-cases/comment-create-use-case';
 import { CommentLikeStatusUpdateCommand } from '../application,use-cases/comment-like-status-update-use-case';
+import { CommentDeleteCommand } from "../application,use-cases/comment-delete-use-case";
 
 @Controller('comments')
 export class CommentsController {
   constructor(
-    private readonly commentService: CommentService,
     private readonly commentsQueryRepo: CommentsQueryRepo,
     private readonly jwtService: JwtService,
     private commandBus: CommandBus,
@@ -59,7 +58,7 @@ export class CommentsController {
     @Request() req,
   ) {
     const isDeleted: Result<ResultCode> =
-      await this.commentService.deleteComment(commentId, req.user.userId);
+      await this.commandBus.execute(new CommentDeleteCommand(commentId, req.user.userId))
 
     if (isDeleted.code !== ResultCode.Success) {
       return exceptionHandler(isDeleted.code);

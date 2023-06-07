@@ -18,7 +18,6 @@ import { PostsViewType } from '../types/posts-view-type';
 import { CommentsViewType } from '../../comments/types/comments-view-type';
 import { CommentsQueryRepo } from '../../comments/infrastructure/comments.query.repo';
 import { Pagination, PaginationType } from '../../../../common/pagination';
-import { CommentService } from '../../comments/application,use-cases/comments.service';
 import { CreateCommentDto } from '../../comments/createComment.Dto';
 import { ResultCode } from '../../../../exception-handler/result-code-enum';
 import { exceptionHandler } from '../../../../exception-handler/exception-handler';
@@ -28,7 +27,7 @@ import { settings } from '../../../../settings';
 import { JwtService } from '../../../../jwt/jwt.service';
 import { CreateLikeDto } from '../../like/createLikeDto';
 import { CommandBus } from '@nestjs/cqrs';
-import { PostLikeUpdateCommand } from '../../like/use-cases/like-update-use-case';
+import { PostLikeUpdateCommand } from '../../like/use-cases/post-like-update-use-case';
 import { CommentCreateCommand } from '../../comments/application,use-cases/comment-create-use-case';
 
 @Controller('posts')
@@ -37,7 +36,6 @@ export class PostsController {
     private readonly postQueryRepo: PostsQueryRepo,
     private readonly commentsQueryRepo: CommentsQueryRepo,
     private readonly postService: PostService,
-    private readonly commentService: CommentService,
     private readonly jwtService: JwtService,
     private commandBus: CommandBus,
   ) {}

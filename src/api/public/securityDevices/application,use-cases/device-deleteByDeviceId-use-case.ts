@@ -1,5 +1,5 @@
 import { DeviceDocument } from '../../../../domains/device.entity';
-import { DeviceRepository } from '../device.repository';
+import { DeviceRepository } from '../infrastructure/device.repository';
 import { CommandHandler } from '@nestjs/cqrs';
 import { Result } from '../../../../exception-handler/result-type';
 import { ResultCode } from '../../../../exception-handler/result-code-enum';

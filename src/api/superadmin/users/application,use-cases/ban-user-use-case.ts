@@ -3,7 +3,7 @@ import { BanUserDto } from '../banUserDto';
 import { UsersRepository } from '../infrastructure/users.repository';
 import { ResultCode } from '../../../../exception-handler/result-code-enum';
 import { UserDocument } from '../../../../domains/user.entity';
-import { DeviceRepository } from '../../../public/securityDevices/device.repository';
+import { DeviceRepository } from '../../../public/securityDevices/infrastructure/device.repository';
 
 export class BanUserCommand {
   constructor(public userId: string, public banUserDto: BanUserDto) {}

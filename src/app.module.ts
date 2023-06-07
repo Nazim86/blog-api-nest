@@ -29,14 +29,13 @@ import * as process from 'process';
 import { AuthModule } from './api/public/auth/auth.module';
 import { UsersModule } from './api/superadmin/users/users.module';
 import { LikesRepository } from './api/public/like/likes.repository';
-import { CommentService } from './api/public/comments/application,use-cases/comments.service';
 import { CommentsRepository } from './api/public/comments/infrastructure/comments.repository';
 import { MailModule } from './mail/mail.module';
 import { JwtService } from './jwt/jwt.service';
 import { CommentsController } from './api/public/comments/api/comments.controller';
 import { IsBlogExistConstraint } from './decorators/IsBlogIdExist';
 import { ScheduleModule } from '@nestjs/schedule';
-import { DeviceRepository } from './api/public/securityDevices/device.repository';
+import { DeviceRepository } from './api/public/securityDevices/infrastructure/device.repository';
 import { Device, DeviceSchema } from './domains/device.entity';
 import { SuperAdminBlogsController } from './api/superadmin/blogs/sa.blogs.controller';
 import { BlogCreateUseCase } from './api/blogger/application,use-cases/blog-create-use-case';
@@ -52,9 +51,10 @@ import { BlogDeleteUseCase } from './api/blogger/application,use-cases/blog-dele
 import { PostDeleteUseCase } from './api/blogger/application,use-cases/post-delete-use-case';
 import { DeviceUpdateUseCase } from './api/public/securityDevices/application,use-cases/device-update-use-case';
 import { DeviceCreateUseCase } from './api/public/securityDevices/application,use-cases/device-create-use-case';
-import { PostLikeUpdateUseCase } from './api/public/like/use-cases/like-update-use-case';
+import { PostLikeUpdateUseCase } from './api/public/like/use-cases/post-like-update-use-case';
 import { CommentUpdateUseCase } from './api/public/comments/application,use-cases/comment-update-use-case';
 import { CommentCreateUseCase } from './api/public/comments/application,use-cases/comment-create-use-case';
+import { CommentDeleteUseCase } from "./api/public/comments/application,use-cases/comment-delete-use-case";
 
 const mongooseModels = [
   { name: Device.name, schema: DeviceSchema },
@@ -80,6 +80,7 @@ const useCases = [
   PostLikeUpdateUseCase,
   CommentUpdateUseCase,
   CommentCreateUseCase,
+  CommentDeleteUseCase,
 ];
 @Module({
   imports: [
@@ -111,7 +112,6 @@ const useCases = [
     PostMapping,
     PostService,
     PostRepository,
-    CommentService,
     CommentsQueryRepo,
     CommentsRepository,
     CommentsMapping,

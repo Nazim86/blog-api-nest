@@ -8,14 +8,14 @@ import {
   Param,
   Ip,
 } from '@nestjs/common';
-import { JwtService } from '../../../jwt/jwt.service';
-import { DeviceService } from './device.service';
-import { DeviceViewType } from '../../../types/device-view-type';
-import { RefreshTokenGuard } from '../auth/guards/refresh-token.guard';
-import { ResultCode } from '../../../exception-handler/result-code-enum';
-import { exceptionHandler } from '../../../exception-handler/exception-handler';
-import { DeviceQueryRepo } from './device-query.repo';
-import { DeviceDeleteByIdCommand } from './application,use-cases/device-deleteByDeviceId-use-case';
+import { JwtService } from '../../../../jwt/jwt.service';
+import { DeviceService } from '../application,use-cases/device.service';
+import { DeviceViewType } from '../../../../types/device-view-type';
+import { RefreshTokenGuard } from '../../auth/guards/refresh-token.guard';
+import { ResultCode } from '../../../../exception-handler/result-code-enum';
+import { exceptionHandler } from '../../../../exception-handler/exception-handler';
+import { DeviceQueryRepo } from '../infrastructure/device-query.repo';
+import { DeviceDeleteByIdCommand } from '../application,use-cases/device-deleteByDeviceId-use-case';
 import { CommandBus } from '@nestjs/cqrs';
 
 @Controller('security/devices')

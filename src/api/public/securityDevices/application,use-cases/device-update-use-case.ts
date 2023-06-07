@@ -1,6 +1,6 @@
 import { JwtService } from '../../../../jwt/jwt.service';
 import { DeviceDocument } from '../../../../domains/device.entity';
-import { DeviceRepository } from '../device.repository';
+import { DeviceRepository } from '../infrastructure/device.repository';
 import { CommandHandler } from '@nestjs/cqrs';
 import { settings } from '../../../../settings';
 

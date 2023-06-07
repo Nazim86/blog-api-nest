@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { JwtService } from '../../../jwt/jwt.service';
+import { JwtService } from '../../../../jwt/jwt.service';
 import { InjectModel } from '@nestjs/mongoose';
-import { Device, DeviceModelType } from '../../../domains/device.entity';
-import { DeviceRepository } from './device.repository';
+import { Device, DeviceModelType } from '../../../../domains/device.entity';
+import { DeviceRepository } from '../infrastructure/device.repository';
 
 @Injectable()
 export class DeviceService {
