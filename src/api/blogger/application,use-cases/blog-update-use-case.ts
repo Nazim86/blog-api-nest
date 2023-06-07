@@ -2,6 +2,8 @@ import { BlogRepository } from '../../public/blogs/infrastructure/blog.repositor
 import { BlogDocument } from '../../../domains/blog.entity';
 import { CreateBlogDto } from '../createBlog.dto';
 import { CommandHandler } from '@nestjs/cqrs';
+import { ResultCode } from '../../../exception-handler/result-code-enum';
+import { Result } from '../../../exception-handler/result-type';
 
 export class BlogUpdateCommand {
   constructor(
@@ -15,16 +17,19 @@ export class BlogUpdateCommand {
 export class BlogUpdateUseCase {
   constructor(private readonly blogRepository: BlogRepository) {}
 
-  async execute(command: BlogUpdateCommand): Promise<BlogDocument | null> {
-    const blog: BlogDocument = await this.blogRepository.getBlogByIdAndUserId(
-      command.userId,
+  async execute(command: BlogUpdateCommand): Promise<Result<ResultCode>> {
+    const blog: BlogDocument = await this.blogRepository.getBlogById(
       command.blogId,
     );
+    if (!blog) return { code: ResultCode.NotFound };
 
-    if (!blog) return null;
+    if (blog.blogOwnerInfo.userId !== command.userId)
+      return { code: ResultCode.Forbidden };
 
     blog.updateBlog(command.updateBlogDto);
 
-    return await this.blogRepository.save(blog);
+    await this.blogRepository.save(blog);
+
+    return { code: ResultCode.Success };
   }
 }
