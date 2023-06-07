@@ -93,7 +93,7 @@ export class BloggerController {
     );
 
     if (!updateBlog) {
-      return exceptionHandler(ResultCode.Forbidden);
+      return exceptionHandler(ResultCode.NotFound);
     }
     return;
   }
