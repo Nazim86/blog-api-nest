@@ -11,7 +11,11 @@ import { Injectable } from '@nestjs/common';
 export class PostRepository {
   constructor(@InjectModel(Post.name) private PostModel: PostModelType) {}
   async getPostById(postId: string): Promise<PostDocument | null> {
-    return this.PostModel.findOne({ _id: new ObjectId(postId) });
+    try {
+      return this.PostModel.findOne({ _id: new ObjectId(postId) });
+    } catch (e) {
+      return null;
+    }
   }
 
   async save(post: PostDocument) {
