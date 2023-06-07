@@ -160,6 +160,12 @@ export class User {
       (this.banInfo.banDate = new Date().toISOString()),
       (this.banInfo.banReason = banUserDto.banReason);
   }
+
+  unBanUser() {
+    (this.banInfo.isBanned = false),
+      (this.banInfo.banDate = null),
+      (this.banInfo.banReason = null);
+  }
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
@@ -176,5 +182,6 @@ UserSchema.methods = {
   confirmRegistration: User.prototype.confirmRegistration,
   newPasswordCanBeConfirmed: User.prototype.newPasswordCanBeConfirmed,
   updateUserAccountData: User.prototype.updateUserAccountData,
+  unBanUser: User.prototype.unBanUser,
   banUser: User.prototype.banUser,
 };

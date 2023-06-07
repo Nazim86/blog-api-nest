@@ -4,7 +4,7 @@ export const configModule = ConfigModule.forRoot();
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Blog, BlogSchema } from './api/public/blogs/domain/blog.entity';
+import { Blog, BlogSchema } from './domains/blog.entity';
 import { BloggerController } from './api/blogger/blogger.controller';
 import { BlogsQueryRepo } from './api/public/blogs/infrastructure/blogs-query.repository';
 import { Post, PostSchema } from './domains/post.entity';
@@ -55,6 +55,7 @@ import { PostLikeUpdateUseCase } from './api/public/like/use-cases/post-like-upd
 import { CommentUpdateUseCase } from './api/public/comments/application,use-cases/comment-update-use-case';
 import { CommentCreateUseCase } from './api/public/comments/application,use-cases/comment-create-use-case';
 import { CommentDeleteUseCase } from './api/public/comments/application,use-cases/comment-delete-use-case';
+import { CommentLikeStatusUpdateUseCase } from './api/public/like/use-cases/comment-like-status-update-use-case';
 
 const mongooseModels = [
   { name: Device.name, schema: DeviceSchema },
@@ -81,6 +82,7 @@ const useCases = [
   CommentUpdateUseCase,
   CommentCreateUseCase,
   CommentDeleteUseCase,
+  CommentLikeStatusUpdateUseCase,
 ];
 @Module({
   imports: [

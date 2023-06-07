@@ -16,7 +16,7 @@ import { BlogsQueryRepo } from '../public/blogs/infrastructure/blogs-query.repos
 import { PostsQueryRepo } from '../public/post/infrastructure/posts-query-repo';
 import { CreateBlogDto } from './createBlog.dto';
 import { CreatePostDto } from '../public/post/createPostDto';
-import { BlogDocument } from '../public/blogs/domain/blog.entity';
+import { BlogDocument } from '../../domains/blog.entity';
 import { BlogPagination } from '../public/blogs/domain/blog-pagination';
 import { PaginationType } from '../../common/pagination';
 import { exceptionHandler } from '../../exception-handler/exception-handler';

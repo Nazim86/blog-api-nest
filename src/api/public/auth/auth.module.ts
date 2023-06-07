@@ -18,7 +18,7 @@ import { DeleteController } from '../../../delete/delete.controller';
 import { AuthController } from './api/auth.controller';
 import { DeviceService } from '../securityDevices/application,use-cases/device.service';
 import { UserQueryRepo } from '../../superadmin/users/infrastructure/users.query.repo';
-import { Blog, BlogSchema } from '../blogs/domain/blog.entity';
+import { Blog, BlogSchema } from '../../../domains/blog.entity';
 import { Post, PostSchema } from '../../../domains/post.entity';
 import { PostLike, PostLikeSchema } from '../../../domains/postLike.entity';
 import {

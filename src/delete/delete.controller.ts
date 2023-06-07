@@ -1,6 +1,6 @@
 import { Controller, Delete, HttpCode } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Blog, BlogDocument } from '../api/public/blogs/domain/blog.entity';
+import { Blog, BlogDocument } from '../domains/blog.entity';
 import { Model } from 'mongoose';
 import { Post, PostDocument } from '../domains/post.entity';
 import { Comment, CommentDocument } from '../domains/comment.entity';

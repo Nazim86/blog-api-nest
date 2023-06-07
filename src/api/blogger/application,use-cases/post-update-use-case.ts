@@ -1,5 +1,5 @@
 import { BlogRepository } from '../../public/blogs/infrastructure/blog.repository';
-import { BlogDocument } from '../../public/blogs/domain/blog.entity';
+import { BlogDocument } from '../../../domains/blog.entity';
 import { CommandHandler } from '@nestjs/cqrs';
 import { PostRepository } from '../../public/post/infrastructure/post.repository';
 import { CreatePostDto } from '../../public/post/createPostDto';

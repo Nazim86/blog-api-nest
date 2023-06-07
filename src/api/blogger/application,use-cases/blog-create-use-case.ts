@@ -4,7 +4,7 @@ import {
   Blog,
   BlogDocument,
   BlogModelType,
-} from '../../public/blogs/domain/blog.entity';
+} from '../../../domains/blog.entity';
 import { CreateBlogDto } from '../createBlog.dto';
 import { CommandHandler } from '@nestjs/cqrs';
 import { UsersRepository } from '../../superadmin/users/infrastructure/users.repository';

@@ -30,14 +30,23 @@ export class BanUserUseCase {
       };
     }
 
-    if(user.banInfo.isBanned !== command.banUserDto.isBanned) {
-
+    if (
+      user.banInfo.isBanned !== command.banUserDto.isBanned &&
+      command.banUserDto.isBanned
+    ) {
       user.banUser(command.banUserDto);
-
-      await this.usersRepository.save(user);
 
       await this.deviceRepository.deleteDeviceByUserId(user.id);
     }
+
+    if (
+      user.banInfo.isBanned !== command.banUserDto.isBanned &&
+      !command.banUserDto.isBanned
+    ) {
+      user.unBanUser();
+    }
+
+    await this.usersRepository.save(user);
 
     return { code: ResultCode.Success };
   }
