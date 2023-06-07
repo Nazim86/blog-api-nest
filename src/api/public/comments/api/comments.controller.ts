@@ -21,7 +21,7 @@ import { ResultCode } from '../../../../exception-handler/result-code-enum';
 import { exceptionHandler } from '../../../../exception-handler/exception-handler';
 import { CommandBus } from '@nestjs/cqrs';
 import { CommentCreateCommand } from '../application,use-cases/comment-create-use-case';
-import { CommentLikeStatusUpdateCommand } from '../application,use-cases/comment-like-status-update-use-case';
+import { CommentLikeStatusUpdateCommand } from '../../like/use-cases/comment-like-status-update-use-case';
 import { CommentDeleteCommand } from "../application,use-cases/comment-delete-use-case";
 
 @Controller('comments')

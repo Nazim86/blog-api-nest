@@ -13,7 +13,7 @@ import { JwtService } from '../../../../jwt/jwt.service';
 import { AuthService } from '../auth.service';
 import { UsersRepository } from '../../../superadmin/users/infrastructure/users.repository';
 import { DeviceService } from '../../securityDevices/application,use-cases/device.service';
-import { CreateUserDto } from '../../../superadmin/users/createUser.Dto';
+import { CreateUserDto } from '../../../superadmin/users/dto/createUser.Dto';
 import { exceptionHandler } from '../../../../exception-handler/exception-handler';
 import { ResultCode } from '../../../../exception-handler/result-code-enum';
 import { NewPasswordDto } from '../dto/newPasswordDto';
@@ -124,7 +124,7 @@ export class AuthController {
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: true,
+      //secure: true,
       maxAge: 24 * 60 * 60 * 1000,
     });
     return { accessToken: accessToken };
@@ -163,7 +163,7 @@ export class AuthController {
     res
       .cookie('refreshToken', newRefreshToken, {
         httpOnly: true,
-        secure: true,
+        //secure: true,
         maxAge: 24 * 60 * 60 * 1000,
       })
       .json({ accessToken: newAccessToken });

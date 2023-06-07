@@ -10,7 +10,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { BanUserDto } from './banUserDto';
+import { BanUserDto } from './dto/banUserDto';
 import { CommandBus } from '@nestjs/cqrs';
 import { BanUserCommand } from './application,use-cases/ban-user-use-case';
 import { exceptionHandler } from '../../../exception-handler/exception-handler';
@@ -19,7 +19,7 @@ import { UserQueryRepo } from './infrastructure/users.query.repo';
 import { UserPagination } from './user-pagination';
 import { PaginationType } from '../../../common/pagination';
 import { BasicAuthGuard } from '../../public/auth/guards/basic-auth.guard';
-import { CreateUserDto } from './createUser.Dto';
+import { CreateUserDto } from './dto/createUser.Dto';
 import { CreateUsersCommand } from './application,use-cases/create-user-use-case';
 import { UsersService } from './application,use-cases/users.service';
 

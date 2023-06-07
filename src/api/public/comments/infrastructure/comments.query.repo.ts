@@ -13,12 +13,15 @@ import {
 } from '../../../../domains/commentLike.entity';
 import { LikeEnum } from '../../like/like.enum';
 import { ObjectId } from 'mongodb';
+import { UsersRepository } from "../../../superadmin/users/infrastructure/users.repository";
 
 @Injectable()
 export class CommentsQueryRepo {
   constructor(
-    protected postQueryRepo: PostsQueryRepo,
-    protected commentMapping: CommentsMapping,
+    private readonly postQueryRepo: PostsQueryRepo,
+    private readonly commentMapping: CommentsMapping,
+    private readonly usersRepository: UsersRepository,
+
     @InjectModel(Comment.name) private CommentModel: Model<CommentDocument>,
     @InjectModel(CommentLike.name)
     private CommentLikeModel: Model<CommentLikeDocument>,
@@ -66,12 +69,18 @@ export class CommentsQueryRepo {
     userId?: string,
   ): Promise<CommentsViewType | null> {
     try {
-      const getComment: CommentDocument | null =
+      const comment: CommentDocument | null =
         await this.CommentModel.findOne({
           _id: new ObjectId(commentId),
         });
 
-      if (!getComment) return null;
+      if (!comment) return null;
+
+      const user = await this.usersRepository.findUserById(comment.commentatorInfo.userId)
+
+      if(user.banInfo.isBanned){
+        return null
+      }
 
       let myStatus = 'None';
       if (userId) {
@@ -94,13 +103,13 @@ export class CommentsQueryRepo {
       });
 
       return {
-        id: getComment._id.toString(),
-        content: getComment.content,
+        id: comment._id.toString(),
+        content: comment.content,
         commentatorInfo: {
-          userId: getComment.commentatorInfo.userId,
-          userLogin: getComment.commentatorInfo.userLogin,
+          userId: comment.commentatorInfo.userId,
+          userLogin: comment.commentatorInfo.userLogin,
         },
-        createdAt: getComment.createdAt,
+        createdAt: comment.createdAt,
         likesInfo: {
           likesCount,
           dislikesCount,

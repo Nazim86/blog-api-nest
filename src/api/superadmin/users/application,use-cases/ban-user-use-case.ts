@@ -1,5 +1,5 @@
 import { CommandHandler } from '@nestjs/cqrs';
-import { BanUserDto } from '../banUserDto';
+import { BanUserDto } from '../dto/banUserDto';
 import { UsersRepository } from '../infrastructure/users.repository';
 import { ResultCode } from '../../../../exception-handler/result-code-enum';
 import { UserDocument } from '../../../../domains/user.entity';
@@ -29,11 +29,15 @@ export class BanUserUseCase {
         data: errorMessage,
       };
     }
-    user.banUser(command.banUserDto);
 
-    await this.usersRepository.save(user);
+    if(user.banInfo.isBanned !== command.banUserDto.isBanned) {
 
-    await this.deviceRepository.deleteDeviceByUserId(user.id);
+      user.banUser(command.banUserDto);
+
+      await this.usersRepository.save(user);
+
+      await this.deviceRepository.deleteDeviceByUserId(user.id);
+    }
 
     return { code: ResultCode.Success };
   }

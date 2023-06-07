@@ -1,9 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Model } from 'mongoose';
-import { CreateUserDto } from '../api/superadmin/users/createUser.Dto';
+import { CreateUserDto } from '../api/superadmin/users/dto/createUser.Dto';
 import { v4 as uuid } from 'uuid';
 import { add } from 'date-fns';
-import { BanUserDto } from '../api/superadmin/users/banUserDto';
+import { BanUserDto } from '../api/superadmin/users/dto/banUserDto';
 
 export type UserDocument = HydratedDocument<User>;
 export type UserModelStaticType = {

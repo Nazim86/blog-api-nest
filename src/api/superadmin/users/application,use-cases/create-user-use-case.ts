@@ -1,7 +1,7 @@
 import { CommandHandler } from '@nestjs/cqrs';
 import { UsersRepository } from '../infrastructure/users.repository';
 import { ResultCode } from '../../../../exception-handler/result-code-enum';
-import { CreateUserDto } from '../createUser.Dto';
+import { CreateUserDto } from '../dto/createUser.Dto';
 import * as bcrypt from 'bcrypt';
 import process from 'process';
 import {
