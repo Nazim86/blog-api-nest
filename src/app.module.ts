@@ -54,7 +54,7 @@ import { DeviceCreateUseCase } from './api/public/securityDevices/application,us
 import { PostLikeUpdateUseCase } from './api/public/like/use-cases/post-like-update-use-case';
 import { CommentUpdateUseCase } from './api/public/comments/application,use-cases/comment-update-use-case';
 import { CommentCreateUseCase } from './api/public/comments/application,use-cases/comment-create-use-case';
-import { CommentDeleteUseCase } from "./api/public/comments/application,use-cases/comment-delete-use-case";
+import { CommentDeleteUseCase } from './api/public/comments/application,use-cases/comment-delete-use-case';
 
 const mongooseModels = [
   { name: Device.name, schema: DeviceSchema },
