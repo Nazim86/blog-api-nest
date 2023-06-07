@@ -6,10 +6,9 @@ import {
   CommentDocument,
   CommentModelType,
 } from '../../../../domains/comment.entity';
-import { CreateLikeDto } from '../../like/createLikeDto';
 import {
   CommentLike,
-  CommentLikeDocument,
+
   CommentLikeModelType,
 } from '../../../../domains/commentLike.entity';
 import { LikesRepository } from '../../like/likes.repository';
@@ -30,38 +29,6 @@ export class CommentService {
     protected usersRepository: UsersRepository,
   ) {}
 
-  async updateCommentLikeStatus(
-    commentId: string,
-    userId: string,
-    createLikeDto: CreateLikeDto,
-  ): Promise<boolean> {
-    const comment: CommentDocument | null =
-      await this.commentsRepository.getComment(commentId);
-
-    if (!comment) return false;
-
-    const commentLike: CommentLikeDocument | null =
-      await this.likesRepository.findCommentLike(commentId, userId);
-
-    if (!commentLike) {
-      const newCommentLike = this.CommentLikeModel.createCommentLike(
-        commentId,
-        userId,
-        createLikeDto,
-        this.CommentLikeModel,
-      );
-      await this.likesRepository.save(newCommentLike);
-      return true;
-    }
-
-    commentLike.updateCommentLikeStatus(
-      //commentLike._id.toString(),
-      //userId,
-      createLikeDto,
-    );
-    await this.likesRepository.save(commentLike);
-    return true;
-  }
 
   async deleteComment(
     commentId: string,
