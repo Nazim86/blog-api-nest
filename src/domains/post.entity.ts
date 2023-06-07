@@ -40,7 +40,6 @@ export class Post {
     (this.title = updatePostDto.title),
       (this.shortDescription = updatePostDto.shortDescription),
       (this.content = updatePostDto.content);
-    this.blogId = updatePostDto.blogId;
   }
 
   static createPost(
