@@ -6,7 +6,6 @@ import { ObjectId } from 'mongodb';
 import { UserViewType } from './types/user-view-type';
 import { BanStatusEnum, UserPagination } from '../user-pagination';
 import { PaginationType } from '../../../../common/pagination';
-import { tr } from 'date-fns/locale';
 
 @Injectable()
 export class UserQueryRepo {
@@ -54,17 +53,18 @@ export class UserQueryRepo {
     const skipSize = paginatedQuery.skipSize; //(paginatedQuery.pageNumber - 1) * paginatedQuery.pageSize;
 
     const filter: any = {};
+    filter.$and = [];
 
     if (paginatedQuery.searchLoginTerm || paginatedQuery.searchEmailTerm) {
       filter.$or = [];
     }
 
     if (paginatedQuery.banStatus === BanStatusEnum.banned) {
-      filter.$or.push({ 'banInfo.isBanned': true });
+      filter.$and.push({ 'banInfo.isBanned': true });
     }
 
     if (paginatedQuery.banStatus === BanStatusEnum.notBanned) {
-      filter.$or.push({ 'banInfo.isBanned': false });
+      filter.$and.push({ 'banInfo.isBanned': false });
     }
 
     if (paginatedQuery.searchLoginTerm) {
@@ -83,6 +83,10 @@ export class UserQueryRepo {
           $options: 'i',
         },
       });
+    }
+
+    if (filter.$or && filter.$or.length > 0) {
+      filter.$and.push({ $or: filter.$or });
     }
 
     const totalCount = await this.UserModel.countDocuments(filter);
