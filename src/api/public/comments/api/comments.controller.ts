@@ -22,7 +22,7 @@ import { exceptionHandler } from '../../../../exception-handler/exception-handle
 import { CommandBus } from '@nestjs/cqrs';
 import { CommentCreateCommand } from '../application,use-cases/comment-create-use-case';
 import { CommentLikeStatusUpdateCommand } from '../../like/use-cases/comment-like-status-update-use-case';
-import { CommentDeleteCommand } from "../application,use-cases/comment-delete-use-case";
+import { CommentDeleteCommand } from '../application,use-cases/comment-delete-use-case';
 
 @Controller('comments')
 export class CommentsController {
@@ -57,8 +57,9 @@ export class CommentsController {
     @Param('id') commentId: string,
     @Request() req,
   ) {
-    const isDeleted: Result<ResultCode> =
-      await this.commandBus.execute(new CommentDeleteCommand(commentId, req.user.userId))
+    const isDeleted: Result<ResultCode> = await this.commandBus.execute(
+      new CommentDeleteCommand(commentId, req.user.userId),
+    );
 
     if (isDeleted.code !== ResultCode.Success) {
       return exceptionHandler(isDeleted.code);

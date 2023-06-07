@@ -21,7 +21,7 @@ import { ResultCode } from '../../../../exception-handler/result-code-enum';
 import { CommandBus } from '@nestjs/cqrs';
 
 @Controller('blogs')
-export class BloggerController {
+export class PublicBlogsController {
   constructor(
     private commandBus: CommandBus,
     private readonly blogQueryRepo: BlogsQueryRepo,

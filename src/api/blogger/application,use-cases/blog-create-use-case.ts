@@ -25,12 +25,14 @@ export class BlogCreateUseCase {
     const user: UserDocument = await this.usersRepository.findUserById(
       command.userId,
     );
+
     const newBlog: BlogDocument = this.BlogModel.createBlog(
       user.id,
       user.accountData.login,
       command.createBlogDto,
       this.BlogModel,
     );
+
     await this.blogRepository.save(newBlog);
 
     return newBlog.id;

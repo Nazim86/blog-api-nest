@@ -4,8 +4,9 @@ import { User, UserDocument } from '../../../../domains/user.entity';
 import { Model } from 'mongoose';
 import { ObjectId } from 'mongodb';
 import { UserViewType } from './types/user-view-type';
-import { UserPagination } from '../user-pagination';
+import { BanStatusEnum, UserPagination } from '../user-pagination';
 import { PaginationType } from '../../../../common/pagination';
+import { tr } from 'date-fns/locale';
 
 @Injectable()
 export class UserQueryRepo {
@@ -39,6 +40,7 @@ export class UserQueryRepo {
   };
 
   async getUsers(query: UserPagination<PaginationType>, requestType?: string) {
+    console.log('Query', query);
     const paginatedQuery = new UserPagination<PaginationType>(
       query.pageNumber,
       query.pageSize,
@@ -46,6 +48,7 @@ export class UserQueryRepo {
       query.sortDirection,
       query.searchLoginTerm,
       query.searchEmailTerm,
+      query.banStatus,
     );
 
     const skipSize = paginatedQuery.skipSize; //(paginatedQuery.pageNumber - 1) * paginatedQuery.pageSize;
@@ -54,6 +57,14 @@ export class UserQueryRepo {
 
     if (paginatedQuery.searchLoginTerm || paginatedQuery.searchEmailTerm) {
       filter.$or = [];
+    }
+
+    if (paginatedQuery.banStatus === BanStatusEnum.banned) {
+      filter.$or.push({ 'banInfo.isBanned': true });
+    }
+
+    if (paginatedQuery.banStatus === BanStatusEnum.notBanned) {
+      filter.$or.push({ 'banInfo.isBanned': false });
     }
 
     if (paginatedQuery.searchLoginTerm) {
