@@ -76,10 +76,9 @@ export class BlogsQueryRepo {
     );
 
     const filter: any = {};
-
+    filter['$and'] = [];
     //this is new
     if (paginatedQuery.searchNameTerm) {
-      filter['$and'] = [];
       filter['$and'].push({
         name: { $regex: paginatedQuery.searchNameTerm, $options: 'i' },
       });
@@ -87,11 +86,13 @@ export class BlogsQueryRepo {
     // console.log(userId);
 
     if (requestType === 'blogger') {
-      filter['$and'] = [];
       filter['$and'].push({ 'blogOwnerInfo.userId': userId });
     }
     // // console.log(filter);
 
+    if (filter.$and.length === 0) {
+      delete filter.$and;
+    }
     const skipSize = paginatedQuery.skipSize;
     const totalCount = await this.BlogModel.countDocuments(filter);
     const pagesCount = paginatedQuery.totalPages(totalCount);
