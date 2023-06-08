@@ -21,14 +21,16 @@ export class PostDeleteUseCase {
     const post: PostDocument = await this.postRepository.getPostById(
       command.params.postId,
     );
-
     if (!post) return { code: ResultCode.NotFound };
 
     const blog: BlogDocument = await this.blogRepository.getBlogById(
-      post.blogId,
+      command.params.blogId,
     );
 
-    if (!blog) return { code: ResultCode.NotFound };
+    console.log(blog);
+    if (!blog) {
+      return { code: ResultCode.NotFound };
+    }
 
     if (blog.blogOwnerInfo.userId !== command.userId)
       return { code: ResultCode.Forbidden };
