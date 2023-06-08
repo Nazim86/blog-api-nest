@@ -13,7 +13,7 @@ import {
 } from '../../../../domains/commentLike.entity';
 import { LikeEnum } from '../../like/like.enum';
 import { ObjectId } from 'mongodb';
-import { UsersRepository } from "../../../superadmin/users/infrastructure/users.repository";
+import { UsersRepository } from '../../../superadmin/users/infrastructure/users.repository';
 
 @Injectable()
 export class CommentsQueryRepo {
@@ -64,25 +64,24 @@ export class CommentsQueryRepo {
     };
   }
 
-  async getComment(
-    commentId: string,
-    userId?: string,
-  ): Promise<CommentsViewType | null> {
+  async getComment(commentId: string, userId?: string): Promise<any | null> {
     try {
-      const comment: CommentDocument | null =
-        await this.CommentModel.findOne({
-          _id: new ObjectId(commentId),
-        });
+      const comment: CommentDocument | null = await this.CommentModel.findOne({
+        _id: new ObjectId(commentId),
+      });
 
       if (!comment) return null;
 
-      const user = await this.usersRepository.findUserById(comment.commentatorInfo.userId)
+      const user = await this.usersRepository.findUserById(
+        comment.commentatorInfo.userId,
+      );
 
-      if(user.banInfo.isBanned){
-        return null
+      if (user.banInfo.isBanned) {
+        return null;
       }
 
       let myStatus = 'None';
+
       if (userId) {
         const likeInDb = await this.CommentLikeModel.findOne({
           commentId,

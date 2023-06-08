@@ -65,6 +65,7 @@ export class BlogsQueryRepo {
   async getBlog(
     query: BlogPagination<PaginationType>,
     requestType?: string,
+    userId?: string,
   ): Promise<QueryPaginationType<BlogsViewType[]>> {
     const paginatedQuery = new BlogPagination<PaginationType>(
       query.pageNumber,
@@ -74,12 +75,20 @@ export class BlogsQueryRepo {
       query.searchNameTerm,
     );
 
-    let filter = {};
+    const filter: any = {};
 
+    //this is new
     if (paginatedQuery.searchNameTerm) {
-      filter = {
+      filter.$and = [];
+      filter.$and.push({
         name: { $regex: paginatedQuery.searchNameTerm, $options: 'i' },
-      };
+      });
+    }
+
+    //this is new
+    if (requestType === 'SA') {
+      filter.$and = [];
+      filter.$and.push({ 'blogOwnerInfo.userId': userId });
     }
 
     const skipSize = paginatedQuery.skipSize;

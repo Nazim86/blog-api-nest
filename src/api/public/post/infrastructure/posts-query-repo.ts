@@ -21,7 +21,7 @@ export class PostsQueryRepo {
   constructor(
     @InjectModel(Post.name) private PostModel: Model<PostDocument>,
     @InjectModel(PostLike.name) private PostLikeModel: Model<PostLikeDocument>,
-    protected postMapping: PostMapping,
+    private readonly postMapping: PostMapping,
   ) {}
 
   async getPostById(
@@ -29,11 +29,11 @@ export class PostsQueryRepo {
     userId?: string | undefined,
   ): Promise<PostsViewType | boolean> {
     try {
-      const postById: PostsDbType | null = await this.PostModel.findOne({
+      const post: PostDocument | null = await this.PostModel.findOne({
         _id: new ObjectId(postId),
       });
 
-      if (!postById) {
+      if (!post) {
         return false;
       }
 
@@ -66,13 +66,13 @@ export class PostsQueryRepo {
       const newestLikes: NewestLikesType[] = newestLikesMapping(getLast3Likes);
 
       return {
-        id: postById._id.toString(),
-        title: postById.title,
-        shortDescription: postById.shortDescription,
-        content: postById.content,
-        blogId: postById.blogId,
-        blogName: postById.blogName,
-        createdAt: postById.createdAt,
+        id: post._id.toString(),
+        title: post.title,
+        shortDescription: post.shortDescription,
+        content: post.content,
+        blogId: post.blogId,
+        blogName: post.blogName,
+        createdAt: post.createdAt,
         extendedLikesInfo: {
           likesCount,
           dislikesCount,
