@@ -28,6 +28,8 @@ export class PostDeleteUseCase {
       post.blogId,
     );
 
+    if (!blog) return { code: ResultCode.NotFound };
+
     if (blog.blogOwnerInfo.userId !== command.userId)
       return { code: ResultCode.Forbidden };
 

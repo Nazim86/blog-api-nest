@@ -86,7 +86,7 @@ export class BlogsQueryRepo {
     }
     // console.log(userId);
 
-    if (requestType === 'SA') {
+    if (requestType === 'blogger') {
       filter['$and'] = [];
       filter['$and'].push({ 'blogOwnerInfo.userId': userId });
     }
