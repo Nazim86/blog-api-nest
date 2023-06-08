@@ -86,10 +86,10 @@ export class BlogsQueryRepo {
     }
     // console.log(userId);
 
-    // if (requestType === 'SA') {
-    //   filter['$and'] = [];
-    //   filter['$and'].push({ 'blogOwnerInfo.userId': userId });
-    // }
+    if (requestType === 'SA') {
+      filter['$and'] = [];
+      filter['$and'].push({ 'blogOwnerInfo.userId': userId });
+    }
     // // console.log(filter);
 
     const skipSize = paginatedQuery.skipSize;
