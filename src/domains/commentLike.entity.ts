@@ -29,6 +29,9 @@ export class CommentLike {
   @Prop({ required: true })
   status: string;
 
+  @Prop()
+  banStatus: boolean;
+
   static createCommentLike(
     commentId: string,
     userId: string,
@@ -40,6 +43,7 @@ export class CommentLike {
       userId: userId,
       addedAt: new Date(),
       status: createLikeDto.likeStatus,
+      banStatus: false,
     };
     return new CommentLikeModel(newCommentLike);
   }

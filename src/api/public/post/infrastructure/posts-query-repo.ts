@@ -49,10 +49,12 @@ export class PostsQueryRepo {
       const likesCount = await this.PostLikeModel.countDocuments({
         postId,
         status: LikeEnum.Like,
+        banStatus: false,
       });
       const dislikesCount = await this.PostLikeModel.countDocuments({
         postId,
         status: LikeEnum.Dislike,
+        banStatus: false,
       });
 
       const getLast3Likes: PostLikesDbType[] = await this.PostLikeModel.find({

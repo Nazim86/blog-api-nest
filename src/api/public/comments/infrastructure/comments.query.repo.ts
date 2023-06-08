@@ -95,10 +95,12 @@ export class CommentsQueryRepo {
       const likesCount = await this.CommentLikeModel.countDocuments({
         commentId,
         status: LikeEnum.Like,
+        banStatus: false,
       });
       const dislikesCount = await this.CommentLikeModel.countDocuments({
         commentId,
         status: LikeEnum.Dislike,
+        banStatus: false,
       });
 
       return {

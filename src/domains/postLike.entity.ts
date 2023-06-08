@@ -32,6 +32,9 @@ export class PostLike {
 
   @Prop({ required: true })
   login: string;
+
+  @Prop()
+  banStatus: boolean;
   static createPostLike(
     postId: string,
     userId: string,
@@ -45,6 +48,7 @@ export class PostLike {
       addedAt: new Date(),
       status: createLikeDto.likeStatus,
       login: login,
+      banStatus: false,
     };
     return new PostLikeModel(postLike);
   }

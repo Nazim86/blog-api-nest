@@ -47,7 +47,7 @@ export class BloggerController {
     @UserId() userId: string,
   ) {
     const getBlog: QueryPaginationType<BlogsViewType[]> =
-      await this.blogQueryRepo.getBlog(query, userId);
+      await this.blogQueryRepo.getBlog(query, '', userId);
 
     return getBlog;
   }

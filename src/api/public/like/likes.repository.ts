@@ -9,6 +9,7 @@ import {
   CommentLikeDocument,
   CommentLikeModelType,
 } from '../../../domains/commentLike.entity';
+import { ExtractJwt } from 'passport-jwt';
 
 export class LikesRepository {
   constructor(
@@ -29,6 +30,20 @@ export class LikesRepository {
     userId: string,
   ): Promise<CommentLikeDocument | null> {
     return this.CommentLikeModel.findOne({ commentId, userId });
+  }
+
+  async setBanStatusForCommentLike(userId: string, banStatus: boolean) {
+    return this.CommentLikeModel.updateMany(
+      { userId },
+      { $set: { banStatus: banStatus } },
+    );
+  }
+
+  async setBanStatusForPostLike(userId: string, banStatus: boolean) {
+    return this.PostLikeModel.updateMany(
+      { userId },
+      { $set: { banStatus: banStatus } },
+    );
   }
 
   async save(likeDocument: any) {
