@@ -60,6 +60,7 @@ export class PostsQueryRepo {
       const getLast3Likes: PostLikesDbType[] = await this.PostLikeModel.find({
         postId,
         status: LikeEnum.Like,
+        banStatus: false,
       })
         .sort({ addedAt: -1 }) // sort by addedAt in descending order
         .limit(3) // limit to 3 results

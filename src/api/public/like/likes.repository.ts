@@ -9,7 +9,6 @@ import {
   CommentLikeDocument,
   CommentLikeModelType,
 } from '../../../domains/commentLike.entity';
-import { ExtractJwt } from 'passport-jwt';
 
 export class LikesRepository {
   constructor(

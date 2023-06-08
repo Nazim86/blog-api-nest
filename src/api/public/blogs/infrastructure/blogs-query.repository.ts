@@ -84,13 +84,13 @@ export class BlogsQueryRepo {
         name: { $regex: paginatedQuery.searchNameTerm, $options: 'i' },
       });
     }
-    console.log(userId);
-    //this is new
-    if (requestType === 'SA') {
-      filter['$and'] = [];
-      filter['$and'].push({ 'blogOwnerInfo.userId': userId });
-    }
-    console.log(filter);
+    // console.log(userId);
+
+    // if (requestType === 'SA') {
+    //   filter['$and'] = [];
+    //   filter['$and'].push({ 'blogOwnerInfo.userId': userId });
+    // }
+    // // console.log(filter);
 
     const skipSize = paginatedQuery.skipSize;
     const totalCount = await this.BlogModel.countDocuments(filter);

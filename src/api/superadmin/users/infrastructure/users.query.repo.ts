@@ -39,7 +39,6 @@ export class UserQueryRepo {
   };
 
   async getUsers(query: UserPagination<PaginationType>, requestType?: string) {
-    console.log('Query', query);
     const paginatedQuery = new UserPagination<PaginationType>(
       query.pageNumber,
       query.pageSize,
