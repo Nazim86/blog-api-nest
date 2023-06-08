@@ -27,7 +27,6 @@ export class PostDeleteUseCase {
       command.params.blogId,
     );
 
-    console.log(blog);
     if (!blog) {
       return { code: ResultCode.NotFound };
     }
