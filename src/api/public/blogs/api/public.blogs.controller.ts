@@ -49,6 +49,7 @@ export class PublicBlogsController {
     if (!getBlog) {
       return exceptionHandler(ResultCode.NotFound);
     }
+
     return getBlog;
   }
 

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from '../../../../domains/user.entity';
-import { FilterQuery, Model } from 'mongoose';
+import { Model } from 'mongoose';
 import { ObjectId } from 'mongodb';
 import { UserViewType } from './types/user-view-type';
 import { BanStatusEnum, UserPagination } from '../user-pagination';
@@ -51,35 +51,47 @@ export class UserQueryRepo {
 
     const skipSize = paginatedQuery.skipSize; //(paginatedQuery.pageNumber - 1) * paginatedQuery.pageSize;
 
-    const filter: FilterQuery<User> = {
-      $and: [
-        {
-          $or: [
-            {
-              'accountData.login': {
-                $regex: paginatedQuery.searchLoginTerm ?? '',
-                $options: 'i',
-              },
-            },
-            {
-              'accountData.email': {
-                $regex: paginatedQuery.searchEmailTerm ?? '',
-                $options: 'i',
-              },
-            },
-          ],
+    const filter: any = {};
+    filter.$and = [];
+
+    if (paginatedQuery.searchLoginTerm || paginatedQuery.searchEmailTerm) {
+      filter.$or = [];
+    }
+
+    if (paginatedQuery.banStatus === BanStatusEnum.banned) {
+      filter.$and.push({ 'banInfo.isBanned': true });
+    }
+
+    if (paginatedQuery.banStatus === BanStatusEnum.notBanned) {
+      filter.$and.push({ 'banInfo.isBanned': false });
+    }
+
+    if (paginatedQuery.searchLoginTerm) {
+      filter.$or.push({
+        'accountData.login': {
+          $regex: paginatedQuery.searchLoginTerm ?? '',
+          $options: 'i',
         },
-        query.banStatus === BanStatusEnum.banned
-          ? {
-              'banInfo.isBanned': true,
-            }
-          : query.banStatus === BanStatusEnum.notBanned
-          ? {
-              'banInfo.isBanned': false,
-            }
-          : {},
-      ],
-    };
+      });
+    }
+
+    if (paginatedQuery.searchEmailTerm) {
+      filter.$or.push({
+        'accountData.email': {
+          $regex: paginatedQuery.searchEmailTerm ?? '',
+          $options: 'i',
+        },
+      });
+    }
+
+    if (filter.$or && filter.$or.length > 0) {
+      filter.$and.push({ $or: filter.$or });
+      delete filter.$or;
+    }
+
+    if (filter.$and.length === 0) {
+      delete filter.$and;
+    }
 
     const totalCount = await this.UserModel.countDocuments(filter);
     const pagesCount = paginatedQuery.totalPages(totalCount); //Math.ceil(totalCount / paginatedQuery.pageSize);
