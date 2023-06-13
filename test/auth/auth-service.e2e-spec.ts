@@ -2,37 +2,36 @@ import { Test } from '@nestjs/testing';
 
 import { AppModule } from '../../src/app.module';
 import { AuthService } from '../../src/api/public/auth/auth.service';
-import { MongoMemoryServer } from 'mongodb-memory-server';
+
+import { INestApplication } from '@nestjs/common';
 import mongoose from 'mongoose';
-import { UsersService } from '../../src/api/superadmin/users/application,use-cases/users.service';
+import { UsersRepository } from '../../src/api/superadmin/users/infrastructure/users.repository';
+import { JwtService } from '@nestjs/jwt';
+import { MailService } from '../../src/mail/mail.service';
 describe('integration tests for AuthService', () => {
-  // let catsController: CatsController;
   let authService: AuthService;
-  let userService: UsersService;
-  let mongoServer: MongoMemoryServer;
+  let userRepository: UsersRepository;
+  let jwtService: JwtService;
+  let mailService: MailService;
 
   beforeEach(async () => {
-    mongoServer = await MongoMemoryServer.create();
-    const mongoUri = mongoServer.getUri();
-    await mongoose.connect(mongoUri);
-
     const moduleRef = await Test.createTestingModule({
-      imports: [AppModule],
+      providers: [AuthService, UsersRepository, JwtService, MailService],
     }).compile();
 
     authService = moduleRef.get<AuthService>(AuthService);
-    // catsController = moduleRef.get<CatsController>(CatsController);
+    userRepository = moduleRef.get<UsersRepository>(UsersRepository);
+    jwtService = moduleRef.get<JwtService>(JwtService);
+    mailService = moduleRef.get<MailService>(MailService);
+
+    // authService = new AuthService();
   });
 
-  afterAll(async () => {
-    await mongoose.disconnect();
-    // await mongoServer.stop();
-  });
+  // afterAll(async () => {
+  //   await mongoose.close();
+  // });
 
   describe('createUser', () => {
-    beforeAll(async () => {
-      await mongoose.connection.db.dropDatabase();
-    });
     it('should return created user', async () => {
       const result = await authService.createNewUser({
         login: 'leo',

@@ -15,7 +15,6 @@ import { NewPasswordDto } from './dto/newPasswordDto';
 import { LoginDto } from './dto/loginDto';
 import { EmailDto } from './dto/emailDto';
 import { CurrentUserType } from '../../superadmin/users/infrastructure/types/current-user-type';
-import { DeviceRepository } from '../securityDevices/infrastructure/device.repository';
 import { MailService } from '../../../mail/mail.service';
 import { ConfirmationCodeDto } from './dto/confirmationCodeDto';
 
@@ -25,7 +24,6 @@ export class AuthService {
     @InjectModel(User.name) private UserModel: UserModelTYpe,
     protected userRepository: UsersRepository,
     protected jwtService: JwtService,
-    protected deviceRepository: DeviceRepository,
     protected mailService: MailService,
   ) {}
 

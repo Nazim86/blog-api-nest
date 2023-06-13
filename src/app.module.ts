@@ -57,6 +57,7 @@ import { CommentCreateUseCase } from './api/public/comments/application,use-case
 import { CommentDeleteUseCase } from './api/public/comments/application,use-cases/comment-delete-use-case';
 import { CommentLikeStatusUpdateUseCase } from './api/public/like/use-cases/comment-like-status-update-use-case';
 import { PublicBlogsController } from './api/public/blogs/api/public.blogs.controller';
+import { MongoMemoryServer } from 'mongodb-memory-server';
 
 const mongooseModels = [
   { name: Device.name, schema: DeviceSchema },
@@ -91,11 +92,22 @@ const useCases = [
     ScheduleModule.forRoot(),
     AuthModule,
     UsersModule,
-    MongooseModule.forRoot(process.env.MONGOOSE_URL),
+    MongooseModule.forRootAsync({
+      useFactory: async () => {
+        const mongoMemoryServer = await MongoMemoryServer.create();
+        const mongoMemoryServerConnectionString = mongoMemoryServer.getUri();
+        const mongoServerConnectionString = process.env.MONGOOSE_URL;
+        return {
+          uri: mongoMemoryServerConnectionString,
+        };
+      },
+    }),
     MongooseModule.forFeature(mongooseModels),
     MailModule,
     CqrsModule,
   ],
+
+  // process.env.MONGOOSE_URL
 
   controllers: [
     AppController,
