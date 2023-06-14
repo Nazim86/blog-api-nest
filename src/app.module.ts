@@ -92,16 +92,17 @@ const useCases = [
     ScheduleModule.forRoot(),
     AuthModule,
     UsersModule,
-    MongooseModule.forRootAsync({
-      useFactory: async () => {
-        const mongoMemoryServer = await MongoMemoryServer.create();
-        const mongoMemoryServerConnectionString = mongoMemoryServer.getUri();
-        const mongoServerConnectionString = process.env.MONGOOSE_URL;
-        return {
-          uri: mongoMemoryServerConnectionString,
-        };
-      },
-    }),
+    // MongooseModule.forRootAsync({
+    //   useFactory: async () => {
+    //     const mongoMemoryServer = await MongoMemoryServer.create();
+    //     const mongoMemoryServerConnectionString = mongoMemoryServer.getUri();
+    //     const mongoServerConnectionString = process.env.MONGOOSE_URL;
+    //     return {
+    //       uri: mongoMemoryServerConnectionString,
+    //     };
+    //   },
+    // }),
+    MongooseModule.forRoot(process.env.MONGOOSE_URL),
     MongooseModule.forFeature(mongooseModels),
     MailModule,
     CqrsModule,
