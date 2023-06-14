@@ -57,6 +57,12 @@ import { CommentCreateUseCase } from './api/public/comments/application,use-case
 import { CommentDeleteUseCase } from './api/public/comments/application,use-cases/comment-delete-use-case';
 import { CommentLikeStatusUpdateUseCase } from './api/public/like/use-cases/comment-like-status-update-use-case';
 import { PublicBlogsController } from './api/public/blogs/api/public.blogs.controller';
+import { UserBanByBloggerUseCase } from './api/blogger/application,use-cases/user-ban-by-blogger-use-case';
+import { BloggerUsersController } from './api/blogger/blogger.users.controller';
+import {
+  UserBanByBlogger,
+  UserBanByBloggerSchema,
+} from './domains/user-ban-by-blogger.entity';
 
 const mongooseModels = [
   { name: Device.name, schema: DeviceSchema },
@@ -66,6 +72,7 @@ const mongooseModels = [
   { name: CommentLike.name, schema: CommentLikeSchema },
   { name: Comment.name, schema: CommentSchema },
   { name: User.name, schema: UserSchema },
+  { name: UserBanByBlogger.name, schema: UserBanByBloggerSchema },
 ];
 const useCases = [
   BlogCreateUseCase,
@@ -84,6 +91,7 @@ const useCases = [
   CommentCreateUseCase,
   CommentDeleteUseCase,
   CommentLikeStatusUpdateUseCase,
+  UserBanByBloggerUseCase,
 ];
 @Module({
   imports: [
@@ -119,6 +127,7 @@ const useCases = [
     SuperAdminBlogsController,
     SuperAdminUsersController,
     PublicBlogsController,
+    BloggerUsersController,
   ],
   providers: [
     AppService,

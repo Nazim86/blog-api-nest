@@ -37,6 +37,10 @@ import { SuperAdminUsersController } from '../../superadmin/users/sa.users.contr
 import { CqrsModule } from '@nestjs/cqrs';
 import { DeviceCreateUseCase } from '../securityDevices/application,use-cases/device-create-use-case';
 import { DeviceUpdateUseCase } from '../securityDevices/application,use-cases/device-update-use-case';
+import {
+  UserBanByBlogger,
+  UserBanByBloggerSchema,
+} from '../../../domains/user-ban-by-blogger.entity';
 
 const mongooseModels = [
   { name: Device.name, schema: DeviceSchema },
@@ -46,6 +50,7 @@ const mongooseModels = [
   { name: CommentLike.name, schema: CommentLikeSchema },
   { name: Comment.name, schema: CommentSchema },
   { name: User.name, schema: UserSchema },
+  { name: UserBanByBlogger.name, schema: UserBanByBloggerSchema },
 ];
 const useCases = [DeviceCreateUseCase, DeviceUpdateUseCase];
 @Module({

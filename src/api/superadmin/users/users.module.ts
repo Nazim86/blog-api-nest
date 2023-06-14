@@ -5,12 +5,19 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from '../../../domains/user.entity';
 import { configModule } from '../../../app.module';
 import { IsUserAlreadyExistConstraint } from '../../../decorators/IsUserAlreadyExist';
+import {
+  UserBanByBlogger,
+  UserBanByBloggerSchema,
+} from '../../../domains/user-ban-by-blogger.entity';
 
 @Module({
   imports: [
     configModule,
 
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    MongooseModule.forFeature([
+      { name: User.name, schema: UserSchema },
+      { name: UserBanByBlogger.name, schema: UserBanByBloggerSchema },
+    ]),
   ],
   providers: [UsersService, UsersRepository, IsUserAlreadyExistConstraint],
   exports: [UsersService, UsersRepository],
