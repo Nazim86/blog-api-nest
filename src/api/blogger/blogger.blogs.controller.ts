@@ -14,9 +14,9 @@ import { QueryPaginationType } from '../../types/query-pagination-type';
 import { BlogsViewType } from '../public/blogs/infrastructure/types/blogs-view-type';
 import { BlogsQueryRepo } from '../public/blogs/infrastructure/blogs-query.repository';
 import { PostsQueryRepo } from '../public/post/infrastructure/posts-query-repo';
-import { CreateBlogDto } from './createBlog.dto';
+import { CreateBlogDto } from './inputModel-Dto/createBlog.dto';
 import { CreatePostDto } from '../public/post/createPostDto';
-import { BlogPagination } from '../public/blogs/domain/blog-pagination';
+import { BlogPagination } from '../public/blogs/blog-pagination';
 import { PaginationType } from '../../common/pagination';
 import { exceptionHandler } from '../../exception-handler/exception-handler';
 import { ResultCode } from '../../exception-handler/result-code-enum';
@@ -33,7 +33,7 @@ import { PostDeleteCommand } from './application,use-cases/post-delete-use-case'
 
 @UseGuards(AccessTokenGuard)
 @Controller('blogger/blogs')
-export class BloggerController {
+export class BloggerBlogsController {
   constructor(
     private commandBus: CommandBus,
     private readonly blogQueryRepo: BlogsQueryRepo,

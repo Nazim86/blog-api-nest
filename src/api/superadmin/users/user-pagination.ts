@@ -17,7 +17,7 @@ export class UserPagination<T> extends Pagination<PaginationType> {
     sortBy = 'createdAt',
     sortDirection: 'asc' | 'desc' = 'desc',
     searchLoginTerm: string,
-    searchEmailTerm: string,
+    searchEmailTerm?: string,
     banStatus: BanStatusEnum = BanStatusEnum.all,
   ) {
     super(pageNumber, pageSize, sortBy, sortDirection);

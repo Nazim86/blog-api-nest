@@ -12,7 +12,7 @@ import { BlogsQueryRepo } from '../infrastructure/blogs-query.repository';
 import { PostsViewType } from '../../post/types/posts-view-type';
 import { PostsQueryRepo } from '../../post/infrastructure/posts-query-repo';
 import { PostService } from '../../post/application/posts.service';
-import { BlogPagination } from '../domain/blog-pagination';
+import { BlogPagination } from '../blog-pagination';
 import { PaginationType } from '../../../../common/pagination';
 import { settings } from '../../../../settings';
 import { JwtService } from '../../../../jwt/jwt.service';

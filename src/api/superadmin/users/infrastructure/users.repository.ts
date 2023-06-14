@@ -2,12 +2,20 @@ import { Injectable } from '@nestjs/common';
 import { User, UserDocument } from '../../../../domains/user.entity';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import add from 'date-fns/add';
 import { ObjectId } from 'mongodb';
+import {
+  UserBanByBlogger,
+  UserBanByBloggerDocument,
+  UserBanByBloggerModelType,
+} from '../../../../domains/user-ban-by-blogger.entity';
 
 @Injectable()
 export class UsersRepository {
-  constructor(@InjectModel(User.name) private UserModel: Model<User>) {}
+  constructor(
+    @InjectModel(User.name) private UserModel: Model<User>,
+    @InjectModel(UserBanByBlogger.name)
+    private UserBanModeL: UserBanByBloggerModelType,
+  ) {}
 
   async findUserByConfirmationCode(code: string) {
     return this.UserModel.findOne({
@@ -29,57 +37,12 @@ export class UsersRepository {
     return await user.save();
   }
 
-  async updateConfirmation(userId: ObjectId): Promise<boolean> {
-    const result = await this.UserModel.updateOne(
-      { _id: userId },
-      { $set: { 'emailConfirmation.isConfirmed': true } },
-    );
-    return result.modifiedCount === 1;
+  async saveBloggerBanUser(bannedUser: UserBanByBloggerDocument) {
+    return await bannedUser.save();
   }
 
-  async setNewRecoveryCode(
-    userId: ObjectId,
-    recoveryCode: string,
-  ): Promise<boolean> {
-    const result = await this.UserModel.updateOne(
-      { _id: userId },
-      {
-        $set: {
-          'accountData.recoveryCode': recoveryCode,
-          'accountData.recoveryCodeExpiration': add(new Date(), {
-            hours: 1,
-            minutes: 3,
-          }),
-        },
-      },
-    );
-
-    return result.matchedCount === 1;
-  }
-
-  // async setNewConfirmationCode(
-  //   userId: ObjectId,
-  //   confirmationCode: string,
-  // ): Promise<boolean> {
-  //   const result = await this.UserModel.updateMany(
-  //     { _id: userId },
-  //     { $set: { 'emailConfirmation.confirmationCode': confirmationCode } },
-  //   );
-  //
-  //   return result.matchedCount === 1;
-  // }
-
-  async updateUserAccountData(
-    userId: ObjectId,
-    passwordHash: string,
-  ): Promise<boolean> {
-    const result = await this.UserModel.updateOne(
-      { _id: userId },
-      {
-        $set: { 'accountData.passwordHash': passwordHash },
-      },
-    );
-    return result.modifiedCount === 1;
+  async findBloggerBannedUser(userId: string, blogId: string) {
+    return this.UserBanModeL.findOne({ userId, blogId });
   }
 
   async deleteUser(id: string): Promise<boolean> {

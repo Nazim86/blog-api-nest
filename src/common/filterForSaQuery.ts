@@ -2,8 +2,8 @@ import { BanStatusEnum } from '../api/superadmin/users/user-pagination';
 
 export const filterForSaQuery = (
   searchLoginTerm: string,
-  searchEmailTerm: string,
-  banStatus: BanStatusEnum,
+  searchEmailTerm?: string,
+  banStatus?: BanStatusEnum,
 ) => {
   const filter: any = {};
   filter.$and = [];

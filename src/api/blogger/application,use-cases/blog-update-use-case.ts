@@ -1,6 +1,6 @@
 import { BlogRepository } from '../../public/blogs/infrastructure/blog.repository';
 import { BlogDocument } from '../../../domains/blog.entity';
-import { CreateBlogDto } from '../createBlog.dto';
+import { CreateBlogDto } from '../inputModel-Dto/createBlog.dto';
 import { CommandHandler } from '@nestjs/cqrs';
 import { ResultCode } from '../../../exception-handler/result-code-enum';
 import { Result } from '../../../exception-handler/result-type';

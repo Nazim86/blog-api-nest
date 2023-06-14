@@ -4,13 +4,22 @@ import { User, UserDocument } from '../../../../domains/user.entity';
 import { Model } from 'mongoose';
 import { ObjectId } from 'mongodb';
 import { UserViewType } from './types/user-view-type';
-import { UserPagination } from '../user-pagination';
+import { BanStatusEnum, UserPagination } from '../user-pagination';
 import { PaginationType } from '../../../../common/pagination';
 import { filterForSaQuery } from '../../../../common/filterForSaQuery';
+import {
+  UserBanByBlogger,
+  UserBanByBloggerDocument,
+  UserBanByBloggerModelType,
+} from '../../../../domains/user-ban-by-blogger.entity';
 
 @Injectable()
 export class UserQueryRepo {
-  constructor(@InjectModel(User.name) private UserModel: Model<UserDocument>) {}
+  constructor(
+    @InjectModel(User.name) private UserModel: Model<UserDocument>,
+    @InjectModel(UserBanByBlogger.name)
+    private UserBanModel: UserBanByBloggerModelType,
+  ) {}
 
   private userMapping = (newUser: UserDocument[]): UserViewType[] => {
     return newUser.map((user: UserDocument): UserViewType => {
@@ -38,6 +47,66 @@ export class UserQueryRepo {
       };
     });
   };
+
+  private bannedUserMappingForBlog = (
+    bannedUsers: UserBanByBloggerDocument[],
+  ) => {
+    return bannedUsers.map((bannedUser: UserBanByBloggerDocument) => {
+      return {
+        id: bannedUser.id,
+        login: bannedUser.login,
+        banInfo: {
+          isBanned: bannedUser.banInfo.isBanned,
+          banDate: bannedUser.banInfo.banDate,
+          banReason: bannedUser.banInfo.banReason,
+        },
+      };
+    });
+  };
+
+  async getBannedUsersForBlog(
+    query: UserPagination<PaginationType>,
+    blogId: string,
+  ) {
+    const paginatedQuery: UserPagination<PaginationType> =
+      new UserPagination<PaginationType>(
+        query.pageNumber,
+        query.pageSize,
+        query.sortBy,
+        query.sortDirection,
+        query.searchLoginTerm,
+      );
+    const filter = filterForSaQuery(
+      paginatedQuery.searchLoginTerm,
+      null,
+      BanStatusEnum.banned,
+    );
+
+    const skipSize = paginatedQuery.skipSize; //(paginatedQuery.pageNumber - 1) * paginatedQuery.pageSize;
+    const totalCount = await this.UserBanModel.countDocuments(filter);
+    const pagesCount = paginatedQuery.totalPages(totalCount); //Math.ceil(totalCount / paginatedQuery.pageSize);
+
+    const sortDirection = paginatedQuery.sortDirection === 'asc' ? 1 : -1;
+
+    const bannedUsersForBlog: UserBanByBloggerDocument[] =
+      await this.UserBanModel.find({ blogId })
+        .sort({
+          [paginatedQuery.sortBy]: sortDirection,
+        })
+        .skip(skipSize)
+        .limit(paginatedQuery.pageSize)
+        .lean();
+
+    const mappedBannedUsers = this.bannedUserMappingForBlog(bannedUsersForBlog);
+
+    return {
+      pagesCount: pagesCount,
+      page: Number(paginatedQuery.pageNumber),
+      pageSize: Number(paginatedQuery.pageSize),
+      totalCount: totalCount,
+      items: mappedBannedUsers,
+    };
+  }
 
   async getUsers(query: UserPagination<PaginationType>, requestType?: string) {
     const paginatedQuery = new UserPagination<PaginationType>(

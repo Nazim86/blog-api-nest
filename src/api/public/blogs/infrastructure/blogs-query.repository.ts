@@ -6,7 +6,7 @@ import { QueryPaginationType } from '../../../../types/query-pagination-type';
 import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
 import { PaginationType } from '../../../../common/pagination';
-import { BlogPagination } from '../domain/blog-pagination';
+import { BlogPagination } from '../blog-pagination';
 
 @Injectable()
 export class BlogsQueryRepo {

@@ -5,7 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Blog, BlogSchema } from './domains/blog.entity';
-import { BloggerController } from './api/blogger/blogger.controller';
+import { BloggerBlogsController } from './api/blogger/blogger.blogs.controller';
 import { BlogsQueryRepo } from './api/public/blogs/infrastructure/blogs-query.repository';
 import { Post, PostSchema } from './domains/post.entity';
 import { PostMapping } from './api/public/post/mapper/post.mapping';
@@ -57,7 +57,6 @@ import { CommentCreateUseCase } from './api/public/comments/application,use-case
 import { CommentDeleteUseCase } from './api/public/comments/application,use-cases/comment-delete-use-case';
 import { CommentLikeStatusUpdateUseCase } from './api/public/like/use-cases/comment-like-status-update-use-case';
 import { PublicBlogsController } from './api/public/blogs/api/public.blogs.controller';
-import { MongoMemoryServer } from 'mongodb-memory-server';
 
 const mongooseModels = [
   { name: Device.name, schema: DeviceSchema },
@@ -112,7 +111,7 @@ const useCases = [
 
   controllers: [
     AppController,
-    BloggerController,
+    BloggerBlogsController,
     PostsController,
     SuperAdminUsersController,
     DeleteController,
