@@ -7,7 +7,6 @@ import {
   UserDocument,
   UserModelTYpe,
 } from '../../../domains/user.entity';
-import { CreateUserDto } from '../../superadmin/users/dto/createUser.Dto';
 import bcrypt from 'bcrypt';
 import { v4 as uuid } from 'uuid';
 import * as process from 'process';
@@ -16,7 +15,6 @@ import { LoginDto } from './dto/loginDto';
 import { EmailDto } from './dto/emailDto';
 import { CurrentUserType } from '../../superadmin/users/infrastructure/types/current-user-type';
 import { MailService } from '../../../mail/mail.service';
-import { ConfirmationCodeDto } from './dto/confirmationCodeDto';
 
 @Injectable()
 export class AuthService {
@@ -26,51 +24,6 @@ export class AuthService {
     protected jwtService: JwtService,
     protected mailService: MailService,
   ) {}
-
-  async createNewUser(
-    creatUserDto: CreateUserDto,
-  ): Promise<UserDocument | null> {
-    const passwordHash = await bcrypt.hash(
-      creatUserDto.password,
-      Number(process.env.SALT_ROUND),
-    );
-
-    const newUser: UserDocument = this.UserModel.createUser(
-      creatUserDto,
-      passwordHash,
-      this.UserModel,
-      false,
-    );
-
-    console.log(newUser.emailConfirmation.confirmationCode);
-
-    const result: UserDocument = await this.userRepository.save(newUser);
-
-    try {
-      await this.mailService.sendUserConfirmationEmail(
-        newUser.emailConfirmation.confirmationCode,
-        newUser.accountData.email,
-        newUser.accountData.login,
-      );
-    } catch (e) {
-      return null;
-    }
-    return result;
-  }
-
-  async registrationConfirmation(
-    confirmationCodeDto: ConfirmationCodeDto,
-  ): Promise<boolean> {
-    const user: UserDocument =
-      await this.userRepository.findUserByConfirmationCode(
-        confirmationCodeDto.code,
-      );
-    if (!user || !user.registrationCanBeConfirmed()) return false;
-
-    user.confirmRegistration();
-    await this.userRepository.save(user);
-    return true;
-  }
 
   async resendEmailWithNewConfirmationCode(
     emailDto: EmailDto,

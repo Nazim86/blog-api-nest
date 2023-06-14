@@ -32,6 +32,8 @@ import { CommandBus } from '@nestjs/cqrs';
 import { DeviceCreateCommand } from '../../securityDevices/application,use-cases/device-create-use-case';
 import { DeviceUpdateCommand } from '../../securityDevices/application,use-cases/device-update-use-case';
 import { DeviceDeleteByIdCommand } from '../../securityDevices/application,use-cases/device-deleteByDeviceId-use-case';
+import { CreateUserCommand } from '../application,use-cases/create-user-use-case';
+import { RegistrationConfirmationCommand } from '../application,use-cases/registration-confirmation-use-case';
 
 @Controller('auth')
 export class AuthController {
@@ -47,7 +49,9 @@ export class AuthController {
   @Post('registration')
   @HttpCode(204)
   async userRegistration(@Body() createUserDto: CreateUserDto) {
-    const newUser = await this.authService.createNewUser(createUserDto);
+    const newUser = await this.commandBus.execute(
+      new CreateUserCommand(createUserDto),
+    );
 
     if (newUser) {
       return;
@@ -73,8 +77,9 @@ export class AuthController {
   @Post('registration-confirmation')
   @HttpCode(204)
   async confirmRegistration(@Body() confirmationCodeDto: ConfirmationCodeDto) {
-    const registrationConfirmation: boolean =
-      await this.authService.registrationConfirmation(confirmationCodeDto);
+    const registrationConfirmation: boolean = await this.commandBus.execute(
+      new RegistrationConfirmationCommand(confirmationCodeDto),
+    );
 
     if (!registrationConfirmation) {
       const errorMessage = {
