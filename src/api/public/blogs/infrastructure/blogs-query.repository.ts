@@ -46,7 +46,7 @@ export class BlogsQueryRepo {
     try {
       const foundBlog = await this.BlogModel.findOne({ _id: new ObjectId(id) });
 
-      if (!foundBlog) {
+      if (!foundBlog || foundBlog.isBanned) {
         return false;
       }
       return {
@@ -76,7 +76,7 @@ export class BlogsQueryRepo {
     );
 
     const filter: any = {};
-    filter['$and'] = [];
+    filter['$and'] = [{ isBanned: false }];
     //this is new
     if (paginatedQuery.searchNameTerm) {
       filter['$and'].push({

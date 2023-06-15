@@ -32,6 +32,9 @@ export class Blog {
   @Prop({ required: true })
   isMembership: boolean;
 
+  @Prop({ required: true })
+  isBanned: boolean;
+
   @Prop({
     type: {
       userId: { type: String },
@@ -55,6 +58,7 @@ export class Blog {
       websiteUrl: createBlog.websiteUrl,
       createdAt: new Date().toISOString(),
       isMembership: false,
+      isBanned: false,
       blogOwnerInfo: {
         userId: userId,
         userLogin: userLogin,
@@ -72,6 +76,9 @@ export class Blog {
   bindBlogWithUser(userId: string, userLogin: string) {
     this.blogOwnerInfo.userId = userId;
     this.blogOwnerInfo.userLogin = userLogin;
+  }
+  banBlog(banStatus: boolean) {
+    this.isBanned = banStatus;
   }
 }
 

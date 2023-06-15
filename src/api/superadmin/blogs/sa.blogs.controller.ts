@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Get,
   HttpCode,
@@ -15,6 +16,8 @@ import { BlogsQueryRepo } from '../../public/blogs/infrastructure/blogs-query.re
 import { exceptionHandler } from '../../../exception-handler/exception-handler';
 import { ResultCode } from '../../../exception-handler/result-code-enum';
 import { BasicAuthGuard } from '../../public/auth/guards/basic-auth.guard';
+import { BanBlogCommand } from './ban-blog-use-case';
+import { BanBlogInputModel } from './inputModel/banBlog-input-model';
 
 @Controller('sa/blogs')
 @UseGuards(BasicAuthGuard)
@@ -37,6 +40,21 @@ export class SuperAdminBlogsController {
 
     if (isBlogBound.code !== ResultCode.Success) {
       return exceptionHandler(ResultCode.BadRequest, isBlogBound.data);
+    }
+    return;
+  }
+
+  @Put(':id/ban')
+  async banBlog(
+    @Param('id') blogId: string,
+    @Body() banStatus: BanBlogInputModel,
+  ) {
+    const isBlogBanned = await this.commandBus.execute(
+      new BanBlogCommand(blogId, banStatus),
+    );
+
+    if (isBlogBanned.code !== ResultCode) {
+      return exceptionHandler(isBlogBanned.code);
     }
     return;
   }
