@@ -87,6 +87,7 @@ export const BlogSchema = SchemaFactory.createForClass(Blog);
 BlogSchema.methods = {
   updateBlog: Blog.prototype.updateBlog,
   bindBlogWithUser: Blog.prototype.bindBlogWithUser,
+  banBlog: Blog.prototype.banBlog,
 };
 
 const blogStaticMethods: BlogModelStaticType = {
