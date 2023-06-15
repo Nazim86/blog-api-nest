@@ -63,6 +63,7 @@ import {
   UserBanByBlogger,
   UserBanByBloggerSchema,
 } from './domains/user-ban-by-blogger.entity';
+import { BanBlogUseCase } from './api/superadmin/blogs/ban-blog-use-case';
 
 const mongooseModels = [
   { name: Device.name, schema: DeviceSchema },
@@ -92,6 +93,7 @@ const useCases = [
   CommentDeleteUseCase,
   CommentLikeStatusUpdateUseCase,
   UserBanByBloggerUseCase,
+  BanBlogUseCase,
 ];
 @Module({
   imports: [
