@@ -30,14 +30,18 @@ import { Result } from '../../exception-handler/result-type';
 import { PostCreateCommand } from './application,use-cases/post-create-use-case';
 import { PostUpdateCommand } from './application,use-cases/post-update-use-case';
 import { PostDeleteCommand } from './application,use-cases/post-delete-use-case';
+import { BlogRepository } from '../public/blogs/infrastructure/blog.repository';
+import { CommentsQueryRepo } from '../public/comments/infrastructure/comments.query.repo';
 
 @UseGuards(AccessTokenGuard)
 @Controller('blogger/blogs')
 export class BloggerBlogsController {
   constructor(
     private commandBus: CommandBus,
+    private readonly blogsRepository: BlogRepository,
     private readonly blogQueryRepo: BlogsQueryRepo,
-    private readonly postQueryRepo: PostsQueryRepo, //private readonly jwtService: JwtService, // , // protected postQueryRepo: PostsQueryRepo, // ,
+    private readonly postQueryRepo: PostsQueryRepo,
+    private readonly commentsQueryRepo: CommentsQueryRepo,
   ) {}
 
   @Get()
@@ -50,6 +54,14 @@ export class BloggerBlogsController {
       await this.blogQueryRepo.getBlog(query, 'blogger', userId);
 
     return getBlog;
+  }
+
+  @Get()
+  async getCommentsForBlog(
+    @Query() query: PaginationType,
+    @UserId() userId: string,
+  ) {
+    return await this.commentsQueryRepo.getCommentForBlogOfUser(query, userId);
   }
 
   @Post()

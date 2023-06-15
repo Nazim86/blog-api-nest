@@ -11,6 +11,9 @@ export type CommentModelStaticType = {
     userId: string,
     userLogin: string,
     CommentModel: CommentModelType,
+    title: string,
+    blogId: string,
+    blogName: string,
   ) => CommentDocument;
 };
 
@@ -32,24 +35,20 @@ export class Comment {
       userLogin: String,
     },
   })
-  commentatorInfo: { userId: string; userLogin: string };
+  commentatorInfo: { userId: string; userLogin: string; isBanned: string };
+
+  @Prop({
+    required: true,
+    type: { title: String, blogId: String, blogName: String },
+  })
+  postInfo: {
+    title: string;
+    blogId: string;
+    blogName: string;
+  };
 
   @Prop({ required: true })
   createdAt: string;
-
-  // @Prop({
-  //   required: true,
-  //   type: {
-  //     likesCount: Number,
-  //     dislikesCount: Number,
-  //     myStatus: String,
-  //   },
-  // })
-  // likesInfo: {
-  //   likesCount: number;
-  //   dislikesCount: number;
-  //   myStatus: string;
-  // };
 
   static createComment(
     createCommentDto: CreateCommentDto,
@@ -57,6 +56,9 @@ export class Comment {
     userId: string,
     userLogin: string,
     CommentModel: CommentModelType,
+    title: string,
+    blogId: string,
+    blogName: string,
   ) {
     const newComment = {
       postId: postId,
@@ -64,6 +66,12 @@ export class Comment {
       commentatorInfo: {
         userId: userId,
         userLogin: userLogin,
+        isBanned: false,
+      },
+      postInfo: {
+        title: title,
+        blogId: blogId,
+        blogName: blogName,
       },
       createdAt: new Date().toISOString(),
     };

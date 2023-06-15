@@ -14,6 +14,7 @@ import {
 import { LikeEnum } from '../../like/like.enum';
 import { ObjectId } from 'mongodb';
 import { UsersRepository } from '../../../superadmin/users/infrastructure/users.repository';
+import { Pagination, PaginationType } from '../../../../common/pagination';
 
 @Injectable()
 export class CommentsQueryRepo {
@@ -26,6 +27,26 @@ export class CommentsQueryRepo {
     @InjectModel(CommentLike.name)
     private CommentLikeModel: Model<CommentLikeDocument>,
   ) {}
+
+  private commentMappingForBlog(comments: CommentDocument[]) {
+    return comments.map((comment: CommentDocument) => {
+      return {
+        id: comment.id,
+        content: comment.content,
+        commentatorInfo: {
+          userId: comment.commentatorInfo.userId,
+          userLogin: comment.commentatorInfo.userLogin,
+        },
+        createdAt: comment.createdAt,
+        postInfo: {
+          id: comment.postId,
+          title: comment.postInfo.title,
+          blogId: comment.postInfo.blogId,
+          blogName: comment.postInfo.blogName,
+        },
+      };
+    });
+  }
 
   async getCommentsForPost(
     postId: string,
@@ -120,5 +141,40 @@ export class CommentsQueryRepo {
     } catch (e) {
       return null;
     }
+  }
+
+  async getCommentForBlogOfUser(query: PaginationType, userId: string) {
+    const paginatedQuery: Pagination<PaginationType> = new Pagination(
+      query.pageNumber,
+      query.pageSize,
+      query.sortBy,
+      query.sortDirection,
+    );
+    const filter = {
+      'commentatorInfo.userId': userId,
+      'commentatorInfo.isBanned': false,
+    };
+
+    const skipSize = paginatedQuery.skipSize;
+    const totalCount = await this.CommentModel.countDocuments(filter);
+    const pagesCount = paginatedQuery.totalPages(totalCount);
+
+    const comments: CommentDocument[] = await this.CommentModel.find(filter)
+      .sort({
+        [paginatedQuery.sortBy]:
+          paginatedQuery.sortDirection === 'asc' ? 1 : -1,
+      })
+      .skip(skipSize)
+      .limit(paginatedQuery.pageSize);
+
+    const mappedCommentsForBlog = this.commentMappingForBlog(comments);
+
+    return {
+      pagesCount: pagesCount,
+      page: Number(query.pageNumber),
+      pageSize: Number(query.pageSize),
+      totalCount: totalCount,
+      items: mappedCommentsForBlog,
+    };
   }
 }

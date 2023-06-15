@@ -5,6 +5,7 @@ import { ResultCode } from '../../../../exception-handler/result-code-enum';
 import { UserDocument } from '../../../../domains/user.entity';
 import { DeviceRepository } from '../../../public/securityDevices/infrastructure/device.repository';
 import { LikesRepository } from '../../../public/like/likes.repository';
+import { CommentsRepository } from '../../../public/comments/infrastructure/comments.repository';
 
 export class BanUserCommand {
   constructor(public userId: string, public banUserDto: BanUserDto) {}
@@ -15,6 +16,7 @@ export class BanUserUseCase {
     private readonly usersRepository: UsersRepository,
     private readonly deviceRepository: DeviceRepository,
     private readonly likesRepository: LikesRepository,
+    private readonly commentsRepository: CommentsRepository,
   ) {}
 
   async execute(command: BanUserCommand) {
@@ -45,6 +47,11 @@ export class BanUserUseCase {
 
       await this.likesRepository.setBanStatusForPostLike(command.userId, true);
 
+      await this.commentsRepository.setBanStatusForComment(
+        command.userId,
+        true,
+      );
+
       await this.deviceRepository.deleteDeviceByUserId(user.id);
     }
 
@@ -60,6 +67,10 @@ export class BanUserUseCase {
       );
 
       await this.likesRepository.setBanStatusForPostLike(command.userId, false);
+      await this.commentsRepository.setBanStatusForComment(
+        command.userId,
+        false,
+      );
     }
 
     await this.usersRepository.save(user);

@@ -39,7 +39,7 @@ export class Pagination<T> {
 
 export interface PaginationType {
   sortBy: string;
-  sortDirection: string;
+  sortDirection: 'asc' | 'desc';
   pageNumber: number;
   pageSize: number;
 }

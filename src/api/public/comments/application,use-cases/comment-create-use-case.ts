@@ -24,10 +24,11 @@ export class CommentCreateUseCase {
     @InjectModel(Comment.name) private CommentModel: CommentModelType,
   ) {}
   async execute(command: CommentCreateCommand): Promise<string | null> {
-    const postById: PostDocument | boolean =
-      await this.postsRepository.getPostById(command.postId);
+    const post: PostDocument | boolean = await this.postsRepository.getPostById(
+      command.postId,
+    );
 
-    if (!postById || typeof postById === 'boolean') return null;
+    if (!post || typeof post === 'boolean') return null;
 
     const user: UserDocument | null = await this.usersRepository.findUserById(
       command.userId,
@@ -41,6 +42,9 @@ export class CommentCreateUseCase {
       command.userId,
       user.accountData.login,
       this.CommentModel,
+      post.title,
+      post.blogId,
+      post.blogName,
     );
 
     await this.commentsRepository.save(newComment);
