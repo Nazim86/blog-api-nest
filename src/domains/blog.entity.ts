@@ -32,9 +32,11 @@ export class Blog {
   @Prop({ required: true })
   isMembership: boolean;
 
-  @Prop({ required: true })
-  isBanned: boolean;
-
+  @Prop({ required: true, type: { isBanned: Boolean, banDate: String } })
+  banInfo: {
+    isBanned: boolean;
+    banDate: string;
+  };
   @Prop({
     type: {
       userId: { type: String },
@@ -58,10 +60,13 @@ export class Blog {
       websiteUrl: createBlog.websiteUrl,
       createdAt: new Date().toISOString(),
       isMembership: false,
-      isBanned: false,
       blogOwnerInfo: {
         userId: userId,
         userLogin: userLogin,
+      },
+      banInfo: {
+        isBanned: false,
+        banDate: new Date().toISOString(),
       },
     };
     return new BlogModel(newBlog);
@@ -78,7 +83,8 @@ export class Blog {
     this.blogOwnerInfo.userLogin = userLogin;
   }
   banBlog(banStatus: boolean) {
-    this.isBanned = banStatus;
+    this.banInfo.isBanned = banStatus;
+    this.banInfo.banDate = new Date().toISOString();
   }
 }
 

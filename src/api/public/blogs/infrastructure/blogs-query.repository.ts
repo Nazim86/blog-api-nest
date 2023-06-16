@@ -38,6 +38,10 @@ export class BlogsQueryRepo {
           userId: blog.blogOwnerInfo.userId,
           userLogin: blog.blogOwnerInfo.userLogin,
         },
+        banInfo: {
+          isBanned: blog.banInfo.isBanned,
+          banDate: blog.banInfo.banDate,
+        },
       };
     });
   };
@@ -46,7 +50,7 @@ export class BlogsQueryRepo {
     try {
       const foundBlog = await this.BlogModel.findOne({ _id: new ObjectId(id) });
 
-      if (!foundBlog || foundBlog.isBanned) {
+      if (!foundBlog || foundBlog.banInfo.isBanned) {
         return false;
       }
       return {
@@ -79,7 +83,7 @@ export class BlogsQueryRepo {
     filter['$and'] = [];
 
     if (requestType !== 'SA') {
-      filter.push({ isBanned: false });
+      filter['$and'].push({ isBanned: false });
     }
 
     if (paginatedQuery.searchNameTerm) {

@@ -9,4 +9,8 @@ export type BlogsViewType = {
     userId: string;
     userLogin: string;
   };
+  banInfo?: {
+    isBanned: boolean;
+    banDate: string;
+  };
 };

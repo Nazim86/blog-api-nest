@@ -49,6 +49,7 @@ import {
   blogCreatingData,
   createdBlogWithoutPagination,
   createdBlogWithPagination,
+  emptyBlogDataWithPagination,
 } from '../data/blogs-data';
 
 describe('Super Admin blogs testing', () => {
@@ -112,14 +113,26 @@ describe('Super Admin blogs testing', () => {
         .send({
           isBanned: true,
         });
-      console.log(result.body);
       expect(result.status).toBe(200);
     });
 
-    it(`Get Blogger blogs`, async () => {
+    it(`Does not show banned blogs in public api`, async () => {
+      const result = await request(app.getHttpServer()).get(`/blogs`);
+      expect(result.status).toBe(200);
+      expect(result.body).toEqual(emptyBlogDataWithPagination);
+    });
+
+    it(`Does not show banned blogById in public api`, async () => {
+      const result = await request(app.getHttpServer()).get(
+        `/blogs/${blog.id}`,
+      );
+      expect(result.status).toBe(404);
+    });
+
+    it(`Super Admin get all (banned or unbanned) blogs with pagination`, async () => {
       const result = await request(app.getHttpServer())
-        .get('/blogger/blogs')
-        .auth(accessToken, { type: 'bearer' });
+        .get('/sa/blogs')
+        .auth('admin', 'qwerty');
 
       expect(result.status).toBe(200);
       expect(result.body).toEqual(createdBlogWithPagination);

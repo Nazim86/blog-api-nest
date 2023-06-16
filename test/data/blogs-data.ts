@@ -37,7 +37,7 @@ export const paginationValues = {
   pageSize: expect.any(Number),
 };
 
-export const emptyBlogData = {
+export const emptyBlogDataWithPagination = {
   pagesCount: expect.any(Number) | 0,
   page: expect.any(Number) | 1,
   pageSize: expect.any(Number) | 10,
@@ -58,6 +58,14 @@ export const createdBlogWithPagination = {
       websiteUrl: 'https://it-incubator.io/',
       createdAt: expect.any(String),
       isMembership: false,
+      blogOwnerInfo: {
+        userId: expect.any(String),
+        userLogin: 'leo',
+      },
+      banInfo: {
+        isBanned: true,
+        banDate: expect.any(String),
+      },
     },
   ],
 };
