@@ -82,9 +82,9 @@ export class BlogsQueryRepo {
     const filter: any = {};
     filter['$and'] = [];
 
-    //if (requestType !== 'SA') {
-    filter['$and'].push({ isBanned: false });
-    //}
+    if (requestType !== 'SA') {
+      filter['$and'].push({ isBanned: false });
+    }
 
     if (paginatedQuery.searchNameTerm) {
       filter['$and'].push({

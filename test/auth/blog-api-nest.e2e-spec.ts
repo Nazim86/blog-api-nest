@@ -46,8 +46,7 @@ import {
   rootMongooseTestModule,
 } from '../mongoose-test-module';
 import {
-  blogCreatingData1,
-  blogCreatingData2,
+  blogCreatingData,
   createdBlogWithoutPagination,
   createdBlogWithPagination,
   emptyBlogDataWithPagination,
@@ -70,7 +69,7 @@ describe('Super Admin blogs testing', () => {
     await closeInMongodConnection();
   });
 
-  describe('Creating user,blog,binding,banning ', () => {
+  describe('Creating user,blog,binding,banning,unbaning ', () => {
     let accessToken;
     let blog;
     it(`Creating user`, () => {
@@ -100,18 +99,7 @@ describe('Super Admin blogs testing', () => {
       const result = await request(app.getHttpServer())
         .post('/blogger/blogs')
         .auth(accessToken, { type: 'bearer' })
-        .send(blogCreatingData1);
-
-      blog = result.body;
-      expect(result.status).toBe(201);
-      expect(result.body).toEqual(createdBlogWithoutPagination);
-    });
-
-    it(`Blogger creates second blog`, async () => {
-      const result = await request(app.getHttpServer())
-        .post('/blogger/blogs')
-        .auth(accessToken, { type: 'bearer' })
-        .send(blogCreatingData2);
+        .send(blogCreatingData);
 
       blog = result.body;
       expect(result.status).toBe(201);
@@ -146,6 +134,22 @@ describe('Super Admin blogs testing', () => {
         .get('/sa/blogs')
         .auth('admin', 'qwerty');
 
+      expect(result.status).toBe(200);
+      expect(result.body).toEqual(createdBlogWithPagination);
+    });
+
+    it(`Unbanning blog`, async () => {
+      const result = await request(app.getHttpServer())
+        .put(`/sa/blogs/${blog.id}/ban`)
+        .auth('admin', 'qwerty')
+        .send({
+          isBanned: false,
+        });
+      expect(result.status).toBe(200);
+    });
+
+    it(`Does not show banned blogs in public api`, async () => {
+      const result = await request(app.getHttpServer()).get(`/blogs`);
       expect(result.status).toBe(200);
       expect(result.body).toEqual(createdBlogWithPagination);
     });
