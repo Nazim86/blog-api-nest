@@ -1,8 +1,14 @@
 export const authorizationData = 'Basic YWRtaW46cXdlcnR5';
-export const blogCreatingData = {
+export const blogCreatingData1 = {
   name: 'Blog',
   description: 'creating newblog',
   websiteUrl: 'https://it-incubator.io/',
+};
+
+export const blogCreatingData2 = {
+  name: 'Blog2',
+  description: 'creating newblog2',
+  websiteUrl: 'https://it-incubator.io/2',
 };
 
 export const updateBlog = {

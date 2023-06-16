@@ -46,7 +46,8 @@ import {
   rootMongooseTestModule,
 } from '../mongoose-test-module';
 import {
-  blogCreatingData,
+  blogCreatingData1,
+  blogCreatingData2,
   createdBlogWithoutPagination,
   createdBlogWithPagination,
   emptyBlogDataWithPagination,
@@ -99,7 +100,18 @@ describe('Super Admin blogs testing', () => {
       const result = await request(app.getHttpServer())
         .post('/blogger/blogs')
         .auth(accessToken, { type: 'bearer' })
-        .send(blogCreatingData);
+        .send(blogCreatingData1);
+
+      blog = result.body;
+      expect(result.status).toBe(201);
+      expect(result.body).toEqual(createdBlogWithoutPagination);
+    });
+
+    it(`Blogger creates second blog`, async () => {
+      const result = await request(app.getHttpServer())
+        .post('/blogger/blogs')
+        .auth(accessToken, { type: 'bearer' })
+        .send(blogCreatingData2);
 
       blog = result.body;
       expect(result.status).toBe(201);
