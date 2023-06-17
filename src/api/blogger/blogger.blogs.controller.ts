@@ -32,6 +32,7 @@ import { PostUpdateCommand } from './application,use-cases/post-update-use-case'
 import { PostDeleteCommand } from './application,use-cases/post-delete-use-case';
 import { BlogRepository } from '../public/blogs/infrastructure/blog.repository';
 import { CommentsQueryRepo } from '../public/comments/infrastructure/comments.query.repo';
+import { RoleEnum } from '../../enums/role-enum';
 
 @UseGuards(AccessTokenGuard)
 @Controller('blogger/blogs')
@@ -51,7 +52,7 @@ export class BloggerBlogsController {
     @UserId() userId: string,
   ) {
     const getBlog: QueryPaginationType<BlogsViewType[]> =
-      await this.blogQueryRepo.getBlog(query, 'blogger', userId);
+      await this.blogQueryRepo.getBlog(query, RoleEnum.Blogger, userId);
 
     return getBlog;
   }

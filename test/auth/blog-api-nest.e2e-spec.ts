@@ -52,7 +52,11 @@ import {
   createdBlogWithPaginationForSa,
   emptyBlogDataWithPagination,
 } from '../data/blogs-data';
-import { newUserEmail, userCreatedData } from '../data/user-data';
+import {
+  emptyUsersDataWithPagination,
+  newUserEmail,
+  userCreatedData,
+} from '../data/user-data';
 
 describe('Super Admin blogs testing', () => {
   let app: INestApplication;
@@ -85,8 +89,8 @@ describe('Super Admin blogs testing', () => {
           email: newUserEmail,
         })
         .expect(201);
-      expect(result.body).toEqual(userCreatedData);
       user = result.body;
+      expect(result.body).toEqual(userCreatedData);
     });
 
     it(`User login`, async () => {
@@ -160,14 +164,22 @@ describe('Super Admin blogs testing', () => {
     });
 
     it(`Deleting user`, async () => {
-      console.log(user.id);
       const result = await request(app.getHttpServer())
-        .put(`/sa/users/${user.id}`)
+        .delete(`/sa/users/${user.id}`)
         .auth('admin', 'qwerty')
         .send({
           isBanned: false,
         });
+      expect(result.status).toBe(204);
+    });
+
+    it(`Super Admin should get no users`, async () => {
+      const result = await request(app.getHttpServer())
+        .get('/sa/users')
+        .auth('admin', 'qwerty');
+
       expect(result.status).toBe(200);
+      expect(result.body).toEqual(emptyUsersDataWithPagination);
     });
   });
 });

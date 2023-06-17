@@ -9,7 +9,7 @@ export const userPaginationValues = {
   searchEmailTerm: null,
 };
 
-export const getEmptyUsersData = {
+export const emptyUsersDataWithPagination = {
   pagesCount: expect.any(Number) | 0,
   page: expect.any(Number) | 1,
   pageSize: expect.any(Number) | 10,

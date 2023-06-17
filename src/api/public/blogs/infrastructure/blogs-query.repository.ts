@@ -7,6 +7,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
 import { PaginationType } from '../../../../common/pagination';
 import { BlogPagination } from '../blog-pagination';
+import { RoleEnum } from '../../../../enums/role-enum';
 
 @Injectable()
 export class BlogsQueryRepo {
@@ -68,9 +69,10 @@ export class BlogsQueryRepo {
 
   async getBlog(
     query: BlogPagination<PaginationType>,
-    requestType?: string,
+    requestType?: RoleEnum,
     userId?: string,
   ): Promise<QueryPaginationType<BlogsViewType[]>> {
+    console.log(requestType);
     const paginatedQuery = new BlogPagination<PaginationType>(
       query.pageNumber,
       query.pageSize,
@@ -82,7 +84,7 @@ export class BlogsQueryRepo {
     const filter: any = {};
     filter['$and'] = [];
 
-    if (requestType !== 'SA') {
+    if (requestType !== RoleEnum.SA) {
       filter['$and'].push({ 'banInfo.isBanned': false });
     }
 
@@ -93,7 +95,7 @@ export class BlogsQueryRepo {
     }
     // console.log(userId);
 
-    if (requestType === 'blogger') {
+    if (requestType === RoleEnum.Blogger) {
       filter['$and'].push({ 'blogOwnerInfo.userId': userId });
     }
     // // console.log(filter);
@@ -114,7 +116,7 @@ export class BlogsQueryRepo {
       .limit(paginatedQuery.pageSize);
 
     let mappedBlog: BlogsViewType[];
-    if (requestType === 'SA') {
+    if (requestType === RoleEnum.SA) {
       mappedBlog = this.blogsMappingForSA(blog);
     } else {
       mappedBlog = this.blogsMapping(blog);

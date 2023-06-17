@@ -31,7 +31,7 @@ export class BloggerUsersController {
     private readonly usersQueryRepo: UserQueryRepo,
   ) {}
 
-  @Get(':id')
+  @Get('blog/:id')
   async getBannedUsersForBlog(
     @Query()
     query: UserPagination<PaginationType>,

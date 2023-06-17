@@ -18,6 +18,7 @@ import { ResultCode } from '../../../exception-handler/result-code-enum';
 import { BasicAuthGuard } from '../../public/auth/guards/basic-auth.guard';
 import { BanBlogCommand } from './ban-blog-use-case';
 import { BanBlogInputModel } from './inputModel/banBlog-input-model';
+import { RoleEnum } from '../../../enums/role-enum';
 
 @Controller('sa/blogs')
 @UseGuards(BasicAuthGuard)
@@ -28,7 +29,7 @@ export class SuperAdminBlogsController {
   ) {}
   @Get()
   async getBlogs(@Query() query: BlogPagination<PaginationType>) {
-    return await this.blogsQueryRepo.getBlog(query, 'SA');
+    return await this.blogsQueryRepo.getBlog(query, RoleEnum.SA);
   }
 
   @Put(':blogId/bind-with-user/:userId')
