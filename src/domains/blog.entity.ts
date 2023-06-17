@@ -35,7 +35,7 @@ export class Blog {
   @Prop({ required: true, type: { isBanned: Boolean, banDate: String } })
   banInfo: {
     isBanned: boolean;
-    banDate: string;
+    banDate: string | null;
   };
   @Prop({
     type: {
@@ -66,7 +66,7 @@ export class Blog {
       },
       banInfo: {
         isBanned: false,
-        banDate: new Date().toISOString(),
+        banDate: null,
       },
     };
     return new BlogModel(newBlog);

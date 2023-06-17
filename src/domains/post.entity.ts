@@ -73,7 +73,9 @@ export class Post {
 
 export const PostSchema = SchemaFactory.createForClass(Post);
 
-PostSchema.methods = { updatePost: Post.prototype.updatePost };
+PostSchema.methods = {
+  updatePost: Post.prototype.updatePost,
+};
 
 const postStaticMethods = {
   createPost: Post.createPost,

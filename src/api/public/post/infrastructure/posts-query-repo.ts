@@ -15,6 +15,8 @@ import { QueryPaginationType } from '../../../../types/query-pagination-type';
 import { newestLikesMapping } from '../../like/post-likes.mapping';
 import { PostMapping } from '../mapper/post.mapping';
 import { Pagination, PaginationType } from '../../../../common/pagination';
+import { BlogRepository } from '../../blogs/infrastructure/blog.repository';
+import { BlogDocument } from '../../../../domains/blog.entity';
 
 @Injectable()
 export class PostsQueryRepo {
@@ -22,6 +24,7 @@ export class PostsQueryRepo {
     @InjectModel(Post.name) private PostModel: Model<PostDocument>,
     @InjectModel(PostLike.name) private PostLikeModel: Model<PostLikeDocument>,
     private readonly postMapping: PostMapping,
+    private readonly blogsRepository: BlogRepository,
   ) {}
 
   async getPostById(
@@ -34,6 +37,14 @@ export class PostsQueryRepo {
       });
 
       if (!post) {
+        return false;
+      }
+
+      const blog: BlogDocument = await this.blogsRepository.getBlogById(
+        post.blogId,
+      );
+
+      if (blog.banInfo.isBanned) {
         return false;
       }
 

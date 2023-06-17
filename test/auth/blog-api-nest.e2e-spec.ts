@@ -52,6 +52,7 @@ import {
   createdBlogWithPaginationForSa,
   emptyBlogDataWithPagination,
 } from '../data/blogs-data';
+import { newUserEmail, userCreatedData } from '../data/user-data';
 
 describe('Super Admin blogs testing', () => {
   let app: INestApplication;
@@ -73,16 +74,19 @@ describe('Super Admin blogs testing', () => {
   describe('Creating user,blog,binding,banning,unbaning ', () => {
     let accessToken;
     let blog;
-    it(`Creating user`, () => {
-      return request(app.getHttpServer())
+    let user;
+    it(`Creating user`, async () => {
+      const result = await request(app.getHttpServer())
         .post('/sa/users')
         .auth('admin', 'qwerty')
         .send({
           login: 'leo',
           password: '123456',
-          email: 'leo@mail.ru',
+          email: newUserEmail,
         })
         .expect(201);
+      expect(result.body).toEqual(userCreatedData);
+      user = result.body;
     });
 
     it(`User login`, async () => {
@@ -153,6 +157,17 @@ describe('Super Admin blogs testing', () => {
       const result = await request(app.getHttpServer()).get(`/blogs`);
       expect(result.status).toBe(200);
       expect(result.body).toEqual(createdBlogWithPaginationForPublic);
+    });
+
+    it(`Deleting user`, async () => {
+      console.log(user.id);
+      const result = await request(app.getHttpServer())
+        .put(`/sa/users/${user.id}`)
+        .auth('admin', 'qwerty')
+        .send({
+          isBanned: false,
+        });
+      expect(result.status).toBe(200);
     });
   });
 });
