@@ -148,7 +148,7 @@ describe('Super Admin blogs testing', () => {
       expect(result.status).toBe(200);
     });
 
-    it(`Does not show banned blogs in public api`, async () => {
+    it(`Must show unbanned blogs in public api`, async () => {
       const result = await request(app.getHttpServer()).get(`/blogs`);
       expect(result.status).toBe(200);
       expect(result.body).toEqual(createdBlogWithPagination);
