@@ -48,7 +48,8 @@ import {
 import {
   blogCreatingData,
   createdBlogWithoutPagination,
-  createdBlogWithPagination,
+  createdBlogWithPaginationForPublic,
+  createdBlogWithPaginationForSa,
   emptyBlogDataWithPagination,
 } from '../data/blogs-data';
 
@@ -135,7 +136,7 @@ describe('Super Admin blogs testing', () => {
         .auth('admin', 'qwerty');
 
       expect(result.status).toBe(200);
-      expect(result.body).toEqual(createdBlogWithPagination);
+      expect(result.body).toEqual(createdBlogWithPaginationForSa);
     });
 
     it(`Unbanning blog`, async () => {
@@ -151,7 +152,7 @@ describe('Super Admin blogs testing', () => {
     it(`Must show unbanned blogs in public api`, async () => {
       const result = await request(app.getHttpServer()).get(`/blogs`);
       expect(result.status).toBe(200);
-      expect(result.body).toEqual(createdBlogWithPagination);
+      expect(result.body).toEqual(createdBlogWithPaginationForPublic);
     });
   });
 });
