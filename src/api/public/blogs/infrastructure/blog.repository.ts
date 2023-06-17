@@ -26,18 +26,15 @@ export class BlogRepository {
     }
   }
 
-  async getBlogUserId(
-    userId: string,
-    blogId: string,
-  ): Promise<BlogDocument | null> {
-    const foundBlog = await this.BlogModel.findOne({
-      'blogOwnerInfo.userId': userId,
-    });
+  async deleteBlogOwnerInfo(userId: string) {
+    const result = await this.BlogModel.updateMany(
+      { 'blogOwnerInfo.userId': userId },
+      {
+        $set: { 'blogOwnerInfo.userId': null, 'blogOwnerInfo.userLogin': null },
+      },
+    );
 
-    if (!foundBlog) {
-      return null;
-    }
-    return foundBlog;
+    return result.matchedCount === 1;
   }
 
   async save(blog: BlogDocument): Promise<BlogDocument> {

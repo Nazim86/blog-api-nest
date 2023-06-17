@@ -72,7 +72,6 @@ export class BlogsQueryRepo {
     requestType?: RoleEnum,
     userId?: string,
   ): Promise<QueryPaginationType<BlogsViewType[]>> {
-    console.log(requestType);
     const paginatedQuery = new BlogPagination<PaginationType>(
       query.pageNumber,
       query.pageSize,

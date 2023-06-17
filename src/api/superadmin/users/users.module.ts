@@ -9,6 +9,8 @@ import {
   UserBanByBlogger,
   UserBanByBloggerSchema,
 } from '../../../domains/user-ban-by-blogger.entity';
+import { BlogRepository } from '../../public/blogs/infrastructure/blog.repository';
+import { Blog, BlogSchema } from '../../../domains/blog.entity';
 
 @Module({
   imports: [
@@ -16,10 +18,16 @@ import {
 
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
+      { name: Blog.name, schema: BlogSchema },
       { name: UserBanByBlogger.name, schema: UserBanByBloggerSchema },
     ]),
   ],
-  providers: [UsersService, UsersRepository, IsUserAlreadyExistConstraint],
-  exports: [UsersService, UsersRepository],
+  providers: [
+    UsersService,
+    UsersRepository,
+    IsUserAlreadyExistConstraint,
+    BlogRepository,
+  ],
+  exports: [UsersService, UsersRepository, BlogRepository],
 })
 export class UsersModule {}

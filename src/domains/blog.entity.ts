@@ -38,14 +38,15 @@ export class Blog {
     banDate: string | null;
   };
   @Prop({
+    required: true,
     type: {
       userId: { type: String },
       userLogin: { type: String },
     },
   })
   blogOwnerInfo: {
-    userId: string;
-    userLogin: string;
+    userId: string | null;
+    userLogin: string | null;
   };
 
   static createBlog(

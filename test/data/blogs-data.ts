@@ -70,6 +70,31 @@ export const createdBlogWithPaginationForSa = {
   ],
 };
 
+export const blogWithBlogOwnerInfoNull = {
+  pagesCount: expect.any(Number) | 1,
+  page: expect.any(Number) | 1,
+  pageSize: expect.any(Number) | 10,
+  totalCount: expect.any(Number) | 1,
+  items: [
+    {
+      id: expect.any(String),
+      name: 'Blog',
+      description: 'creating newblog',
+      websiteUrl: 'https://it-incubator.io/',
+      createdAt: expect.any(String),
+      isMembership: false,
+      blogOwnerInfo: {
+        userId: null,
+        userLogin: null,
+      },
+      banInfo: {
+        isBanned: expect.any(Boolean),
+        banDate: expect.any(String),
+      },
+    },
+  ],
+};
+
 export const createdBlogWithPaginationForPublic = {
   pagesCount: expect.any(Number) | 1,
   page: expect.any(Number) | 1,

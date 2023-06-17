@@ -47,6 +47,7 @@ import {
 } from '../mongoose-test-module';
 import {
   blogCreatingData,
+  blogWithBlogOwnerInfoNull,
   createdBlogWithoutPagination,
   createdBlogWithPaginationForPublic,
   createdBlogWithPaginationForSa,
@@ -71,8 +72,8 @@ describe('Super Admin blogs testing', () => {
   });
 
   afterAll(async () => {
-    await app.close();
     await closeInMongodConnection();
+    await app.close();
   });
 
   describe('Creating user,blog,binding,banning,unbaning ', () => {
@@ -142,7 +143,6 @@ describe('Super Admin blogs testing', () => {
       const result = await request(app.getHttpServer())
         .get('/sa/blogs')
         .auth('admin', 'qwerty');
-
       expect(result.status).toBe(200);
       expect(result.body).toEqual(createdBlogWithPaginationForSa);
     });
@@ -180,6 +180,34 @@ describe('Super Admin blogs testing', () => {
 
       expect(result.status).toBe(200);
       expect(result.body).toEqual(emptyUsersDataWithPagination);
+    });
+
+    it(`BlogOwnerInfo.login should be null`, async () => {
+      const result = await request(app.getHttpServer())
+        .get('/sa/blogs')
+        .auth('admin', 'qwerty');
+      expect(result.status).toBe(200);
+      expect(result.body).toEqual(blogWithBlogOwnerInfoNull);
+    });
+
+    it(`Creating user`, async () => {
+      const result = await request(app.getHttpServer())
+        .post('/sa/users')
+        .auth('admin', 'qwerty')
+        .send({
+          login: 'leonid',
+          password: '123456',
+          email: newUserEmail,
+        })
+        .expect(201);
+      user = result.body;
+    });
+
+    it(`Should bing blog with user`, async () => {
+      const result = await request(app.getHttpServer())
+        .put(`/sa/blogs/${blog.id}/bind-with-user/${user.id}`)
+        .auth('admin', 'qwerty');
+      expect(result.status).toBe(204);
     });
   });
 });
