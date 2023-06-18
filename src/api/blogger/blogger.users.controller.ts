@@ -40,6 +40,10 @@ export class BloggerUsersController {
     const getBannedUsersForBlog =
       await this.usersQueryRepo.getBannedUsersForBlog(query, blogId);
 
+    if (getBannedUsersForBlog.items.length === 0) {
+      return exceptionHandler(ResultCode.NotFound);
+    }
+
     return getBannedUsersForBlog;
   }
 
