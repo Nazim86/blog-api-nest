@@ -70,6 +70,7 @@ export class BloggerBanUserUseCase {
       command.userBanDto,
     );
     await this.usersRepository.saveBloggerBanUser(bannedUser);
+
     return { code: ResultCode.Success };
   }
 }

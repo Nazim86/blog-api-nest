@@ -151,8 +151,10 @@ export class CommentsQueryRepo {
       query.sortDirection,
     );
     const filter = {
-      'commentatorInfo.userId': userId,
-      'commentatorInfo.isBanned': false,
+      $and: [
+        { 'commentatorInfo.userId': userId },
+        { 'commentatorInfo.isBanned': false },
+      ],
     };
 
     const skipSize = paginatedQuery.skipSize;
