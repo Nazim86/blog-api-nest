@@ -31,10 +31,10 @@ export class BloggerBanUserUseCase {
       command.userBanDto.blogId,
     );
 
-    const errorsMessages = [];
-
     if (!blog) {
-      errorsMessages.push({ message: 'blog not found', field: 'blogId' });
+      const errorsMessages = {
+        message: [{ message: 'blog not found', field: 'blogId' }],
+      };
       return { data: errorsMessages, code: ResultCode.BadRequest };
     }
 

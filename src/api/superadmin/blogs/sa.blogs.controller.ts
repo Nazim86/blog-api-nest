@@ -9,14 +9,14 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
-import { BindBlogCommand } from './bind-blog-use-case';
+import { BindBlogCommand } from './use-cases/bind-blog-use-case';
 import { PaginationType } from '../../../common/pagination';
 import { BlogPagination } from '../../infrastructure/blogs/blog-pagination';
 import { BlogsQueryRepo } from '../../infrastructure/blogs/blogs-query.repository';
 import { exceptionHandler } from '../../../exception-handler/exception-handler';
 import { ResultCode } from '../../../exception-handler/result-code-enum';
 import { BasicAuthGuard } from '../../public/auth/guards/basic-auth.guard';
-import { BanBlogCommand } from './ban-blog-use-case';
+import { BanBlogCommand } from './use-cases/ban-blog-use-case';
 import { BanBlogInputModel } from './inputModel/banBlog-input-model';
 import { RoleEnum } from '../../../enums/role-enum';
 

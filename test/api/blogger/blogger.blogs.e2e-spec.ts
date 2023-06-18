@@ -30,7 +30,7 @@ describe('Blogger user testing', () => {
     await app.close();
   });
 
-  describe('Banning, unbanning user, get all banned users ', () => {
+  describe('Creating blog,post,comment, update,delete ', () => {
     let accessToken;
     let user;
     let blog;

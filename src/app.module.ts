@@ -44,7 +44,7 @@ import { SuperAdminBlogsController } from './api/superadmin/blogs/sa.blogs.contr
 import { BlogCreateUseCase } from './api/blogger/application,use-cases/blog-create-use-case';
 import { CqrsModule } from '@nestjs/cqrs';
 import { BlogUpdateUseCase } from './api/blogger/application,use-cases/blog-update-use-case';
-import { BindBlogUseCase } from './api/superadmin/blogs/bind-blog-use-case';
+import { BindBlogUseCase } from './api/superadmin/blogs/use-cases/bind-blog-use-case';
 import { SuperAdminUsersController } from './api/superadmin/users/sa.users.controller';
 import { BanUserUseCase } from './api/superadmin/users/application,use-cases/ban-user-use-case';
 import { CreateUsersUseCase } from './api/superadmin/users/application,use-cases/create-user-use-case';
@@ -66,7 +66,7 @@ import {
   BloggerBanUser,
   UserBanByBloggerSchema,
 } from './api/entities/user-ban-by-blogger.entity';
-import { BanBlogUseCase } from './api/superadmin/blogs/ban-blog-use-case';
+import { BanBlogUseCase } from './api/superadmin/blogs/use-cases/ban-blog-use-case';
 
 const mongooseModels = [
   { name: Device.name, schema: DeviceSchema },

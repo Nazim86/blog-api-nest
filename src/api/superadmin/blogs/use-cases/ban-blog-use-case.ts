@@ -1,8 +1,8 @@
-import { BlogRepository } from '../../infrastructure/blogs/blog.repository';
-import { BlogDocument } from '../../entities/blog.entity';
-import { ResultCode } from '../../../exception-handler/result-code-enum';
-import { BanBlogInputModel } from './inputModel/banBlog-input-model';
-import { Result } from '../../../exception-handler/result-type';
+import { BlogRepository } from '../../../infrastructure/blogs/blog.repository';
+import { BlogDocument } from '../../../entities/blog.entity';
+import { ResultCode } from '../../../../exception-handler/result-code-enum';
+import { BanBlogInputModel } from '../inputModel/banBlog-input-model';
+import { Result } from '../../../../exception-handler/result-type';
 import { CommandHandler } from '@nestjs/cqrs';
 
 export class BanBlogCommand {
@@ -12,19 +12,17 @@ export class BanBlogCommand {
 @CommandHandler(BanBlogCommand)
 export class BanBlogUseCase {
   constructor(private readonly blogsRepository: BlogRepository) {}
-  async execute(command: BanBlogCommand): Promise<Result<ResultCode>> {
+  async execute(command: BanBlogCommand): Promise<Result<any>> {
     const blog: BlogDocument = await this.blogsRepository.getBlogById(
       command.blogId,
     );
 
-    const errorMessages = [];
-
     if (!blog) {
+      const errorMessage = {
+        message: [{ message: 'blog not found', field: 'blogId' }],
+      };
       return {
-        data: errorMessages.push({
-          message: 'blog not found',
-          field: 'blogId',
-        }),
+        data: errorMessage,
         code: ResultCode.BadRequest,
       };
     }
