@@ -1,7 +1,7 @@
 import { BanStatusEnum } from '../api/superadmin/users/user-pagination';
 import { RoleEnum } from '../enums/role-enum';
 
-export const filterForSaQuery = (
+export const filterForUserQuery = (
   searchLoginTerm: string,
   searchEmailTerm?: string,
   banStatus?: BanStatusEnum,

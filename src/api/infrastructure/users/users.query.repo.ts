@@ -9,7 +9,7 @@ import {
   UserPagination,
 } from '../../superadmin/users/user-pagination';
 import { PaginationType } from '../../../common/pagination';
-import { filterForSaQuery } from '../../../common/filterForSaQuery';
+import { filterForUserQuery } from '../../../common/filterForUserQuery';
 import {
   BloggerBanUser,
   BloggerBanUserDocument,
@@ -80,7 +80,7 @@ export class UserQueryRepo {
         query.sortDirection,
         query.searchLoginTerm,
       );
-    const filter = filterForSaQuery(
+    const filter = filterForUserQuery(
       paginatedQuery.searchLoginTerm,
       null,
       BanStatusEnum.banned,
@@ -126,7 +126,7 @@ export class UserQueryRepo {
       query.banStatus,
     );
 
-    const filter = filterForSaQuery(
+    const filter = filterForUserQuery(
       paginatedQuery.searchLoginTerm,
       paginatedQuery.searchEmailTerm,
       paginatedQuery.banStatus,

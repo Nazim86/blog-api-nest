@@ -27,6 +27,14 @@ export class BloggerBanUserUseCase {
     const user: UserDocument = await this.usersRepository.findUserById(
       command.userId,
     );
+
+    if (!user) {
+      const errorsMessages = {
+        message: [{ message: 'user not found', field: 'userId' }],
+      };
+      return { data: errorsMessages, code: ResultCode.BadRequest };
+    }
+
     const blog = await this.blogsRepository.getBlogById(
       command.userBanDto.blogId,
     );
