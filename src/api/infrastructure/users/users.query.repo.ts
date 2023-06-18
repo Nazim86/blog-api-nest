@@ -85,6 +85,8 @@ export class UserQueryRepo {
       BanStatusEnum.banned,
     );
 
+    filter.$and.push({ 'banInfo.blogId': blogId });
+
     const skipSize = paginatedQuery.skipSize; //(paginatedQuery.pageNumber - 1) * paginatedQuery.pageSize;
     const totalCount = await this.UserBanModel.countDocuments(filter);
     const pagesCount = paginatedQuery.totalPages(totalCount); //Math.ceil(totalCount / paginatedQuery.pageSize);
@@ -92,7 +94,7 @@ export class UserQueryRepo {
     const sortDirection = paginatedQuery.sortDirection === 'asc' ? 1 : -1;
 
     const bannedUsersForBlog: BloggerBanUserDocument[] =
-      await this.UserBanModel.find({ 'banInfo.blogId': blogId })
+      await this.UserBanModel.find(filter)
         .sort({
           [paginatedQuery.sortBy]: sortDirection,
         })
