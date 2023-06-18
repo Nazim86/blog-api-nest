@@ -8,12 +8,18 @@ import { AppModule } from '../../../src/app.module';
 import request from 'supertest';
 import { newUserEmail, userCreatedData } from '../../data/user-data';
 import {
-  bannedUsersDataForBlog,
   blogCreatingData,
   createdBlogWithoutPagination,
+  createdBlogWithPaginationForPublic,
+  updateBlogData,
+  updatedBlogWithPagination,
 } from '../../data/blogs-data';
+import {
+  newPostCreatingData,
+  returnedCreatedPost,
+} from '../../data/posts-data';
 
-describe('Blogger user testing', () => {
+describe('Blogger blog testing', () => {
   let app: INestApplication;
   jest.setTimeout(60 * 1000);
   beforeAll(async () => {
@@ -30,10 +36,11 @@ describe('Blogger user testing', () => {
     await app.close();
   });
 
-  describe('Creating blog,post,comment, update,delete ', () => {
+  describe('Creating blog,post,comment, update,delete', () => {
     let accessToken;
     let user;
     let blog;
+    let post;
 
     it(`Creating user`, async () => {
       const result = await request(app.getHttpServer())
@@ -71,35 +78,39 @@ describe('Blogger user testing', () => {
       expect(result.body).toEqual(createdBlogWithoutPagination);
     });
 
-    it(`Banning user`, async () => {
+    it(`Blogger gets blogs for current owner`, async () => {
       const result = await request(app.getHttpServer())
-        .put(`/blogger/users/${user.id}/ban`)
+        .get('/blogger/blogs')
+        .auth(accessToken, { type: 'bearer' });
+      expect(result.status).toBe(200);
+      expect(result.body).toEqual(createdBlogWithPaginationForPublic);
+    });
+
+    it(`Updating blog`, async () => {
+      const result = await request(app.getHttpServer())
+        .put(`/blogger/blogs/${blog.id}`)
         .auth(accessToken, { type: 'bearer' })
-        .send({
-          isBanned: true,
-          banReason: 'bad words',
-          blogId: blog.id,
-        });
+        .send(updateBlogData);
       expect(result.status).toBe(204);
     });
 
-    it(`Blogger gets all banned users for blog`, async () => {
+    it(`Blogger gets updated blogs for current owner`, async () => {
       const result = await request(app.getHttpServer())
-        .get(`/blogger/users/blog/${blog.id}`)
+        .get('/blogger/blogs')
         .auth(accessToken, { type: 'bearer' });
       expect(result.status).toBe(200);
-      expect(result.body).toEqual({
-        ...bannedUsersDataForBlog,
-        items: [
-          {
-            ...bannedUsersDataForBlog.items[0],
-            banInfo: {
-              ...bannedUsersDataForBlog.items[0].banInfo,
-              isBanned: true,
-            },
-          },
-        ],
-      });
+      expect(result.body).toEqual(updatedBlogWithPagination);
+    });
+
+    it(`Blogger creates post for blog`, async () => {
+      const result = await request(app.getHttpServer())
+        .post(`/blogger/blogs/${blog.id}/posts`)
+        .auth(accessToken, { type: 'bearer' })
+        .send(newPostCreatingData);
+
+      post = result.body;
+      expect(result.status).toBe(201);
+      expect(result.body).toEqual(returnedCreatedPost);
     });
   });
 });

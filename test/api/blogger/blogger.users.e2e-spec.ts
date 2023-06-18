@@ -8,11 +8,12 @@ import { AppModule } from '../../../src/app.module';
 import request from 'supertest';
 import { newUserEmail, userCreatedData } from '../../data/user-data';
 import {
+  bannedUsersDataForBlog,
   blogCreatingData,
   createdBlogWithoutPagination,
 } from '../../data/blogs-data';
 
-describe('Blogger blog testing', () => {
+describe('Blogger user testing', () => {
   let app: INestApplication;
   jest.setTimeout(60 * 1000);
   beforeAll(async () => {
@@ -70,35 +71,37 @@ describe('Blogger blog testing', () => {
       expect(result.body).toEqual(createdBlogWithoutPagination);
     });
 
-    // it(`Banning user`, async () => {
-    //   const result = await request(app.getHttpServer())
-    //     .put(`/blogger/users/${user.id}/ban`)
-    //     .auth(accessToken, { type: 'bearer' })
-    //     .send({
-    //       isBanned: true,
-    //       banReason: 'bad words',
-    //       blogId: blog.id,
-    //     });
-    //   expect(result.status).toBe(204);
-    // });
-    //
-    // it(`Blogger gets all banned users for blog`, async () => {
-    //   const result = await request(app.getHttpServer())
-    //     .get(`/blogger/users/blog/${blog.id}`)
-    //     .auth(accessToken, { type: 'bearer' });
-    //   expect(result.status).toBe(200);
-    //   expect(result.body).toEqual({
-    //     ...bannedUsersDataForBlog,
-    //     items: [
-    //       {
-    //         ...bannedUsersDataForBlog.items[0],
-    //         banInfo: {
-    //           ...bannedUsersDataForBlog.items[0].banInfo,
-    //           isBanned: true,
-    //         },
-    //       },
-    //     ],
-    //   });
-    // });
+    it(`Banning user`, async () => {
+      const result = await request(app.getHttpServer())
+        .put(`/blogger/users/${user.id}/ban`)
+        .auth(accessToken, { type: 'bearer' })
+        .send({
+          isBanned: true,
+          banReason: 'bad words',
+          blogId: blog.id,
+        });
+      expect(result.status).toBe(204);
+    });
+
+    it(`Blogger gets all banned users for blog`, async () => {
+      const result = await request(app.getHttpServer())
+        .get(`/blogger/users/blog/${blog.id}`)
+        .auth(accessToken, { type: 'bearer' });
+      expect(result.status).toBe(200);
+      expect(result.body).toEqual({
+        ...bannedUsersDataForBlog,
+        items: [
+          {
+            ...bannedUsersDataForBlog.items[0],
+            banInfo: {
+              ...bannedUsersDataForBlog.items[0].banInfo,
+              isBanned: true,
+            },
+          },
+        ],
+      });
+    });
+
+    //TODO Unban users and then check
   });
 });

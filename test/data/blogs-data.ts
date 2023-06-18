@@ -5,7 +5,7 @@ export const blogCreatingData = {
   websiteUrl: 'https://it-incubator.io/',
 };
 
-export const updateBlog = {
+export const updateBlogData = {
   name: 'Blog updated',
   description: 'updating blog with new',
   websiteUrl: 'https://blog.io/',
@@ -20,7 +20,7 @@ export const createdBlogWithoutPagination = {
   isMembership: false,
 };
 
-export const updatedBlog = {
+export const updatedBlogData = {
   id: expect.any(String),
   name: 'Blog updated',
   description: 'updating blog with new',
@@ -129,7 +129,7 @@ export const createdBlogWithPaginationForPublic = {
     },
   ],
 };
-export const getUpdatedBlog = {
+export const updatedBlogWithPagination = {
   pagesCount: expect.any(Number) | 1,
   page: expect.any(Number) | 1,
   pageSize: expect.any(Number) | 10,
