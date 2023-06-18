@@ -8,8 +8,8 @@ import {
   Post,
   Put,
   Query,
-  UseGuards,
   Request,
+  UseGuards,
 } from '@nestjs/common';
 import { QueryPaginationType } from '../../../../types/query-pagination-type';
 import { PostsQueryRepo } from '../../../infrastructure/posts/posts-query-repo';
@@ -29,6 +29,8 @@ import { CreateLikeDto } from '../../like/createLikeDto';
 import { CommandBus } from '@nestjs/cqrs';
 import { PostLikeUpdateCommand } from '../../like/use-cases/post-like-update-use-case';
 import { CommentCreateCommand } from '../../comments/application,use-cases/comment-create-use-case';
+import { Result } from '../../../../exception-handler/result-type';
+import { UserId } from '../../../../decorators/UserId';
 
 @Controller('posts')
 export class PostsController {
@@ -106,19 +108,18 @@ export class PostsController {
   @UseGuards(AccessTokenGuard) // should be logged user with refreshToken
   @Post(':id/comments')
   async createCommentByPostId(
-    @Request() req,
+    @UserId() userId,
     @Param('id') postId: string,
     @Body() createCommentDto: CreateCommentDto,
   ) {
-    const userId = req.user.userId;
-    const commentId: string | null = await this.commandBus.execute(
+    const isCreated: Result<string> = await this.commandBus.execute(
       new CommentCreateCommand(createCommentDto, postId, userId),
     );
 
-    if (!commentId) {
-      return exceptionHandler(ResultCode.NotFound);
+    if (isCreated.code !== ResultCode.Success) {
+      return exceptionHandler(isCreated.code);
     }
-    return await this.commentsQueryRepo.getComment(commentId);
+    return await this.commentsQueryRepo.getComment(isCreated.data);
   }
 
   @UseGuards(AccessTokenGuard)

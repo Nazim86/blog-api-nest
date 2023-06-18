@@ -29,10 +29,7 @@ export class BloggerBanUserUseCase {
     );
 
     if (!user) {
-      const errorsMessages = {
-        message: [{ message: 'user not found', field: 'userId' }],
-      };
-      return { data: errorsMessages, code: ResultCode.BadRequest };
+      return { code: ResultCode.NotFound };
     }
 
     const blog = await this.blogsRepository.getBlogById(

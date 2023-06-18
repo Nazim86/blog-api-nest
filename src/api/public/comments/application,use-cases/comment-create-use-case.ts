@@ -10,6 +10,8 @@ import { PostRepository } from '../../../infrastructure/posts/post.repository';
 import { UsersRepository } from '../../../infrastructure/users/users.repository';
 import { InjectModel } from '@nestjs/mongoose';
 import { CommentsRepository } from '../../../infrastructure/comments/comments.repository';
+import { ResultCode } from '../../../../exception-handler/result-code-enum';
+import { Result } from '../../../../exception-handler/result-type';
 
 export class CommentCreateCommand {
   constructor(public createCommentDto, public postId, public userId) {}
@@ -23,18 +25,28 @@ export class CommentCreateUseCase {
     private readonly commentsRepository: CommentsRepository,
     @InjectModel(Comment.name) private CommentModel: CommentModelType,
   ) {}
-  async execute(command: CommentCreateCommand): Promise<string | null> {
+  async execute(command: CommentCreateCommand): Promise<Result<string>> {
     const post: PostDocument | boolean = await this.postsRepository.getPostById(
       command.postId,
     );
 
-    if (!post || typeof post === 'boolean') return null;
+    if (!post || typeof post === 'boolean')
+      return { code: ResultCode.NotFound };
 
     const user: UserDocument | null = await this.usersRepository.findUserById(
       command.userId,
     );
 
-    if (!user) return null;
+    if (!user) return { code: ResultCode.NotFound };
+
+    const bannedUser = await this.usersRepository.findBloggerBannedUser(
+      command.userId,
+      post.blogId,
+    );
+
+    if (bannedUser.banInfo.isBanned) {
+      return { code: ResultCode.Forbidden };
+    }
 
     const newComment: CommentDocument = this.CommentModel.createComment(
       command.createCommentDto,
@@ -48,6 +60,6 @@ export class CommentCreateUseCase {
     );
 
     await this.commentsRepository.save(newComment);
-    return newComment.id;
+    return { data: newComment.id, code: ResultCode.Success };
   }
 }

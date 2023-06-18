@@ -57,7 +57,7 @@ export class BloggerBlogsController {
     return getBlog;
   }
 
-  @Get()
+  @Get('comments')
   async getCommentsForBlog(
     @Query() query: PaginationType,
     @UserId() userId: string,
