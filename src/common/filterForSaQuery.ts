@@ -1,9 +1,11 @@
 import { BanStatusEnum } from '../api/superadmin/users/user-pagination';
+import { RoleEnum } from '../enums/role-enum';
 
 export const filterForSaQuery = (
   searchLoginTerm: string,
   searchEmailTerm?: string,
   banStatus?: BanStatusEnum,
+  requestRole?: RoleEnum,
 ) => {
   const filter: any = {};
   filter.$and = [];
@@ -20,9 +22,18 @@ export const filterForSaQuery = (
     filter.$and.push({ 'banInfo.isBanned': false });
   }
 
-  if (searchLoginTerm) {
+  if (searchLoginTerm && requestRole !== RoleEnum.Blogger) {
     filter.$or.push({
       'accountData.login': {
+        $regex: searchLoginTerm,
+        $options: 'i',
+      },
+    });
+  }
+
+  if (searchLoginTerm && requestRole === RoleEnum.Blogger) {
+    filter.$or.push({
+      login: {
         $regex: searchLoginTerm,
         $options: 'i',
       },

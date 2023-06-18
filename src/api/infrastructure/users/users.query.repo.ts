@@ -15,6 +15,7 @@ import {
   BloggerBanUserDocument,
   BloggerBanUserModelType,
 } from '../../entities/user-ban-by-blogger.entity';
+import { RoleEnum } from '../../../enums/role-enum';
 
 @Injectable()
 export class UserQueryRepo {
@@ -83,6 +84,7 @@ export class UserQueryRepo {
       paginatedQuery.searchLoginTerm,
       null,
       BanStatusEnum.banned,
+      RoleEnum.Blogger,
     );
 
     filter.$and.push({ 'banInfo.blogId': blogId });
