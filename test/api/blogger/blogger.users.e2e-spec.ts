@@ -72,7 +72,6 @@ describe('Blogger user testing', () => {
     });
 
     it(`Banning user`, async () => {
-      console.log(user.id);
       const result = await request(app.getHttpServer())
         .put(`/blogger/users/${user.id}/ban`)
         .auth(accessToken, { type: 'bearer' })
@@ -89,7 +88,6 @@ describe('Blogger user testing', () => {
         .get(`/blogger/users/blog/${blog.id}`)
         .auth(accessToken, { type: 'bearer' });
       expect(result.status).toBe(200);
-      console.log(result.body);
       expect(result.body).toEqual({
         ...bannedUsersDataForBlog,
         items: [
