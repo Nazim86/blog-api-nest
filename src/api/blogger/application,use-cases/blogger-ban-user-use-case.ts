@@ -43,9 +43,9 @@ export class BloggerBanUserUseCase {
       return { data: errorsMessages, code: ResultCode.BadRequest };
     }
 
-    if (blog.blogOwnerInfo.userId !== user.id) {
-      return { code: ResultCode.Forbidden };
-    }
+    // if (blog.blogOwnerInfo.userId !== user.id) {
+    //   return { code: ResultCode.Forbidden };
+    // }
 
     const bannedUser: BloggerBanUserDocument =
       await this.usersRepository.findBloggerBannedUser(
