@@ -1,13 +1,13 @@
 import { BlogsViewType } from './types/blogs-view-type';
 import { Injectable } from '@nestjs/common';
-import { Blog, BlogDocument } from '../../../../domains/blog.entity';
+import { Blog, BlogDocument } from '../../entities/blog.entity';
 import { Model } from 'mongoose';
-import { QueryPaginationType } from '../../../../types/query-pagination-type';
+import { QueryPaginationType } from '../../../types/query-pagination-type';
 import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
-import { PaginationType } from '../../../../common/pagination';
-import { BlogPagination } from '../blog-pagination';
-import { RoleEnum } from '../../../../enums/role-enum';
+import { PaginationType } from '../../../common/pagination';
+import { BlogPagination } from './blog-pagination';
+import { RoleEnum } from '../../../enums/role-enum';
 
 @Injectable()
 export class BlogsQueryRepo {

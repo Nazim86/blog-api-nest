@@ -1,14 +1,14 @@
 import { CommandHandler } from '@nestjs/cqrs';
-import { CommentDocument } from '../../../../domains/comment.entity';
+import { CommentDocument } from '../../../entities/comment.entity';
 import { InjectModel } from '@nestjs/mongoose';
-import { CommentsRepository } from '../../comments/infrastructure/comments.repository';
+import { CommentsRepository } from '../../../infrastructure/comments/comments.repository';
 import { CreateLikeDto } from '../createLikeDto';
 import {
   CommentLike,
   CommentLikeDocument,
   CommentLikeModelType,
-} from '../../../../domains/commentLike.entity';
-import { LikesRepository } from '../likes.repository';
+} from '../../../entities/commentLike.entity';
+import { LikesRepository } from '../../../infrastructure/likes/likes.repository';
 
 export class CommentLikeStatusUpdateCommand {
   constructor(

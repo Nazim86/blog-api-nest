@@ -1,5 +1,5 @@
-import { BlogRepository } from '../../public/blogs/infrastructure/blog.repository';
-import { BlogDocument } from '../../../domains/blog.entity';
+import { BlogRepository } from '../../infrastructure/blogs/blog.repository';
+import { BlogDocument } from '../../entities/blog.entity';
 import { ResultCode } from '../../../exception-handler/result-code-enum';
 import { BanBlogInputModel } from './inputModel/banBlog-input-model';
 import { Result } from '../../../exception-handler/result-type';

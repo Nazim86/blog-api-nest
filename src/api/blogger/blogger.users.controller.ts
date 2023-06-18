@@ -9,7 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 
-import { BlogsQueryRepo } from '../public/blogs/infrastructure/blogs-query.repository';
+import { BlogsQueryRepo } from '../infrastructure/blogs/blogs-query.repository';
 import { PaginationType } from '../../common/pagination';
 import { exceptionHandler } from '../../exception-handler/exception-handler';
 import { ResultCode } from '../../exception-handler/result-code-enum';
@@ -18,8 +18,8 @@ import { AccessTokenGuard } from '../public/auth/guards/access-token.guard';
 import { Result } from '../../exception-handler/result-type';
 
 import { UserBanDto } from './inputModel-Dto/userBan.dto';
-import { UserBanByBloggerCommand } from './application,use-cases/user-ban-by-blogger-use-case';
-import { UserQueryRepo } from '../superadmin/users/infrastructure/users.query.repo';
+import { BloggerBanUserCommand } from './application,use-cases/blogger-ban-user-use-case';
+import { UserQueryRepo } from '../infrastructure/users/users.query.repo';
 import { UserPagination } from '../superadmin/users/user-pagination';
 
 @UseGuards(AccessTokenGuard)
@@ -50,7 +50,7 @@ export class BloggerUsersController {
     @Body() userBanDto: UserBanDto,
   ) {
     const isUpdated: Result<ResultCode> = await this.commandBus.execute(
-      new UserBanByBloggerCommand(userId, userBanDto),
+      new BloggerBanUserCommand(userId, userBanDto),
     );
 
     if (isUpdated.code !== ResultCode.Success) {

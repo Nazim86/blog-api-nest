@@ -1,5 +1,5 @@
 import { CommandHandler } from '@nestjs/cqrs';
-import { UsersRepository } from '../infrastructure/users.repository';
+import { UsersRepository } from '../../../infrastructure/users/users.repository';
 import { ResultCode } from '../../../../exception-handler/result-code-enum';
 import { CreateUserDto } from '../dto/createUser.Dto';
 import * as bcrypt from 'bcrypt';
@@ -8,7 +8,7 @@ import {
   User,
   UserDocument,
   UserModelTYpe,
-} from '../../../../domains/user.entity';
+} from '../../../entities/user.entity';
 import { exceptionHandler } from '../../../../exception-handler/exception-handler';
 import { InjectModel } from '@nestjs/mongoose';
 

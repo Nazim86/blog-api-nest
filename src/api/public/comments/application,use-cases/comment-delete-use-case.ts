@@ -1,22 +1,17 @@
-import { Result } from "../../../../exception-handler/result-type";
-import { ResultCode } from "../../../../exception-handler/result-code-enum";
-import { CommentDocument } from "../../../../domains/comment.entity";
-import { CommandHandler } from "@nestjs/cqrs";
-import { CommentsRepository } from "../infrastructure/comments.repository";
+import { Result } from '../../../../exception-handler/result-type';
+import { ResultCode } from '../../../../exception-handler/result-code-enum';
+import { CommentDocument } from '../../../entities/comment.entity';
+import { CommandHandler } from '@nestjs/cqrs';
+import { CommentsRepository } from '../../../infrastructure/comments/comments.repository';
 
-export class CommentDeleteCommand{
-  constructor(public commentId:string, public userId:string ) {
-  }
+export class CommentDeleteCommand {
+  constructor(public commentId: string, public userId: string) {}
 }
 @CommandHandler(CommentDeleteCommand)
-export class CommentDeleteUseCase{
+export class CommentDeleteUseCase {
+  constructor(private readonly commentsRepository: CommentsRepository) {}
 
-  constructor(private readonly commentsRepository:CommentsRepository) {
-  }
-
-  async execute(
-    command:CommentDeleteCommand
-  ): Promise<Result<ResultCode>> {
+  async execute(command: CommentDeleteCommand): Promise<Result<ResultCode>> {
     const comment: CommentDocument = await this.commentsRepository.getComment(
       command.commentId,
     );
@@ -33,5 +28,4 @@ export class CommentDeleteUseCase{
 
     return { code: isDeleted ? ResultCode.Success : ResultCode.NotFound };
   }
-
 }

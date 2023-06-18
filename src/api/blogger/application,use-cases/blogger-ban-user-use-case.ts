@@ -2,28 +2,28 @@ import { UserBanDto } from '../inputModel-Dto/userBan.dto';
 import { CommandHandler } from '@nestjs/cqrs';
 import { InjectModel } from '@nestjs/mongoose';
 import {
-  UserBanByBlogger,
-  UserBanByBloggerDocument,
-  UserBanByBloggerModelType,
-} from '../../../domains/user-ban-by-blogger.entity';
-import { UsersRepository } from '../../superadmin/users/infrastructure/users.repository';
+  BloggerBanUser,
+  BloggerBanUserDocument,
+  BloggerBanUserModelType,
+} from '../../entities/user-ban-by-blogger.entity';
+import { UsersRepository } from '../../infrastructure/users/users.repository';
 import { ResultCode } from '../../../exception-handler/result-code-enum';
-import { UserDocument } from '../../../domains/user.entity';
-import { BlogRepository } from '../../public/blogs/infrastructure/blog.repository';
+import { UserDocument } from '../../entities/user.entity';
+import { BlogRepository } from '../../infrastructure/blogs/blog.repository';
 
-export class UserBanByBloggerCommand {
+export class BloggerBanUserCommand {
   constructor(public userId: string, public userBanDto: UserBanDto) {}
 }
 
-@CommandHandler(UserBanByBloggerCommand)
-export class UserBanByBloggerUseCase {
+@CommandHandler(BloggerBanUserCommand)
+export class BloggerBanUserUseCase {
   constructor(
-    @InjectModel(UserBanByBlogger.name)
-    private UserBanModel: UserBanByBloggerModelType,
+    @InjectModel(BloggerBanUser.name)
+    private UserBanModel: BloggerBanUserModelType,
     private readonly usersRepository: UsersRepository,
     private readonly blogsRepository: BlogRepository,
   ) {}
-  async execute(command: UserBanByBloggerCommand) {
+  async execute(command: BloggerBanUserCommand) {
     const user: UserDocument = await this.usersRepository.findUserById(
       command.userId,
     );
@@ -38,7 +38,7 @@ export class UserBanByBloggerUseCase {
       return { data: errorsMessages, code: ResultCode.BadRequest };
     }
 
-    const bannedUser: UserBanByBloggerDocument =
+    const bannedUser: BloggerBanUserDocument =
       await this.usersRepository.findBloggerBannedUser(
         command.userId,
         command.userBanDto.blogId,

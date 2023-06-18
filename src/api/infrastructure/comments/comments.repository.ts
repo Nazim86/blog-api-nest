@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Comment, CommentDocument } from '../../../../domains/comment.entity';
+import { Comment, CommentDocument } from '../../entities/comment.entity';
 import { Model } from 'mongoose';
 import {
   CommentLike,
   CommentLikeDocument,
-} from '../../../../domains/commentLike.entity';
+} from '../../entities/commentLike.entity';
 import { ObjectId } from 'mongodb';
 
 @Injectable()

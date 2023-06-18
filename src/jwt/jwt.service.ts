@@ -3,7 +3,7 @@ import { ObjectId } from 'mongodb';
 import { v4 as uuid } from 'uuid';
 import jwt from 'jsonwebtoken';
 import { settings } from '../settings';
-import { DeviceRepository } from '../api/public/securityDevices/infrastructure/device.repository';
+import { DeviceRepository } from '../api/infrastructure/devices/device.repository';
 
 @Injectable()
 export class JwtService {

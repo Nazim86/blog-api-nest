@@ -1,14 +1,10 @@
-import { BlogRepository } from '../../public/blogs/infrastructure/blog.repository';
+import { BlogRepository } from '../../infrastructure/blogs/blog.repository';
 import { InjectModel } from '@nestjs/mongoose';
-import {
-  Blog,
-  BlogDocument,
-  BlogModelType,
-} from '../../../domains/blog.entity';
+import { Blog, BlogDocument, BlogModelType } from '../../entities/blog.entity';
 import { CreateBlogDto } from '../inputModel-Dto/createBlog.dto';
 import { CommandHandler } from '@nestjs/cqrs';
-import { UsersRepository } from '../../superadmin/users/infrastructure/users.repository';
-import { UserDocument } from '../../../domains/user.entity';
+import { UsersRepository } from '../../infrastructure/users/users.repository';
+import { UserDocument } from '../../entities/user.entity';
 
 export class BlogCreateCommand {
   constructor(public userId: string, public createBlogDto: CreateBlogDto) {}

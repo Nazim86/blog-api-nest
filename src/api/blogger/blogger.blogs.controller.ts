@@ -11,12 +11,12 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { QueryPaginationType } from '../../types/query-pagination-type';
-import { BlogsViewType } from '../public/blogs/infrastructure/types/blogs-view-type';
-import { BlogsQueryRepo } from '../public/blogs/infrastructure/blogs-query.repository';
-import { PostsQueryRepo } from '../public/post/infrastructure/posts-query-repo';
+import { BlogsViewType } from '../infrastructure/blogs/types/blogs-view-type';
+import { BlogsQueryRepo } from '../infrastructure/blogs/blogs-query.repository';
+import { PostsQueryRepo } from '../infrastructure/posts/posts-query-repo';
 import { CreateBlogDto } from './inputModel-Dto/createBlog.dto';
 import { CreatePostDto } from '../public/post/createPostDto';
-import { BlogPagination } from '../public/blogs/blog-pagination';
+import { BlogPagination } from '../infrastructure/blogs/blog-pagination';
 import { PaginationType } from '../../common/pagination';
 import { exceptionHandler } from '../../exception-handler/exception-handler';
 import { ResultCode } from '../../exception-handler/result-code-enum';
@@ -30,8 +30,8 @@ import { Result } from '../../exception-handler/result-type';
 import { PostCreateCommand } from './application,use-cases/post-create-use-case';
 import { PostUpdateCommand } from './application,use-cases/post-update-use-case';
 import { PostDeleteCommand } from './application,use-cases/post-delete-use-case';
-import { BlogRepository } from '../public/blogs/infrastructure/blog.repository';
-import { CommentsQueryRepo } from '../public/comments/infrastructure/comments.query.repo';
+import { BlogRepository } from '../infrastructure/blogs/blog.repository';
+import { CommentsQueryRepo } from '../infrastructure/comments/comments.query.repo';
 import { RoleEnum } from '../../enums/role-enum';
 
 @UseGuards(AccessTokenGuard)

@@ -1,20 +1,20 @@
 import { Injectable } from '@nestjs/common';
-import { User, UserDocument } from '../../../../domains/user.entity';
+import { User, UserDocument } from '../../entities/user.entity';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ObjectId } from 'mongodb';
 import {
-  UserBanByBlogger,
-  UserBanByBloggerDocument,
-  UserBanByBloggerModelType,
-} from '../../../../domains/user-ban-by-blogger.entity';
+  BloggerBanUser,
+  BloggerBanUserDocument,
+  BloggerBanUserModelType,
+} from '../../entities/user-ban-by-blogger.entity';
 
 @Injectable()
 export class UsersRepository {
   constructor(
     @InjectModel(User.name) private UserModel: Model<User>,
-    @InjectModel(UserBanByBlogger.name)
-    private UserBanModeL: UserBanByBloggerModelType,
+    @InjectModel(BloggerBanUser.name)
+    private UserBanModeL: BloggerBanUserModelType,
   ) {}
 
   async findUserByConfirmationCode(code: string) {
@@ -37,12 +37,12 @@ export class UsersRepository {
     return await user.save();
   }
 
-  async saveBloggerBanUser(bannedUser: UserBanByBloggerDocument) {
+  async saveBloggerBanUser(bannedUser: BloggerBanUserDocument) {
     return await bannedUser.save();
   }
 
   async findBloggerBannedUser(userId: string, blogId: string) {
-    return this.UserBanModeL.findOne({ userId, blogId });
+    return this.UserBanModeL.findOne({ userId, 'banInfo.blogId': blogId });
   }
 
   async deleteUser(id: string): Promise<boolean> {

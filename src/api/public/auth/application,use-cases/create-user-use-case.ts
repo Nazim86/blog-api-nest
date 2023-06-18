@@ -3,13 +3,13 @@ import {
   User,
   UserDocument,
   UserModelTYpe,
-} from '../../../../domains/user.entity';
+} from '../../../entities/user.entity';
 import bcrypt from 'bcrypt';
 import process from 'process';
 import { CommandHandler } from '@nestjs/cqrs';
 import { InjectModel } from '@nestjs/mongoose';
 import { MailService } from '../../../../mail/mail.service';
-import { UsersRepository } from '../../../superadmin/users/infrastructure/users.repository';
+import { UsersRepository } from '../../../infrastructure/users/users.repository';
 
 export class CreateUserCommand {
   constructor(public createUserDto: CreateUserDto) {}

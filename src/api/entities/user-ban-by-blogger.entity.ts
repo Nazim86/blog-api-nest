@@ -1,23 +1,23 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Model } from 'mongoose';
-import { UserBanDto } from '../api/blogger/inputModel-Dto/userBan.dto';
+import { UserBanDto } from '../blogger/inputModel-Dto/userBan.dto';
 
-export type UserBanByBloggerDocument = HydratedDocument<UserBanByBlogger>;
+export type BloggerBanUserDocument = HydratedDocument<BloggerBanUser>;
 
-export type UserBanByBloggerModelStaticType = {
+export type BloggerBanUserModelStaticType = {
   createBannedUser: (
     login: string,
     userId: string,
     userBanDto: UserBanDto,
-    UserBanByBloggerModel: UserBanByBloggerModelType,
-  ) => UserBanByBloggerDocument;
+    UserBanByBloggerModel: BloggerBanUserModelType,
+  ) => BloggerBanUserDocument;
 };
 
-export type UserBanByBloggerModelType = Model<UserBanByBlogger> &
-  UserBanByBloggerModelStaticType;
+export type BloggerBanUserModelType = Model<BloggerBanUser> &
+  BloggerBanUserModelStaticType;
 
 @Schema()
-export class UserBanByBlogger {
+export class BloggerBanUser {
   @Prop({ required: true })
   login: string;
 
@@ -44,7 +44,7 @@ export class UserBanByBlogger {
     login: string,
     userId: string,
     userBanDto: UserBanDto,
-    UserBanByBloggerModel: UserBanByBloggerModelType,
+    UserBanByBloggerModel: BloggerBanUserModelType,
   ) {
     const bannedUser = {
       login: login,
@@ -69,14 +69,14 @@ export class UserBanByBlogger {
       (this.banInfo.blogId = userBanDto.blogId);
   }
 }
-const userBanByBloggerStaticMethods: UserBanByBloggerModelStaticType = {
-  createBannedUser: UserBanByBlogger.createBannedUser,
+const userBanByBloggerStaticMethods: BloggerBanUserModelStaticType = {
+  createBannedUser: BloggerBanUser.createBannedUser,
 };
 export const UserBanByBloggerSchema =
-  SchemaFactory.createForClass(UserBanByBlogger);
+  SchemaFactory.createForClass(BloggerBanUser);
 
 UserBanByBloggerSchema.statics = userBanByBloggerStaticMethods;
 
 UserBanByBloggerSchema.methods = {
-  updateBannedUser: UserBanByBlogger.prototype.updateBannedUser,
+  updateBannedUser: BloggerBanUser.prototype.updateBannedUser,
 };

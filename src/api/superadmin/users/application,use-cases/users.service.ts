@@ -1,9 +1,9 @@
 import { InjectModel } from '@nestjs/mongoose';
 import { Injectable } from '@nestjs/common';
-import { UsersRepository } from '../infrastructure/users.repository';
+import { UsersRepository } from '../../../infrastructure/users/users.repository';
 
-import { User, UserModelTYpe } from '../../../../domains/user.entity';
-import { BlogRepository } from '../../../public/blogs/infrastructure/blog.repository';
+import { User, UserModelTYpe } from '../../../entities/user.entity';
+import { BlogRepository } from '../../../infrastructure/blogs/blog.repository';
 
 @Injectable()
 export class UsersService {

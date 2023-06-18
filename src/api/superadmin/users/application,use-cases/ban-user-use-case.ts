@@ -1,11 +1,11 @@
 import { CommandHandler } from '@nestjs/cqrs';
 import { BanUserDto } from '../dto/banUserDto';
-import { UsersRepository } from '../infrastructure/users.repository';
+import { UsersRepository } from '../../../infrastructure/users/users.repository';
 import { ResultCode } from '../../../../exception-handler/result-code-enum';
-import { UserDocument } from '../../../../domains/user.entity';
-import { DeviceRepository } from '../../../public/securityDevices/infrastructure/device.repository';
-import { LikesRepository } from '../../../public/like/likes.repository';
-import { CommentsRepository } from '../../../public/comments/infrastructure/comments.repository';
+import { UserDocument } from '../../../entities/user.entity';
+import { DeviceRepository } from '../../../infrastructure/devices/device.repository';
+import { LikesRepository } from '../../../infrastructure/likes/likes.repository';
+import { CommentsRepository } from '../../../infrastructure/comments/comments.repository';
 
 export class BanUserCommand {
   constructor(public userId: string, public banUserDto: BanUserDto) {}

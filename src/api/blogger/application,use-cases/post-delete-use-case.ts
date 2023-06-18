@@ -1,10 +1,10 @@
 import { CommandHandler } from '@nestjs/cqrs';
-import { BlogDocument } from '../../../domains/blog.entity';
-import { BlogRepository } from '../../public/blogs/infrastructure/blog.repository';
+import { BlogDocument } from '../../entities/blog.entity';
+import { BlogRepository } from '../../infrastructure/blogs/blog.repository';
 import { ResultCode } from '../../../exception-handler/result-code-enum';
 import { Result } from '../../../exception-handler/result-type';
-import { PostDocument } from '../../../domains/post.entity';
-import { PostRepository } from '../../public/post/infrastructure/post.repository';
+import { PostDocument } from '../../entities/post.entity';
+import { PostRepository } from '../../infrastructure/posts/post.repository';
 
 export class PostDeleteCommand {
   constructor(public userId: string, public params) {}

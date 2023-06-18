@@ -3,12 +3,12 @@ import { CreateCommentDto } from '../createComment.Dto';
 import {
   Comment,
   CommentDocument,
-  CommentModelType
-} from "../../../../domains/comment.entity";
-import { PostRepository } from '../../post/infrastructure/post.repository';
-import { UsersRepository } from '../../../superadmin/users/infrastructure/users.repository';
+  CommentModelType,
+} from '../../../entities/comment.entity';
+import { PostRepository } from '../../../infrastructure/posts/post.repository';
+import { UsersRepository } from '../../../infrastructure/users/users.repository';
 import { InjectModel } from '@nestjs/mongoose';
-import { CommentsRepository } from '../infrastructure/comments.repository';
+import { CommentsRepository } from '../../../infrastructure/comments/comments.repository';
 import { Result } from '../../../../exception-handler/result-type';
 import { ResultCode } from '../../../../exception-handler/result-code-enum';
 

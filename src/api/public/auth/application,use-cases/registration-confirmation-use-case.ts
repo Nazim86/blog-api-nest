@@ -1,7 +1,7 @@
 import { CommandHandler } from '@nestjs/cqrs';
 import { ConfirmationCodeDto } from '../dto/confirmationCodeDto';
-import { UserDocument } from '../../../../domains/user.entity';
-import { UsersRepository } from '../../../superadmin/users/infrastructure/users.repository';
+import { UserDocument } from '../../../entities/user.entity';
+import { UsersRepository } from '../../../infrastructure/users/users.repository';
 
 export class RegistrationConfirmationCommand {
   constructor(public confirmationCodeDto: ConfirmationCodeDto) {}

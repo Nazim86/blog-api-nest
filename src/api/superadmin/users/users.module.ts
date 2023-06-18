@@ -1,16 +1,16 @@
 import { Module } from '@nestjs/common';
 import { UsersService } from './application,use-cases/users.service';
-import { UsersRepository } from './infrastructure/users.repository';
+import { UsersRepository } from '../../infrastructure/users/users.repository';
 import { MongooseModule } from '@nestjs/mongoose';
-import { User, UserSchema } from '../../../domains/user.entity';
+import { User, UserSchema } from '../../entities/user.entity';
 import { configModule } from '../../../app.module';
 import { IsUserAlreadyExistConstraint } from '../../../decorators/IsUserAlreadyExist';
 import {
-  UserBanByBlogger,
+  BloggerBanUser,
   UserBanByBloggerSchema,
-} from '../../../domains/user-ban-by-blogger.entity';
-import { BlogRepository } from '../../public/blogs/infrastructure/blog.repository';
-import { Blog, BlogSchema } from '../../../domains/blog.entity';
+} from '../../entities/user-ban-by-blogger.entity';
+import { BlogRepository } from '../../infrastructure/blogs/blog.repository';
+import { Blog, BlogSchema } from '../../entities/blog.entity';
 
 @Module({
   imports: [
@@ -19,7 +19,7 @@ import { Blog, BlogSchema } from '../../../domains/blog.entity';
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
       { name: Blog.name, schema: BlogSchema },
-      { name: UserBanByBlogger.name, schema: UserBanByBloggerSchema },
+      { name: BloggerBanUser.name, schema: UserBanByBloggerSchema },
     ]),
   ],
   providers: [

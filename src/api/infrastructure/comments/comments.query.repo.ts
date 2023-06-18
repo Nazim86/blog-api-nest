@@ -1,20 +1,20 @@
 import { Injectable } from '@nestjs/common';
-import { PostsQueryRepo } from '../../post/infrastructure/posts-query-repo';
-import { PostsViewType } from '../../post/types/posts-view-type';
-import { QueryPaginationType } from '../../../../types/query-pagination-type';
-import { CommentsViewType } from '../types/comments-view-type';
+import { PostsQueryRepo } from '../posts/posts-query-repo';
+import { PostsViewType } from '../posts/types/posts-view-type';
+import { QueryPaginationType } from '../../../types/query-pagination-type';
+import { CommentsViewType } from './types/comments-view-type';
 import { InjectModel } from '@nestjs/mongoose';
-import { Comment, CommentDocument } from '../../../../domains/comment.entity';
+import { Comment, CommentDocument } from '../../entities/comment.entity';
 import { Model } from 'mongoose';
-import { CommentsMapping } from '../mapper/comments.mapping';
+import { CommentsMapping } from '../../public/comments/mapper/comments.mapping';
 import {
   CommentLike,
   CommentLikeDocument,
-} from '../../../../domains/commentLike.entity';
-import { LikeEnum } from '../../like/like.enum';
+} from '../../entities/commentLike.entity';
+import { LikeEnum } from '../../public/like/like.enum';
 import { ObjectId } from 'mongodb';
-import { UsersRepository } from '../../../superadmin/users/infrastructure/users.repository';
-import { Pagination, PaginationType } from '../../../../common/pagination';
+import { UsersRepository } from '../users/users.repository';
+import { Pagination, PaginationType } from '../../../common/pagination';
 
 @Injectable()
 export class CommentsQueryRepo {

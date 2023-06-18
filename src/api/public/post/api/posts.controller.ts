@@ -12,11 +12,11 @@ import {
   Request,
 } from '@nestjs/common';
 import { QueryPaginationType } from '../../../../types/query-pagination-type';
-import { PostsQueryRepo } from '../infrastructure/posts-query-repo';
+import { PostsQueryRepo } from '../../../infrastructure/posts/posts-query-repo';
 import { PostService } from '../application/posts.service';
-import { PostsViewType } from '../types/posts-view-type';
-import { CommentsViewType } from '../../comments/types/comments-view-type';
-import { CommentsQueryRepo } from '../../comments/infrastructure/comments.query.repo';
+import { PostsViewType } from '../../../infrastructure/posts/types/posts-view-type';
+import { CommentsViewType } from '../../../infrastructure/comments/types/comments-view-type';
+import { CommentsQueryRepo } from '../../../infrastructure/comments/comments.query.repo';
 import { Pagination, PaginationType } from '../../../../common/pagination';
 import { CreateCommentDto } from '../../comments/createComment.Dto';
 import { ResultCode } from '../../../../exception-handler/result-code-enum';

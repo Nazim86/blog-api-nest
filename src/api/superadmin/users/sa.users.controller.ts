@@ -15,7 +15,7 @@ import { CommandBus } from '@nestjs/cqrs';
 import { BanUserCommand } from './application,use-cases/ban-user-use-case';
 import { exceptionHandler } from '../../../exception-handler/exception-handler';
 import { ResultCode } from '../../../exception-handler/result-code-enum';
-import { UserQueryRepo } from './infrastructure/users.query.repo';
+import { UserQueryRepo } from '../../infrastructure/users/users.query.repo';
 import { UserPagination } from './user-pagination';
 import { PaginationType } from '../../../common/pagination';
 import { BasicAuthGuard } from '../../public/auth/guards/basic-auth.guard';

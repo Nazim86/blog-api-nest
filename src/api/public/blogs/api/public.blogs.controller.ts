@@ -7,12 +7,12 @@ import {
   Request,
 } from '@nestjs/common';
 import { QueryPaginationType } from '../../../../types/query-pagination-type';
-import { BlogsViewType } from '../infrastructure/types/blogs-view-type';
-import { BlogsQueryRepo } from '../infrastructure/blogs-query.repository';
-import { PostsViewType } from '../../post/types/posts-view-type';
-import { PostsQueryRepo } from '../../post/infrastructure/posts-query-repo';
+import { BlogsViewType } from '../../../infrastructure/blogs/types/blogs-view-type';
+import { BlogsQueryRepo } from '../../../infrastructure/blogs/blogs-query.repository';
+import { PostsViewType } from '../../../infrastructure/posts/types/posts-view-type';
+import { PostsQueryRepo } from '../../../infrastructure/posts/posts-query-repo';
 import { PostService } from '../../post/application/posts.service';
-import { BlogPagination } from '../blog-pagination';
+import { BlogPagination } from '../../../infrastructure/blogs/blog-pagination';
 import { PaginationType } from '../../../../common/pagination';
 import { settings } from '../../../../settings';
 import { JwtService } from '../../../../jwt/jwt.service';

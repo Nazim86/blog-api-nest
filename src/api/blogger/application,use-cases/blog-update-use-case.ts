@@ -1,5 +1,5 @@
-import { BlogRepository } from '../../public/blogs/infrastructure/blog.repository';
-import { BlogDocument } from '../../../domains/blog.entity';
+import { BlogRepository } from '../../infrastructure/blogs/blog.repository';
+import { BlogDocument } from '../../entities/blog.entity';
 import { CreateBlogDto } from '../inputModel-Dto/createBlog.dto';
 import { CommandHandler } from '@nestjs/cqrs';
 import { ResultCode } from '../../../exception-handler/result-code-enum';

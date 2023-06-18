@@ -1,15 +1,15 @@
 import { CommandHandler } from '@nestjs/cqrs';
-import { PostDocument } from '../../../../domains/post.entity';
-import { UserDocument } from '../../../../domains/user.entity';
+import { PostDocument } from '../../../entities/post.entity';
+import { UserDocument } from '../../../entities/user.entity';
 import {
   Comment,
   CommentDocument,
   CommentModelType,
-} from '../../../../domains/comment.entity';
-import { PostRepository } from '../../post/infrastructure/post.repository';
-import { UsersRepository } from '../../../superadmin/users/infrastructure/users.repository';
+} from '../../../entities/comment.entity';
+import { PostRepository } from '../../../infrastructure/posts/post.repository';
+import { UsersRepository } from '../../../infrastructure/users/users.repository';
 import { InjectModel } from '@nestjs/mongoose';
-import { CommentsRepository } from '../infrastructure/comments.repository';
+import { CommentsRepository } from '../../../infrastructure/comments/comments.repository';
 
 export class CommentCreateCommand {
   constructor(public createCommentDto, public postId, public userId) {}

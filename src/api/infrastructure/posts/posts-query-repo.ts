@@ -1,22 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Post, PostDocument } from '../../../../domains/post.entity';
+import { Post, PostDocument } from '../../entities/post.entity';
 import { Model } from 'mongoose';
-import { PostsViewType } from '../types/posts-view-type';
-import { NewestLikesType, PostsDbType } from '../types/posts-db-type';
+import { PostsViewType } from './types/posts-view-type';
+import { NewestLikesType, PostsDbType } from './types/posts-db-type';
 import { ObjectId } from 'mongodb';
-import {
-  PostLike,
-  PostLikeDocument,
-} from '../../../../domains/postLike.entity';
-import { LikeEnum } from '../../like/like.enum';
-import { PostLikesDbType } from '../../like/post-likes-db-type';
-import { QueryPaginationType } from '../../../../types/query-pagination-type';
-import { newestLikesMapping } from '../../like/post-likes.mapping';
-import { PostMapping } from '../mapper/post.mapping';
-import { Pagination, PaginationType } from '../../../../common/pagination';
-import { BlogRepository } from '../../blogs/infrastructure/blog.repository';
-import { BlogDocument } from '../../../../domains/blog.entity';
+import { PostLike, PostLikeDocument } from '../../entities/postLike.entity';
+import { LikeEnum } from '../../public/like/like.enum';
+import { PostLikesDbType } from '../../public/like/post-likes-db-type';
+import { QueryPaginationType } from '../../../types/query-pagination-type';
+import { newestLikesMapping } from '../../public/like/post-likes.mapping';
+import { PostMapping } from '../../public/post/mapper/post.mapping';
+import { Pagination, PaginationType } from '../../../common/pagination';
+import { BlogRepository } from '../blogs/blog.repository';
+import { BlogDocument } from '../../entities/blog.entity';
 
 @Injectable()
 export class PostsQueryRepo {

@@ -9,9 +9,9 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { CommentsQueryRepo } from '../infrastructure/comments.query.repo';
+import { CommentsQueryRepo } from '../../../infrastructure/comments/comments.query.repo';
 import { JwtService } from '../../../../jwt/jwt.service';
-import { CommentsViewType } from '../types/comments-view-type';
+import { CommentsViewType } from '../../../infrastructure/comments/types/comments-view-type';
 import { settings } from '../../../../settings';
 import { AccessTokenGuard } from '../../auth/guards/access-token.guard';
 import { CreateLikeDto } from '../../like/createLikeDto';

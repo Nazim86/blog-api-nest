@@ -1,24 +1,27 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { User, UserDocument } from '../../../../domains/user.entity';
+import { User, UserDocument } from '../../entities/user.entity';
 import { Model } from 'mongoose';
 import { ObjectId } from 'mongodb';
 import { UserViewType } from './types/user-view-type';
-import { BanStatusEnum, UserPagination } from '../user-pagination';
-import { PaginationType } from '../../../../common/pagination';
-import { filterForSaQuery } from '../../../../common/filterForSaQuery';
 import {
-  UserBanByBlogger,
-  UserBanByBloggerDocument,
-  UserBanByBloggerModelType,
-} from '../../../../domains/user-ban-by-blogger.entity';
+  BanStatusEnum,
+  UserPagination,
+} from '../../superadmin/users/user-pagination';
+import { PaginationType } from '../../../common/pagination';
+import { filterForSaQuery } from '../../../common/filterForSaQuery';
+import {
+  BloggerBanUser,
+  BloggerBanUserDocument,
+  BloggerBanUserModelType,
+} from '../../entities/user-ban-by-blogger.entity';
 
 @Injectable()
 export class UserQueryRepo {
   constructor(
     @InjectModel(User.name) private UserModel: Model<UserDocument>,
-    @InjectModel(UserBanByBlogger.name)
-    private UserBanModel: UserBanByBloggerModelType,
+    @InjectModel(BloggerBanUser.name)
+    private UserBanModel: BloggerBanUserModelType,
   ) {}
 
   private userMapping = (newUser: UserDocument[]): UserViewType[] => {
@@ -49,9 +52,9 @@ export class UserQueryRepo {
   };
 
   private bannedUserMappingForBlog = (
-    bannedUsers: UserBanByBloggerDocument[],
+    bannedUsers: BloggerBanUserDocument[],
   ) => {
-    return bannedUsers.map((bannedUser: UserBanByBloggerDocument) => {
+    return bannedUsers.map((bannedUser: BloggerBanUserDocument) => {
       return {
         id: bannedUser.id,
         login: bannedUser.login,
@@ -88,8 +91,8 @@ export class UserQueryRepo {
 
     const sortDirection = paginatedQuery.sortDirection === 'asc' ? 1 : -1;
 
-    const bannedUsersForBlog: UserBanByBloggerDocument[] =
-      await this.UserBanModel.find({ blogId })
+    const bannedUsersForBlog: BloggerBanUserDocument[] =
+      await this.UserBanModel.find({ 'banInfo.blogId': blogId })
         .sort({
           [paginatedQuery.sortBy]: sortDirection,
         })

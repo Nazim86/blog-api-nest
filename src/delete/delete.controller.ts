@@ -1,15 +1,15 @@
 import { Controller, Delete, HttpCode } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Blog, BlogDocument } from '../domains/blog.entity';
+import { Blog, BlogDocument } from '../api/entities/blog.entity';
 import { Model } from 'mongoose';
-import { Post, PostDocument } from '../domains/post.entity';
-import { Comment, CommentDocument } from '../domains/comment.entity';
-import { User, UserDocument } from '../domains/user.entity';
-import { PostLike, PostLikeDocument } from '../domains/postLike.entity';
+import { Post, PostDocument } from '../api/entities/post.entity';
+import { Comment, CommentDocument } from '../api/entities/comment.entity';
+import { User, UserDocument } from '../api/entities/user.entity';
+import { PostLike, PostLikeDocument } from '../api/entities/postLike.entity';
 import {
   CommentLike,
   CommentLikeDocument,
-} from '../domains/commentLike.entity';
+} from '../api/entities/commentLike.entity';
 
 @Controller('testing/all-data')
 export class DeleteController {

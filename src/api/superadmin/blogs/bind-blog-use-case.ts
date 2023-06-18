@@ -1,13 +1,9 @@
 import { InjectModel } from '@nestjs/mongoose';
 import { CommandHandler } from '@nestjs/cqrs';
-import { UserDocument } from '../../../domains/user.entity';
-import { UsersRepository } from '../users/infrastructure/users.repository';
-import {
-  Blog,
-  BlogDocument,
-  BlogModelType,
-} from '../../../domains/blog.entity';
-import { BlogRepository } from '../../public/blogs/infrastructure/blog.repository';
+import { UserDocument } from '../../entities/user.entity';
+import { UsersRepository } from '../../infrastructure/users/users.repository';
+import { Blog, BlogDocument, BlogModelType } from '../../entities/blog.entity';
+import { BlogRepository } from '../../infrastructure/blogs/blog.repository';
 import { ResultCode } from '../../../exception-handler/result-code-enum';
 import { Result } from '../../../exception-handler/result-type';
 
@@ -64,6 +60,8 @@ export class BindBlogUseCase {
 
     blog.bindBlogWithUser(user.id, user.accountData.login);
 
-    return await this.blogRepository.save(blog);
+    await this.blogRepository.save(blog);
+
+    return { code: ResultCode.Success };
   }
 }

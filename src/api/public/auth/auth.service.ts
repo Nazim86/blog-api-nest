@@ -1,19 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { UsersRepository } from '../../superadmin/users/infrastructure/users.repository';
+import { UsersRepository } from '../../infrastructure/users/users.repository';
 import { JwtService } from '../../../jwt/jwt.service';
 import { InjectModel } from '@nestjs/mongoose';
-import {
-  User,
-  UserDocument,
-  UserModelTYpe,
-} from '../../../domains/user.entity';
+import { User, UserDocument, UserModelTYpe } from '../../entities/user.entity';
 import bcrypt from 'bcrypt';
 import { v4 as uuid } from 'uuid';
 import * as process from 'process';
 import { NewPasswordDto } from './dto/newPasswordDto';
 import { LoginDto } from './dto/loginDto';
 import { EmailDto } from './dto/emailDto';
-import { CurrentUserType } from '../../superadmin/users/infrastructure/types/current-user-type';
+import { CurrentUserType } from '../../infrastructure/users/types/current-user-type';
 import { MailService } from '../../../mail/mail.service';
 
 @Injectable()

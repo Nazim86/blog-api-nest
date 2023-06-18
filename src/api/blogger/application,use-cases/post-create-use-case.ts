@@ -1,15 +1,11 @@
-import { BlogRepository } from '../../public/blogs/infrastructure/blog.repository';
+import { BlogRepository } from '../../infrastructure/blogs/blog.repository';
 import { InjectModel } from '@nestjs/mongoose';
-import { BlogDocument } from '../../../domains/blog.entity';
+import { BlogDocument } from '../../entities/blog.entity';
 import { CommandHandler } from '@nestjs/cqrs';
 
 import { CreatePostDto } from '../../public/post/createPostDto';
-import {
-  Post,
-  PostDocument,
-  PostModelType,
-} from '../../../domains/post.entity';
-import { PostRepository } from '../../public/post/infrastructure/post.repository';
+import { Post, PostDocument, PostModelType } from '../../entities/post.entity';
+import { PostRepository } from '../../infrastructure/posts/post.repository';
 import { ResultCode } from '../../../exception-handler/result-code-enum';
 import { Result } from '../../../exception-handler/result-type';
 

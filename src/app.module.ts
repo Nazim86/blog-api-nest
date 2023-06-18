@@ -4,39 +4,42 @@ export const configModule = ConfigModule.forRoot();
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Blog, BlogSchema } from './domains/blog.entity';
+import { Blog, BlogSchema } from './api/entities/blog.entity';
 import { BloggerBlogsController } from './api/blogger/blogger.blogs.controller';
-import { BlogsQueryRepo } from './api/public/blogs/infrastructure/blogs-query.repository';
-import { Post, PostSchema } from './domains/post.entity';
+import { BlogsQueryRepo } from './api/infrastructure/blogs/blogs-query.repository';
+import { Post, PostSchema } from './api/entities/post.entity';
 import { PostMapping } from './api/public/post/mapper/post.mapping';
-import { PostsQueryRepo } from './api/public/post/infrastructure/posts-query-repo';
-import { PostLike, PostLikeSchema } from './domains/postLike.entity';
-import { BlogRepository } from './api/public/blogs/infrastructure/blog.repository';
+import { PostsQueryRepo } from './api/infrastructure/posts/posts-query-repo';
+import { PostLike, PostLikeSchema } from './api/entities/postLike.entity';
+import { BlogRepository } from './api/infrastructure/blogs/blog.repository';
 import { PostsController } from './api/public/post/api/posts.controller';
 import { PostService } from './api/public/post/application/posts.service';
-import { PostRepository } from './api/public/post/infrastructure/post.repository';
-import { CommentLike, CommentLikeSchema } from './domains/commentLike.entity';
-import { CommentsQueryRepo } from './api/public/comments/infrastructure/comments.query.repo';
+import { PostRepository } from './api/infrastructure/posts/post.repository';
+import {
+  CommentLike,
+  CommentLikeSchema,
+} from './api/entities/commentLike.entity';
+import { CommentsQueryRepo } from './api/infrastructure/comments/comments.query.repo';
 import { CommentsMapping } from './api/public/comments/mapper/comments.mapping';
-import { Comment, CommentSchema } from './domains/comment.entity';
+import { Comment, CommentSchema } from './api/entities/comment.entity';
 import { UsersService } from './api/superadmin/users/application,use-cases/users.service';
-import { UserQueryRepo } from './api/superadmin/users/infrastructure/users.query.repo';
-import { UsersRepository } from './api/superadmin/users/infrastructure/users.repository';
-import { User, UserSchema } from './domains/user.entity';
+import { UserQueryRepo } from './api/infrastructure/users/users.query.repo';
+import { UsersRepository } from './api/infrastructure/users/users.repository';
+import { User, UserSchema } from './api/entities/user.entity';
 import { DeleteController } from './delete/delete.controller';
 
 import * as process from 'process';
 import { AuthModule } from './api/public/auth/auth.module';
 import { UsersModule } from './api/superadmin/users/users.module';
-import { LikesRepository } from './api/public/like/likes.repository';
-import { CommentsRepository } from './api/public/comments/infrastructure/comments.repository';
+import { LikesRepository } from './api/infrastructure/likes/likes.repository';
+import { CommentsRepository } from './api/infrastructure/comments/comments.repository';
 import { MailModule } from './mail/mail.module';
 import { JwtService } from './jwt/jwt.service';
 import { CommentsController } from './api/public/comments/api/comments.controller';
 import { IsBlogExistConstraint } from './decorators/IsBlogIdExist';
 import { ScheduleModule } from '@nestjs/schedule';
-import { DeviceRepository } from './api/public/securityDevices/infrastructure/device.repository';
-import { Device, DeviceSchema } from './domains/device.entity';
+import { DeviceRepository } from './api/infrastructure/devices/device.repository';
+import { Device, DeviceSchema } from './api/entities/device.entity';
 import { SuperAdminBlogsController } from './api/superadmin/blogs/sa.blogs.controller';
 import { BlogCreateUseCase } from './api/blogger/application,use-cases/blog-create-use-case';
 import { CqrsModule } from '@nestjs/cqrs';
@@ -57,12 +60,12 @@ import { CommentCreateUseCase } from './api/public/comments/application,use-case
 import { CommentDeleteUseCase } from './api/public/comments/application,use-cases/comment-delete-use-case';
 import { CommentLikeStatusUpdateUseCase } from './api/public/like/use-cases/comment-like-status-update-use-case';
 import { PublicBlogsController } from './api/public/blogs/api/public.blogs.controller';
-import { UserBanByBloggerUseCase } from './api/blogger/application,use-cases/user-ban-by-blogger-use-case';
+import { BloggerBanUserUseCase } from './api/blogger/application,use-cases/blogger-ban-user-use-case';
 import { BloggerUsersController } from './api/blogger/blogger.users.controller';
 import {
-  UserBanByBlogger,
+  BloggerBanUser,
   UserBanByBloggerSchema,
-} from './domains/user-ban-by-blogger.entity';
+} from './api/entities/user-ban-by-blogger.entity';
 import { BanBlogUseCase } from './api/superadmin/blogs/ban-blog-use-case';
 
 const mongooseModels = [
@@ -73,7 +76,7 @@ const mongooseModels = [
   { name: CommentLike.name, schema: CommentLikeSchema },
   { name: Comment.name, schema: CommentSchema },
   { name: User.name, schema: UserSchema },
-  { name: UserBanByBlogger.name, schema: UserBanByBloggerSchema },
+  { name: BloggerBanUser.name, schema: UserBanByBloggerSchema },
 ];
 const useCases = [
   BlogCreateUseCase,
@@ -92,7 +95,7 @@ const useCases = [
   CommentCreateUseCase,
   CommentDeleteUseCase,
   CommentLikeStatusUpdateUseCase,
-  UserBanByBloggerUseCase,
+  BloggerBanUserUseCase,
   BanBlogUseCase,
 ];
 @Module({

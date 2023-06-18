@@ -1,50 +1,12 @@
-// import { Test, TestingModule } from '@nestjs/testing';
-// import request from 'supertest';
-// import { MongoMemoryServer } from 'mongodb-memory-server';
-// import * as mongoose from 'mongoose';
-// import { AppModule } from '../../src/app.module';
-//
-// describe('Blogger', () => {
-//   let app: any;
-//   let moduleFixture: TestingModule;
-//   let mongod: MongoMemoryServer;
-//
-//   beforeAll(async () => {
-//     mongod = await MongoMemoryServer.create();
-//     const mongoUri = mongod.getUri();
-//
-//     moduleFixture = await Test.createTestingModule({
-//       imports: [AppModule],
-//     }).compile();
-//
-//     app = moduleFixture.createNestApplication();
-//     await app.init();
-//
-//     await mongoose.connect(mongoUri);
-//   });
-//
-//   afterAll(async () => {
-//     await mongoose.disconnect();
-//     await mongod.stop();
-//     await app.close();
-//     await moduleFixture.close();
-//   });
-//   describe('Blogger blog creation', () => {
-//     it('Creating user', async () => {
-//       await request(app.getHttpServer()).post('/sa/users').expect(204);
-//     });
-//   });
-// });
-
 import request from 'supertest';
 import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import { AppModule } from '../../src/app.module';
+import { AppModule } from '../../../src/app.module';
 
 import {
   closeInMongodConnection,
   rootMongooseTestModule,
-} from '../mongoose-test-module';
+} from '../../mongoose-test-module';
 import {
   blogCreatingData,
   blogWithBlogOwnerInfoNull,
@@ -52,16 +14,16 @@ import {
   createdBlogWithPaginationForPublic,
   createdBlogWithPaginationForSa,
   emptyBlogDataWithPagination,
-} from '../data/blogs-data';
+} from '../../data/blogs-data';
 import {
   emptyUsersDataWithPagination,
   newUserEmail,
   userCreatedData,
-} from '../data/user-data';
+} from '../../data/user-data';
 
 describe('Super Admin blogs testing', () => {
   let app: INestApplication;
-
+  jest.setTimeout(60 * 1000);
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [rootMongooseTestModule(), AppModule],
@@ -208,6 +170,26 @@ describe('Super Admin blogs testing', () => {
         .put(`/sa/blogs/${blog.id}/bind-with-user/${user.id}`)
         .auth('admin', 'qwerty');
       expect(result.status).toBe(204);
+    });
+
+    it(`BlogOwnerInfo.login should be leonid`, async () => {
+      const result = await request(app.getHttpServer())
+        .get('/sa/blogs')
+        .auth('admin', 'qwerty');
+      expect(result.status).toBe(200);
+      expect(result.body).toEqual({
+        ...blogWithBlogOwnerInfoNull,
+        items: [
+          {
+            ...blogWithBlogOwnerInfoNull.items[0],
+            blogOwnerInfo: {
+              ...blogWithBlogOwnerInfoNull.items[0].blogOwnerInfo,
+              userLogin: 'leonid',
+              userId: expect.any(String),
+            },
+          },
+        ],
+      });
     });
   });
 });
