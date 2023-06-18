@@ -29,7 +29,6 @@ import { CreateLikeDto } from '../../like/createLikeDto';
 import { CommandBus } from '@nestjs/cqrs';
 import { PostLikeUpdateCommand } from '../../like/use-cases/post-like-update-use-case';
 import { CommentCreateCommand } from '../../comments/application,use-cases/comment-create-use-case';
-import { Result } from '../../../../exception-handler/result-type';
 import { UserId } from '../../../../decorators/UserId';
 
 @Controller('posts')
@@ -112,7 +111,7 @@ export class PostsController {
     @Param('id') postId: string,
     @Body() createCommentDto: CreateCommentDto,
   ) {
-    const isCreated: Result<string> = await this.commandBus.execute(
+    const isCreated = await this.commandBus.execute(
       new CommentCreateCommand(createCommentDto, postId, userId),
     );
 

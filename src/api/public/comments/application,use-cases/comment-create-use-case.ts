@@ -11,7 +11,6 @@ import { UsersRepository } from '../../../infrastructure/users/users.repository'
 import { InjectModel } from '@nestjs/mongoose';
 import { CommentsRepository } from '../../../infrastructure/comments/comments.repository';
 import { ResultCode } from '../../../../exception-handler/result-code-enum';
-import { Result } from '../../../../exception-handler/result-type';
 
 export class CommentCreateCommand {
   constructor(public createCommentDto, public postId, public userId) {}
@@ -25,7 +24,7 @@ export class CommentCreateUseCase {
     private readonly commentsRepository: CommentsRepository,
     @InjectModel(Comment.name) private CommentModel: CommentModelType,
   ) {}
-  async execute(command: CommentCreateCommand): Promise<Result<string>> {
+  async execute(command: CommentCreateCommand) {
     const post: PostDocument | boolean = await this.postsRepository.getPostById(
       command.postId,
     );
