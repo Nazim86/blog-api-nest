@@ -34,29 +34,29 @@ export class BloggerUsersController {
 
   @Get('blog/:id')
   async getBannedUsersForBlog(
+    @UserId() userId,
     @Query()
     query: UserPagination<PaginationType>,
     @Param('id') blogId: string,
   ) {
     const getBannedUsersForBlog =
-      await this.usersQueryRepo.getBannedUsersForBlog(query, blogId);
+      await this.usersQueryRepo.getBannedUsersForBlog(userId, query, blogId);
 
-    // if (getBannedUsersForBlog.items.length === 0) {
-    //   return exceptionHandler(ResultCode.NotFound);
-    // }
+    if (getBannedUsersForBlog.code !== ResultCode.Success) {
+      return exceptionHandler(getBannedUsersForBlog.code);
+    }
 
-    return getBannedUsersForBlog;
+    return getBannedUsersForBlog.data;
   }
 
   @HttpCode(204)
   @Put(':userId/ban')
   async banUser(
-    @UserId() blogOwnerId,
     @Param('userId') userId: string,
     @Body() userBanDto: UserBanDto,
   ) {
     const isUpdated: Result<ResultCode> = await this.commandBus.execute(
-      new BloggerBanUserCommand(blogOwnerId, userId, userBanDto),
+      new BloggerBanUserCommand(userId, userBanDto),
     );
 
     if (isUpdated.code !== ResultCode.Success) {

@@ -103,5 +103,6 @@ describe('Blogger user testing', () => {
     });
 
     //TODO Unban users and then check
+    //TODO check user if it want to get banned user for its blog or not
   });
 });

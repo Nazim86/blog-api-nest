@@ -16,6 +16,9 @@ import {
   BloggerBanUserModelType,
 } from '../../entities/user-ban-by-blogger.entity';
 import { RoleEnum } from '../../../enums/role-enum';
+import { BlogRepository } from '../blogs/blog.repository';
+import { ResultCode } from '../../../exception-handler/result-code-enum';
+import { BlogDocument } from '../../entities/blog.entity';
 
 @Injectable()
 export class UserQueryRepo {
@@ -23,6 +26,7 @@ export class UserQueryRepo {
     @InjectModel(User.name) private UserModel: Model<UserDocument>,
     @InjectModel(BloggerBanUser.name)
     private UserBanModel: BloggerBanUserModelType,
+    private readonly blogsRepository: BlogRepository,
   ) {}
 
   private userMapping = (newUser: UserDocument[]): UserViewType[] => {
@@ -69,6 +73,7 @@ export class UserQueryRepo {
   };
 
   async getBannedUsersForBlog(
+    userId: string,
     query: UserPagination<PaginationType>,
     blogId: string,
   ) {
@@ -86,6 +91,15 @@ export class UserQueryRepo {
       BanStatusEnum.banned,
       RoleEnum.Blogger,
     );
+
+    const blog: BlogDocument | null = await this.blogsRepository.getBlogById(
+      blogId,
+    );
+
+    if (!blog) return { code: ResultCode.NotFound };
+
+    if (blog.blogOwnerInfo.userId !== userId)
+      return { code: ResultCode.Forbidden };
 
     filter.$and.push({ 'banInfo.blogId': blogId });
 
@@ -108,11 +122,14 @@ export class UserQueryRepo {
     const mappedBannedUsers = this.bannedUserMappingForBlog(bannedUsersForBlog);
 
     return {
-      pagesCount: pagesCount,
-      page: Number(paginatedQuery.pageNumber),
-      pageSize: Number(paginatedQuery.pageSize),
-      totalCount: totalCount,
-      items: mappedBannedUsers,
+      data: {
+        pagesCount: pagesCount,
+        page: Number(paginatedQuery.pageNumber),
+        pageSize: Number(paginatedQuery.pageSize),
+        totalCount: totalCount,
+        items: mappedBannedUsers,
+      },
+      code: ResultCode.Success,
     };
   }
 
