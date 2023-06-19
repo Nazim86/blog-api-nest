@@ -1,12 +1,11 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Model, ObjectId } from 'mongoose';
+import { HydratedDocument, Model } from 'mongoose';
 import { UserBanDto } from '../blogger/inputModel-Dto/userBan.dto';
 
 export type BloggerBanUserDocument = HydratedDocument<BloggerBanUser>;
 
 export type BloggerBanUserModelStaticType = {
   createBannedUser: (
-    blogId: string,
     login: string,
     userId: string,
     userBanDto: UserBanDto,
@@ -20,9 +19,6 @@ export type BloggerBanUserModelType = Model<BloggerBanUser> &
 @Schema()
 export class BloggerBanUser {
   @Prop({ required: true })
-  blogId: string;
-
-  @Prop({ required: true })
   login: string;
 
   @Prop({ required: true })
@@ -34,6 +30,7 @@ export class BloggerBanUser {
       isBanned: Boolean,
       banDate: String,
       banReason: String,
+      blogId: String,
     },
     required: true,
   })
@@ -41,23 +38,23 @@ export class BloggerBanUser {
     isBanned: boolean;
     banDate: string;
     banReason: string;
+    blogId: string;
   };
 
   static createBannedUser(
-    blogId: string,
     login: string,
     userId: string,
     userBanDto: UserBanDto,
     UserBanByBloggerModel: BloggerBanUserModelType,
   ) {
     const bannedUser = {
-      blogId: userBanDto.blogId,
-      userId: userId,
       login: login,
+      userId: userId,
       banInfo: {
         isBanned: userBanDto.isBanned,
         banDate: new Date().toISOString(),
         banReason: userBanDto.banReason,
+        blogId: userBanDto.blogId,
       },
     };
     return new UserBanByBloggerModel(bannedUser);
@@ -69,7 +66,7 @@ export class BloggerBanUser {
       (this.banInfo.isBanned = userBanDto.isBanned),
       (this.banInfo.banDate = new Date().toISOString()),
       (this.banInfo.banReason = userBanDto.banReason),
-      (this.blogId = userBanDto.blogId);
+      (this.banInfo.blogId = userBanDto.blogId);
   }
 }
 const userBanByBloggerStaticMethods: BloggerBanUserModelStaticType = {

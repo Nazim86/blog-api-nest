@@ -16,7 +16,6 @@ import {
   BloggerBanUserModelType,
 } from '../../entities/user-ban-by-blogger.entity';
 import { RoleEnum } from '../../../enums/role-enum';
-import { fi } from 'date-fns/locale';
 
 @Injectable()
 export class UserQueryRepo {
@@ -81,37 +80,14 @@ export class UserQueryRepo {
         query.sortDirection,
         query.searchLoginTerm,
       );
-    // const filter = filterForUserQuery(
-    //   paginatedQuery.searchLoginTerm,
-    //   null,
-    //   BanStatusEnum.banned,
-    //   RoleEnum.Blogger,
-    // );
+    const filter = filterForUserQuery(
+      paginatedQuery.searchLoginTerm,
+      null,
+      BanStatusEnum.banned,
+      RoleEnum.Blogger,
+    );
 
-    // const filter: any = {};
-    // filter.$and = [];
-
-    // filter.$and.push({ blogId: blogId });
-    // filter.$and.push({ 'banInfo.isBanned': true });
-    //
-    // if (paginatedQuery.searchLoginTerm) {
-    //   filter.$and.push({
-    //     $or: {
-    //       login: {
-    //         $regex: paginatedQuery.searchLoginTerm,
-    //         $options: 'i',
-    //       },
-    //     },
-    //   });
-    //}
-
-    const filter = {
-      'accountData.login': {
-        $regex: paginatedQuery.searchLoginTerm ?? '',
-        $options: 'i',
-      },
-      'banInfo.isBanned': true,
-    };
+    filter.$and.push({ 'banInfo.blogId': blogId });
 
     const skipSize = paginatedQuery.skipSize; //(paginatedQuery.pageNumber - 1) * paginatedQuery.pageSize;
     const totalCount = await this.UserBanModel.countDocuments(filter);

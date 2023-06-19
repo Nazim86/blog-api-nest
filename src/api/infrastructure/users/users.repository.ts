@@ -44,7 +44,7 @@ export class UsersRepository {
   async findBloggerBannedUser(userId: string, blogId: string) {
     return this.UserBanModeL.findOne({
       userId,
-      blogId: blogId,
+      'banInfo.blogId': blogId,
       'banInfo.isBanned': true,
     });
   }

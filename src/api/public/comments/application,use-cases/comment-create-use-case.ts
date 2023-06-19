@@ -43,7 +43,7 @@ export class CommentCreateUseCase {
       post.blogId,
     );
 
-    if (bannedUser.banInfo.isBanned) {
+    if (bannedUser) {
       return { code: ResultCode.Forbidden };
     }
 

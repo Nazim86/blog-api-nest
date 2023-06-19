@@ -21,6 +21,7 @@ import { UserBanDto } from './inputModel-Dto/userBan.dto';
 import { BloggerBanUserCommand } from './application,use-cases/blogger-ban-user-use-case';
 import { UserQueryRepo } from '../infrastructure/users/users.query.repo';
 import { UserPagination } from '../superadmin/users/user-pagination';
+import { UserId } from '../../decorators/UserId';
 
 @UseGuards(AccessTokenGuard)
 @Controller('blogger/users')
@@ -50,11 +51,12 @@ export class BloggerUsersController {
   @HttpCode(204)
   @Put(':userId/ban')
   async banUser(
+    @UserId() blogOwnerId,
     @Param('userId') userId: string,
     @Body() userBanDto: UserBanDto,
   ) {
     const isUpdated: Result<ResultCode> = await this.commandBus.execute(
-      new BloggerBanUserCommand(userId, userBanDto),
+      new BloggerBanUserCommand(blogOwnerId, userId, userBanDto),
     );
 
     if (isUpdated.code !== ResultCode.Success) {
