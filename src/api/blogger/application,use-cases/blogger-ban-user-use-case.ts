@@ -12,7 +12,11 @@ import { UserDocument } from '../../entities/user.entity';
 import { BlogRepository } from '../../infrastructure/blogs/blog.repository';
 
 export class BloggerBanUserCommand {
-  constructor(public userId: string, public userBanDto: UserBanDto) {}
+  constructor(
+    public blogOwnerId: string,
+    public userId: string,
+    public userBanDto: UserBanDto,
+  ) {}
 }
 
 @CommandHandler(BloggerBanUserCommand)
@@ -44,9 +48,9 @@ export class BloggerBanUserUseCase {
         return { data: errorsMessages, code: ResultCode.BadRequest };
       }
 
-      // if (command.blogOwnerId !== blog.blogOwnerInfo.userId) {
-      //   return { code: ResultCode.Forbidden };
-      // }
+      if (command.blogOwnerId !== blog.blogOwnerInfo.userId) {
+        return { code: ResultCode.Forbidden };
+      }
 
       const bannedUser: BloggerBanUserDocument =
         await this.usersRepository.findBloggerBannedUser(
