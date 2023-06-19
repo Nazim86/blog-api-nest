@@ -58,7 +58,7 @@ export class UserQueryRepo {
   ) => {
     return bannedUsers.map((bannedUser: BloggerBanUserDocument) => {
       return {
-        id: bannedUser._id.toString(),
+        id: bannedUser.userId,
         login: bannedUser.login,
         banInfo: {
           isBanned: bannedUser.banInfo.isBanned,
