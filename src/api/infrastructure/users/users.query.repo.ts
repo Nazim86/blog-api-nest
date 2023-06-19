@@ -81,17 +81,17 @@ export class UserQueryRepo {
         query.sortDirection,
         query.searchLoginTerm,
       );
-    const filter = filterForUserQuery(
-      paginatedQuery.searchLoginTerm,
-      null,
-      BanStatusEnum.banned,
-      RoleEnum.Blogger,
-    );
+    // const filter = filterForUserQuery(
+    //   paginatedQuery.searchLoginTerm,
+    //   null,
+    //   BanStatusEnum.banned,
+    //   RoleEnum.Blogger,
+    // );
 
     // const filter: any = {};
     // filter.$and = [];
 
-    filter.$and.push({ 'banInfo.blogId': blogId });
+    // filter.$and.push({ blogId: blogId });
     // filter.$and.push({ 'banInfo.isBanned': true });
     //
     // if (paginatedQuery.searchLoginTerm) {
@@ -104,6 +104,14 @@ export class UserQueryRepo {
     //     },
     //   });
     //}
+
+    const filter = {
+      'accountData.login': {
+        $regex: paginatedQuery.searchLoginTerm ?? '',
+        $options: 'i',
+      },
+      'banInfo.isBanned': true,
+    };
 
     const skipSize = paginatedQuery.skipSize; //(paginatedQuery.pageNumber - 1) * paginatedQuery.pageSize;
     const totalCount = await this.UserBanModel.countDocuments(filter);

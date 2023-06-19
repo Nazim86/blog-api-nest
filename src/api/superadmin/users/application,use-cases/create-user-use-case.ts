@@ -40,7 +40,6 @@ export class CreateUsersUseCase {
       console.log(e);
       exceptionHandler(ResultCode.BadRequest);
     }
-
     return newUser.id;
   }
 }

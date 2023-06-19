@@ -34,7 +34,7 @@ export class UsersRepository {
   }
 
   async save(user: UserDocument) {
-    return await user.save();
+    return user.save();
   }
 
   async saveBloggerBanUser(bannedUser: BloggerBanUserDocument) {
@@ -42,7 +42,11 @@ export class UsersRepository {
   }
 
   async findBloggerBannedUser(userId: string, blogId: string) {
-    return this.UserBanModeL.findOne({ userId, 'banInfo.blogId': blogId });
+    return this.UserBanModeL.findOne({
+      userId,
+      blogId: blogId,
+      'banInfo.isBanned': true,
+    });
   }
 
   async deleteUser(id: string): Promise<boolean> {

@@ -27,6 +27,7 @@ export class User {
     };
   }
   @Prop({
+    _id: false,
     required: true,
     type: {
       login: { type: String, required: true, unique: true },
@@ -47,6 +48,7 @@ export class User {
   };
 
   @Prop({
+    _id: false,
     required: true,
     type: {
       confirmationCode: { type: String, required: true },
@@ -61,6 +63,7 @@ export class User {
   };
 
   @Prop({
+    _id: false,
     type: {
       isBanned: { type: Boolean },
       banDate: { type: String },

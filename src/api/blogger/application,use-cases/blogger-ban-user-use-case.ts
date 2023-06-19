@@ -10,6 +10,7 @@ import { UsersRepository } from '../../infrastructure/users/users.repository';
 import { ResultCode } from '../../../exception-handler/result-code-enum';
 import { UserDocument } from '../../entities/user.entity';
 import { BlogRepository } from '../../infrastructure/blogs/blog.repository';
+import { BanUserDto } from '../../superadmin/users/dto/banUserDto';
 
 export class BloggerBanUserCommand {
   constructor(public userId: string, public userBanDto: UserBanDto) {}
@@ -47,29 +48,61 @@ export class BloggerBanUserUseCase {
     //   return { code: ResultCode.Forbidden };
     // }
 
-    const bannedUser: BloggerBanUserDocument =
-      await this.usersRepository.findBloggerBannedUser(
-        command.userId,
-        command.userBanDto.blogId,
-      );
+    const updateBanInfo = command.userBanDto.isBanned
+      ? {
+          blogId: command.userBanDto.blogId,
+          login: user.accountData.login,
+          userId: command.userId,
+          banInfo: {
+            isBanned: true,
+            banDate: new Date().toISOString(),
+            banReason: command.userBanDto.banReason,
+          },
+        }
+      : {
+          blogId: command.userBanDto.blogId,
+          login: user.accountData.login,
+          userId: command.userId,
+          banInfo: {
+            isBanned: false,
+            banDate: null,
+            banReason: null,
+          },
+        };
 
-    if (!bannedUser) {
-      const banUser = await this.UserBanModel.createBannedUser(
-        user.accountData.login,
-        command.userId,
-        command.userBanDto,
-        this.UserBanModel,
-      );
-      await this.usersRepository.saveBloggerBanUser(banUser);
-      return { code: ResultCode.Success };
-    }
-
-    bannedUser.updateBannedUser(
-      user.accountData.login,
-      command.userId,
-      command.userBanDto,
+    await this.UserBanModel.updateOne(
+      { blogId: command.userBanDto.blogId, userId: command.userId },
+      { $set: { ...updateBanInfo } },
+      { upsert: true },
     );
-    await this.usersRepository.saveBloggerBanUser(bannedUser);
+
+    // const bannedUser: BloggerBanUserDocument =
+    //   await this.usersRepository.findBloggerBannedUser(
+    //     command.userId,
+    //     command.userBanDto.blogId,
+    //   );
+    //
+    // if (bannedUser && command.userBanDto.isBanned)
+    //   return { code: ResultCode.Success };
+    //
+    // if (!bannedUser && command.userBanDto.isBanned) {
+    //   const banUser = await this.UserBanModel.createBannedUser(
+    //     user.accountData.login,
+    //     command.userId,
+    //     command.userBanDto,
+    //     this.UserBanModel,
+    //   );
+    //   await this.usersRepository.saveBloggerBanUser(banUser);
+    //   return { code: ResultCode.Success };
+    // }
+    //
+    // if (bannedUser && !command.userBanDto.isBanned)
+    //   bannedUser.updateBannedUser(
+    //     user.accountData.login,
+    //     command.userId,
+    //     command.userBanDto,
+    //   );
+    // await this.usersRepository.saveBloggerBanUser(bannedUser);
 
     return { code: ResultCode.Success };
   }
