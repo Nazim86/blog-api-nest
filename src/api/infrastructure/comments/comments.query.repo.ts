@@ -4,12 +4,16 @@ import { PostsViewType } from '../posts/types/posts-view-type';
 import { QueryPaginationType } from '../../../types/query-pagination-type';
 import { CommentsViewType } from './types/comments-view-type';
 import { InjectModel } from '@nestjs/mongoose';
-import { Comment, CommentDocument } from '../../entities/comment.entity';
-import { Model } from 'mongoose';
+import {
+  Comment,
+  CommentDocument,
+  CommentModelType,
+} from '../../entities/comment.entity';
 import { CommentsMapping } from '../../public/comments/mapper/comments.mapping';
 import {
   CommentLike,
   CommentLikeDocument,
+  CommentLikeModelType,
 } from '../../entities/commentLike.entity';
 import { LikeEnum } from '../../public/like/like.enum';
 import { ObjectId } from 'mongodb';
@@ -27,48 +31,61 @@ export class CommentsQueryRepo {
     private readonly blogsRepository: BlogRepository,
     private readonly postsRepository: PostRepository,
 
-    @InjectModel(Comment.name) private CommentModel: Model<CommentDocument>,
+    @InjectModel(Comment.name) private CommentModel: CommentModelType,
     @InjectModel(CommentLike.name)
-    private CommentLikeModel: Model<CommentLikeDocument>,
+    private CommentLikeModel: CommentLikeModelType,
   ) {}
 
+  private async commentMappingForBlogger(
+    comments: CommentDocument[],
+    mystatus: string,
+  ) {
+    return Promise.all(
+      comments.map(async (comment: CommentDocument) => {
+        console.log('CommentId', comment.id);
+        const commentLike: CommentLikeDocument =
+          await this.CommentLikeModel.findOne({
+            commentId: comment.id,
+          });
 
-  private async commentMappingForBlogger(comments: CommentDocument[]) {
-    return comments.map(async (comment: CommentDocument) => {
+        if (commentLike) {
+          mystatus = commentLike.status;
+        }
 
-      const commentLike = await this.CommentLikeModel.findOne({commentId:comment.id})
-      const likesCount = await this.CommentLikeModel.countDocuments({
-        commentId: comment.id,
-        status: LikeEnum.Like,
-        //banStatus: false,
-      });
-      const dislikesCount = await this.CommentLikeModel.countDocuments({
-        commentId: comment.id,
-        status: LikeEnum.Dislike,
-        //banStatus: false,
-      });
+        console.log('CommentLike', commentLike);
+        const likesCount = await this.CommentLikeModel.countDocuments({
+          commentId: comment.id,
+          status: LikeEnum.Like,
+          banStatus: false,
+        });
+        const dislikesCount = await this.CommentLikeModel.countDocuments({
+          commentId: comment.id,
+          status: LikeEnum.Dislike,
+          banStatus: false,
+        });
 
-      return {
-        id: comment.id,
-        content: comment.content,
-        commentatorInfo: {
-          userId: comment.commentatorInfo.userId,
-          userLogin: comment.commentatorInfo.userLogin,
-        },
-        createdAt: comment.createdAt,
-        likesInfo:{
-          likesCount,
-          dislikesCount,
-          myStatus:commentLike.status
-        },
-        postInfo: {
-          id: comment.postId,
-          title: comment.postInfo.title,
-          blogId: comment.postInfo.blogId,
-          blogName: comment.postInfo.blogName,
-        },
-      };
-    });
+        return {
+          id: comment.id,
+          content: comment.content,
+          commentatorInfo: {
+            userId: comment.commentatorInfo.userId,
+            userLogin: comment.commentatorInfo.userLogin,
+          },
+          createdAt: comment.createdAt,
+          likesInfo: {
+            likesCount,
+            dislikesCount,
+            myStatus: mystatus,
+          },
+          postInfo: {
+            id: comment.postId,
+            title: comment.postInfo.title,
+            blogId: comment.postInfo.blogId,
+            blogName: comment.postInfo.blogName,
+          },
+        };
+      }),
+    );
   }
 
   async getCommentsForPost(
@@ -167,51 +184,59 @@ export class CommentsQueryRepo {
   }
 
   async getCommentForBlogger(query: PaginationType, userId: string) {
-    const paginatedQuery: Pagination<PaginationType> = new Pagination(
-      query.pageNumber,
-      query.pageSize,
-      query.sortBy,
-      query.sortDirection,
-    );
+    try {
+      const paginatedQuery: Pagination<PaginationType> = new Pagination(
+        query.pageNumber,
+        query.pageSize,
+        query.sortBy,
+        query.sortDirection,
+      );
 
-    // const blog: BlogDocument[] =
-    //   await this.blogsRepository.getBlogByBlogOwnerId(userId);
+      // const blog: BlogDocument[] =
+      //   await this.blogsRepository.getBlogByBlogOwnerId(userId);
 
-    const filter = {
-      'commentatorInfo.isBanned': false,
-      'postInfo.blogOwnerId': userId,
-    };
+      const filter = {
+        'commentatorInfo.isBanned': false,
+        'postInfo.blogOwnerId': userId,
+      };
 
-    // const gettingComment = await this.CommentModel.find({
-    //   'commentatorInfo.isBanned': false,
-    // });
+      // const gettingComment = await this.CommentModel.find({
+      //   'commentatorInfo.isBanned': false,
+      // });
 
-    // console.log('Comments', gettingComment);
+      // console.log('Comments', gettingComment);
 
-    const skipSize = paginatedQuery.skipSize;
+      const skipSize = paginatedQuery.skipSize;
 
-    const totalCount = await this.CommentModel.countDocuments(filter);
-    const pagesCount = paginatedQuery.totalPages(totalCount);
+      const totalCount = await this.CommentModel.countDocuments(filter);
+      const pagesCount = paginatedQuery.totalPages(totalCount);
 
-    const comments: CommentDocument[] = await this.CommentModel.find(filter)
-      .sort({
-        [paginatedQuery.sortBy]:
-          paginatedQuery.sortDirection === 'asc' ? 1 : -1,
-      })
-      .skip(skipSize)
-      .limit(paginatedQuery.pageSize);
+      const comments: CommentDocument[] = await this.CommentModel.find(filter)
+        .sort({
+          [paginatedQuery.sortBy]:
+            paginatedQuery.sortDirection === 'asc' ? 1 : -1,
+        })
+        .skip(skipSize)
+        .limit(paginatedQuery.pageSize);
+      //.lean();
+      const myStatus = 'None';
+      const mappedCommentsForBlog = this.commentMappingForBlogger(
+        comments,
+        myStatus,
+      );
+      // const resolvedMappedCommentsForBlog = await Promise.all(
+      //   mappedCommentsForBlog,
+      // );
 
-
-
-    const mappedCommentsForBlog = await this.commentMappingForBlogger(comments);
-const resolvedMappedCommentsForBlog = await Promise.all( mappedCommentsForBlog)
-    console.log(resolvedMappedCommentsForBlog);
-    return {
-      pagesCount: pagesCount,
-      page: Number(paginatedQuery.pageNumber),
-      pageSize: Number(paginatedQuery.pageSize),
-      totalCount: totalCount,
-      items: resolvedMappedCommentsForBlog,
-    };
+      return {
+        pagesCount: pagesCount,
+        page: Number(paginatedQuery.pageNumber),
+        pageSize: Number(paginatedQuery.pageSize),
+        totalCount: totalCount,
+        items: mappedCommentsForBlog,
+      };
+    } catch (e) {
+      console.log(e);
+    }
   }
 }

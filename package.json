@@ -80,7 +80,7 @@
     "ts-loader": "^9.2.3",
     "ts-node": "^10.0.0",
     "tsconfig-paths": "4.2.0",
-    "typescript": "^4.7.4"
+    "typescript": "^5.1.3"
   },
   "jest": {
     "moduleFileExtensions": [
@@ -88,7 +88,10 @@
       "json",
       "ts"
     ],
-    "roots": ["test","src"],
+    "roots": [
+      "test",
+      "src"
+    ],
     "testRegex": ".*(-|.)spec.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
