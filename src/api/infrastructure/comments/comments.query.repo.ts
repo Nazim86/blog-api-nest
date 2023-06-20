@@ -220,10 +220,12 @@ export class CommentsQueryRepo {
         .limit(paginatedQuery.pageSize);
       //.lean();
       const myStatus = 'None';
-      const mappedCommentsForBlog = this.commentMappingForBlogger(
+      const mappedCommentsForBlog = await this.commentMappingForBlogger(
         comments,
         myStatus,
       );
+
+      console.log('MappedCommentForBlog', mappedCommentsForBlog);
       // const resolvedMappedCommentsForBlog = await Promise.all(
       //   mappedCommentsForBlog,
       // );
