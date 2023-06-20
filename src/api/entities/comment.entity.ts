@@ -29,15 +29,18 @@ export class Comment {
   content: string;
 
   @Prop({
+    _id: false,
     required: true,
     type: {
       userId: String,
       userLogin: String,
+      isBanned: Boolean,
     },
   })
-  commentatorInfo: { userId: string; userLogin: string; isBanned: string };
+  commentatorInfo: { userId: string; userLogin: string; isBanned: boolean };
 
   @Prop({
+    _id: false,
     required: true,
     type: { title: String, blogId: String, blogName: String },
   })

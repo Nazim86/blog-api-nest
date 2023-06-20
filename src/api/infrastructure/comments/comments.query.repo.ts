@@ -30,7 +30,7 @@ export class CommentsQueryRepo {
     private CommentLikeModel: Model<CommentLikeDocument>,
   ) {}
 
-  private commentMappingForBlog(comments: CommentDocument[]) {
+  private commentMappingForBlogger(comments: CommentDocument[]) {
     return comments.map((comment: CommentDocument) => {
       return {
         id: comment.id,
@@ -145,7 +145,7 @@ export class CommentsQueryRepo {
     }
   }
 
-  async getCommentForBlogOfUser(query: PaginationType, userId: string) {
+  async getCommentForBlogger(query: PaginationType, userId: string) {
     const paginatedQuery: Pagination<PaginationType> = new Pagination(
       query.pageNumber,
       query.pageSize,
@@ -159,9 +159,14 @@ export class CommentsQueryRepo {
       'commentatorInfo.isBanned': false,
     };
 
+    // const gettingComment = await this.CommentModel.find({
+    //   'commentatorInfo.isBanned': false,
+    // });
+
+    // console.log('Comments', gettingComment);
+
     const skipSize = paginatedQuery.skipSize;
     const totalCount = await this.CommentModel.countDocuments(filter);
-    console.log(totalCount);
     const pagesCount = paginatedQuery.totalPages(totalCount);
 
     const comments: CommentDocument[] = await this.CommentModel.find(filter)
@@ -172,7 +177,7 @@ export class CommentsQueryRepo {
       .skip(skipSize)
       .limit(paginatedQuery.pageSize);
 
-    const mappedCommentsForBlog = this.commentMappingForBlog(comments);
+    const mappedCommentsForBlog = this.commentMappingForBlogger(comments);
 
     return {
       pagesCount: pagesCount,

@@ -62,7 +62,7 @@ export class BloggerBlogsController {
     @Query() query: PaginationType,
     @UserId() userId: string,
   ) {
-    return await this.commentsQueryRepo.getCommentForBlogOfUser(query, userId);
+    return await this.commentsQueryRepo.getCommentForBlogger(query, userId);
   }
 
   @Post()
