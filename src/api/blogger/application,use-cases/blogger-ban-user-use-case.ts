@@ -10,6 +10,7 @@ import { UsersRepository } from '../../infrastructure/users/users.repository';
 import { ResultCode } from '../../../exception-handler/result-code-enum';
 import { UserDocument } from '../../entities/user.entity';
 import { BlogRepository } from '../../infrastructure/blogs/blog.repository';
+import { CommentsRepository } from '../../infrastructure/comments/comments.repository';
 
 export class BloggerBanUserCommand {
   constructor(
@@ -26,6 +27,7 @@ export class BloggerBanUserUseCase {
     private UserBanModel: BloggerBanUserModelType,
     private readonly usersRepository: UsersRepository,
     private readonly blogsRepository: BlogRepository,
+    private readonly commentsRepository: CommentsRepository,
   ) {}
   async execute(command: BloggerBanUserCommand) {
     try {
@@ -52,6 +54,8 @@ export class BloggerBanUserUseCase {
         return { code: ResultCode.Forbidden };
       }
 
+      // const comment = await this.commentsRepository.getCommentByBlogId(blog.id);
+
       const bannedUser: BloggerBanUserDocument =
         await this.usersRepository.findBloggerBannedUser(
           command.userId,
@@ -76,6 +80,8 @@ export class BloggerBanUserUseCase {
           command.userBanDto,
         );
       await this.usersRepository.saveBloggerBanUser(bannedUser);
+
+      // await this.commentsRepository.
 
       return { code: ResultCode.Success };
     } catch (e) {

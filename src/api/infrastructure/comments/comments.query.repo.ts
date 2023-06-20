@@ -156,12 +156,12 @@ export class CommentsQueryRepo {
       query.sortDirection,
     );
 
-    const blog: BlogDocument = await this.blogsRepository.getBlogByBlogOwnerId(
-      userId,
-    );
+    // const blog: BlogDocument[] =
+    //   await this.blogsRepository.getBlogByBlogOwnerId(userId);
 
     const filter = {
-      'postInfo.blogId': blog.id,
+      'commentatorInfo.isBanned': false,
+      'postInfo.blogOwnerId': userId,
     };
 
     // const gettingComment = await this.CommentModel.find({
@@ -171,6 +171,7 @@ export class CommentsQueryRepo {
     // console.log('Comments', gettingComment);
 
     const skipSize = paginatedQuery.skipSize;
+
     const totalCount = await this.CommentModel.countDocuments(filter);
     const pagesCount = paginatedQuery.totalPages(totalCount);
 

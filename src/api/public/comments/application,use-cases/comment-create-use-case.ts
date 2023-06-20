@@ -11,6 +11,8 @@ import { UsersRepository } from '../../../infrastructure/users/users.repository'
 import { InjectModel } from '@nestjs/mongoose';
 import { CommentsRepository } from '../../../infrastructure/comments/comments.repository';
 import { ResultCode } from '../../../../exception-handler/result-code-enum';
+import { Blog } from '../../../entities/blog.entity';
+import { BlogRepository } from '../../../infrastructure/blogs/blog.repository';
 
 export class CommentCreateCommand {
   constructor(public createCommentDto, public postId, public userId) {}
@@ -22,6 +24,7 @@ export class CommentCreateUseCase {
     private readonly postsRepository: PostRepository,
     private readonly usersRepository: UsersRepository,
     private readonly commentsRepository: CommentsRepository,
+    private readonly blogsRepository: BlogRepository,
     @InjectModel(Comment.name) private CommentModel: CommentModelType,
   ) {}
   async execute(command: CommentCreateCommand) {
@@ -37,6 +40,8 @@ export class CommentCreateUseCase {
     );
 
     if (!user) return { code: ResultCode.NotFound };
+
+    const blog = await this.blogsRepository.getBlogById(post.blogId);
 
     const bannedUser = await this.usersRepository.findBloggerBannedUser(
       command.userId,
@@ -56,6 +61,7 @@ export class CommentCreateUseCase {
       post.title,
       post.blogId,
       post.blogName,
+      blog.blogOwnerInfo.userId,
     );
 
     await this.commentsRepository.save(newComment);

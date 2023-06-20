@@ -14,6 +14,7 @@ export type CommentModelStaticType = {
     title: string,
     blogId: string,
     blogName: string,
+    blogOwnerId: string,
   ) => CommentDocument;
 };
 
@@ -42,12 +43,18 @@ export class Comment {
   @Prop({
     _id: false,
     required: true,
-    type: { title: String, blogId: String, blogName: String },
+    type: {
+      title: String,
+      blogId: String,
+      blogName: String,
+      blogOwnerId: String,
+    },
   })
   postInfo: {
     title: string;
     blogId: string;
     blogName: string;
+    blogOwnerId: string;
   };
 
   @Prop({ required: true })
@@ -62,6 +69,7 @@ export class Comment {
     title: string,
     blogId: string,
     blogName: string,
+    blogOwnerId: string,
   ) {
     const newComment = {
       postId: postId,
@@ -75,6 +83,7 @@ export class Comment {
         title: title,
         blogId: blogId,
         blogName: blogName,
+        blogOwnerId: blogOwnerId,
       },
       createdAt: new Date().toISOString(),
     };

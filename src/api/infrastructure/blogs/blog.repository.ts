@@ -23,7 +23,7 @@ export class BlogRepository {
   }
 
   async getBlogByBlogOwnerId(userId: string) {
-    return this.BlogModel.findOne({
+    return this.BlogModel.find({
       'blogOwnerInfo.userId': userId,
     });
   }

@@ -30,6 +30,10 @@ export class CommentsRepository {
     return this.CommentModel.findOne({ _id: new ObjectId(commentId) });
   }
 
+  // async getCommentByBlogId(blogId): Promise<CommentDocument | null> {
+  //   return this.CommentModel.findOne({ 'postInfo.blogId': blogId });
+  // }
+
   async deleteComment(commentId: string): Promise<boolean> {
     const result = await this.CommentModel.deleteOne({
       _id: new ObjectId(commentId),
