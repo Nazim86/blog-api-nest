@@ -32,7 +32,6 @@ export class CommentsQueryRepo {
     private CommentLikeModel: Model<CommentLikeDocument>,
   ) {}
 
-  private likeCount
 
   private commentMappingForBlogger(comments: CommentDocument[]) {
     return comments.map(async (comment: CommentDocument) => {
