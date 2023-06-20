@@ -17,7 +17,6 @@ import { UsersRepository } from '../users/users.repository';
 import { Pagination, PaginationType } from '../../../common/pagination';
 import { BlogRepository } from '../blogs/blog.repository';
 import { PostRepository } from '../posts/post.repository';
-import { BlogDocument } from '../../entities/blog.entity';
 
 @Injectable()
 export class CommentsQueryRepo {
@@ -33,8 +32,22 @@ export class CommentsQueryRepo {
     private CommentLikeModel: Model<CommentLikeDocument>,
   ) {}
 
+  private likeCount
+
   private commentMappingForBlogger(comments: CommentDocument[]) {
-    return comments.map((comment: CommentDocument) => {
+    return comments.map(async (comment: CommentDocument) => {
+      const commentLike = await this.CommentLikeModel.findOne({commentId:comment.id})
+      const likesCount = await this.CommentLikeModel.countDocuments({
+        commentId: comment.id,
+        status: LikeEnum.Like,
+        banStatus: false,
+      });
+      const dislikesCount = await this.CommentLikeModel.countDocuments({
+        commentId: comment.id,
+        status: LikeEnum.Dislike,
+        banStatus: false,
+      });
+
       return {
         id: comment.id,
         content: comment.content,
@@ -43,6 +56,11 @@ export class CommentsQueryRepo {
           userLogin: comment.commentatorInfo.userLogin,
         },
         createdAt: comment.createdAt,
+        likesInfo:{
+          likesCount,
+          dislikesCount,
+          myStatus:commentLike.status
+        },
         postInfo: {
           id: comment.postId,
           title: comment.postInfo.title,
@@ -182,6 +200,8 @@ export class CommentsQueryRepo {
       })
       .skip(skipSize)
       .limit(paginatedQuery.pageSize);
+
+
 
     const mappedCommentsForBlog = this.commentMappingForBlogger(comments);
 
