@@ -15,9 +15,15 @@ import {
   updatedBlogWithPagination,
 } from '../../data/blogs-data';
 import {
+  createdPostWithPagination,
   newPostCreatingData,
   returnedCreatedPost,
 } from '../../data/posts-data';
+import {
+  commentCreatingData,
+  commentWithPagination,
+  createdComment,
+} from '../../data/comments-data';
 
 describe('Blogger blog testing', () => {
   let app: INestApplication;
@@ -41,6 +47,7 @@ describe('Blogger blog testing', () => {
     let user;
     let blog;
     let post;
+    let comment;
 
     it(`Creating user`, async () => {
       const result = await request(app.getHttpServer())
@@ -111,6 +118,31 @@ describe('Blogger blog testing', () => {
       post = result.body;
       expect(result.status).toBe(201);
       expect(result.body).toEqual(returnedCreatedPost);
+    });
+
+    it(`Get posts`, async () => {
+      const result = await request(app.getHttpServer()).get('/posts');
+      expect(result.status).toBe(200);
+      expect(result.body).toEqual(createdPostWithPagination);
+    });
+
+    it(`Creating comment to post`, async () => {
+      const result = await request(app.getHttpServer())
+        .post(`/posts/${post.id}/comments`)
+        .auth(accessToken, { type: 'bearer' })
+        .send(commentCreatingData);
+
+      comment = result.body;
+      expect(result.status).toBe(201);
+      expect(result.body).toEqual(createdComment);
+    });
+
+    it(`Blogger gets all comments for blog`, async () => {
+      const result = await request(app.getHttpServer())
+        .get('/blogger/blogs/comments')
+        .auth(accessToken, { type: 'bearer' });
+      expect(result.status).toBe(200);
+      expect(result.body).toEqual(commentWithPagination);
     });
   });
 });

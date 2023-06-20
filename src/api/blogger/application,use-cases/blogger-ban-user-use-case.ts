@@ -75,12 +75,10 @@ export class BloggerBanUserUseCase {
           command.userId,
           command.userBanDto,
         );
-      console.log(bannedUser, 'before update ban status');
       await this.usersRepository.saveBloggerBanUser(bannedUser);
 
       return { code: ResultCode.Success };
     } catch (e) {
-      console.log(e);
       return { code: ResultCode.Success };
     }
   }

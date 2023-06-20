@@ -15,6 +15,7 @@ import { LikeEnum } from '../../public/like/like.enum';
 import { ObjectId } from 'mongodb';
 import { UsersRepository } from '../users/users.repository';
 import { Pagination, PaginationType } from '../../../common/pagination';
+import { BlogRepository } from '../blogs/blog.repository';
 
 @Injectable()
 export class CommentsQueryRepo {
@@ -22,6 +23,7 @@ export class CommentsQueryRepo {
     private readonly postQueryRepo: PostsQueryRepo,
     private readonly commentMapping: CommentsMapping,
     private readonly usersRepository: UsersRepository,
+    private readonly blogsRepository: BlogRepository,
 
     @InjectModel(Comment.name) private CommentModel: Model<CommentDocument>,
     @InjectModel(CommentLike.name)
@@ -150,15 +152,16 @@ export class CommentsQueryRepo {
       query.sortBy,
       query.sortDirection,
     );
+
+    //const blog =await this.blogsRepository.
     const filter = {
-      $and: [
-        { 'commentatorInfo.userId': userId },
-        { 'commentatorInfo.isBanned': false },
-      ],
+      'commentatorInfo.userId': userId,
+      'commentatorInfo.isBanned': false,
     };
 
     const skipSize = paginatedQuery.skipSize;
     const totalCount = await this.CommentModel.countDocuments(filter);
+    console.log(totalCount);
     const pagesCount = paginatedQuery.totalPages(totalCount);
 
     const comments: CommentDocument[] = await this.CommentModel.find(filter)
@@ -173,8 +176,8 @@ export class CommentsQueryRepo {
 
     return {
       pagesCount: pagesCount,
-      page: Number(query.pageNumber),
-      pageSize: Number(query.pageSize),
+      page: Number(paginatedQuery.pageNumber),
+      pageSize: Number(paginatedQuery.pageSize),
       totalCount: totalCount,
       items: mappedCommentsForBlog,
     };
