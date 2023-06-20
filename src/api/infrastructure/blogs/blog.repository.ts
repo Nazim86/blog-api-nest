@@ -22,6 +22,12 @@ export class BlogRepository {
     }
   }
 
+  async getBlogByBlogOwnerId(userId: string) {
+    return this.BlogModel.findOne({
+      'blogOwnerInfo.userId': userId,
+    });
+  }
+
   async deleteBlogOwnerInfo(userId: string) {
     const result = await this.BlogModel.updateMany(
       { 'blogOwnerInfo.userId': userId },

@@ -166,3 +166,5 @@ describe('Blogger blog testing', () => {
     });
   });
 });
+
+//TODO get all comments for all posts inside all current user blogs

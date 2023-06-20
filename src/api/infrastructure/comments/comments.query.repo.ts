@@ -16,6 +16,8 @@ import { ObjectId } from 'mongodb';
 import { UsersRepository } from '../users/users.repository';
 import { Pagination, PaginationType } from '../../../common/pagination';
 import { BlogRepository } from '../blogs/blog.repository';
+import { PostRepository } from '../posts/post.repository';
+import { BlogDocument } from '../../entities/blog.entity';
 
 @Injectable()
 export class CommentsQueryRepo {
@@ -24,6 +26,7 @@ export class CommentsQueryRepo {
     private readonly commentMapping: CommentsMapping,
     private readonly usersRepository: UsersRepository,
     private readonly blogsRepository: BlogRepository,
+    private readonly postsRepository: PostRepository,
 
     @InjectModel(Comment.name) private CommentModel: Model<CommentDocument>,
     @InjectModel(CommentLike.name)
@@ -153,9 +156,12 @@ export class CommentsQueryRepo {
       query.sortDirection,
     );
 
-    //const blog =await this.blogsRepository.
+    const blog: BlogDocument = await this.blogsRepository.getBlogByBlogOwnerId(
+      userId,
+    );
+
     const filter = {
-      'commentatorInfo.userId': userId,
+      'postInfo.blogId': blog.id,
     };
 
     // const gettingComment = await this.CommentModel.find({
