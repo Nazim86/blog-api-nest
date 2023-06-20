@@ -21,7 +21,7 @@ import {
 } from '../../data/posts-data';
 import {
   commentCreatingData,
-  commentWithPagination,
+  commentForBloggerWithPagination,
   createdComment,
 } from '../../data/comments-data';
 
@@ -142,7 +142,27 @@ describe('Blogger blog testing', () => {
         .get('/blogger/blogs/comments')
         .auth(accessToken, { type: 'bearer' });
       expect(result.status).toBe(200);
-      expect(result.body).toEqual(commentWithPagination);
+      expect(result.body).toEqual(commentForBloggerWithPagination);
+    });
+
+    it(`Banning user`, async () => {
+      const result = await request(app.getHttpServer())
+        .put(`/blogger/users/${user.id}/ban`)
+        .auth(accessToken, { type: 'bearer' })
+        .send({
+          isBanned: true,
+          banReason: 'bad words',
+          blogId: blog.id,
+        });
+      expect(result.status).toBe(204);
+    });
+
+    it(`Blogger gets all comments for blog`, async () => {
+      const result = await request(app.getHttpServer())
+        .get('/blogger/blogs/comments')
+        .auth(accessToken, { type: 'bearer' });
+      expect(result.status).toBe(200);
+      expect(result.body).toEqual(commentForBloggerWithPagination);
     });
   });
 });

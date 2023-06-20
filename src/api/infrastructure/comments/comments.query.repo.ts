@@ -156,7 +156,6 @@ export class CommentsQueryRepo {
     //const blog =await this.blogsRepository.
     const filter = {
       'commentatorInfo.userId': userId,
-      'commentatorInfo.isBanned': false,
     };
 
     // const gettingComment = await this.CommentModel.find({
