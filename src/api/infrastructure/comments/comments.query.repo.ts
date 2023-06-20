@@ -192,19 +192,10 @@ export class CommentsQueryRepo {
         query.sortDirection,
       );
 
-      // const blog: BlogDocument[] =
-      //   await this.blogsRepository.getBlogByBlogOwnerId(userId);
-
       const filter = {
         'commentatorInfo.isBanned': false,
         'postInfo.blogOwnerId': userId,
       };
-
-      // const gettingComment = await this.CommentModel.find({
-      //   'commentatorInfo.isBanned': false,
-      // });
-
-      // console.log('Comments', gettingComment);
 
       const skipSize = paginatedQuery.skipSize;
 
@@ -224,11 +215,6 @@ export class CommentsQueryRepo {
         comments,
         myStatus,
       );
-
-      console.log('MappedCommentForBlog', mappedCommentsForBlog);
-      // const resolvedMappedCommentsForBlog = await Promise.all(
-      //   mappedCommentsForBlog,
-      // );
 
       return {
         pagesCount: pagesCount,

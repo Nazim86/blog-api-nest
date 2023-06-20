@@ -10,7 +10,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { JwtService } from '../../../../jwt/jwt.service';
-import { AuthService } from '../auth.service';
 import { UsersRepository } from '../../../infrastructure/users/users.repository';
 import { DeviceService } from '../../securityDevices/application,use-cases/device.service';
 import { CreateUserDto } from '../../../superadmin/users/dto/createUser.Dto';
@@ -34,12 +33,16 @@ import { DeviceUpdateCommand } from '../../securityDevices/application,use-cases
 import { DeviceDeleteByIdCommand } from '../../securityDevices/application,use-cases/device-deleteByDeviceId-use-case';
 import { CreateUserCommand } from '../application,use-cases/create-user-use-case';
 import { RegistrationConfirmationCommand } from '../application,use-cases/registration-confirmation-use-case';
+import { ResendEmailCommand } from '../application,use-cases/resend-email-use-case';
+import { SendRecoveryCodeCommand } from '../application,use-cases/send-recovery-code-use-case';
+import { SetNewPasswordCommand } from '../application,use-cases/set-new-password-use-case';
+import { CheckCredentialsCommand } from '../application,use-cases/check-credentials-use-case';
+import { CurrentUserCommand } from '../application,use-cases/current-user-use-case';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly jwtService: JwtService,
-    private readonly authService: AuthService,
     private readonly deviceService: DeviceService,
     private readonly userRepository: UsersRepository,
     private commandBus: CommandBus,
@@ -62,8 +65,9 @@ export class AuthController {
   @Post('registration-email-resending')
   @HttpCode(204)
   async reSendRegistrationEmail(@Body() emailDto: EmailDto) {
-    const isEmailSent: boolean =
-      await this.authService.resendEmailWithNewConfirmationCode(emailDto);
+    const isEmailSent: boolean = await this.commandBus.execute(
+      new ResendEmailCommand(emailDto),
+    );
     if (!isEmailSent) {
       const errorMessage = {
         message: [{ message: 'wrong email', field: 'email' }],
@@ -100,8 +104,8 @@ export class AuthController {
     @Ip() ip,
     @Headers() headers,
   ) {
-    const user: UserDocument | null = await this.authService.checkCredentials(
-      loginDto,
+    const user: UserDocument | null = await this.commandBus.execute(
+      new CheckCredentialsCommand(loginDto),
     );
 
     if (!user) {
@@ -178,8 +182,8 @@ export class AuthController {
   @Get('me')
   @HttpCode(200)
   async getCurrentUser(@UserId() userId) {
-    const currentUser: CurrentUserType = await this.authService.getCurrentUser(
-      userId,
+    const currentUser: CurrentUserType = await this.commandBus.execute(
+      new CurrentUserCommand(userId),
     );
     return currentUser;
   }
@@ -187,8 +191,9 @@ export class AuthController {
   //@Throttle(5, 10)
   @Post('password-recovery')
   async sendPasswordRecoveryCode(@Body() emailDto: EmailDto) {
-    const isRecoveryEmailSent: boolean =
-      await this.authService.sendingRecoveryCode(emailDto);
+    const isRecoveryEmailSent: boolean = await this.commandBus.execute(
+      new SendRecoveryCodeCommand(emailDto),
+    );
 
     if (!isRecoveryEmailSent) {
       return exceptionHandler(ResultCode.BadRequest);
@@ -200,8 +205,9 @@ export class AuthController {
   @Post('new-password')
   @HttpCode(204)
   async setNewPassword(@Body() newPasswordDto: NewPasswordDto) {
-    const isNewPasswordSet: boolean =
-      await this.authService.setNewPasswordByRecoveryCode(newPasswordDto);
+    const isNewPasswordSet: boolean = await this.commandBus.execute(
+      new SetNewPasswordCommand(newPasswordDto),
+    );
 
     if (!isNewPasswordSet) {
       return exceptionHandler(ResultCode.BadRequest);

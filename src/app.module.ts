@@ -67,6 +67,11 @@ import {
   UserBanByBloggerSchema,
 } from './api/entities/user-ban-by-blogger.entity';
 import { BanBlogUseCase } from './api/superadmin/blogs/use-cases/ban-blog-use-case';
+import { CheckCredentialsUseCase } from './api/public/auth/application,use-cases/check-credentials-use-case';
+import { CurrentUserUseCase } from './api/public/auth/application,use-cases/current-user-use-case';
+import { ResendEmailUseCase } from './api/public/auth/application,use-cases/resend-email-use-case';
+import { SendRecoveryCodeUseCase } from './api/public/auth/application,use-cases/send-recovery-code-use-case';
+import { SetNewPasswordUseCase } from './api/public/auth/application,use-cases/set-new-password-use-case';
 
 const mongooseModels = [
   { name: Device.name, schema: DeviceSchema },
@@ -97,6 +102,11 @@ const useCases = [
   CommentLikeStatusUpdateUseCase,
   BloggerBanUserUseCase,
   BanBlogUseCase,
+  CheckCredentialsUseCase,
+  CurrentUserUseCase,
+  ResendEmailUseCase,
+  SendRecoveryCodeUseCase,
+  SetNewPasswordUseCase,
 ];
 @Module({
   imports: [
@@ -104,6 +114,7 @@ const useCases = [
     ScheduleModule.forRoot(),
     AuthModule,
     UsersModule,
+
     // MongooseModule.forRootAsync({
     //   useFactory: async () => {
     //     const mongoMemoryServer = await MongoMemoryServer.create();
