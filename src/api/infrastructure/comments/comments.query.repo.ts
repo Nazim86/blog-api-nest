@@ -33,18 +33,19 @@ export class CommentsQueryRepo {
   ) {}
 
 
-  private commentMappingForBlogger(comments: CommentDocument[]) {
+  private async commentMappingForBlogger(comments: CommentDocument[]) {
     return comments.map(async (comment: CommentDocument) => {
+
       const commentLike = await this.CommentLikeModel.findOne({commentId:comment.id})
       const likesCount = await this.CommentLikeModel.countDocuments({
         commentId: comment.id,
         status: LikeEnum.Like,
-        banStatus: false,
+        //banStatus: false,
       });
       const dislikesCount = await this.CommentLikeModel.countDocuments({
         commentId: comment.id,
         status: LikeEnum.Dislike,
-        banStatus: false,
+        //banStatus: false,
       });
 
       return {
@@ -202,14 +203,15 @@ export class CommentsQueryRepo {
 
 
 
-    const mappedCommentsForBlog = this.commentMappingForBlogger(comments);
-
+    const mappedCommentsForBlog = await this.commentMappingForBlogger(comments);
+const resolvedMappedCommentsForBlog = await Promise.all( mappedCommentsForBlog)
+    console.log(resolvedMappedCommentsForBlog);
     return {
       pagesCount: pagesCount,
       page: Number(paginatedQuery.pageNumber),
       pageSize: Number(paginatedQuery.pageSize),
       totalCount: totalCount,
-      items: mappedCommentsForBlog,
+      items: resolvedMappedCommentsForBlog,
     };
   }
 }
