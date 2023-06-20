@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { UsersModule } from '../../superadmin/users/users.module';
-import { AuthService } from './auth.service';
 import { AccessTokenStrategy } from './strategies/access-token.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
 import { ConfigModule } from '@nestjs/config';
@@ -28,8 +27,7 @@ import {
 import { Comment, CommentSchema } from '../../entities/comment.entity';
 import { RefreshTokenStrategy } from './strategies/refresh-token.strategy';
 import { UsersService } from '../../superadmin/users/application,use-cases/users.service';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { APP_GUARD } from '@nestjs/core';
+
 import { DevicesController } from '../securityDevices/api/devices.controller';
 import { DeviceQueryRepo } from '../../infrastructure/devices/device-query.repo';
 import { ScheduleModule } from '@nestjs/schedule';
@@ -73,7 +71,6 @@ const useCases = [DeviceCreateUseCase, DeviceUpdateUseCase];
     CqrsModule,
   ],
   providers: [
-    AuthService,
     LocalStrategy,
     AccessTokenStrategy,
     BasicStrategy,
@@ -99,6 +96,6 @@ const useCases = [DeviceCreateUseCase, DeviceUpdateUseCase];
     DeleteController,
     DevicesController,
   ],
-  exports: [AuthService],
+  exports: [],
 })
 export class AuthModule {}
