@@ -32,5 +32,3 @@ export class SetNewPasswordUseCase {
     return true;
   }
 }
-
-console.log();
