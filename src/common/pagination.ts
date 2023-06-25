@@ -24,17 +24,6 @@ export class Pagination<T> {
   public get skipSize(): number {
     return (this.pageNumber - 1) * this.pageSize;
   }
-
-  // public get sortedData(): T[] {
-  //   const sorted = this.data.sort((a, b) => {
-  //     const fieldA = a[this.sortBy];
-  //     const fieldB = b[this.sortBy];
-  //     const compare = fieldA < fieldB ? -1 : fieldA > fieldB ? 1 : 0;
-  //     return this.sortDirection === 'asc' ? compare : -compare;
-  //   });
-  //
-  //   return sorted.slice(this.startIndex, this.endIndex + 1);
-  // }
 }
 
 export interface PaginationType {
