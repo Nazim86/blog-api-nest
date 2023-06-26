@@ -1,9 +1,10 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Prop, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Model } from 'mongoose';
 import { CreateUserDto } from '../superadmin/users/dto/createUser.Dto';
 import { v4 as uuid } from 'uuid';
 import { add } from 'date-fns';
 import { BanUserDto } from '../superadmin/users/dto/banUserDto';
+import { Entity } from 'typeorm';
 
 export type UserDocument = HydratedDocument<User>;
 export type UserModelStaticType = {
@@ -17,7 +18,8 @@ export type UserModelStaticType = {
 
 export type UserModelTYpe = Model<User> & UserModelStaticType;
 
-@Schema({ timestamps: true })
+//@Schema({ timestamps: true })
+@Entity()
 export class User {
   constructor() {
     this.emailConfirmation = {

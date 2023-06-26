@@ -8,6 +8,8 @@ import {
   BloggerBanUserDocument,
   BloggerBanUserModelType,
 } from '../../entities/user-ban-by-blogger.entity';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class UsersRepository {
@@ -15,6 +17,7 @@ export class UsersRepository {
     @InjectModel(User.name) private UserModel: Model<User>,
     @InjectModel(BloggerBanUser.name)
     private UserBanModeL: BloggerBanUserModelType,
+    @InjectDataSource() protected dataSource: DataSource,
   ) {}
 
   async findUserByConfirmationCode(code: string) {
@@ -51,7 +54,11 @@ export class UsersRepository {
 
   async deleteUser(id: string): Promise<boolean> {
     try {
-      const result = await this.UserModel.deleteOne({ _id: new ObjectId(id) });
+      // const result = await this.UserModel.deleteOne({ _id: new ObjectId(id) });
+      const result = await this.dataSource.query(
+        `DELETE FROM public."Users" WHERE "Id = $1";`,
+        [id],
+      );
       return result.deletedCount === 1;
     } catch (e) {
       return false;

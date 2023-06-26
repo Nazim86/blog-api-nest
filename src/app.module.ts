@@ -72,6 +72,7 @@ import { CurrentUserUseCase } from './api/public/auth/application,use-cases/curr
 import { ResendEmailUseCase } from './api/public/auth/application,use-cases/resend-email-use-case';
 import { SendRecoveryCodeUseCase } from './api/public/auth/application,use-cases/send-recovery-code-use-case';
 import { SetNewPasswordUseCase } from './api/public/auth/application,use-cases/set-new-password-use-case';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 const mongooseModels = [
   { name: Device.name, schema: DeviceSchema },
@@ -114,7 +115,16 @@ const useCases = [
     ScheduleModule.forRoot(),
     AuthModule,
     UsersModule,
-
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: 'localhost',
+      port: 5432,
+      username: 'postgres',
+      password: 'sa',
+      database: 'blog-api-nest-rawSql',
+      autoLoadEntities: false,
+      synchronize: false,
+    }),
     // MongooseModule.forRootAsync({
     //   useFactory: async () => {
     //     const mongoMemoryServer = await MongoMemoryServer.create();
