@@ -17,7 +17,7 @@ export class IsUserAlreadyExistConstraint
     const user = await this.usersRepository.findUserByLoginOrEmail(
       loginOrEmail,
     );
-    return !user;
+    return !user.length;
   }
 }
 

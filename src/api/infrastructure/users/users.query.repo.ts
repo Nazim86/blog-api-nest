@@ -190,7 +190,6 @@ export class UserQueryRepo {
       `SELECT u.*, ub."banDate", ub."banReason" FROM public.users u left join public.users_ban_by_sa ub on u."id" = ub."userId" where u."id"=$1;`,
       [id],
     );
-    console.log(user);
     return {
       id: user[0].id,
       login: user[0].login,

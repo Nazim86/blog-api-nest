@@ -87,15 +87,15 @@ export class UsersRepository {
     }
   }
 
-  async findUserByLoginOrEmail(
-    loginOrEmail: string,
-  ): Promise<UserDocument | null> {
-    return this.UserModel.findOne({
-      $or: [
-        { 'accountData.login': loginOrEmail },
-        { 'accountData.email': loginOrEmail },
-      ],
-    });
+  async findUserByLoginOrEmail(loginOrEmail: string) {
+    const user = await this.dataSource.query(
+      `SELECT u.*
+FROM public.users u
+where u."login"= $1 OR u."email" = $1;`,
+      [loginOrEmail],
+    );
+    console.log(user);
+    return user;
   }
 
   async findUserById(userId: string): Promise<UserDocument | null> {
