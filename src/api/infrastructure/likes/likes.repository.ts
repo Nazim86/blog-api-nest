@@ -45,10 +45,16 @@ export class LikesRepository {
   }
 
   async setBanStatusForPostLike(userId: string, banStatus: boolean) {
-    return this.PostLikeModel.updateMany(
-      { userId },
-      { $set: { banStatus: banStatus } },
+    return this.dataSource.query(
+      `UPDATE public.post_like pl
+    SET pl."banStatus"=$1
+    WHERE pl."userId"= $2;`,
+      [banStatus, userId],
     );
+    // updateMany(
+    //   { userId },
+    //   { $set: { banStatus: banStatus } },
+    // );
   }
 
   async save(likeDocument: any) {
