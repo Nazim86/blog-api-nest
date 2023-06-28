@@ -10,6 +10,7 @@ import {
 } from '../../entities/user-ban-by-blogger.entity';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
+import { CreateUserDto } from '../../superadmin/users/dto/createUser.Dto';
 
 @Injectable()
 export class UsersRepository {
@@ -19,6 +20,27 @@ export class UsersRepository {
     private UserBanModeL: BloggerBanUserModelType,
     @InjectDataSource() protected dataSource: DataSource,
   ) {}
+
+  async createUser(createUserDto: CreateUserDto, passwordHash: string) {
+    const newUser = await this.dataSource.query(
+      `INSERT INTO public."users"(
+      "login", "passwordHash", "email", "createdAt","isConfirmed","isBanned")
+    VALUES ($1, $2, $3, $4, $5, $6) returning id`,
+      [
+        createUserDto.login,
+        passwordHash,
+        createUserDto.email,
+        new Date().toISOString(),
+        true,
+        false,
+      ],
+    );
+    await this.dataSource.query(
+      `INSERT INTO public.users_ban_by_sa("userId") VALUES ($1);`,
+      [newUser[0].id],
+    );
+    return newUser[0].id;
+  }
 
   async findUserByConfirmationCode(code: string) {
     return this.UserModel.findOne({

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from '../../entities/user.entity';
 import { Model } from 'mongoose';
-import { ObjectId } from 'mongodb';
+
 import { UserViewType } from './types/user-view-type';
 import {
   BanStatusEnum,
@@ -19,6 +19,8 @@ import { RoleEnum } from '../../../enums/role-enum';
 import { BlogRepository } from '../blogs/blog.repository';
 import { ResultCode } from '../../../exception-handler/result-code-enum';
 import { BlogDocument } from '../../entities/blog.entity';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class UserQueryRepo {
@@ -27,6 +29,7 @@ export class UserQueryRepo {
     @InjectModel(BloggerBanUser.name)
     private UserBanModel: BloggerBanUserModelType,
     private readonly blogsRepository: BlogRepository,
+    @InjectDataSource() protected dataSource: DataSource,
   ) {}
 
   private userMapping = (newUser: UserDocument[]): UserViewType[] => {
@@ -183,16 +186,20 @@ export class UserQueryRepo {
   }
 
   async getUserById(id: string): Promise<UserViewType> {
-    const user = await this.UserModel.findOne({ _id: new ObjectId(id) });
+    const user = await this.dataSource.query(
+      `SELECT u.*, ub."banDate", ub."banReason" FROM public.users u left join public.users_ban_by_sa ub on u."id" = ub."userId" where u."id"=$1;`,
+      [id],
+    );
+    console.log(user);
     return {
-      id: user.id,
-      login: user.accountData.login,
-      email: user.accountData.email,
-      createdAt: user.accountData.createdAt,
+      id: user[0].id,
+      login: user[0].login,
+      email: user[0].email,
+      createdAt: user[0].createdAt,
       banInfo: {
-        isBanned: user.banInfo.isBanned,
-        banDate: user.banInfo.banDate,
-        banReason: user.banInfo.banReason,
+        isBanned: user[0].isBanned,
+        banDate: user[0].banDate,
+        banReason: user[0].banReason,
       },
     };
   }
