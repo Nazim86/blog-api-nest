@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { User, UserDocument } from '../../entities/user.entity';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { ObjectId } from 'mongodb';
 import {
   BloggerBanUser,
   BloggerBanUserDocument,
@@ -98,11 +97,13 @@ where u."login"= $1 OR u."email" = $1;`,
     return user;
   }
 
-  async findUserById(userId: string): Promise<UserDocument | null> {
+  async findUserById(userId: string) {
     try {
-      const user: UserDocument = await this.UserModel.findOne({
-        _id: new ObjectId(userId),
-      });
+      const user = await this.dataSource.query(
+        `SELECT u.* FROM public.users u
+        WHERE u."id" = $1`,
+        [userId],
+      );
       if (!user) return null;
       return user;
     } catch (e) {

@@ -2,7 +2,6 @@ import { CommandHandler } from '@nestjs/cqrs';
 import { BanUserDto } from '../dto/banUserDto';
 import { UsersRepository } from '../../../infrastructure/users/users.repository';
 import { ResultCode } from '../../../../exception-handler/result-code-enum';
-import { UserDocument } from '../../../entities/user.entity';
 import { DeviceRepository } from '../../../infrastructure/devices/device.repository';
 import { LikesRepository } from '../../../infrastructure/likes/likes.repository';
 import { CommentsRepository } from '../../../infrastructure/comments/comments.repository';
@@ -20,9 +19,7 @@ export class BanUserUseCase {
   ) {}
 
   async execute(command: BanUserCommand) {
-    const user: UserDocument | null = await this.usersRepository.findUserById(
-      command.userId,
-    );
+    const user = await this.usersRepository.findUserById(command.userId);
 
     if (!user) {
       const errorMessage = {

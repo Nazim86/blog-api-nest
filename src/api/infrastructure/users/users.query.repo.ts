@@ -183,13 +183,6 @@ export class UserQueryRepo {
       ],
     );
 
-    // .sort({
-    //   [`accountData.${paginatedQuery.sortBy}`]: sortDirection,
-    // })
-    // .skip(skipSize)
-    // .limit(paginatedQuery.pageSize)
-    // .lean();
-
     let mappedUsers: any[];
 
     if (requestType === 'SA') {
