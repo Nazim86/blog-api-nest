@@ -43,17 +43,17 @@ export class UserQueryRepo {
     });
   };
 
-  private userMappingForSA = (newUser: UserDocument[]): UserViewType[] => {
-    return newUser.map((user: UserDocument): UserViewType => {
+  private userMappingForSA = (newUser): UserViewType[] => {
+    return newUser.map((user): UserViewType => {
       return {
-        id: user._id.toString(),
-        login: user.accountData.login,
-        email: user.accountData.email,
-        createdAt: user.accountData.createdAt,
+        id: user.id,
+        login: user.login,
+        email: user.email,
+        createdAt: user.createdAt,
         banInfo: {
-          isBanned: user.banInfo.isBanned,
-          banDate: user.banInfo.banDate,
-          banReason: user.banInfo.banReason,
+          isBanned: user.isBanned,
+          banDate: user.banDate,
+          banReason: user.banReason,
         },
       };
     });
@@ -104,7 +104,7 @@ export class UserQueryRepo {
     if (blog.blogOwnerInfo.userId !== userId)
       return { code: ResultCode.Forbidden };
 
-    filter.$and.push({ 'banInfo.blogId': blogId });
+    //filter.$and.push({ 'banInfo.blogId': blogId });
 
     const skipSize = paginatedQuery.skipSize; //(paginatedQuery.pageNumber - 1) * paginatedQuery.pageSize;
     const totalCount = await this.UserBanModel.countDocuments(filter);
@@ -155,18 +155,41 @@ export class UserQueryRepo {
 
     const skipSize = paginatedQuery.skipSize; //(paginatedQuery.pageNumber - 1) * paginatedQuery.pageSize;
 
-    const totalCount = await this.UserModel.countDocuments(filter);
+    const totalCount = await this.dataSource.query(
+      `SELECT COUNT(*)
+    FROM public.users u
+    WHERE (u."login" ilike $1 OR u."email" ilike $2) And (u."isBanned"=$3 or u."isBanned"=$4);`,
+      [
+        filter.searchLogin,
+        filter.searchEmail,
+        filter.banStatus01,
+        filter.banStatus02,
+      ],
+    );
+    console.log(totalCount);
     const pagesCount = paginatedQuery.totalPages(totalCount); //Math.ceil(totalCount / paginatedQuery.pageSize);
 
-    const sortDirection = paginatedQuery.sortDirection === 'asc' ? 1 : -1;
+    const getUsers = await this.dataSource.query(
+      `SELECT u."id", u.login,u.email, u."createdAt", ub."banDate",ub."banReason" 
+    FROM public.users u
+    Left join public.users_ban_by_sa ub on u."id" = ub."userId"
+    WHERE (u."login" ilike $1 OR u."email" ilike $2) And (u."isBanned"=$3 or u."isBanned"=$4)
+    Order by "${paginatedQuery.sortBy}" ${paginatedQuery.sortDirection}
+    Limit ${paginatedQuery.pageSize} Offset ${skipSize};`,
+      [
+        filter.searchLogin,
+        filter.searchEmail,
+        filter.banStatus01,
+        filter.banStatus02,
+      ],
+    );
 
-    const getUsers: UserDocument[] = await this.UserModel.find(filter)
-      .sort({
-        [`accountData.${paginatedQuery.sortBy}`]: sortDirection,
-      })
-      .skip(skipSize)
-      .limit(paginatedQuery.pageSize)
-      .lean();
+    // .sort({
+    //   [`accountData.${paginatedQuery.sortBy}`]: sortDirection,
+    // })
+    // .skip(skipSize)
+    // .limit(paginatedQuery.pageSize)
+    // .lean();
 
     let mappedUsers: any[];
 
@@ -180,7 +203,7 @@ export class UserQueryRepo {
       pagesCount: pagesCount,
       page: Number(paginatedQuery.pageNumber),
       pageSize: Number(paginatedQuery.pageSize),
-      totalCount: totalCount,
+      totalCount: totalCount[0].count,
       items: mappedUsers,
     };
   }

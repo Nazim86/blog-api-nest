@@ -35,6 +35,7 @@ export class UsersRepository {
         false,
       ],
     );
+
     await this.dataSource.query(
       `INSERT INTO public.users_ban_by_sa("userId") VALUES ($1);`,
       [newUser[0].id],
@@ -94,7 +95,6 @@ FROM public.users u
 where u."login"= $1 OR u."email" = $1;`,
       [loginOrEmail],
     );
-    console.log(user);
     return user;
   }
 

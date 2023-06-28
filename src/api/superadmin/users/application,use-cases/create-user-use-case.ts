@@ -22,25 +22,10 @@ export class CreateUsersUseCase {
       Number(process.env.SALT_ROUND),
     );
 
-    // const newUser: UserDocument = this.UserModel.createUser(
-    //   command.createUserDto,
-    //   passwordHash,
-    //   this.UserModel,
-    // );
-
     const userId = await this.usersRepository.createUser(
       command.createUserDto,
       passwordHash,
     );
-    console.log(userId);
     return userId;
-
-    // try {
-    //   await this.usersRepository.save(newUser);
-    // } catch (e) {
-    //   console.log(e);
-    //   exceptionHandler(ResultCode.BadRequest);
-    // }
-    // return newUser.id;
   }
 }
