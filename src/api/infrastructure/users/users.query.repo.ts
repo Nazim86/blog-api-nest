@@ -166,7 +166,6 @@ export class UserQueryRepo {
         filter.banStatus02,
       ],
     );
-    console.log(totalCount);
     const pagesCount = paginatedQuery.totalPages(totalCount); //Math.ceil(totalCount / paginatedQuery.pageSize);
 
     const getUsers = await this.dataSource.query(
