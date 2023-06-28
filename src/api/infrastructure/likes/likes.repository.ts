@@ -9,12 +9,15 @@ import {
   CommentLikeDocument,
   CommentLikeModelType,
 } from '../../entities/commentLike.entity';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 export class LikesRepository {
   constructor(
     @InjectModel(PostLike.name) private PostLikeModel: PostLikeModelType,
     @InjectModel(CommentLike.name)
     private CommentLikeModel: CommentLikeModelType,
+    @InjectDataSource() protected dataSource: DataSource,
   ) {}
 
   async findPostLike(
@@ -32,10 +35,13 @@ export class LikesRepository {
   }
 
   async setBanStatusForCommentLike(userId: string, banStatus: boolean) {
-    return this.CommentLikeModel.updateMany(
-      { userId },
-      { $set: { banStatus: banStatus } },
+    return this.dataSource.query(
+      `UPDATE public.comment_like cl
+        SET cl."banStatus"=$1
+        WHERE cl."userId"=$2;`,
+      [banStatus, userId],
     );
+    //updateMany({ userId }, { $set: { banStatus: banStatus } });
   }
 
   async setBanStatusForPostLike(userId: string, banStatus: boolean) {
