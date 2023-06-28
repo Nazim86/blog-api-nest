@@ -10,6 +10,7 @@ import {
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { CreateUserDto } from '../../superadmin/users/dto/createUser.Dto';
+import { BanUserDto } from '../../superadmin/users/dto/banUserDto';
 
 @Injectable()
 export class UsersRepository {
@@ -74,6 +75,22 @@ export class UsersRepository {
     });
   }
 
+  async banUser(userId, banUserDto: BanUserDto) {
+    const userResult = await this.dataSource.query(
+      `UPDATE public.users u SET "isBanned"=$1
+     WHERE u."id" = $2;`,
+      [banUserDto.isBanned, userId],
+    );
+
+    const userBanResult = await this.dataSource.query(
+      `UPDATE public.users_ban_by_sa ub
+    SET "banReason"=$1, "banDate" = $2
+    WHERE ub."userId" = $3;`,
+      [banUserDto.banReason, new Date().toISOString(), userId],
+    );
+
+    return; //userResult[1] === 1 && userBanResult[1] === 1;
+  }
   async deleteUser(id: string): Promise<boolean> {
     try {
       // const result = await this.UserModel.deleteOne({ _id: new ObjectId(id) });

@@ -32,10 +32,12 @@ export class BanUserUseCase {
     }
 
     if (
-      user.banInfo.isBanned !== command.banUserDto.isBanned &&
+      user.isBanned !== command.banUserDto.isBanned &&
       command.banUserDto.isBanned
     ) {
-      user.banUser(command.banUserDto);
+      await this.usersRepository.banUser(command.userId, command.banUserDto);
+
+      //user.banUser(command.banUserDto);
 
       await this.likesRepository.setBanStatusForCommentLike(
         command.userId,
@@ -53,7 +55,7 @@ export class BanUserUseCase {
     }
 
     if (
-      user.banInfo.isBanned !== command.banUserDto.isBanned &&
+      user.isBanned !== command.banUserDto.isBanned &&
       !command.banUserDto.isBanned
     ) {
       user.unBanUser();
