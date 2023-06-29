@@ -11,6 +11,8 @@ import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { CreateUserDto } from '../../superadmin/users/dto/createUser.Dto';
 import { BanUserDto } from '../../superadmin/users/dto/banUserDto';
+import { v4 as uuid } from 'uuid';
+import { add } from 'date-fns';
 
 @Injectable()
 export class UsersRepository {
@@ -21,7 +23,11 @@ export class UsersRepository {
     @InjectDataSource() protected dataSource: DataSource,
   ) {}
 
-  async createUser(createUserDto: CreateUserDto, passwordHash: string) {
+  async createUser(
+    createUserDto: CreateUserDto,
+    passwordHash: string,
+    isConfirmed: boolean,
+  ) {
     const newUser = await this.dataSource.query(
       `INSERT INTO public."users"(
       "login", "passwordHash", "email", "createdAt","isConfirmed","isBanned")
@@ -31,7 +37,7 @@ export class UsersRepository {
         passwordHash,
         createUserDto.email,
         new Date().toISOString(),
-        true,
+        isConfirmed,
         false,
       ],
     );
@@ -40,6 +46,21 @@ export class UsersRepository {
       `INSERT INTO public.users_ban_by_sa("userId") VALUES ($1);`,
       [newUser[0].id],
     );
+
+    await this.dataSource.query(
+      `INSERT INTO public.email_confirmation(
+        "userId", "confirmationCode", "emailExpiration")
+        VALUES ($1, $2, $3);`,
+      [
+        newUser[0].id,
+        uuid(),
+        add(new Date(), {
+          hours: 1,
+          minutes: 3,
+        }),
+      ],
+    );
+
     return newUser[0].id;
   }
 
@@ -125,8 +146,8 @@ export class UsersRepository {
   async findUserByLoginOrEmail(loginOrEmail: string) {
     const user = await this.dataSource.query(
       `SELECT u.*
-FROM public.users u
-where u."login"= $1 OR u."email" = $1;`,
+    FROM public.users u
+    where u."login"= $1 OR u."email" = $1;`,
       [loginOrEmail],
     );
     return user;
@@ -135,8 +156,13 @@ where u."login"= $1 OR u."email" = $1;`,
   async findUserById(userId: string) {
     try {
       const user = await this.dataSource.query(
-        `SELECT u.* FROM public.users u
-        WHERE u."id" = $1`,
+        `SELECT u.*,ub."banDate",ub."banReason",ec."confirmationCode", ec."emailExpiration"
+                FROM public.users u
+                left join public.users_ban_by_sa ub on
+                u."id" = ub."userId"
+                left join public.email_confirmation ec on
+                u."id" = ec."userId"
+                where u."id" = $1`,
         [userId],
       );
       if (!user) return null;

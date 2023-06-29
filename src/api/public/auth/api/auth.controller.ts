@@ -52,11 +52,11 @@ export class AuthController {
   @Post('registration')
   @HttpCode(204)
   async userRegistration(@Body() createUserDto: CreateUserDto) {
-    const newUser = await this.commandBus.execute(
+    const userId = await this.commandBus.execute(
       new CreateUserCommand(createUserDto),
     );
 
-    if (newUser) {
+    if (userId) {
       return;
     }
   }

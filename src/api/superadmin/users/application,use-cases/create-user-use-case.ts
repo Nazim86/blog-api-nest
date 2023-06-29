@@ -25,6 +25,7 @@ export class CreateUsersUseCase {
     const userId = await this.usersRepository.createUser(
       command.createUserDto,
       passwordHash,
+      true,
     );
     return userId;
   }

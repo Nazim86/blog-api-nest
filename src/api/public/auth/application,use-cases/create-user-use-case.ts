@@ -1,9 +1,5 @@
 import { CreateUserDto } from '../../../superadmin/users/dto/createUser.Dto';
-import {
-  User,
-  UserDocument,
-  UserModelTYpe,
-} from '../../../entities/user.entity';
+import { User, UserModelTYpe } from '../../../entities/user.entity';
 import bcrypt from 'bcrypt';
 import process from 'process';
 import { CommandHandler } from '@nestjs/cqrs';
@@ -22,32 +18,37 @@ export class CreateUserUseCase {
     private readonly mailService: MailService,
     private readonly userRepository: UsersRepository,
   ) {}
-  async execute(command: CreateUserCommand): Promise<UserDocument | null> {
+  async execute(command: CreateUserCommand) {
     const passwordHash = await bcrypt.hash(
       command.createUserDto.password,
       Number(process.env.SALT_ROUND),
     );
 
-    const newUser: UserDocument = this.UserModel.createUser(
+    // const newUser: UserDocument = this.UserModel.createUser(
+    //   command.createUserDto,
+    //   passwordHash,
+    //   this.UserModel,
+    //   false,
+    // );
+
+    const userId = await this.userRepository.createUser(
       command.createUserDto,
       passwordHash,
-      this.UserModel,
       false,
     );
 
-    console.log(newUser.emailConfirmation.confirmationCode);
-
-    const result: UserDocument = await this.userRepository.save(newUser);
+    //const result: UserDocument = await this.userRepository.save(newUser);
+    const user = await this.userRepository.findUserById(userId);
 
     try {
       await this.mailService.sendUserConfirmationEmail(
-        newUser.emailConfirmation.confirmationCode,
-        newUser.accountData.email,
-        newUser.accountData.login,
+        user.confirmationCode,
+        user.email,
+        user.login,
       );
     } catch (e) {
       return null;
     }
-    return result;
+    return userId;
   }
 }

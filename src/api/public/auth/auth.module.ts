@@ -26,7 +26,6 @@ import {
 } from '../../entities/commentLike.entity';
 import { Comment, CommentSchema } from '../../entities/comment.entity';
 import { RefreshTokenStrategy } from './strategies/refresh-token.strategy';
-import { UsersService } from '../../superadmin/users/application,use-cases/users.service';
 
 import { DevicesController } from '../securityDevices/api/devices.controller';
 import { DeviceQueryRepo } from '../../infrastructure/devices/device-query.repo';
@@ -81,7 +80,6 @@ const useCases = [DeviceCreateUseCase, DeviceUpdateUseCase];
     DeviceService,
     UserQueryRepo,
     RefreshTokenStrategy,
-    UsersService,
     DeviceQueryRepo,
     // {
     //   provide: APP_GUARD,
