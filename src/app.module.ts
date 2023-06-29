@@ -22,7 +22,6 @@ import {
 import { CommentsQueryRepo } from './api/infrastructure/comments/comments.query.repo';
 import { CommentsMapping } from './api/public/comments/mapper/comments.mapping';
 import { Comment, CommentSchema } from './api/entities/comment.entity';
-import { UsersService } from './api/superadmin/users/application,use-cases/users.service';
 import { UserQueryRepo } from './api/infrastructure/users/users.query.repo';
 import { UsersRepository } from './api/infrastructure/users/users.repository';
 import { User, UserSchema } from './api/entities/user.entity';
@@ -73,6 +72,7 @@ import { ResendEmailUseCase } from './api/public/auth/application,use-cases/rese
 import { SendRecoveryCodeUseCase } from './api/public/auth/application,use-cases/send-recovery-code-use-case';
 import { SetNewPasswordUseCase } from './api/public/auth/application,use-cases/set-new-password-use-case';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { DeleteUserUseCase } from './api/superadmin/users/application,use-cases/delete-user-use-case';
 
 const mongooseModels = [
   { name: Device.name, schema: DeviceSchema },
@@ -108,6 +108,7 @@ const useCases = [
   ResendEmailUseCase,
   SendRecoveryCodeUseCase,
   SetNewPasswordUseCase,
+  DeleteUserUseCase,
 ];
 @Module({
   imports: [
@@ -166,7 +167,6 @@ const useCases = [
     CommentsQueryRepo,
     CommentsRepository,
     CommentsMapping,
-    UsersService,
     UserQueryRepo,
     UsersRepository,
     LikesRepository,

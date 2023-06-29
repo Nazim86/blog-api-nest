@@ -21,7 +21,7 @@ import { PaginationType } from '../../../common/pagination';
 import { BasicAuthGuard } from '../../public/auth/guards/basic-auth.guard';
 import { CreateUserDto } from './dto/createUser.Dto';
 import { CreateUsersCommand } from './application,use-cases/create-user-use-case';
-import { UsersService } from './application,use-cases/users.service';
+import { DeleteUserCommand } from './application,use-cases/delete-user-use-case';
 
 @UseGuards(BasicAuthGuard)
 @Controller('sa/users')
@@ -29,7 +29,6 @@ export class SuperAdminUsersController {
   constructor(
     private commandBus: CommandBus,
     private readonly usersQueryRepo: UserQueryRepo,
-    private readonly usersService: UsersService,
   ) {}
   @Put(':userId/ban')
   async banUser(@Param('userId') userId, @Body() banUserDto: BanUserDto) {
@@ -63,7 +62,9 @@ export class SuperAdminUsersController {
   @Delete(':id')
   @HttpCode(204)
   async deleteUser(@Param('id') userId: string) {
-    const deleteUser = await this.usersService.deleteUser(userId);
+    const deleteUser = await this.commandBus.execute(
+      new DeleteUserCommand(userId),
+    );
 
     if (!deleteUser) {
       return exceptionHandler(ResultCode.NotFound);

@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { UsersService } from './application,use-cases/users.service';
 import { UsersRepository } from '../../infrastructure/users/users.repository';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from '../../entities/user.entity';
@@ -22,12 +21,7 @@ import { Blog, BlogSchema } from '../../entities/blog.entity';
       { name: BloggerBanUser.name, schema: UserBanByBloggerSchema },
     ]),
   ],
-  providers: [
-    UsersService,
-    UsersRepository,
-    IsUserAlreadyExistConstraint,
-    BlogRepository,
-  ],
-  exports: [UsersService, UsersRepository, BlogRepository],
+  providers: [UsersRepository, IsUserAlreadyExistConstraint, BlogRepository],
+  exports: [UsersRepository, BlogRepository],
 })
 export class UsersModule {}

@@ -2,10 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { Blog, BlogDocument, BlogModelType } from '../../entities/blog.entity';
 import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class BlogRepository {
-  constructor(@InjectModel(Blog.name) private BlogModel: BlogModelType) {}
+  constructor(
+    @InjectModel(Blog.name) private BlogModel: BlogModelType,
+    @InjectDataSource() private dataSource: DataSource,
+  ) {}
 
   async getBlogById(blogId: string): Promise<BlogDocument | null> {
     try {
@@ -29,14 +34,21 @@ export class BlogRepository {
   }
 
   async deleteBlogOwnerInfo(userId: string) {
-    const result = await this.BlogModel.updateMany(
-      { 'blogOwnerInfo.userId': userId },
-      {
-        $set: { 'blogOwnerInfo.userId': null, 'blogOwnerInfo.userLogin': null },
-      },
+    const result = await this.dataSource.query(
+      `UPDATE public.blog_owner_info bo
+    SET  "userId"=null, "userLogin"=null
+    WHERE bo."userId" = $1;`,
+      [userId],
     );
 
-    return result.matchedCount === 1;
+    //   await this.BlogModel.updateMany(
+    //   { 'blogOwnerInfo.userId': userId },
+    //   {
+    //     $set: { 'blogOwnerInfo.userId': null, 'blogOwnerInfo.userLogin': null },
+    //   },
+    // );
+
+    return result[1] === 1;
   }
 
   async save(blog: BlogDocument): Promise<BlogDocument> {
