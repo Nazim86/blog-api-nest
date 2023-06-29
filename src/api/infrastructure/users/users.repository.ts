@@ -166,7 +166,7 @@ export class UsersRepository {
         [userId],
       );
       if (!user) return null;
-      return user;
+      return user[0];
     } catch (e) {
       return null;
     }

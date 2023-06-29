@@ -1,9 +1,7 @@
 import { CreateUserDto } from '../../../superadmin/users/dto/createUser.Dto';
-import { User, UserModelTYpe } from '../../../entities/user.entity';
 import bcrypt from 'bcrypt';
 import process from 'process';
 import { CommandHandler } from '@nestjs/cqrs';
-import { InjectModel } from '@nestjs/mongoose';
 import { MailService } from '../../../../mail/mail.service';
 import { UsersRepository } from '../../../infrastructure/users/users.repository';
 
@@ -14,7 +12,6 @@ export class CreateUserCommand {
 @CommandHandler(CreateUserCommand)
 export class CreateUserUseCase {
   constructor(
-    @InjectModel(User.name) private UserModel: UserModelTYpe,
     private readonly mailService: MailService,
     private readonly userRepository: UsersRepository,
   ) {}
@@ -24,13 +21,6 @@ export class CreateUserUseCase {
       Number(process.env.SALT_ROUND),
     );
 
-    // const newUser: UserDocument = this.UserModel.createUser(
-    //   command.createUserDto,
-    //   passwordHash,
-    //   this.UserModel,
-    //   false,
-    // );
-
     const userId = await this.userRepository.createUser(
       command.createUserDto,
       passwordHash,
@@ -39,7 +29,6 @@ export class CreateUserUseCase {
 
     //const result: UserDocument = await this.userRepository.save(newUser);
     const user = await this.userRepository.findUserById(userId);
-
     try {
       await this.mailService.sendUserConfirmationEmail(
         user.confirmationCode,
