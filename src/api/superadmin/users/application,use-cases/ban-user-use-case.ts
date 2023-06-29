@@ -5,6 +5,8 @@ import { ResultCode } from '../../../../exception-handler/result-code-enum';
 import { DeviceRepository } from '../../../infrastructure/devices/device.repository';
 import { LikesRepository } from '../../../infrastructure/likes/likes.repository';
 import { CommentsRepository } from '../../../infrastructure/comments/comments.repository';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 export class BanUserCommand {
   constructor(public userId: string, public banUserDto: BanUserDto) {}
@@ -16,6 +18,7 @@ export class BanUserUseCase {
     private readonly deviceRepository: DeviceRepository,
     private readonly likesRepository: LikesRepository,
     private readonly commentsRepository: CommentsRepository,
+    @InjectDataSource() private dataSource: DataSource,
   ) {}
 
   async execute(command: BanUserCommand) {
@@ -39,40 +42,41 @@ export class BanUserUseCase {
 
       //user.banUser(command.banUserDto);
 
-      await this.likesRepository.setBanStatusForCommentLike(
-        command.userId,
-        true,
-      );
+      // await this.likesRepository.setBanStatusForCommentLike(
+      //   command.userId,
+      //   true,
+      // );
+      //
+      // await this.likesRepository.setBanStatusForPostLike(command.userId, true);
+      //
+      // await this.commentsRepository.setBanStatusForComment(
+      //   command.userId,
+      //   true,
+      // );
 
-      await this.likesRepository.setBanStatusForPostLike(command.userId, true);
-
-      await this.commentsRepository.setBanStatusForComment(
-        command.userId,
-        true,
-      );
-
-      await this.deviceRepository.deleteDeviceByUserId(user.id);
+      await this.deviceRepository.deleteDeviceByUserId(command.userId);
     }
 
     if (
       user.isBanned !== command.banUserDto.isBanned &&
       !command.banUserDto.isBanned
     ) {
-      user.unBanUser();
+      await this.usersRepository.unBanUser(command.userId);
+      // user.unBanUser();
 
-      await this.likesRepository.setBanStatusForCommentLike(
-        command.userId,
-        false,
-      );
-
-      await this.likesRepository.setBanStatusForPostLike(command.userId, false);
-      await this.commentsRepository.setBanStatusForComment(
-        command.userId,
-        false,
-      );
+      // await this.likesRepository.setBanStatusForCommentLike(
+      //   command.userId,
+      //   false,
+      // );
+      //
+      // await this.likesRepository.setBanStatusForPostLike(command.userId, false);
+      // await this.commentsRepository.setBanStatusForComment(
+      //   command.userId,
+      //   false,
+      // );
     }
 
-    await this.usersRepository.save(user);
+    // await this.usersRepository.save(user);
 
     return { code: ResultCode.Success };
   }

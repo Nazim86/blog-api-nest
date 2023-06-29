@@ -2,11 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { Device, DeviceDocument } from '../../entities/device.entity';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class DeviceRepository {
   constructor(
     @InjectModel(Device.name) private DeviceModel: Model<DeviceDocument>,
+    @InjectDataSource() private dataSource: DataSource,
   ) {}
   async save(device: DeviceDocument) {
     return device.save();
@@ -17,8 +20,12 @@ export class DeviceRepository {
   }
 
   async deleteDeviceByUserId(userId: string) {
-    const result = await this.DeviceModel.deleteMany({ userId });
-    return result.deletedCount === 1;
+    const result = await this.dataSource.query(
+      `DELETE FROM public.devices d
+        WHERE d."userId"= $1;`,
+      [userId],
+    );
+    return result[1] === 1;
   }
 
   async deleteDevices(deviceId: string): Promise<boolean> {

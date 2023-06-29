@@ -76,13 +76,13 @@ export class UsersRepository {
   }
 
   async banUser(userId, banUserDto: BanUserDto) {
-    const userResult = await this.dataSource.query(
+    await this.dataSource.query(
       `UPDATE public.users u SET "isBanned"=$1
      WHERE u."id" = $2;`,
       [banUserDto.isBanned, userId],
     );
 
-    const userBanResult = await this.dataSource.query(
+    await this.dataSource.query(
       `UPDATE public.users_ban_by_sa ub
     SET "banReason"=$1, "banDate" = $2
     WHERE ub."userId" = $3;`,
@@ -91,6 +91,24 @@ export class UsersRepository {
 
     return; //userResult[1] === 1 && userBanResult[1] === 1;
   }
+
+  async unBanUser(userId) {
+    await this.dataSource.query(
+      `UPDATE public.users u SET "isBanned"=false
+     WHERE u."id" = $1;`,
+      [userId],
+    );
+
+    await this.dataSource.query(
+      `UPDATE public.users_ban_by_sa ub
+    SET "banReason"=null, "banDate" = null
+    WHERE ub."userId" = $1;`,
+      [userId],
+    );
+
+    return; //userResult[1] === 1 && userBanResult[1] === 1;
+  }
+
   async deleteUser(id: string): Promise<boolean> {
     try {
       // const result = await this.UserModel.deleteOne({ _id: new ObjectId(id) });
