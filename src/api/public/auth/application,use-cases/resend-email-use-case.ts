@@ -1,6 +1,5 @@
 import { EmailDto } from '../dto/emailDto';
 import { CommandHandler } from '@nestjs/cqrs';
-import { UserDocument } from '../../../entities/user.entity';
 import { v4 as uuid } from 'uuid';
 import { UsersRepository } from '../../../infrastructure/users/users.repository';
 import { MailService } from '../../../../mail/mail.service';
@@ -16,22 +15,27 @@ export class ResendEmailUseCase {
     private readonly mailService: MailService,
   ) {}
   async execute(command: ResendEmailCommand): Promise<boolean> {
-    const user: UserDocument | null =
-      await this.usersRepository.findUserByEmail(command.emailDto.email);
-
-    if (!user || !user.resendEmailCanBeConfirmed()) return false;
+    const user = await this.usersRepository.findUserByEmail(
+      command.emailDto.email,
+    );
 
     try {
+      if (!user || user.isConfirmed || user.emailExpiration < new Date())
+        return false;
+
       const newCode = uuid();
 
-      user.updateConfirmationCode(newCode);
+      const isUpdated = await this.usersRepository.updateConfirmationCode(
+        user.id,
+        newCode,
+      );
 
-      await this.usersRepository.save(user);
+      if (!isUpdated) return false;
 
       await this.mailService.sendUserConfirmationEmail(
         newCode,
-        user.accountData.email,
-        user.accountData.login,
+        user.email,
+        user.login,
       );
     } catch (e) {
       return false;

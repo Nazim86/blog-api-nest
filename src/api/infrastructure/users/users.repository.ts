@@ -60,10 +60,26 @@ export class UsersRepository {
         }),
       ],
     );
-
     return newUser[0].id;
   }
 
+  async updateConfirmationCode(userId: string, newCode: string) {
+    const result = await this.dataSource.query(
+      `UPDATE public.email_confirmation ec
+        SET "confirmationCode"=$1, "emailExpiration"=$2
+        WHERE ec."userId" = $3;`,
+      [
+        newCode,
+        add(new Date(), {
+          hours: 1,
+          minutes: 3,
+        }),
+        userId,
+      ],
+    );
+
+    return result[1] === 1;
+  }
   async findUserByConfirmationCode(code: string) {
     return this.UserModel.findOne({
       'emailConfirmation.confirmationCode': code,
@@ -77,7 +93,19 @@ export class UsersRepository {
   }
 
   async findUserByEmail(email: string) {
-    return this.UserModel.findOne({ 'accountData.email': email });
+    const user = await this.dataSource.query(
+      `SELECT u.*,ub."banDate",ub."banReason",ec."confirmationCode", ec."emailExpiration"
+                FROM public.users u
+                left join public.users_ban_by_sa ub on
+                u."id" = ub."userId"
+                left join public.email_confirmation ec on
+                u."id" = ec."userId"
+                where u."email" = $1`,
+      [email],
+    );
+
+    return user[0];
+    //this.UserModel.findOne({ 'accountData.email': email });
   }
 
   async save(user: UserDocument) {
