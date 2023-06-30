@@ -108,6 +108,22 @@ export class UsersRepository {
     return this.UserModel.findOne({ 'accountData.recoveryCode': recoveryCode });
   }
 
+  async createRecoveryCode(userId: string, recoveryCode: string) {
+    return await this.dataSource.query(
+      `INSERT INTO public.password_recovery(
+            "userId", "recoveryCode", "recoveryCodeExpiration")
+            VALUES ($1, $2, $3);`,
+      [
+        userId,
+        recoveryCode,
+        add(new Date(), {
+          hours: 1,
+          minutes: 3,
+        }),
+      ],
+    );
+  }
+
   async findUserByEmail(email: string) {
     const user = await this.dataSource.query(
       `SELECT u.*,ub."banDate",ub."banReason",ec."confirmationCode", ec."emailExpiration"
@@ -121,7 +137,6 @@ export class UsersRepository {
     );
 
     return user[0];
-    //this.UserModel.findOne({ 'accountData.email': email });
   }
 
   async save(user: UserDocument) {
