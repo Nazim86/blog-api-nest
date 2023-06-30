@@ -126,10 +126,11 @@ const useCases = [
     UsersModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: process.env.PG_HOST,
+      host: process.env.PG_HOST, //localhost
       //port: 5432,
       username: process.env.PG_USER,
       password: process.env.PG_PASS,
+      ssl: true,
       database: process.env.PG_DATABASE,
       autoLoadEntities: false,
       synchronize: false,
