@@ -61,10 +61,12 @@ export class DeviceRepository {
   }
 
   async deleteDevices(deviceId: string): Promise<boolean> {
-    const result = await this.DeviceModel.deleteMany({
-      deviceId: { $not: { $eq: deviceId } },
-    });
-    return result.deletedCount === 1;
+    const result = await this.dataSource.query(
+      'DELETE FROM public.devices d WHERE d."deviceId"!=$1;',
+      [deviceId],
+    );
+
+    return result[1] === 1;
   }
 
   async deleteDeviceById(deviceId: string, userId: string) {
