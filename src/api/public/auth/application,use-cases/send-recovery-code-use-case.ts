@@ -23,6 +23,8 @@ export class SendRecoveryCodeUseCase {
       try {
         const recoveryCode = uuid();
 
+        console.log(recoveryCode);
+
         await this.usersRepository.createRecoveryCode(user.id, recoveryCode);
 
         await this.mailService.passwordRecoveryEmail(

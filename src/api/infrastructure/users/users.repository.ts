@@ -102,10 +102,16 @@ export class UsersRepository {
     return user[0];
   }
 
-  async findUserByRecoveryCode(
-    recoveryCode: string,
-  ): Promise<UserDocument | null> {
-    return this.UserModel.findOne({ 'accountData.recoveryCode': recoveryCode });
+  async findUserByRecoveryCode(recoveryCode: string) {
+    const user = await this.dataSource.query(
+      `SELECT pr.*, u.*
+                FROM public.password_recovery pr
+                Left join public.users u on
+                u."id" = pr."userId"
+                Where pr."recoveryCode"=$1`,
+      [recoveryCode],
+    );
+    return user[0];
   }
 
   async createRecoveryCode(userId: string, recoveryCode: string) {
@@ -122,6 +128,23 @@ export class UsersRepository {
         }),
       ],
     );
+  }
+
+  async setNewPassword(userId: string, passwordHash: string) {
+    const isUserUpdated = await this.dataSource.query(
+      `UPDATE public.users u
+                SET  "passwordHash"=$1
+                WHERE u."id" = $2;`,
+      [passwordHash, userId],
+    );
+    const isPasswordRecoveryUpdated = await this.dataSource.query(
+      `UPDATE public.password_recovery pr
+                        SET "userId"=null, "recoveryCode"=null, "recoveryCodeExpiration"=null
+                        WHERE pr."userId"= $1;`,
+      [userId],
+    );
+
+    return isUserUpdated[1] === 1 && isPasswordRecoveryUpdated[1] === 1;
   }
 
   async findUserByEmail(email: string) {
