@@ -17,7 +17,6 @@ import { exceptionHandler } from '../../../../exception-handler/exception-handle
 import { ResultCode } from '../../../../exception-handler/result-code-enum';
 import { NewPasswordDto } from '../dto/newPasswordDto';
 import { LoginDto } from '../dto/loginDto';
-import { UserDocument } from '../../../entities/user.entity';
 import { settings } from '../../../../settings';
 import { RefreshTokenGuard } from '../guards/refresh-token.guard';
 import { EmailDto } from '../dto/emailDto';
@@ -104,7 +103,7 @@ export class AuthController {
     @Ip() ip,
     @Headers() headers,
   ) {
-    const user: UserDocument | null = await this.commandBus.execute(
+    const user = await this.commandBus.execute(
       new CheckCredentialsCommand(loginDto),
     );
 

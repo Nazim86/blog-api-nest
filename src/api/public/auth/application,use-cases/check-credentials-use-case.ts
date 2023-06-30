@@ -15,12 +15,11 @@ export class CheckCredentialsUseCase {
       command.loginDto.loginOrEmail,
     );
 
-    if (!user || !user.emailConfirmation.isConfirmed || user.banInfo.isBanned)
-      return null;
+    if (!user || !user.isConfirmed || user.isBanned) return null;
 
     const result = await bcrypt.compare(
       command.loginDto.password,
-      user.accountData.passwordHash,
+      user.passwordHash,
     );
     if (!result) return null;
     return user;
