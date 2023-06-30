@@ -37,6 +37,7 @@ import { SendRecoveryCodeCommand } from '../application,use-cases/send-recovery-
 import { SetNewPasswordCommand } from '../application,use-cases/set-new-password-use-case';
 import { CheckCredentialsCommand } from '../application,use-cases/check-credentials-use-case';
 import { CurrentUserCommand } from '../application,use-cases/current-user-use-case';
+import { Result } from '../../../../exception-handler/result-type';
 
 @Controller('auth')
 export class AuthController {
@@ -191,12 +192,15 @@ export class AuthController {
   //@Throttle(5, 10)
   @Post('password-recovery')
   async sendPasswordRecoveryCode(@Body() emailDto: EmailDto) {
-    const isRecoveryEmailSent: boolean = await this.commandBus.execute(
+    const isRecoveryEmailSent: Result<any> = await this.commandBus.execute(
       new SendRecoveryCodeCommand(emailDto),
     );
 
-    if (!isRecoveryEmailSent) {
-      return exceptionHandler(ResultCode.BadRequest);
+    if (isRecoveryEmailSent.code !== ResultCode.Success) {
+      return exceptionHandler(
+        isRecoveryEmailSent.code,
+        isRecoveryEmailSent.data,
+      );
     }
     return;
   }
@@ -205,13 +209,14 @@ export class AuthController {
   @Post('new-password')
   @HttpCode(204)
   async setNewPassword(@Body() newPasswordDto: NewPasswordDto) {
-    const isNewPasswordSet: boolean = await this.commandBus.execute(
+    const isNewPasswordSet: Result<any> = await this.commandBus.execute(
       new SetNewPasswordCommand(newPasswordDto),
     );
 
-    if (!isNewPasswordSet) {
-      return exceptionHandler(ResultCode.BadRequest);
+    if (isNewPasswordSet.code !== ResultCode.Success) {
+      return exceptionHandler(isNewPasswordSet.code, isNewPasswordSet.data);
     }
+
     return;
   }
 
