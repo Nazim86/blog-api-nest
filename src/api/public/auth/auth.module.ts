@@ -15,7 +15,6 @@ import { JwtService } from '../../../jwt/jwt.service';
 import { Device, DeviceSchema } from '../../entities/device.entity';
 import { DeleteController } from '../../../delete/delete.controller';
 import { AuthController } from './api/auth.controller';
-import { DeviceService } from '../securityDevices/application,use-cases/device.service';
 import { UserQueryRepo } from '../../infrastructure/users/users.query.repo';
 import { Blog, BlogSchema } from '../../entities/blog.entity';
 import { Post, PostSchema } from '../../entities/post.entity';
@@ -88,7 +87,6 @@ const useCases = [DeviceCreateUseCase, DeviceUpdateUseCase];
     MailService,
     UsersRepository,
     JwtService,
-    DeviceService,
     UserQueryRepo,
     RefreshTokenStrategy,
     DeviceQueryRepo,

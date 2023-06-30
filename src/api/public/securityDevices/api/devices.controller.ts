@@ -9,7 +9,6 @@ import {
   Ip,
 } from '@nestjs/common';
 import { JwtService } from '../../../../jwt/jwt.service';
-import { DeviceService } from '../application,use-cases/device.service';
 import { DeviceViewType } from '../../../../types/device-view-type';
 import { RefreshTokenGuard } from '../../auth/guards/refresh-token.guard';
 import { ResultCode } from '../../../../exception-handler/result-code-enum';
@@ -17,12 +16,12 @@ import { exceptionHandler } from '../../../../exception-handler/exception-handle
 import { DeviceQueryRepo } from '../../../infrastructure/devices/device-query.repo';
 import { DeviceDeleteByIdCommand } from '../application,use-cases/device-deleteByDeviceId-use-case';
 import { CommandBus } from '@nestjs/cqrs';
+import { DeleteDevicesCommand } from '../application,use-cases/delete-devices-use-case';
 
 @Controller('security/devices')
 export class DevicesController {
   constructor(
     private readonly jwtService: JwtService,
-    private readonly securityService: DeviceService,
     private readonly deviceQueryRepo: DeviceQueryRepo,
     private commandBus: CommandBus,
   ) {}
@@ -45,7 +44,7 @@ export class DevicesController {
     const { deviceId } = await this.jwtService.getTokenMetaData(
       req.cookies.refreshToken,
     );
-    await this.securityService.deleteDevices(deviceId);
+    await this.commandBus.execute(new DeleteDevicesCommand(deviceId));
     return;
   }
 
