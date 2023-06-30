@@ -150,7 +150,7 @@ export class AuthController {
   ) {
     const isTokenValid = await this.jwtService.checkTokenVersion(refreshToken);
 
-    if (!isTokenValid) {
+    if (!isTokenValid || !userId || !deviceId) {
       return exceptionHandler(ResultCode.Unauthorized);
     }
 
@@ -230,7 +230,7 @@ export class AuthController {
   ) {
     const isTokenValid = await this.jwtService.checkTokenVersion(refreshToken);
 
-    if (!isTokenValid) {
+    if (!isTokenValid || !userId || !deviceId) {
       return exceptionHandler(ResultCode.Unauthorized);
     }
 
