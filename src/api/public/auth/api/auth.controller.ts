@@ -148,6 +148,7 @@ export class AuthController {
     @Response() res,
   ) {
     const isTokenValid = await this.jwtService.checkTokenVersion(refreshToken);
+    console.log(isTokenValid);
 
     if (!isTokenValid) {
       return exceptionHandler(ResultCode.Unauthorized);

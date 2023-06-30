@@ -79,12 +79,14 @@ export class DeviceRepository {
     deviceId: string,
     lastActiveDate: string,
   ): Promise<boolean> {
-    const isTokenValid: DeviceDocument | null = await this.DeviceModel.findOne({
-      deviceId,
-      lastActiveDate,
-    });
+    const isTokenValid = await this.dataSource.query(
+      `SELECT d.*
+            FROM public.devices d
+            Where d."deviceId" = $1 and d."lastActiveDate" =$2;`,
+      [deviceId, lastActiveDate],
+    );
 
-    if (!isTokenValid) return false;
+    if (!isTokenValid[0]) return false;
     return true;
   }
 
