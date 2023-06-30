@@ -1,6 +1,4 @@
 import { JwtService } from '../../../../jwt/jwt.service';
-import { InjectModel } from '@nestjs/mongoose';
-import { Device, DeviceModelType } from '../../../entities/device.entity';
 import { DeviceRepository } from '../../../infrastructure/devices/device.repository';
 import { CommandHandler } from '@nestjs/cqrs';
 
@@ -17,25 +15,20 @@ export class DeviceCreateUseCase {
   constructor(
     private readonly jwtService: JwtService,
     private readonly deviceRepository: DeviceRepository,
-
-    @InjectModel(Device.name) private DeviceModel: DeviceModelType,
   ) {}
   async execute(command: DeviceCreateCommand) {
     const { deviceId, lastActiveDate, userId, expiration } =
       await this.jwtService.getTokenMetaData(command.refreshToken);
 
-    const newDevice = this.DeviceModel.createDevice(
-      {
-        lastActiveDate,
-        deviceId,
-        ip: command.ip,
-        title: command.deviceName,
-        userId,
-        expiration,
-      },
-      this.DeviceModel,
+    await this.deviceRepository.createDevice(
+      lastActiveDate,
+      deviceId,
+      command.ip,
+      command.deviceName,
+      userId,
+      expiration,
     );
 
-    await this.deviceRepository.save(newDevice);
+    return;
   }
 }

@@ -19,6 +19,22 @@ export class DeviceRepository {
     return this.DeviceModel.findOne({ deviceId: deviceId });
   }
 
+  async createDevice(
+    lastActiveDate: string,
+    deviceId: string,
+    ip: string,
+    deviceName: string,
+    userId: string,
+    expiration: string,
+  ) {
+    return await this.dataSource.query(
+      `INSERT INTO public.devices(
+            "lastActiveDate", "deviceId", ip, title, "userId", expiration)
+            VALUES ($1, $2, $3, $4, $5, $6);`,
+      [lastActiveDate, deviceId, ip, deviceName, userId, expiration],
+    );
+  }
+
   async deleteDeviceByUserId(userId: string) {
     const result = await this.dataSource.query(
       `DELETE FROM public.devices d
