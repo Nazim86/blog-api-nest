@@ -126,7 +126,7 @@ const useCases = [
     UsersModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
+      host: 'postgres://Nazim86:a8TCeF5qBfGn@ep-mute-recipe-040509.us-east-2.aws.neon.tech/blog-api-nest',
       //port: 5432,
       username: 'postgres',
       password: 'sa',
