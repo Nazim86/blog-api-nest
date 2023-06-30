@@ -77,13 +77,29 @@ export class UsersRepository {
         userId,
       ],
     );
-
     return result[1] === 1;
   }
+
+  async confirmRegistration(userId: string) {
+    const result = await this.dataSource.query(
+      `UPDATE public.users 
+            SET "isConfirmed"=true
+            WHERE "id" = $1;`,
+      [userId],
+    );
+    return result[1] === 1;
+  }
+
   async findUserByConfirmationCode(code: string) {
-    return this.UserModel.findOne({
-      'emailConfirmation.confirmationCode': code,
-    });
+    const user = await this.dataSource.query(
+      `SELECT  u.*,ec."confirmationCode", ec."emailExpiration"
+            FROM public.email_confirmation ec
+            left join public.users u 
+            on ec."userId"= u."id"
+            where ec."confirmationCode" = $1`,
+      [code],
+    );
+    return user[0];
   }
 
   async findUserByRecoveryCode(

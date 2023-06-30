@@ -1,6 +1,5 @@
 import { CommandHandler } from '@nestjs/cqrs';
 import { ConfirmationCodeDto } from '../dto/confirmationCodeDto';
-import { UserDocument } from '../../../entities/user.entity';
 import { UsersRepository } from '../../../infrastructure/users/users.repository';
 
 export class RegistrationConfirmationCommand {
@@ -12,14 +11,18 @@ export class RegistrationConfirmationUseCase {
   constructor(private readonly userRepository: UsersRepository) {}
 
   async execute(command: RegistrationConfirmationCommand): Promise<boolean> {
-    const user: UserDocument =
-      await this.userRepository.findUserByConfirmationCode(
-        command.confirmationCodeDto.code,
-      );
-    if (!user || !user.registrationCanBeConfirmed()) return false;
+    console.log(command.confirmationCodeDto.code);
+    const user = await this.userRepository.findUserByConfirmationCode(
+      command.confirmationCodeDto.code,
+    );
+    if (!user || user.isConfirmed || user.emailExpiration < new Date())
+      return false;
 
-    user.confirmRegistration();
-    await this.userRepository.save(user);
-    return true;
+    const isUserConfirmed = await this.userRepository.confirmRegistration(
+      user.id,
+    );
+    //user.confirmRegistration();
+    //await this.userRepository.save(user);
+    return isUserConfirmed;
   }
 }

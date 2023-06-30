@@ -24,6 +24,7 @@ export class ResendEmailUseCase {
         return false;
 
       const newCode = uuid();
+      console.log('confirmation code', newCode);
 
       const isUpdated = await this.usersRepository.updateConfirmationCode(
         user.id,

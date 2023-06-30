@@ -74,6 +74,7 @@ import { SetNewPasswordUseCase } from './api/public/auth/application,use-cases/s
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DeleteUserUseCase } from './api/superadmin/users/application,use-cases/delete-user-use-case';
 import { CreateUserUseCase } from './api/public/auth/application,use-cases/create-user-use-case';
+import { RegistrationConfirmationUseCase } from './api/public/auth/application,use-cases/registration-confirmation-use-case';
 
 const mongooseModels = [
   { name: Device.name, schema: DeviceSchema },
@@ -111,6 +112,7 @@ const useCases = [
   SetNewPasswordUseCase,
   DeleteUserUseCase,
   CreateUserUseCase,
+  RegistrationConfirmationUseCase,
 ];
 @Module({
   imports: [
