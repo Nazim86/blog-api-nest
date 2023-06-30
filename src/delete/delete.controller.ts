@@ -10,6 +10,8 @@ import {
   CommentLike,
   CommentLikeDocument,
 } from '../api/entities/commentLike.entity';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 @Controller('testing/all-data')
 export class DeleteController {
@@ -21,21 +23,28 @@ export class DeleteController {
     @InjectModel(PostLike.name) private PostLikeModel: Model<PostLikeDocument>,
     @InjectModel(CommentLike.name)
     private CommentLikeModel: Model<CommentLikeDocument>,
+    @InjectDataSource() private dataSource: DataSource,
   ) {}
 
   @Delete()
   @HttpCode(204)
   async deleteRoutes() {
-    await this.BlogModel.deleteMany({});
+    //await this.BlogModel.deleteMany({});
     await this.PostModel.deleteMany({});
     await this.CommentModel.deleteMany({});
-    await this.UserModel.deleteMany({});
-    await this.CommentLikeModel.deleteMany({});
-    await this.PostLikeModel.deleteMany({});
+    // await this.UserModel.deleteMany({});
+    // await this.CommentLikeModel.deleteMany({});
+    // await this.PostLikeModel.deleteMany({});
 
-    // await TokenModel.deleteMany({});
-    // await IpModel.deleteMany({});
-    // await LikeModel.deleteMany({});
+    await this.dataSource.query(`Delete from public.users`);
+    await this.dataSource.query(`Delete from public.devices`);
+    await this.dataSource.query(`Delete from public.post_like`);
+    await this.dataSource.query(`Delete from public.blog_owner_info`);
+    await this.dataSource.query(`Delete from public.blogs`);
+    await this.dataSource.query(`Delete from public.comment_like`);
+    await this.dataSource.query(`Delete from public.email_confirmation`);
+    await this.dataSource.query(`Delete from public.password_recovery`);
+    await this.dataSource.query(`Delete from public.users_ban_by_sa`);
 
     return;
   }

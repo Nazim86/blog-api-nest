@@ -11,7 +11,6 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '../../../../jwt/jwt.service';
 import { UsersRepository } from '../../../infrastructure/users/users.repository';
-import { DeviceService } from '../../securityDevices/application,use-cases/device.service';
 import { CreateUserDto } from '../../../superadmin/users/dto/createUser.Dto';
 import { exceptionHandler } from '../../../../exception-handler/exception-handler';
 import { ResultCode } from '../../../../exception-handler/result-code-enum';
@@ -43,7 +42,6 @@ import { Result } from '../../../../exception-handler/result-type';
 export class AuthController {
   constructor(
     private readonly jwtService: JwtService,
-    private readonly deviceService: DeviceService,
     private readonly userRepository: UsersRepository,
     private commandBus: CommandBus,
   ) {}

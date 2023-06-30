@@ -66,7 +66,7 @@ export class DeviceRepository {
       [deviceId],
     );
 
-    return result[1] === 1;
+    return result[1] >= 1;
   }
 
   async deleteDeviceById(deviceId: string, userId: string) {
