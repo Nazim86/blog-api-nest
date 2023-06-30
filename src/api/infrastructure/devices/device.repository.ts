@@ -15,8 +15,14 @@ export class DeviceRepository {
     return device.save();
   }
 
-  async getDevicesByDeviceId(deviceId: string): Promise<DeviceDocument | null> {
-    return this.DeviceModel.findOne({ deviceId: deviceId });
+  async getDevicesByDeviceId(deviceId: string) {
+    const device = await this.dataSource.query(
+      `SELECT d.*
+    FROM public.devices d Where d."deviceId" = $1;`,
+      [deviceId],
+    );
+
+    return device[0];
   }
 
   async createDevice(
@@ -33,6 +39,16 @@ export class DeviceRepository {
             VALUES ($1, $2, $3, $4, $5, $6);`,
       [lastActiveDate, deviceId, ip, deviceName, userId, expiration],
     );
+  }
+
+  async updateDevice(deviceId: string, lastActiveDate: string) {
+    const result = await this.dataSource.query(
+      `UPDATE public.devices
+            SET "lastActiveDate"=$1, "deviceId"=$2
+            WHERE "deviceId" =$2 ;`,
+      [lastActiveDate, deviceId],
+    );
+    return result[1] === 1;
   }
 
   async deleteDeviceByUserId(userId: string) {
@@ -71,16 +87,6 @@ export class DeviceRepository {
     if (!isTokenValid) return false;
     return true;
   }
-  // async checkTokenVersion(deviceId: string, iat: number): Promise<boolean> {
-  //   const lastActiveDate = new Date(iat * 1000).toISOString();
-  //   const isTokenValid: DeviceDocument | null = await this.DeviceModel.findOne({
-  //     deviceId,
-  //     lastActiveDate,
-  //   });
-  //
-  //   if (!isTokenValid) return false;
-  //   return true;
-  // }
 
   async deleteOldSession() {
     try {

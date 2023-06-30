@@ -1,4 +1,3 @@
-import { DeviceDocument } from '../../../entities/device.entity';
 import { DeviceRepository } from '../../../infrastructure/devices/device.repository';
 import { CommandHandler } from '@nestjs/cqrs';
 import { Result } from '../../../../exception-handler/result-type';
@@ -15,8 +14,7 @@ export class DeviceDeleteByIdUseCase {
     deviceId: string,
     userId: string,
   ): Promise<Result<boolean | null>> {
-    const device: DeviceDocument =
-      await this.deviceRepository.getDevicesByDeviceId(deviceId);
+    const device = await this.deviceRepository.getDevicesByDeviceId(deviceId);
 
     if (device && device.userId !== userId) {
       return {

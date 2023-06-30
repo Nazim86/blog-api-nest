@@ -1,5 +1,4 @@
 import { JwtService } from '../../../../jwt/jwt.service';
-import { DeviceDocument } from '../../../entities/device.entity';
 import { DeviceRepository } from '../../../infrastructure/devices/device.repository';
 import { CommandHandler } from '@nestjs/cqrs';
 import { settings } from '../../../../settings';
@@ -20,15 +19,15 @@ export class DeviceUpdateUseCase {
       settings.REFRESH_TOKEN_SECRET,
     );
 
-    const device: DeviceDocument =
-      await this.deviceRepository.getDevicesByDeviceId(deviceId);
+    const device = await this.deviceRepository.getDevicesByDeviceId(deviceId);
 
     if (!device) return false;
 
-    device.updateDevice(deviceId, lastActiveDate);
+    const isDeviceUpdated = await this.deviceRepository.updateDevice(
+      deviceId,
+      lastActiveDate,
+    );
 
-    await this.deviceRepository.save(device);
-
-    return;
+    return isDeviceUpdated;
   }
 }
