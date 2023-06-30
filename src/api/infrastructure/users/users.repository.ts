@@ -194,7 +194,7 @@ export class UsersRepository {
     where u."login"= $1 OR u."email" = $1;`,
       [loginOrEmail],
     );
-    return user;
+    return user[0];
   }
 
   async findUserById(userId: string) {
