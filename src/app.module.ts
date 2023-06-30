@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-export const configModule = ConfigModule.forRoot();
+export const configModule = ConfigModule.forRoot({ isGlobal: true });
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -126,11 +126,11 @@ const useCases = [
     UsersModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'postgres://Nazim86:a8TCeF5qBfGn@ep-mute-recipe-040509.us-east-2.aws.neon.tech/blog-api-nest',
+      host: process.env.PG_HOST,
       //port: 5432,
-      username: 'postgres',
-      password: 'sa',
-      database: 'blog-api-nest-rawSql',
+      username: process.env.PG_USER,
+      password: process.env.PG_PASS,
+      database: process.env.PG_DATABASE,
       autoLoadEntities: false,
       synchronize: false,
     }),
