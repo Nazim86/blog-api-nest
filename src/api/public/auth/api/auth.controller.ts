@@ -113,13 +113,13 @@ export class AuthController {
     }
 
     const accessToken = await this.jwtService.createJWT(
-      user.id!,
+      user.id,
       settings.ACCESS_TOKEN_SECRET,
       '10h',
     );
 
     const refreshToken = await this.jwtService.createJWT(
-      user._id,
+      user.id,
       settings.REFRESH_TOKEN_SECRET,
       '20h',
     );
@@ -149,7 +149,6 @@ export class AuthController {
     @Response() res,
   ) {
     const isTokenValid = await this.jwtService.checkTokenVersion(refreshToken);
-    console.log(isTokenValid);
 
     if (!isTokenValid) {
       return exceptionHandler(ResultCode.Unauthorized);
@@ -235,9 +234,13 @@ export class AuthController {
       return exceptionHandler(ResultCode.Unauthorized);
     }
 
-    await this.commandBus.execute(
+    const isDeviceDeleted = await this.commandBus.execute(
       new DeviceDeleteByIdCommand(deviceId, userId),
     );
+
+    if (isDeviceDeleted.code !== ResultCode.Success) {
+      return exceptionHandler(isDeviceDeleted.code);
+    }
 
     try {
       res.clearCookie('refreshToken').json();

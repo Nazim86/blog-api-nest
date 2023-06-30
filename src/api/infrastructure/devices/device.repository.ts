@@ -68,11 +68,13 @@ export class DeviceRepository {
   }
 
   async deleteDeviceById(deviceId: string, userId: string) {
-    const result = await this.DeviceModel.deleteOne({
-      deviceId: deviceId,
-      userId: userId,
-    });
-    return result.deletedCount === 1;
+    const result = await this.dataSource.query(
+      `DELETE FROM public.devices d
+                    WHERE d."deviceId"=$1 and d."userId" =$2;`,
+      [deviceId, userId],
+    );
+    console.log(result);
+    return result[1] === 1;
   }
 
   async checkTokenVersion(

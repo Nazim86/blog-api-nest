@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { ObjectId } from 'mongodb';
 import { v4 as uuid } from 'uuid';
 import jwt from 'jsonwebtoken';
 import { settings } from '../settings';
@@ -11,7 +10,7 @@ export class JwtService {
     private readonly deviceRepository: DeviceRepository, //private readonly jwtService: JwtService,
   ) {}
   async createJWT(
-    userId: ObjectId,
+    userId: string,
     secretKey: string,
     expirationTime: string,
     deviceId: string | null = null,

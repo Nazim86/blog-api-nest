@@ -10,21 +10,20 @@ export class DeviceDeleteByIdCommand {
 @CommandHandler(DeviceDeleteByIdCommand)
 export class DeviceDeleteByIdUseCase {
   constructor(private readonly deviceRepository: DeviceRepository) {}
-  async execute(
-    deviceId: string,
-    userId: string,
-  ): Promise<Result<boolean | null>> {
-    const device = await this.deviceRepository.getDevicesByDeviceId(deviceId);
+  async execute(command: DeviceDeleteByIdCommand): Promise<Result<any>> {
+    const device = await this.deviceRepository.getDevicesByDeviceId(
+      command.deviceId,
+    );
 
-    if (device && device.userId !== userId) {
+    if (device && device.userId !== command.userId) {
       return {
         code: ResultCode.Forbidden,
       };
     }
 
     const isDeleted = await this.deviceRepository.deleteDeviceById(
-      deviceId,
-      userId,
+      command.deviceId,
+      command.userId,
     );
 
     return {
