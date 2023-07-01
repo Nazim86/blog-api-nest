@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { User, UserDocument } from '../../entities/user.entity';
+import { User } from '../../entities/user.entity';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import {
@@ -160,10 +160,6 @@ export class UsersRepository {
     );
 
     return user[0];
-  }
-
-  async save(user: UserDocument) {
-    return user.save();
   }
 
   async saveBloggerBanUser(bannedUser: BloggerBanUserDocument) {

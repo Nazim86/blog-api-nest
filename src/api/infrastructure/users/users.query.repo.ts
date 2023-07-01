@@ -169,7 +169,7 @@ export class UserQueryRepo {
     const pagesCount = paginatedQuery.totalPages(totalCount); //Math.ceil(totalCount / paginatedQuery.pageSize);
 
     const getUsers = await this.dataSource.query(
-      `SELECT u."id", u.login,u.email, u."createdAt", ub."banDate",ub."banReason" 
+      `SELECT u."id", u.login,u.email,u."isBanned", u."createdAt", ub."banDate",ub."banReason" 
     FROM public.users u
     Left join public.users_ban_by_sa ub on u."id" = ub."userId"
     WHERE (u."login" ilike $1 OR u."email" ilike $2) And (u."isBanned"=$3 or u."isBanned"=$4)

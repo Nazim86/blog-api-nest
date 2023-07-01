@@ -20,6 +20,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@neondatabase/serverless": "^0.4.23",
     "@nestjs-modules/mailer": "^1.8.1",
     "@nestjs/common": "^9.0.0",
     "@nestjs/config": "^3.0.0",
@@ -47,6 +48,7 @@
     "config": "^3.3.9",
     "cookie-parser": "^1.4.6",
     "date-fns": "^2.30.0",
+    "dotenv": "^16.3.1",
     "handlebars": "^4.7.7",
     "mongoose": "^7.1.0",
     "nodemailer": "^6.9.2",

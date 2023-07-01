@@ -24,7 +24,11 @@ import { CommentsMapping } from './api/public/comments/mapper/comments.mapping';
 import { Comment, CommentSchema } from './api/entities/comment.entity';
 import { UserQueryRepo } from './api/infrastructure/users/users.query.repo';
 import { UsersRepository } from './api/infrastructure/users/users.repository';
-import { User, UserSchema } from './api/entities/user.entity';
+import {
+  User,
+  UserBanInfoEntity,
+  UserSchema,
+} from './api/entities/user.entity';
 import { DeleteController } from './delete/delete.controller';
 
 import * as process from 'process';
@@ -71,12 +75,13 @@ import { CurrentUserUseCase } from './api/public/auth/application,use-cases/curr
 import { ResendEmailUseCase } from './api/public/auth/application,use-cases/resend-email-use-case';
 import { SendRecoveryCodeUseCase } from './api/public/auth/application,use-cases/send-recovery-code-use-case';
 import { SetNewPasswordUseCase } from './api/public/auth/application,use-cases/set-new-password-use-case';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { DeleteUserUseCase } from './api/superadmin/users/application,use-cases/delete-user-use-case';
 import { CreateUserUseCase } from './api/public/auth/application,use-cases/create-user-use-case';
 import { RegistrationConfirmationUseCase } from './api/public/auth/application,use-cases/registration-confirmation-use-case';
 import { DeviceDeleteByIdUseCase } from './api/public/securityDevices/application,use-cases/device-deleteByDeviceId-use-case';
 import { DeleteDevicesUseCase } from './api/public/securityDevices/application,use-cases/delete-devices-use-case';
+import { UserEntity } from './api/entities/sql/user.entity';
 
 const mongooseModels = [
   { name: Device.name, schema: DeviceSchema },
@@ -118,23 +123,41 @@ const useCases = [
   DeviceDeleteByIdUseCase,
   DeleteDevicesUseCase,
 ];
+
+const entities = [UserEntity, UserBanInfoEntity];
+
+export const neonConfigForTypeOrm: TypeOrmModuleOptions = {
+  type: 'postgres',
+  host: process.env.PG_HOST, //localhost
+  //port: 5432,
+  username: process.env.PG_USER,
+  password: process.env.PG_PASS,
+  entities,
+  ssl: true,
+  database: process.env.PG_DATABASE,
+  autoLoadEntities: false,
+  synchronize: true,
+};
+
+export const localConfigTypeOrm: TypeOrmModuleOptions = {
+  type: 'postgres',
+  host: 'localhost',
+  port: 5432,
+  username: 'postgres',
+  password: 'sa',
+  database: 'blog-api-nest-rawSql',
+  autoLoadEntities: false,
+  synchronize: false,
+};
+
 @Module({
   imports: [
     configModule,
     ScheduleModule.forRoot(),
     AuthModule,
     UsersModule,
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.PG_HOST, //localhost
-      //port: 5432,
-      username: process.env.PG_USER,
-      password: process.env.PG_PASS,
-      ssl: true,
-      database: process.env.PG_DATABASE,
-      autoLoadEntities: false,
-      synchronize: false,
-    }),
+    TypeOrmModule.forRoot(localConfigTypeOrm),
+    TypeOrmModule.forFeature(entities),
     // MongooseModule.forRootAsync({
     //   useFactory: async () => {
     //     const mongoMemoryServer = await MongoMemoryServer.create();

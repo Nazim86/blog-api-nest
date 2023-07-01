@@ -37,7 +37,6 @@ import {
   BloggerBanUser,
   UserBanByBloggerSchema,
 } from '../../entities/user-ban-by-blogger.entity';
-import { TypeOrmModule } from '@nestjs/typeorm';
 
 const mongooseModels = [
   { name: Device.name, schema: DeviceSchema },
@@ -61,16 +60,17 @@ const useCases = [DeviceCreateUseCase, DeviceUpdateUseCase];
     PassportModule,
     ConfigModule,
     MongooseModule.forFeature(mongooseModels),
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'postgres',
-      password: 'sa',
-      database: 'blog-api-nest-rawSql',
-      autoLoadEntities: false,
-      synchronize: false,
-    }),
+    // TypeOrmModule.forRoot({
+    //   type: 'postgres',
+    //   host: process.env.PG_HOST, //localhost
+    //   //port: 5432,
+    //   username: process.env.PG_USER,
+    //   password: process.env.PG_PASS,
+    //   ssl: true,
+    //   database: process.env.PG_DATABASE,
+    //   autoLoadEntities: false,
+    //   synchronize: false,
+    // }),
 
     // JwtModule.register({
     //   secret: refreshTokenSecret.secret,
