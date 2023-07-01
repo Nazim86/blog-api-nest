@@ -210,12 +210,13 @@ export class UsersRepository {
 
   async deleteUser(id: string): Promise<boolean> {
     try {
-      // const result = await this.UserModel.deleteOne({ _id: new ObjectId(id) });
+      console.log(id);
       const result = await this.dataSource.query(
-        `DELETE FROM public."Users" WHERE "Id = $1";`,
+        `DELETE FROM public."users" u WHERE u."id" = $1;`,
         [id],
       );
-      return result.deletedCount === 1;
+      console.log('delete user', result[1]);
+      return result[1] === 1;
     } catch (e) {
       return false;
     }

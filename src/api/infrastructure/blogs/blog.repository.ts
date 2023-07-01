@@ -47,7 +47,6 @@ export class BlogRepository {
     //     $set: { 'blogOwnerInfo.userId': null, 'blogOwnerInfo.userLogin': null },
     //   },
     // );
-
     return result[1] === 1;
   }
 

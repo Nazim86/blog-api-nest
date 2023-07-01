@@ -37,6 +37,7 @@ import { SetNewPasswordCommand } from '../application,use-cases/set-new-password
 import { CheckCredentialsCommand } from '../application,use-cases/check-credentials-use-case';
 import { CurrentUserCommand } from '../application,use-cases/current-user-use-case';
 import { Result } from '../../../../exception-handler/result-type';
+import { Throttle } from '@nestjs/throttler';
 
 @Controller('auth')
 export class AuthController {
@@ -46,7 +47,7 @@ export class AuthController {
     private commandBus: CommandBus,
   ) {}
 
-  //@Throttle(5, 10)
+  @Throttle(5, 10)
   @Post('registration')
   @HttpCode(204)
   async userRegistration(@Body() createUserDto: CreateUserDto) {
@@ -59,7 +60,7 @@ export class AuthController {
     }
   }
 
-  //@Throttle(5, 10)
+  @Throttle(5, 10)
   @Post('registration-email-resending')
   @HttpCode(204)
   async reSendRegistrationEmail(@Body() emailDto: EmailDto) {
@@ -75,7 +76,7 @@ export class AuthController {
     return;
   }
 
-  //@Throttle(5, 10)
+  @Throttle(5, 10)
   @Post('registration-confirmation')
   @HttpCode(204)
   async confirmRegistration(@Body() confirmationCodeDto: ConfirmationCodeDto) {
@@ -93,7 +94,7 @@ export class AuthController {
     return;
   }
 
-  //@Throttle(5, 10)
+  @Throttle(5, 10)
   @Post('login')
   @HttpCode(200)
   async login(
@@ -113,13 +114,13 @@ export class AuthController {
     const accessToken = await this.jwtService.createJWT(
       user.id,
       settings.ACCESS_TOKEN_SECRET,
-      '10h',
+      '10s',
     );
 
     const refreshToken = await this.jwtService.createJWT(
       user.id,
       settings.REFRESH_TOKEN_SECRET,
-      '20h',
+      '20s',
     );
 
     // const ipAddress = req.ip;
@@ -155,13 +156,13 @@ export class AuthController {
     const newAccessToken = await this.jwtService.createJWT(
       userId,
       settings.ACCESS_TOKEN_SECRET,
-      '10h',
+      '10s',
       deviceId,
     );
     const newRefreshToken = await this.jwtService.createJWT(
       userId,
       settings.REFRESH_TOKEN_SECRET,
-      '20h',
+      '20s',
       deviceId,
     );
 
@@ -186,7 +187,7 @@ export class AuthController {
     return currentUser;
   }
 
-  //@Throttle(5, 10)
+  @Throttle(5, 10)
   @Post('password-recovery')
   async sendPasswordRecoveryCode(@Body() emailDto: EmailDto) {
     const isRecoveryEmailSent: Result<any> = await this.commandBus.execute(
@@ -202,7 +203,7 @@ export class AuthController {
     return;
   }
 
-  //@Throttle(5, 10)
+  @Throttle(5, 10)
   @Post('new-password')
   @HttpCode(204)
   async setNewPassword(@Body() newPasswordDto: NewPasswordDto) {

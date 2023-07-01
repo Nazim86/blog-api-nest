@@ -10,8 +10,20 @@ export class UserEntity {
   login: string;
 
   @Column({ unique: true, type: 'varchar' })
+  passwordHash: string;
+
+  @Column({ unique: true, type: 'varchar' })
   email: string;
 
-  @OneToOne(() => UserBanInfoEntity, (bI) => bI.userId, {})
+  @Column({ unique: true, type: 'varchar' })
+  createdAt: string;
+
+  @Column({ unique: true, type: 'varchar' })
+  isConfirmed: string;
+
+  @Column({ unique: true, type: 'varchar' })
+  isBanned: string;
+
+  @OneToOne(() => UserBanInfoEntity, (ub) => ub.userId, {})
   banInfo: UserBanInfoEntity;
 }

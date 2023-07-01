@@ -51,7 +51,7 @@ export class DevicesController {
   @UseGuards(RefreshTokenGuard)
   @Delete(':id')
   @HttpCode(204)
-  async deleteDeviceByDeviceId(@Param() deviceId, @Request() req) {
+  async deleteDeviceByDeviceId(@Param('id') deviceId, @Request() req) {
     const { userId } = await this.jwtService.getTokenMetaData(
       req.cookies.refreshToken,
     );

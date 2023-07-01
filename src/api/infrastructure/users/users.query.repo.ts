@@ -166,7 +166,8 @@ export class UserQueryRepo {
         filter.banStatus02,
       ],
     );
-    const pagesCount = paginatedQuery.totalPages(totalCount); //Math.ceil(totalCount / paginatedQuery.pageSize);
+
+    const pagesCount = paginatedQuery.totalPages(totalCount[0].count); //Math.ceil(totalCount / paginatedQuery.pageSize);
 
     const getUsers = await this.dataSource.query(
       `SELECT u."id", u.login,u.email,u."isBanned", u."createdAt", ub."banDate",ub."banReason" 
@@ -195,7 +196,7 @@ export class UserQueryRepo {
       pagesCount: pagesCount,
       page: Number(paginatedQuery.pageNumber),
       pageSize: Number(paginatedQuery.pageSize),
-      totalCount: totalCount[0].count,
+      totalCount: Number(totalCount[0].count),
       items: mappedUsers,
     };
   }
