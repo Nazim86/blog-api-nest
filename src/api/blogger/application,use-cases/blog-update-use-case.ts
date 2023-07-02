@@ -22,9 +22,11 @@ export class BlogUpdateUseCase {
 
     if (blog.userId !== command.userId) return { code: ResultCode.Forbidden };
 
-    blog.updateBlog(command.updateBlogDto);
+    await this.blogRepository.updateBlog(blog.id, command.updateBlogDto);
 
-    await this.blogRepository.save(blog);
+    // blog.updateBlog(command.updateBlogDto);
+    //
+    // await this.blogRepository.save(blog);
 
     return { code: ResultCode.Success };
   }

@@ -69,6 +69,21 @@ export class BlogRepository {
     return newBlog[0].id;
   }
 
+  async updateBlog(blogId: string, updateBlogDto: CreateBlogDto) {
+    const result = await this.dataSource.query(
+      `UPDATE public.blogs b
+    SET  name=$1, description=$2, "websiteUrl"=$3
+    WHERE b."id" = $4;`,
+      [
+        updateBlogDto.name,
+        updateBlogDto.description,
+        updateBlogDto.websiteUrl,
+        blogId,
+      ],
+    );
+    return result[1] === 1;
+  }
+
   async getBlogByBlogOwnerId(userId: string) {
     return this.BlogModel.find({
       'blogOwnerInfo.userId': userId,
