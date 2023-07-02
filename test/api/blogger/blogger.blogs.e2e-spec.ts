@@ -35,6 +35,7 @@ describe('Blogger blog testing', () => {
 
     app = moduleRef.createNestApplication();
     await app.init();
+    // await this.query('TRUNCATE table1, table2, table3 CASCADE');
   });
 
   afterAll(async () => {

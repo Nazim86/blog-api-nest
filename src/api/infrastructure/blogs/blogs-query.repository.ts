@@ -17,10 +17,10 @@ export class BlogsQueryRepo {
     @InjectDataSource() private dataSource: DataSource,
   ) {}
 
-  private blogsMapping = (array: BlogDocument[]): BlogsViewType[] => {
-    return array.map((blog: BlogDocument): BlogsViewType => {
+  private blogsMapping = (array): BlogsViewType[] => {
+    return array.map((blog): BlogsViewType => {
       return {
-        id: blog._id.toString(),
+        id: blog.id,
         name: blog.name,
         description: blog.description,
         websiteUrl: blog.websiteUrl,
@@ -114,7 +114,7 @@ export class BlogsQueryRepo {
     // console.log(userId);
 
     if (requestRole === RoleEnum.Blogger) {
-      blogOwnerUserId = `%${userId}%`;
+      blogOwnerUserId = userId;
 
       //filter['$and'].push({ 'blogOwnerInfo.userId': userId });
     }
@@ -125,25 +125,36 @@ export class BlogsQueryRepo {
     // }
     const skipSize = paginatedQuery.skipSize;
 
-    const totalCount = await this.dataSource.query(
+    let totalCount = await this.dataSource.query(
       `SELECT count(*)
-       FROM public.blogs b Left join public.blog_owner_info boi on b."id"= boi."blogId"
-       Left Join public.blog_ban_info bbi on b."id"= bbi."blogId"
-       Where b."isBanned"=$1 and b."isBanned"=$2 and b."name"=$3 and boi."userId"=$4;`,
+       FROM public.blogs b Left join public.blog_owner_info boi on b."id" = boi."blogId"
+       Left Join public.blog_ban_info bbi on b."id" = bbi."blogId"
+       Where b."isBanned"=$1 and b."isBanned"=$2 and b."name" ilike $3 and boi."userId" = $4;`,
       [isBanned01, isBanned02, searchName, blogOwnerUserId],
     );
 
+    totalCount = totalCount[0].count;
     //const totalCount = await this.BlogModel.countDocuments(filter);
 
-    const pagesCount = paginatedQuery.totalPages(totalCount[0].count);
+    const pagesCount = paginatedQuery.totalPages(totalCount);
 
-    const blog = await this.BlogModel.find(filter)
-      .sort({
-        [paginatedQuery.sortBy]:
-          paginatedQuery.sortDirection === 'asc' ? 1 : -1,
-      })
-      .skip(skipSize)
-      .limit(paginatedQuery.pageSize);
+    const blog = await this.dataSource.query(
+      `SELECT b.*, boi."userId",boi."userLogin", bbi."banDate"
+       FROM public.blogs b Left join public.blog_owner_info boi on b."id"= boi."blogId"
+       Left Join public.blog_ban_info bbi on b."id"= bbi."blogId"
+       Where b."isBanned"=$1 and b."isBanned"=$2 and b."name" ilike $3 and boi."userId" = $4
+       Order by "${paginatedQuery.sortBy}" ${paginatedQuery.sortDirection}
+       Limit ${paginatedQuery.pageSize} Offset ${skipSize};`,
+      [isBanned01, isBanned02, searchName, blogOwnerUserId],
+    );
+
+    // const blog = await this.BlogModel.find(filter)
+    //   .sort({
+    //     [paginatedQuery.sortBy]:
+    //       paginatedQuery.sortDirection === 'asc' ? 1 : -1,
+    //   })
+    //   .skip(skipSize)
+    //   .limit(paginatedQuery.pageSize);
 
     let mappedBlog: BlogsViewType[];
     if (requestRole === RoleEnum.SA) {
@@ -156,7 +167,7 @@ export class BlogsQueryRepo {
       pagesCount: pagesCount,
       page: Number(paginatedQuery.pageNumber),
       pageSize: Number(paginatedQuery.pageSize),
-      totalCount: totalCount,
+      totalCount: Number(totalCount),
       items: mappedBlog,
     };
   }
