@@ -4,14 +4,18 @@ import { Blog, BlogDocument } from '../../entities/blog.entity';
 import { Model } from 'mongoose';
 import { QueryPaginationType } from '../../../types/query-pagination-type';
 import { InjectModel } from '@nestjs/mongoose';
-import { ObjectId } from 'mongodb';
 import { PaginationType } from '../../../common/pagination';
 import { BlogPagination } from './blog-pagination';
 import { RoleEnum } from '../../../enums/role-enum';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class BlogsQueryRepo {
-  constructor(@InjectModel(Blog.name) private BlogModel: Model<BlogDocument>) {}
+  constructor(
+    @InjectModel(Blog.name) private BlogModel: Model<BlogDocument>,
+    @InjectDataSource() private dataSource: DataSource,
+  ) {}
 
   private blogsMapping = (array: BlogDocument[]): BlogsViewType[] => {
     return array.map((blog: BlogDocument): BlogsViewType => {
@@ -49,13 +53,20 @@ export class BlogsQueryRepo {
 
   async getBlogById(id: string): Promise<BlogsViewType | boolean> {
     try {
-      const foundBlog = await this.BlogModel.findOne({ _id: new ObjectId(id) });
+      let foundBlog = await this.dataSource.query(
+        `SELECT b.*, boi."userId",boi."userLogin", bbi."banDate" 
+        FROM public.blogs b Left join public.blog_owner_info boi on b."id" = boi."blogId" 
+        Left join public.blog_ban_info bbi on b."id" = bbi."blogId" where b."id" = $1 ;`,
+        [id],
+      );
 
-      if (!foundBlog || foundBlog.banInfo.isBanned) {
+      foundBlog = foundBlog[0];
+
+      if (!foundBlog || foundBlog.isBanned) {
         return false;
       }
       return {
-        id: foundBlog._id.toString(),
+        id: foundBlog.id,
         name: foundBlog.name,
         description: foundBlog.description,
         websiteUrl: foundBlog.websiteUrl,
@@ -69,9 +80,14 @@ export class BlogsQueryRepo {
 
   async getBlog(
     query: BlogPagination<PaginationType>,
-    requestType?: RoleEnum,
+    requestRole?: RoleEnum,
     userId?: string,
   ): Promise<QueryPaginationType<BlogsViewType[]>> {
+    let searchName = '%';
+    let isBanned01 = true;
+    const isBanned02 = false;
+    let blogOwnerUserId = '%';
+
     const paginatedQuery = new BlogPagination<PaginationType>(
       query.pageNumber,
       query.pageSize,
@@ -83,28 +99,43 @@ export class BlogsQueryRepo {
     const filter: any = {};
     filter['$and'] = [];
 
-    if (requestType !== RoleEnum.SA) {
-      filter['$and'].push({ 'banInfo.isBanned': false });
+    if (requestRole !== RoleEnum.SA) {
+      isBanned01 = false;
+
+      //filter['$and'].push({ 'banInfo.isBanned': false });
     }
 
     if (paginatedQuery.searchNameTerm) {
-      filter['$and'].push({
-        name: { $regex: paginatedQuery.searchNameTerm, $options: 'i' },
-      });
+      searchName = `%${paginatedQuery.searchNameTerm}%`;
+      // filter['$and'].push({
+      //   name: { $regex: paginatedQuery.searchNameTerm, $options: 'i' },
+      // });
     }
     // console.log(userId);
 
-    if (requestType === RoleEnum.Blogger) {
-      filter['$and'].push({ 'blogOwnerInfo.userId': userId });
+    if (requestRole === RoleEnum.Blogger) {
+      blogOwnerUserId = `%${userId}%`;
+
+      //filter['$and'].push({ 'blogOwnerInfo.userId': userId });
     }
     // // console.log(filter);
 
-    if (filter.$and.length === 0) {
-      delete filter.$and;
-    }
+    // if (filter.$and.length === 0) {
+    //   delete filter.$and;
+    // }
     const skipSize = paginatedQuery.skipSize;
-    const totalCount = await this.BlogModel.countDocuments(filter);
-    const pagesCount = paginatedQuery.totalPages(totalCount);
+
+    const totalCount = await this.dataSource.query(
+      `SELECT count(*)
+       FROM public.blogs b Left join public.blog_owner_info boi on b."id"= boi."blogId"
+       Left Join public.blog_ban_info bbi on b."id"= bbi."blogId"
+       Where b."isBanned"=$1 and b."isBanned"=$2 and b."name"=$3 and b."userId"=$4;`,
+      [isBanned01, isBanned02, searchName, blogOwnerUserId],
+    );
+
+    //const totalCount = await this.BlogModel.countDocuments(filter);
+
+    const pagesCount = paginatedQuery.totalPages(totalCount[0].count);
 
     const blog = await this.BlogModel.find(filter)
       .sort({
@@ -115,7 +146,7 @@ export class BlogsQueryRepo {
       .limit(paginatedQuery.pageSize);
 
     let mappedBlog: BlogsViewType[];
-    if (requestType === RoleEnum.SA) {
+    if (requestRole === RoleEnum.SA) {
       mappedBlog = this.blogsMappingForSA(blog);
     } else {
       mappedBlog = this.blogsMapping(blog);

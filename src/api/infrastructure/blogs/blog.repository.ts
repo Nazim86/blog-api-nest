@@ -4,6 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
+import { CreateBlogDto } from '../../blogger/inputModel-Dto/createBlog.dto';
 
 @Injectable()
 export class BlogRepository {
@@ -14,9 +15,14 @@ export class BlogRepository {
 
   async getBlogById(blogId: string): Promise<BlogDocument | null> {
     try {
-      const foundBlog = await this.BlogModel.findOne({
-        _id: new ObjectId(blogId),
-      });
+      let foundBlog = await this.dataSource.query(
+        `SELECT b.*, boi."userId",boi."userLogin", bbi."banDate" 
+        FROM public.blogs b Left join public.blog_owner_info boi on b."id" = boi."blogId" 
+        Left join public.blog_ban_info bbi on b."id" = bbi."blogId" where b."id" = $1 ;`,
+        [blogId],
+      );
+
+      foundBlog = foundBlog[0];
 
       if (!foundBlog) {
         return null;
@@ -25,6 +31,42 @@ export class BlogRepository {
     } catch (e) {
       return null;
     }
+  }
+
+  async createBlog(
+    userId: string,
+    login: string,
+    createBlogDto: CreateBlogDto,
+  ) {
+    const newBlog = await this.dataSource.query(
+      `INSERT INTO public.blogs(
+         name, description, "websiteUrl", "createdAt", "isMembership", "isBanned")
+         VALUES ( $1, $2, $3, $4, $5, $6) returning id;`,
+      [
+        createBlogDto.name,
+        createBlogDto.description,
+        createBlogDto.websiteUrl,
+        new Date().toISOString(),
+        false,
+        false,
+      ],
+    );
+
+    await this.dataSource.query(
+      `INSERT INTO public.blog_owner_info(
+            "blogId", "userId", "userLogin")
+            VALUES ($1, $2, $3);`,
+      [newBlog[0].id, userId, login],
+    );
+
+    await this.dataSource.query(
+      `INSERT INTO public.blog_ban_info(
+         "isBanned", "banDate", "blogId")
+          VALUES ( $1,$2,$3);`,
+      [false, null, newBlog[0].id],
+    );
+
+    return newBlog[0].id;
   }
 
   async getBlogByBlogOwnerId(userId: string) {

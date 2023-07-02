@@ -14,7 +14,6 @@ export class CheckCredentialsUseCase {
     const user = await this.usersRepository.findUserByLoginOrEmail(
       command.loginDto.loginOrEmail,
     );
-    console.log(user);
 
     if (!user || !user.isConfirmed || user.isBanned) return null;
 

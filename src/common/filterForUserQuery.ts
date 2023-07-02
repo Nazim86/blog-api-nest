@@ -13,7 +13,7 @@ export const filterForUserQuery = (
   let searchLogin = '%';
 
   const filter: any = {};
-  filter.$and = [];
+  //filter.$and = [];
 
   // if (searchLoginTerm || searchEmailTerm) {
   //   filter.$or = [];
@@ -62,15 +62,6 @@ export const filterForUserQuery = (
     searchEmail = `%${searchEmailTerm}%`;
     searchLogin = `%${searchLoginTerm}%`;
   }
-
-  // if (filter.$or && filter.$or.length > 0) {
-  //   filter.$and.push({ $or: filter.$or });
-  //   delete filter.$or;
-  // }
-  //
-  // if (filter.$and.length === 0) {
-  //   delete filter.$and;
-  // }
 
   return {
     banStatus01: banStatus01,
