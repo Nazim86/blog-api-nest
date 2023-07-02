@@ -4,75 +4,101 @@ import { Post, PostDocument } from '../../entities/post.entity';
 import { Model } from 'mongoose';
 import { PostsViewType } from './types/posts-view-type';
 import { NewestLikesType, PostsDbType } from './types/posts-db-type';
-import { ObjectId } from 'mongodb';
 import { PostLike, PostLikeDocument } from '../../entities/postLike.entity';
 import { LikeEnum } from '../../public/like/like.enum';
-import { PostLikesDbType } from '../../public/like/post-likes-db-type';
 import { QueryPaginationType } from '../../../types/query-pagination-type';
 import { newestLikesMapping } from '../../public/like/post-likes.mapping';
 import { PostMapping } from '../../public/post/mapper/post.mapping';
 import { Pagination, PaginationType } from '../../../common/pagination';
 import { BlogRepository } from '../blogs/blog.repository';
-import { BlogDocument } from '../../entities/blog.entity';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class PostsQueryRepo {
   constructor(
+    @InjectDataSource() private dataSource: DataSource,
     @InjectModel(Post.name) private PostModel: Model<PostDocument>,
     @InjectModel(PostLike.name) private PostLikeModel: Model<PostLikeDocument>,
     private readonly postMapping: PostMapping,
     private readonly blogsRepository: BlogRepository,
   ) {}
 
-  async getPostById(
-    postId: string,
-    userId?: string | undefined,
-  ): Promise<PostsViewType | boolean> {
+  async getPostById(postId: string, userId?: string | undefined) {
     try {
-      const post: PostDocument | null = await this.PostModel.findOne({
-        _id: new ObjectId(postId),
-      });
+      let post = await this.dataSource.query(
+        `SELECT p.* FROM public.posts p where p."id"=$1`,
+        [postId],
+      );
+
+      post = post[0];
+      // const post: PostDocument | null = await this.PostModel.findOne({
+      //   _id: new ObjectId(postId),
+      // });
 
       if (!post) {
         return false;
       }
 
-      const blog: BlogDocument = await this.blogsRepository.getBlogById(
-        post.blogId,
-      );
+      const blog = await this.blogsRepository.getBlogById(post.blogId);
 
-      if (blog.banInfo.isBanned) {
+      if (blog.isBanned) {
         return false;
       }
 
       let myStatus = 'None';
 
       if (userId) {
-        const likeInDb = await this.PostLikeModel.findOne({ postId, userId });
+        const likeInDb = await this.dataSource.query(
+          `SELECT id, "postId", "userId", "addedAt", status, login, "banStatus"
+            FROM public.post_like pl Where pl."postId"=$1 and pl."userId"=$2;`,
+          [postId, userId],
+        );
+        //const likeInDb = await this.PostLikeModel.findOne({ postId, userId });
         if (likeInDb) {
           myStatus = likeInDb.status;
         }
       }
 
-      const likesCount = await this.PostLikeModel.countDocuments({
-        postId,
-        status: LikeEnum.Like,
-        banStatus: false,
-      });
-      const dislikesCount = await this.PostLikeModel.countDocuments({
-        postId,
-        status: LikeEnum.Dislike,
-        banStatus: false,
-      });
+      const likesCount = await this.dataSource.query(
+        `SELECT count(*) 
+        FROM public.post_like pl Where pl."postId"=$1 and pl."status"=$2 and pl."banStatus"=$3;`,
+        [post.id, LikeEnum.Like, false],
+      );
 
-      const getLast3Likes: PostLikesDbType[] = await this.PostLikeModel.find({
-        postId,
-        status: LikeEnum.Like,
-        banStatus: false,
-      })
-        .sort({ addedAt: -1 }) // sort by addedAt in descending order
-        .limit(3) // limit to 3 results
-        .lean();
+      const dislikesCount = await this.dataSource.query(
+        `SELECT count(*) 
+        FROM public.post_like pl Where pl."postId"=$1 and pl."status"=$2 and pl."banStatus"=$3;`,
+        [post.id, LikeEnum.Dislike, false],
+      );
+
+      // const likesCount = await this.PostLikeModel.countDocuments({
+      //   postId,
+      //   status: LikeEnum.Like,
+      //   banStatus: false,
+      // });
+      // const dislikesCount = await this.PostLikeModel.countDocuments({
+      //   postId,
+      //   status: LikeEnum.Dislike,
+      //   banStatus: false,
+      // });
+
+      const getLast3Likes = await this.dataSource.query(
+        `SELECT count(*) 
+        FROM public.post_like pl Where pl."postId"=$1 and pl."status"=$2 and pl."banStatus"=$3 
+        Order by pl."addedAt" desc
+        Limit 3;`,
+        [post.id, LikeEnum.Like, false],
+      );
+
+      //   await this.PostLikeModel.find({
+      //   postId,
+      //   status: LikeEnum.Like,
+      //   banStatus: false,
+      // })
+      //   .sort({ addedAt: -1 }) // sort by addedAt in descending order
+      //   .limit(3) // limit to 3 results
+      //   .lean();
 
       const newestLikes: NewestLikesType[] = newestLikesMapping(getLast3Likes);
 

@@ -129,7 +129,7 @@ export class BlogsQueryRepo {
       `SELECT count(*)
        FROM public.blogs b Left join public.blog_owner_info boi on b."id"= boi."blogId"
        Left Join public.blog_ban_info bbi on b."id"= bbi."blogId"
-       Where b."isBanned"=$1 and b."isBanned"=$2 and b."name"=$3 and b."userId"=$4;`,
+       Where b."isBanned"=$1 and b."isBanned"=$2 and b."name"=$3 and boi."userId"=$4;`,
       [isBanned01, isBanned02, searchName, blogOwnerUserId],
     );
 

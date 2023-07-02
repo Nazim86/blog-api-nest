@@ -13,7 +13,7 @@ export class BlogRepository {
     @InjectDataSource() private dataSource: DataSource,
   ) {}
 
-  async getBlogById(blogId: string): Promise<BlogDocument | null> {
+  async getBlogById(blogId: string) {
     try {
       let foundBlog = await this.dataSource.query(
         `SELECT b.*, boi."userId",boi."userLogin", bbi."banDate" 

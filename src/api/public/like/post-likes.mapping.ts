@@ -1,10 +1,5 @@
-import { PostLikesDbType } from './post-likes-db-type';
-import { NewestLikesType } from '../../infrastructure/posts/types/posts-db-type';
-
-export const newestLikesMapping = (
-  postLikes: PostLikesDbType[],
-): NewestLikesType[] => {
-  return postLikes.map((likes: PostLikesDbType): NewestLikesType => {
+export const newestLikesMapping = (postLikes) => {
+  return postLikes.map((likes) => {
     return {
       addedAt: likes.addedAt,
       userId: likes.userId,

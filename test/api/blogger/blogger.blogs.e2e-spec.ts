@@ -116,6 +116,7 @@ describe('Blogger blog testing', () => {
         .send(newPostCreatingData);
 
       post = result.body;
+      console.log('post', post);
       expect(result.status).toBe(201);
       expect(result.body).toEqual(returnedCreatedPost);
     });

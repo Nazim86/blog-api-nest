@@ -84,14 +84,14 @@ export class BloggerBlogsController {
     @Body() createPostDto: CreatePostDto,
     @UserId() userId: string,
   ) {
-    const post: Result<ResultCode> = await this.commandBus.execute(
+    const postId = await this.commandBus.execute(
       new PostCreateCommand(userId, blogId, createPostDto),
     );
 
-    if (post.code !== ResultCode.Success) {
-      return exceptionHandler(post.code);
+    if (postId.code !== ResultCode.Success) {
+      return exceptionHandler(postId.code);
     }
-    return await this.postQueryRepo.getPostById(post.data.toString());
+    return await this.postQueryRepo.getPostById(postId.data);
   }
 
   @HttpCode(204)

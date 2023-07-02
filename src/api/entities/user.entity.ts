@@ -11,7 +11,6 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { UserEntity } from './sql/user.entity';
 
 export type UserDocument = HydratedDocument<User>;
 export type UserModelStaticType = {
@@ -205,7 +204,7 @@ export class UserBanInfoEntity {
   @Column({ unique: true, type: 'varchar' })
   isBanned: string;
 
-  @OneToOne(() => UserEntity, (u) => u.banInfo, { cascade: true })
+  @OneToOne(() => User, (u) => u.banInfo, { cascade: true })
   @JoinColumn({ name: 'userId' })
   userId: string;
 }

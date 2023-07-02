@@ -81,7 +81,6 @@ import { CreateUserUseCase } from './api/public/auth/application,use-cases/creat
 import { RegistrationConfirmationUseCase } from './api/public/auth/application,use-cases/registration-confirmation-use-case';
 import { DeviceDeleteByIdUseCase } from './api/public/securityDevices/application,use-cases/device-deleteByDeviceId-use-case';
 import { DeleteDevicesUseCase } from './api/public/securityDevices/application,use-cases/delete-devices-use-case';
-import { UserEntity } from './api/entities/sql/user.entity';
 
 const mongooseModels = [
   { name: Device.name, schema: DeviceSchema },
@@ -124,7 +123,7 @@ const useCases = [
   DeleteDevicesUseCase,
 ];
 
-const entities = [UserEntity, UserBanInfoEntity];
+const entities = [User, UserBanInfoEntity];
 
 export const neonConfigForTypeOrm: TypeOrmModuleOptions = {
   type: 'postgres',
