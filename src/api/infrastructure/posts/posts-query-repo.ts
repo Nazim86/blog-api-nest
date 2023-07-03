@@ -32,6 +32,9 @@ export class PostsQueryRepo {
       );
 
       post = post[0];
+
+      console.log('post in post query repo', post);
+
       // const post: PostDocument | null = await this.PostModel.findOne({
       //   _id: new ObjectId(postId),
       // });
@@ -41,6 +44,8 @@ export class PostsQueryRepo {
       }
 
       const blog = await this.blogsRepository.getBlogById(post.blogId);
+
+      console.log('blog iin post query', blog);
 
       if (blog.isBanned) {
         return false;
@@ -60,17 +65,21 @@ export class PostsQueryRepo {
         }
       }
 
-      const likesCount = await this.dataSource.query(
+      let likesCount = await this.dataSource.query(
         `SELECT count(*) 
         FROM public.post_like pl Where pl."postId"=$1 and pl."status"=$2 and pl."banStatus"=$3;`,
         [post.id, LikeEnum.Like, false],
       );
 
-      const dislikesCount = await this.dataSource.query(
+      likesCount = Number(likesCount[0].count);
+
+      let dislikesCount = await this.dataSource.query(
         `SELECT count(*) 
         FROM public.post_like pl Where pl."postId"=$1 and pl."status"=$2 and pl."banStatus"=$3;`,
         [post.id, LikeEnum.Dislike, false],
       );
+
+      dislikesCount = Number(dislikesCount[0].count);
 
       // const likesCount = await this.PostLikeModel.countDocuments({
       //   postId,
@@ -83,14 +92,23 @@ export class PostsQueryRepo {
       //   banStatus: false,
       // });
 
+      console.log('before 3 last like');
+
+      const sortBy = 'addedAt';
+
       const getLast3Likes = await this.dataSource.query(
         `SELECT count(*) 
-        FROM public.post_like pl Where pl."postId"=$1 and pl."status"=$2 and pl."banStatus"=$3 
-        Order by pl."addedAt" desc
+        FROM public.post_like pl 
+        Where pl."postId"=$1 and pl."status"=$2 and pl."banStatus"=$3
+        Group by pl."addedAt"
+        Order by "${sortBy}" desc
         Limit 3;`,
         [post.id, LikeEnum.Like, false],
       );
 
+      console.log('after get3likes');
+
+      console.log('get last 3 likes', getLast3Likes);
       //   await this.PostLikeModel.find({
       //   postId,
       //   status: LikeEnum.Like,
@@ -103,7 +121,7 @@ export class PostsQueryRepo {
       const newestLikes: NewestLikesType[] = newestLikesMapping(getLast3Likes);
 
       return {
-        id: post._id.toString(),
+        id: post.id,
         title: post.title,
         shortDescription: post.shortDescription,
         content: post.content,
@@ -118,6 +136,7 @@ export class PostsQueryRepo {
         },
       };
     } catch (e) {
+      console.log(e);
       return false;
     }
   }

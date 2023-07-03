@@ -30,11 +30,10 @@ export class PostCreateUseCase {
 
     if (blog.userId !== command.userId) return { code: ResultCode.Forbidden };
 
-    const newPost = await this.postRepository.createPost(
+    const postId = await this.postRepository.createPost(
       command.createPostDto,
       blog,
     );
-
     // const newPost: PostDocument = this.PostModel.createPost(
     //   command.createPostDto,
     //   this.PostModel,
@@ -43,6 +42,6 @@ export class PostCreateUseCase {
 
     //await this.postRepository.save(newPost);
 
-    return { code: ResultCode.Success, data: newPost.id };
+    return { code: ResultCode.Success, data: postId };
   }
 }
