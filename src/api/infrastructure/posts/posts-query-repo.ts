@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Post, PostDocument } from '../../entities/post.entity';
 import { Model } from 'mongoose';
 import { PostsViewType } from './types/posts-view-type';
-import { NewestLikesType, PostsDbType } from './types/posts-db-type';
+import { NewestLikesType } from './types/posts-db-type';
 import { PostLike, PostLikeDocument } from '../../entities/postLike.entity';
 import { LikeEnum } from '../../public/like/like.enum';
 import { QueryPaginationType } from '../../../types/query-pagination-type';
@@ -46,12 +46,14 @@ export class PostsQueryRepo {
       let myStatus = 'None';
 
       if (userId) {
-        const likeInDb = await this.dataSource.query(
+        let likeInDb = await this.dataSource.query(
           `SELECT id, "postId", "userId", "addedAt", status, login, "banStatus"
             FROM public.post_like pl Where pl."postId"=$1 and pl."userId"=$2;`,
           [postId, userId],
         );
-        //const likeInDb = await this.PostLikeModel.findOne({ postId, userId });
+
+        likeInDb = likeInDb[0];
+
         if (likeInDb) {
           myStatus = likeInDb.status;
         }
@@ -87,6 +89,8 @@ export class PostsQueryRepo {
 
       const newestLikes: NewestLikesType[] = newestLikesMapping(getLast3Likes);
 
+      console.log(post);
+
       return {
         id: post.id,
         title: post.title,
@@ -119,20 +123,33 @@ export class PostsQueryRepo {
     );
 
     const skipSize = paginatedQuery.skipSize;
-    const totalCount = await this.PostModel.countDocuments({});
+
+    let totalCount = await this.dataSource.query(
+      `SELECT count(*) FROM public.posts;`,
+    );
+
+    totalCount = Number(totalCount[0].count);
+
+    //const totalCount = await this.PostModel.countDocuments({});
     const pagesCount = paginatedQuery.totalPages(totalCount);
 
-    const getposts: PostsDbType[] = await this.PostModel.find({})
-      .sort({
-        [paginatedQuery.sortBy]:
-          paginatedQuery.sortDirection === 'asc' ? 1 : -1,
-      })
-      .skip(skipSize)
-      .limit(paginatedQuery.pageSize)
-      .lean();
+    const getPosts = await this.dataSource.query(
+      `SELECT p.* FROM public.posts p
+              Order by "${paginatedQuery.sortBy}" ${paginatedQuery.sortDirection}
+              Limit ${paginatedQuery.pageSize} Offset ${skipSize} ;`,
+    );
+
+    // const getposts = await this.PostModel.find({})
+    //   .sort({
+    //     [paginatedQuery.sortBy]:
+    //       paginatedQuery.sortDirection === 'asc' ? 1 : -1,
+    //   })
+    //   .skip(skipSize)
+    //   .limit(paginatedQuery.pageSize)
+    //   .lean();
 
     const mappedPost: Promise<PostsViewType>[] =
-      await this.postMapping.postViewMapping(getposts, userId);
+      await this.postMapping.postViewMapping(getPosts, userId);
 
     const resolvedMappedPosts: PostsViewType[] = await Promise.all(mappedPost);
 
