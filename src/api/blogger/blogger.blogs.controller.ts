@@ -65,6 +65,15 @@ export class BloggerBlogsController {
     return await this.commentsQueryRepo.getCommentForBlogger(query, userId);
   }
 
+  @Get(':blogId/posts')
+  async getPostsForBlog(
+    @Param('blogId') blogId: string,
+    @Query() query: PaginationType,
+    @UserId() userId: string,
+  ) {
+    return await this.postQueryRepo.getPostsByBlogId(query, blogId, userId);
+  }
+
   @Post()
   async createBlog(
     @Body() createBlogDto: CreateBlogDto,

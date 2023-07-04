@@ -33,19 +33,11 @@ export class PostsQueryRepo {
 
       post = post[0];
 
-      console.log('post in post query repo', post);
-
-      // const post: PostDocument | null = await this.PostModel.findOne({
-      //   _id: new ObjectId(postId),
-      // });
-
       if (!post) {
         return false;
       }
 
       const blog = await this.blogsRepository.getBlogById(post.blogId);
-
-      console.log('blog iin post query', blog);
 
       if (blog.isBanned) {
         return false;
@@ -81,19 +73,6 @@ export class PostsQueryRepo {
 
       dislikesCount = Number(dislikesCount[0].count);
 
-      // const likesCount = await this.PostLikeModel.countDocuments({
-      //   postId,
-      //   status: LikeEnum.Like,
-      //   banStatus: false,
-      // });
-      // const dislikesCount = await this.PostLikeModel.countDocuments({
-      //   postId,
-      //   status: LikeEnum.Dislike,
-      //   banStatus: false,
-      // });
-
-      console.log('before 3 last like');
-
       const sortBy = 'addedAt';
 
       const getLast3Likes = await this.dataSource.query(
@@ -105,18 +84,6 @@ export class PostsQueryRepo {
         Limit 3;`,
         [post.id, LikeEnum.Like, false],
       );
-
-      console.log('after get3likes');
-
-      console.log('get last 3 likes', getLast3Likes);
-      //   await this.PostLikeModel.find({
-      //   postId,
-      //   status: LikeEnum.Like,
-      //   banStatus: false,
-      // })
-      //   .sort({ addedAt: -1 }) // sort by addedAt in descending order
-      //   .limit(3) // limit to 3 results
-      //   .lean();
 
       const newestLikes: NewestLikesType[] = newestLikesMapping(getLast3Likes);
 
@@ -136,7 +103,6 @@ export class PostsQueryRepo {
         },
       };
     } catch (e) {
-      console.log(e);
       return false;
     }
   }
@@ -191,19 +157,35 @@ export class PostsQueryRepo {
       query.sortDirection,
     );
     const skipSize = paginatedQuery.skipSize;
-    const totalCount = await this.PostModel.countDocuments({ blogId: blogId });
+
+    let totalCount = await this.dataSource.query(
+      `SELECT count(*) FROM public.posts Where "blogId"=$1 `,
+      [blogId],
+    );
+
+    totalCount = Number(totalCount[0].count);
+
+    //const totalCount = await this.PostModel.countDocuments({ blogId: blogId });
     const pagesCount = paginatedQuery.totalPages(totalCount);
 
-    const getPostsByBlogId: PostsDbType[] = await this.PostModel.find({
-      blogId: blogId,
-    })
-      .sort({
-        [paginatedQuery.sortBy]:
-          paginatedQuery.sortDirection === 'asc' ? 1 : -1,
-      })
-      .skip(skipSize)
-      .limit(paginatedQuery.pageSize)
-      .lean();
+    const getPostsByBlogId = await this.dataSource.query(
+      `SELECT p.* FROM public.posts p 
+              Where p."blogId"=$1 
+              Order by "${paginatedQuery.sortBy}" ${paginatedQuery.sortDirection}
+              Limit ${paginatedQuery.pageSize} Offset ${skipSize}`,
+      [blogId],
+    );
+
+    // const getPostsByBlogId: PostsDbType[] = await this.PostModel.find({
+    //   blogId: blogId,
+    // })
+    //   .sort({
+    //     [paginatedQuery.sortBy]:
+    //       paginatedQuery.sortDirection === 'asc' ? 1 : -1,
+    //   })
+    //   .skip(skipSize)
+    //   .limit(paginatedQuery.pageSize)
+    //   .lean();
 
     if (getPostsByBlogId.length === 0) return false;
 

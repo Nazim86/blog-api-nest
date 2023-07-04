@@ -117,9 +117,17 @@ describe('Blogger blog testing', () => {
         .send(newPostCreatingData);
 
       post = result.body;
-      console.log('post', post);
       expect(result.status).toBe(201);
       expect(result.body).toEqual(returnedCreatedPost);
+    });
+
+    it(`Get posts by blogId`, async () => {
+      const result = await request(app.getHttpServer())
+        .get(`/blogger/blogs/${blog.id}/posts`)
+        .auth(accessToken, { type: 'bearer' });
+
+      expect(result.status).toBe(200);
+      expect(result.body).toEqual(createdPostWithPagination);
     });
 
     it(`Get posts`, async () => {
