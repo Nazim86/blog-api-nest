@@ -21,6 +21,8 @@ import { UsersRepository } from '../users/users.repository';
 import { Pagination, PaginationType } from '../../../common/pagination';
 import { BlogRepository } from '../blogs/blog.repository';
 import { PostRepository } from '../posts/post.repository';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class CommentsQueryRepo {
@@ -30,6 +32,7 @@ export class CommentsQueryRepo {
     private readonly usersRepository: UsersRepository,
     private readonly blogsRepository: BlogRepository,
     private readonly postsRepository: PostRepository,
+    @InjectDataSource() private dataSource: DataSource,
 
     @InjectModel(Comment.name) private CommentModel: CommentModelType,
     @InjectModel(CommentLike.name)
@@ -189,24 +192,49 @@ export class CommentsQueryRepo {
       query.sortDirection,
     );
 
-    const filter = {
-      'commentatorInfo.isBanned': false,
-      'postInfo.blogOwnerId': userId,
-    };
+    // const filter = {
+    //   'commentatorInfo.isBanned': false,
+    //   'postInfo.blogOwnerId': userId,
+    // };
 
     const skipSize = paginatedQuery.skipSize;
 
-    const totalCount = await this.CommentModel.countDocuments(filter);
+    let totalCount = await this.dataSource.query(
+      `Select count(*) from public.comments c
+              Left join public.commentator_info ci on
+              c."id"= ci."commentId"
+              Left join public.post_info pi on
+              c."id"= pi."commentId"
+              Where ci."isBanned" = $1 and pi."blogOwnerId"=$2`,
+      [false, userId],
+    );
+
+    totalCount = Number(totalCount[0].count);
+
+    //const totalCount = await this.CommentModel.countDocuments(filter);
     const pagesCount = paginatedQuery.totalPages(totalCount);
 
-    const comments: CommentDocument[] = await this.CommentModel.find(filter)
-      .sort({
-        [paginatedQuery.sortBy]:
-          paginatedQuery.sortDirection === 'asc' ? 1 : -1,
-      })
-      .skip(skipSize)
-      .limit(paginatedQuery.pageSize);
-    //.lean();
+    const comments = await this.dataSource.query(
+      `Select c.*, ci."userId", ci."userLogin", pi."title",
+              pi."blogId",pi."blogName", pi."blogOwnerId" 
+              from public.comments c
+              Left join public.commentator_info ci on
+              c."id"= ci."commentId"
+              Left join public.post_info pi on
+              c."id"= pi."commentId"
+              Where ci."isBanned" = $1 and pi."blogOwnerId"=$2
+              Order by "${paginatedQuery.sortBy}" ${paginatedQuery.sortDirection}
+              Limit ${paginatedQuery.pageSize} Offset ${skipSize}`,
+      [false, userId],
+    );
+    // const comments: CommentDocument[] = await this.CommentModel.find(filter)
+    //   .sort({
+    //     [paginatedQuery.sortBy]:
+    //       paginatedQuery.sortDirection === 'asc' ? 1 : -1,
+    //   })
+    //   .skip(skipSize)
+    //   .limit(paginatedQuery.pageSize);
+    // //.lean();
     const myStatus = 'None';
     const mappedCommentsForBlog = await this.commentMappingForBlogger(
       comments,

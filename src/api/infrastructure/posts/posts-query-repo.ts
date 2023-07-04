@@ -89,8 +89,6 @@ export class PostsQueryRepo {
 
       const newestLikes: NewestLikesType[] = newestLikesMapping(getLast3Likes);
 
-      console.log(post);
-
       return {
         id: post.id,
         title: post.title,
@@ -138,15 +136,6 @@ export class PostsQueryRepo {
               Order by "${paginatedQuery.sortBy}" ${paginatedQuery.sortDirection}
               Limit ${paginatedQuery.pageSize} Offset ${skipSize} ;`,
     );
-
-    // const getposts = await this.PostModel.find({})
-    //   .sort({
-    //     [paginatedQuery.sortBy]:
-    //       paginatedQuery.sortDirection === 'asc' ? 1 : -1,
-    //   })
-    //   .skip(skipSize)
-    //   .limit(paginatedQuery.pageSize)
-    //   .lean();
 
     const mappedPost: Promise<PostsViewType>[] =
       await this.postMapping.postViewMapping(getPosts, userId);
