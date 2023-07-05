@@ -1,17 +1,11 @@
 import { CommandHandler } from '@nestjs/cqrs';
 import { PostDocument } from '../../../entities/post.entity';
-import { UserDocument } from '../../../entities/user.entity';
-import {
-  Comment,
-  CommentDocument,
-  CommentModelType,
-} from '../../../entities/comment.entity';
+import { Comment, CommentModelType } from '../../../entities/comment.entity';
 import { PostRepository } from '../../../infrastructure/posts/post.repository';
 import { UsersRepository } from '../../../infrastructure/users/users.repository';
 import { InjectModel } from '@nestjs/mongoose';
 import { CommentsRepository } from '../../../infrastructure/comments/comments.repository';
 import { ResultCode } from '../../../../exception-handler/result-code-enum';
-import { Blog } from '../../../entities/blog.entity';
 import { BlogRepository } from '../../../infrastructure/blogs/blog.repository';
 
 export class CommentCreateCommand {
@@ -35,9 +29,7 @@ export class CommentCreateUseCase {
     if (!post || typeof post === 'boolean')
       return { code: ResultCode.NotFound };
 
-    const user: UserDocument | null = await this.usersRepository.findUserById(
-      command.userId,
-    );
+    const user = await this.usersRepository.findUserById(command.userId);
 
     if (!user) return { code: ResultCode.NotFound };
 
@@ -52,19 +44,29 @@ export class CommentCreateUseCase {
       return { code: ResultCode.Forbidden };
     }
 
-    const newComment: CommentDocument = this.CommentModel.createComment(
-      command.createCommentDto,
-      command.postId,
-      command.userId,
-      user.accountData.login,
-      this.CommentModel,
-      post.title,
-      post.blogId,
-      post.blogName,
-      blog.blogOwnerInfo.userId,
-    );
+    const newComment = await this.commentsRepository.createComment({
+      createCommentDto: command.createCommentDto,
+      postId: command.postId,
+      userId: command.userId,
+      login: user.login,
+      title: post.title,
+      blogId: post.blogId,
+      blogName: post.blogName,
+      blogOwnerId: blog.userId,
+    });
+    // const newComment: CommentDocument = this.CommentModel.createComment(
+    //   command.createCommentDto,
+    //   command.postId,
+    //   command.userId,
+    //   user.accountData.login,
+    //   this.CommentModel,
+    //   post.title,
+    //   post.blogId,
+    //   post.blogName,
+    //   blog.blogOwnerInfo.userId,
+    // );
 
-    await this.commentsRepository.save(newComment);
+    //await this.commentsRepository.save(newComment);
     return { data: newComment.id, code: ResultCode.Success };
   }
 }

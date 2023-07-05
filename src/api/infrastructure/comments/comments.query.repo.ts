@@ -12,7 +12,6 @@ import {
 import { CommentsMapping } from '../../public/comments/mapper/comments.mapping';
 import {
   CommentLike,
-  CommentLikeDocument,
   CommentLikeModelType,
 } from '../../entities/commentLike.entity';
 import { LikeEnum } from '../../public/like/like.enum';
@@ -39,50 +38,65 @@ export class CommentsQueryRepo {
     private CommentLikeModel: CommentLikeModelType,
   ) {}
 
-  private async commentMappingForBlogger(
-    comments: CommentDocument[],
-    mystatus: string,
-  ) {
+  private async commentMappingForBlogger(comments, myStatus: string) {
     return Promise.all(
-      comments.map(async (comment: CommentDocument) => {
-        const commentLike: CommentLikeDocument =
-          await this.CommentLikeModel.findOne({
-            commentId: comment.id,
-          });
+      comments.map(async (comment) => {
+        const commentLike = await this.dataSource.query(
+          `Select * from public.comment_like
+                  Where "commentId"=$1;`,
+          [comment.id],
+        );
 
-        if (commentLike) {
-          mystatus = commentLike.status;
+        // const commentLike: CommentLikeDocument =
+        //   await this.CommentLikeModel.findOne({
+        //     commentId: comment.id,
+        //   });
+
+        if (commentLike.length > 0) {
+          myStatus = commentLike.status;
         }
 
-        const likesCount = await this.CommentLikeModel.countDocuments({
-          commentId: comment.id,
-          status: LikeEnum.Like,
-          banStatus: false,
-        });
-        const dislikesCount = await this.CommentLikeModel.countDocuments({
-          commentId: comment.id,
-          status: LikeEnum.Dislike,
-          banStatus: false,
-        });
+        const likesCount = await this.dataSource.query(
+          `Select count(*) from public.comment_like
+                  Where "commentId"=$1 and "status"=$2 and "banStatus" = $3;`,
+          [comment.id, LikeEnum.Like, false],
+        );
+
+        const dislikesCount = await this.dataSource.query(
+          `Select count(*) from public.comment_like
+                  Where "commentId"=$1 and "status"=$2 and "banStatus" = $3;`,
+          [comment.id, LikeEnum.Dislike, false],
+        );
+
+        // const likesCount = await this.CommentLikeModel.countDocuments({
+        //   commentId: comment.id,
+        //   status: LikeEnum.Like,
+        //   banStatus: false,
+        // });
+        // const dislikesCount = await this.CommentLikeModel.countDocuments({
+        //   commentId: comment.id,
+        //   status: LikeEnum.Dislike,
+        //   banStatus: false,
+        // });
 
         return {
           id: comment.id,
           content: comment.content,
           commentatorInfo: {
-            userId: comment.commentatorInfo.userId,
-            userLogin: comment.commentatorInfo.userLogin,
+            userId: comment.userId,
+            userLogin: comment.userLogin,
           },
           createdAt: comment.createdAt,
           likesInfo: {
             likesCount,
             dislikesCount,
-            myStatus: mystatus,
+            myStatus: myStatus,
           },
           postInfo: {
             id: comment.postId,
-            title: comment.postInfo.title,
-            blogId: comment.postInfo.blogId,
-            blogName: comment.postInfo.blogName,
+            title: comment.title,
+            blogId: comment.blogId,
+            blogName: comment.blogName,
           },
         };
       }),
