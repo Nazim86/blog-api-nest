@@ -4,18 +4,13 @@ import { PostsViewType } from '../posts/types/posts-view-type';
 import { QueryPaginationType } from '../../../types/query-pagination-type';
 import { CommentsViewType } from './types/comments-view-type';
 import { InjectModel } from '@nestjs/mongoose';
-import {
-  Comment,
-  CommentDocument,
-  CommentModelType,
-} from '../../entities/comment.entity';
+import { Comment, CommentModelType } from '../../entities/comment.entity';
 import { CommentsMapping } from '../../public/comments/mapper/comments.mapping';
 import {
   CommentLike,
   CommentLikeModelType,
 } from '../../entities/commentLike.entity';
 import { LikeEnum } from '../../public/like/like.enum';
-import { ObjectId } from 'mongodb';
 import { UsersRepository } from '../users/users.repository';
 import { Pagination, PaginationType } from '../../../common/pagination';
 import { BlogRepository } from '../blogs/blog.repository';
@@ -107,22 +102,62 @@ export class CommentsQueryRepo {
     postId: string,
     query,
   ): Promise<QueryPaginationType<CommentsViewType[]> | null> {
+    const paginatedQuery: Pagination<PaginationType> = new Pagination(
+      query.pageNumber,
+      query.pageSize,
+      query.sortBy,
+      query.sortDirection,
+    ); // this was not here before
+
     const postById: PostsViewType | boolean =
       await this.postQueryRepo.getPostById(postId);
-    if (!postById) return null;
-    const skipSize = (query.pageNumber - 1) * query.pageSize;
-    const totalCount = await this.CommentModel.countDocuments({
-      postId: postId,
-    });
-    const pagesCount = Math.ceil(totalCount / query.pageSize);
 
-    const getCommentsForPost: CommentDocument[] = await this.CommentModel.find({
-      postId: postId,
-    })
-      .sort({ [query.sortBy]: query.sortDirection === 'asc' ? 1 : -1 })
-      .skip(skipSize)
-      .limit(query.pageSize)
-      .lean();
+    if (!postById) return null;
+
+    const skipSize = paginatedQuery.skipSize;
+
+    //const skipSize = (query.pageNumber - 1) * query.pageSize;
+
+    let totalCount = await this.dataSource.query(
+      `Select count(*) from public.comments c
+              Left join public.commentator_info ci on
+              c."id"= ci."commentId"
+              Left join public.post_info pi on
+              c."id"= pi."commentId"
+              Where c."postId" = $1`,
+      [postId],
+    );
+
+    totalCount = Number(totalCount[0].count);
+
+    // const totalCount = await this.CommentModel.countDocuments({
+    //   postId: postId,
+    // });
+    const pagesCount = paginatedQuery.totalPages(totalCount);
+
+    // const pagesCount = Math.ceil(totalCount / query.pageSize);
+
+    const getCommentsForPost = await this.dataSource.query(
+      `Select c.*, ci."userId", ci."userLogin", pi."title",
+              pi."blogId",pi."blogName", pi."blogOwnerId" 
+              from public.comments c
+              Left join public.commentator_info ci on
+              c."id"= ci."commentId"
+              Left join public.post_info pi on
+              c."id"= pi."commentId"
+              Where c."postId" = $1
+              Order by "${paginatedQuery.sortBy}" ${paginatedQuery.sortDirection}
+              Limit ${paginatedQuery.pageSize} Offset ${skipSize}`,
+      [postId],
+    );
+
+    // const getCommentsForPost: CommentDocument[] = await this.CommentModel.find({
+    //   postId: postId,
+    // })
+    //   .sort({ [query.sortBy]: query.sortDirection === 'asc' ? 1 : -1 })
+    //   .skip(skipSize)
+    //   .limit(query.pageSize)
+    //   .lean();
 
     const mappedComment: Promise<CommentsViewType>[] =
       await this.commentMapping.commentMapping(getCommentsForPost);
@@ -140,51 +175,83 @@ export class CommentsQueryRepo {
     };
   }
 
-  async getComment(commentId: string, userId?: string): Promise<any | null> {
+  async getComment(commentId: string, userId?: string) {
     try {
-      const comment: CommentDocument | null = await this.CommentModel.findOne({
-        _id: new ObjectId(commentId),
-      });
+      const comment = await this.dataSource.query(
+        `Select c.*, ci."userId", ci."userLogin", pi."title",
+              pi."blogId",pi."blogName", pi."blogOwnerId" 
+              from public.comments c
+              Left join public.commentator_info ci on
+              c."id"= ci."commentId"
+              Left join public.post_info pi on
+              c."id"= pi."commentId"
+              Where c."id" = $1`,
+        [commentId],
+      );
+      // const comment = await this.CommentModel.findOne({
+      //   _id: new ObjectId(commentId),
+      // });
 
       if (!comment) return null;
 
-      const user = await this.usersRepository.findUserById(
-        comment.commentatorInfo.userId,
-      );
+      const user = await this.usersRepository.findUserById(comment.userId);
 
-      if (user.banInfo.isBanned) {
+      if (user.isBanned) {
         return null;
       }
 
       let myStatus = 'None';
 
       if (userId) {
-        const likeInDb = await this.CommentLikeModel.findOne({
-          commentId,
-          userId,
-        });
+        const likeInDb = await this.dataSource.query(
+          `SELECT * FROM public.comment_like
+                 Where "commentId"=$1 and "userId" = $2;`,
+          [commentId, userId],
+        );
+
+        // const likeInDb = await this.CommentLikeModel.findOne({
+        //   commentId,
+        //   userId,
+        // });
+
         if (likeInDb) {
           myStatus = likeInDb.status;
         }
       }
 
-      const likesCount = await this.CommentLikeModel.countDocuments({
-        commentId,
-        status: LikeEnum.Like,
-        banStatus: false,
-      });
-      const dislikesCount = await this.CommentLikeModel.countDocuments({
-        commentId,
-        status: LikeEnum.Dislike,
-        banStatus: false,
-      });
+      let likesCount = await this.dataSource.query(
+        `SELECT count(*) 
+        FROM public.comment_like cl Where cl."commentId"=$1 and cl."status"=$2 and cl."banStatus"=$3;`,
+        [comment.id, LikeEnum.Like, false],
+      );
+
+      likesCount = Number(likesCount[0].count);
+
+      let dislikesCount = await this.dataSource.query(
+        `SELECT count(*) 
+        FROM public.comment_like cl Where cl."commentId"=$1 and cl."status"=$2 and cl."banStatus"=$3;`,
+        [comment.id, LikeEnum.Dislike, false],
+      );
+
+      dislikesCount = Number(dislikesCount[0].count);
+
+      // const likesCount = await this.CommentLikeModel.countDocuments({
+      //   commentId,
+      //   status: LikeEnum.Like,
+      //   banStatus: false,
+      // });
+      // const dislikesCount = await this.CommentLikeModel.countDocuments({
+      //   commentId,
+      //   status: LikeEnum.Dislike,
+      //   banStatus: false,
+      // });
 
       return {
-        id: comment._id.toString(),
+        id: comment.id,
         content: comment.content,
         commentatorInfo: {
-          userId: comment.commentatorInfo.userId,
-          userLogin: comment.commentatorInfo.userLogin,
+          userId: comment.userId,
+          userLogin: comment.userLogin,
         },
         createdAt: comment.createdAt,
         likesInfo: {
