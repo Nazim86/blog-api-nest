@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { PostsQueryRepo } from '../posts/posts-query-repo';
-import { PostsViewType } from '../posts/types/posts-view-type';
 import { QueryPaginationType } from '../../../types/query-pagination-type';
 import { CommentsViewType } from './types/comments-view-type';
 import { InjectModel } from '@nestjs/mongoose';
@@ -109,8 +108,7 @@ export class CommentsQueryRepo {
       query.sortDirection,
     ); // this was not here before
 
-    const postById: PostsViewType | boolean =
-      await this.postQueryRepo.getPostById(postId);
+    const postById = await this.postsRepository.getPostById(postId);
 
     if (!postById) return null;
 
@@ -177,7 +175,7 @@ export class CommentsQueryRepo {
 
   async getComment(commentId: string, userId?: string) {
     try {
-      const comment = await this.dataSource.query(
+      let comment = await this.dataSource.query(
         `Select c.*, ci."userId", ci."userLogin", pi."title",
               pi."blogId",pi."blogName", pi."blogOwnerId" 
               from public.comments c
@@ -191,6 +189,8 @@ export class CommentsQueryRepo {
       // const comment = await this.CommentModel.findOne({
       //   _id: new ObjectId(commentId),
       // });
+
+      comment = comment[0];
 
       if (!comment) return null;
 
