@@ -2,13 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PostsQueryRepo } from '../posts/posts-query-repo';
 import { QueryPaginationType } from '../../../types/query-pagination-type';
 import { CommentsViewType } from './types/comments-view-type';
-import { InjectModel } from '@nestjs/mongoose';
-import { Comment, CommentModelType } from '../../entities/comment.entity';
 import { CommentsMapping } from '../../public/comments/mapper/comments.mapping';
-import {
-  CommentLike,
-  CommentLikeModelType,
-} from '../../entities/commentLike.entity';
 import { LikeEnum } from '../../public/like/like.enum';
 import { UsersRepository } from '../users/users.repository';
 import { Pagination, PaginationType } from '../../../common/pagination';
@@ -26,10 +20,6 @@ export class CommentsQueryRepo {
     private readonly blogsRepository: BlogRepository,
     private readonly postsRepository: PostRepository,
     @InjectDataSource() private dataSource: DataSource,
-
-    @InjectModel(Comment.name) private CommentModel: CommentModelType,
-    @InjectModel(CommentLike.name)
-    private CommentLikeModel: CommentLikeModelType,
   ) {}
 
   private async commentMappingForBlogger(comments, myStatus: string) {

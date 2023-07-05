@@ -1,9 +1,7 @@
 import { CommandHandler } from '@nestjs/cqrs';
 import { PostDocument } from '../../../entities/post.entity';
-import { Comment, CommentModelType } from '../../../entities/comment.entity';
 import { PostRepository } from '../../../infrastructure/posts/post.repository';
 import { UsersRepository } from '../../../infrastructure/users/users.repository';
-import { InjectModel } from '@nestjs/mongoose';
 import { CommentsRepository } from '../../../infrastructure/comments/comments.repository';
 import { ResultCode } from '../../../../exception-handler/result-code-enum';
 import { BlogRepository } from '../../../infrastructure/blogs/blog.repository';
@@ -19,7 +17,6 @@ export class CommentCreateUseCase {
     private readonly usersRepository: UsersRepository,
     private readonly commentsRepository: CommentsRepository,
     private readonly blogsRepository: BlogRepository,
-    @InjectModel(Comment.name) private CommentModel: CommentModelType,
   ) {}
   async execute(command: CommentCreateCommand) {
     const post: PostDocument | boolean = await this.postsRepository.getPostById(
