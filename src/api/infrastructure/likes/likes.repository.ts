@@ -1,37 +1,27 @@
-import { InjectModel } from '@nestjs/mongoose';
-import {
-  PostLike,
-  PostLikeDocument,
-  PostLikeModelType,
-} from '../../entities/postLike.entity';
-import {
-  CommentLike,
-  CommentLikeDocument,
-  CommentLikeModelType,
-} from '../../entities/commentLike.entity';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
 export class LikesRepository {
-  constructor(
-    @InjectModel(PostLike.name) private PostLikeModel: PostLikeModelType,
-    @InjectModel(CommentLike.name)
-    private CommentLikeModel: CommentLikeModelType,
-    @InjectDataSource() protected dataSource: DataSource,
-  ) {}
+  constructor(@InjectDataSource() protected dataSource: DataSource) {}
 
-  async findPostLike(
-    postId: string,
-    userId: string,
-  ): Promise<PostLikeDocument | null> {
-    return this.PostLikeModel.findOne({ postId, userId });
+  async findPostLike(postId: string, userId: string) {
+    const postLike = await this.dataSource.query(
+      `Select * from public.post_like
+             Where "postId" = $1 and "userId"=$2`,
+      [postId, userId],
+    );
+    //return this.PostLikeModel.findOne({ postId, userId });
+    return postLike[0];
   }
 
-  async findCommentLike(
-    commentId: string,
-    userId: string,
-  ): Promise<CommentLikeDocument | null> {
-    return this.CommentLikeModel.findOne({ commentId, userId });
+  async findCommentLike(commentId: string, userId: string) {
+    const commentLike = await this.dataSource.query(
+      `Select * from public.comment_like
+             Where "commentId" = $1 and "userId"=$2`,
+      [commentId, userId],
+    );
+    return commentLike[0];
+    //return this.CommentLikeModel.findOne({ commentId, userId });
   }
 
   async setBanStatusForCommentLike(userId: string, banStatus: boolean) {
@@ -55,9 +45,5 @@ export class LikesRepository {
     //   { userId },
     //   { $set: { banStatus: banStatus } },
     // );
-  }
-
-  async save(likeDocument: any) {
-    return likeDocument.save();
   }
 }
