@@ -7,6 +7,7 @@ import { CreateUserDto } from '../../superadmin/users/dto/createUser.Dto';
 import { BanUserDto } from '../../superadmin/users/dto/banUserDto';
 import { v4 as uuid } from 'uuid';
 import { add } from 'date-fns';
+import { UserBanDto } from '../../blogger/inputModel-Dto/userBan.dto';
 
 @Injectable()
 export class UsersRepository {
@@ -167,6 +168,24 @@ export class UsersRepository {
     );
 
     return bannedUser[0];
+  }
+
+  async bloggerBanUser(
+    isBanned: boolean,
+    banReason: string,
+    userId: string,
+    userBanDto: UserBanDto,
+    blogId: string,
+  ) {
+    const bannedUser = await this.dataSource.query(
+      `Insert into public.users_ban_by_blogger("isBanned", "banDate", "banReason", "blogId", "userId")
+                values($1,$2,$3,$4,$5)
+                on conflict ("blogId", "userId")
+                do Update set "isBanned"=$1, "banDate"=$2, "banReason"=$3, "blogId"=$3, "userId"=$4`,
+      [isBanned, new Date().toISOString(), banReason, blogId, userId],
+    );
+
+    return bannedUser[1] === 1;
   }
 
   async banUser(userId, banUserDto: BanUserDto) {

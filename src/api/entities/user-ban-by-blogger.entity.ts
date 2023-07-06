@@ -23,7 +23,6 @@ export class BloggerBanUser {
 
   @Prop({ required: true })
   userId: string;
-  ba;
 
   @Prop({
     _id: false,
