@@ -1,9 +1,6 @@
 import { BlogsViewType } from './types/blogs-view-type';
 import { Injectable } from '@nestjs/common';
-import { Blog, BlogDocument } from '../../entities/blog.entity';
-import { Model } from 'mongoose';
 import { QueryPaginationType } from '../../../types/query-pagination-type';
-import { InjectModel } from '@nestjs/mongoose';
 import { PaginationType } from '../../../common/pagination';
 import { BlogPagination } from './blog-pagination';
 import { RoleEnum } from '../../../enums/role-enum';
@@ -12,10 +9,7 @@ import { DataSource } from 'typeorm';
 
 @Injectable()
 export class BlogsQueryRepo {
-  constructor(
-    @InjectModel(Blog.name) private BlogModel: Model<BlogDocument>,
-    @InjectDataSource() private dataSource: DataSource,
-  ) {}
+  constructor(@InjectDataSource() private dataSource: DataSource) {}
 
   private blogsMapping = (array): BlogsViewType[] => {
     return array.map((blog): BlogsViewType => {
@@ -30,22 +24,22 @@ export class BlogsQueryRepo {
     });
   };
 
-  private blogsMappingForSA = (array: BlogDocument[]): BlogsViewType[] => {
-    return array.map((blog: BlogDocument): BlogsViewType => {
+  private blogsMappingForSA = (array) => {
+    return array.map((blog) => {
       return {
-        id: blog._id.toString(),
+        id: blog.id,
         name: blog.name,
         description: blog.description,
         websiteUrl: blog.websiteUrl,
         createdAt: blog.createdAt,
         isMembership: blog.isMembership,
         blogOwnerInfo: {
-          userId: blog.blogOwnerInfo.userId,
-          userLogin: blog.blogOwnerInfo.userLogin,
+          userId: blog.userId,
+          userLogin: blog.userLogin,
         },
         banInfo: {
-          isBanned: blog.banInfo.isBanned,
-          banDate: blog.banInfo.banDate,
+          isBanned: blog.isBanned,
+          banDate: blog.banDate,
         },
       };
     });
