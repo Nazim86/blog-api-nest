@@ -1,17 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { Blog, BlogDocument, BlogModelType } from '../../entities/blog.entity';
-import { InjectModel } from '@nestjs/mongoose';
-import { ObjectId } from 'mongodb';
+import { BlogDocument } from '../../entities/blog.entity';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { CreateBlogDto } from '../../blogger/inputModel-Dto/createBlog.dto';
 
 @Injectable()
 export class BlogRepository {
-  constructor(
-    @InjectModel(Blog.name) private BlogModel: BlogModelType,
-    @InjectDataSource() private dataSource: DataSource,
-  ) {}
+  constructor(@InjectDataSource() private dataSource: DataSource) {}
 
   async getBlogById(blogId: string) {
     try {
@@ -84,12 +79,6 @@ export class BlogRepository {
     return result[1] === 1;
   }
 
-  async getBlogByBlogOwnerId(userId: string) {
-    return this.BlogModel.find({
-      'blogOwnerInfo.userId': userId,
-    });
-  }
-
   async deleteBlogOwnerInfo(userId: string) {
     const result = await this.dataSource.query(
       `UPDATE public.blog_owner_info bo
@@ -113,8 +102,13 @@ export class BlogRepository {
 
   async deleteBlogById(id: string): Promise<boolean> {
     try {
-      const result = await this.BlogModel.deleteOne({ _id: new ObjectId(id) });
-      return result.deletedCount === 1;
+      const result = await this.dataSource.query(
+        `DELETE FROM public.blogs
+               WHERE "id" = $1;`,
+        [id],
+      );
+      //const result = await this.BlogModel.deleteOne({ _id: new ObjectId(id) });
+      return result[1] === 1;
     } catch (e) {
       return false;
     }
