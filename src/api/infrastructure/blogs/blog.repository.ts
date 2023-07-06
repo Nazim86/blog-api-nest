@@ -96,6 +96,17 @@ export class BlogRepository {
     return result2[1] === 1;
   }
 
+  async bindBlogWithUser(userId: string, login: string, blogId: string) {
+    const isBound = await this.dataSource.query(
+      `UPDATE public.blog_owner_info
+        SET "userId"=$1, "userLogin"=$2
+        WHERE "blogId"=$3`,
+      [userId, login, blogId],
+    );
+
+    return isBound[1] === 1;
+  }
+
   async deleteBlogOwnerInfo(userId: string) {
     const result = await this.dataSource.query(
       `UPDATE public.blog_owner_info bo
