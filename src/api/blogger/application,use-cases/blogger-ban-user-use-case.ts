@@ -1,16 +1,8 @@
 import { UserBanDto } from '../inputModel-Dto/userBan.dto';
 import { CommandHandler } from '@nestjs/cqrs';
-import { InjectModel } from '@nestjs/mongoose';
-import {
-  BloggerBanUser,
-  BloggerBanUserDocument,
-  BloggerBanUserModelType,
-} from '../../entities/user-ban-by-blogger.entity';
 import { UsersRepository } from '../../infrastructure/users/users.repository';
 import { ResultCode } from '../../../exception-handler/result-code-enum';
-import { UserDocument } from '../../entities/user.entity';
 import { BlogRepository } from '../../infrastructure/blogs/blog.repository';
-import { CommentsRepository } from '../../infrastructure/comments/comments.repository';
 
 export class BloggerBanUserCommand {
   constructor(
@@ -23,17 +15,12 @@ export class BloggerBanUserCommand {
 @CommandHandler(BloggerBanUserCommand)
 export class BloggerBanUserUseCase {
   constructor(
-    @InjectModel(BloggerBanUser.name)
-    private UserBanModel: BloggerBanUserModelType,
     private readonly usersRepository: UsersRepository,
     private readonly blogsRepository: BlogRepository,
-    private readonly commentsRepository: CommentsRepository,
   ) {}
   async execute(command: BloggerBanUserCommand) {
     try {
-      const user: UserDocument = await this.usersRepository.findUserById(
-        command.userId,
-      );
+      const user = await this.usersRepository.findUserById(command.userId);
 
       if (!user) {
         return { code: ResultCode.NotFound };
@@ -50,40 +37,44 @@ export class BloggerBanUserUseCase {
         return { data: errorsMessages, code: ResultCode.BadRequest };
       }
 
-      if (command.blogOwnerId !== blog.blogOwnerInfo.userId) {
+      if (command.blogOwnerId !== blog.userId) {
         return { code: ResultCode.Forbidden };
       }
 
-      // const comment = await this.commentsRepository.getCommentByBlogId(blog.id);
-
-      const bannedUser: BloggerBanUserDocument =
-        await this.usersRepository.findBloggerBannedUser(
-          command.userId,
-          command.userBanDto.blogId,
-        );
-
-      if (!bannedUser) {
-        const banUser = await this.UserBanModel.createBannedUser(
-          user.accountData.login,
-          command.userId,
-          command.userBanDto,
-          this.UserBanModel,
-        );
-        await this.usersRepository.saveBloggerBanUser(banUser);
-        return { code: ResultCode.Success };
-      }
-
-      if (bannedUser)
-        bannedUser.updateBannedUser(
-          user.accountData.login,
-          command.userId,
-          command.userBanDto,
-        );
-      await this.usersRepository.saveBloggerBanUser(bannedUser);
+      const bannedUser = await this.usersRepository.bloggerBanUser(
+        user.isBanned,
+        user.banReason,
+        command.userId,
+        command.userBanDto,
+        blog.id,
+      );
+      // const bannedUser = await this.usersRepository.findBloggerBannedUser(
+      //   command.userId,
+      //   command.userBanDto.blogId,
+      // );
+      //
+      // if (!bannedUser) {
+      //   const banUser = await this.UserBanModel.createBannedUser(
+      //     user.login,
+      //     command.userId,
+      //     command.userBanDto,
+      //     this.UserBanModel,
+      //   );
+      //   await this.usersRepository.saveBloggerBanUser(banUser);
+      //   return { code: ResultCode.Success };
+      // }
+      //
+      // if (bannedUser)
+      //   bannedUser.updateBannedUser(
+      //     user.accountData.login,
+      //     command.userId,
+      //     command.userBanDto,
+      //   );
+      // await this.usersRepository.saveBloggerBanUser(bannedUser);
 
       // await this.commentsRepository.
 
-      return { code: ResultCode.Success };
+      return { code: bannedUser ? ResultCode.Success : ResultCode.NotFound };
     } catch (e) {
       return { code: ResultCode.Success };
     }
