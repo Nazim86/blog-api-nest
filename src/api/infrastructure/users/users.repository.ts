@@ -1,12 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { User } from '../../entities/user.entity';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import {
-  BloggerBanUser,
-  BloggerBanUserDocument,
-  BloggerBanUserModelType,
-} from '../../entities/user-ban-by-blogger.entity';
+
+import { BloggerBanUserDocument } from '../../entities/user-ban-by-blogger.entity';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { CreateUserDto } from '../../superadmin/users/dto/createUser.Dto';
@@ -16,12 +10,7 @@ import { add } from 'date-fns';
 
 @Injectable()
 export class UsersRepository {
-  constructor(
-    @InjectModel(User.name) private UserModel: Model<User>,
-    @InjectModel(BloggerBanUser.name)
-    private UserBanModeL: BloggerBanUserModelType,
-    @InjectDataSource() protected dataSource: DataSource,
-  ) {}
+  constructor(@InjectDataSource() protected dataSource: DataSource) {}
 
   async createUser(
     createUserDto: CreateUserDto,
@@ -167,11 +156,17 @@ export class UsersRepository {
   }
 
   async findBloggerBannedUser(userId: string, blogId: string) {
-    return this.UserBanModeL.findOne({
-      userId,
-      'banInfo.blogId': blogId,
-      'banInfo.isBanned': true,
-    });
+    const bannedUser = await this.dataSource.query(
+      `Select * from public.users_ban_by_blogger ubb
+              Left join public.blog_owner_info boi on
+              ubb."blogId" = boi."blogId"
+              Left join public.users u on
+              ubb."userId" = u."id"
+              Where ubb."userId"=$1 and ubb."blogId"=$2 and ubb.isBanned = $3`,
+      [userId, blogId, true],
+    );
+
+    return bannedUser[0];
   }
 
   async banUser(userId, banUserDto: BanUserDto) {
