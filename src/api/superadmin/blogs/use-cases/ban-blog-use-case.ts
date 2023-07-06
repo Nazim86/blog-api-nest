@@ -1,5 +1,4 @@
 import { BlogRepository } from '../../../infrastructure/blogs/blog.repository';
-import { BlogDocument } from '../../../entities/blog.entity';
 import { ResultCode } from '../../../../exception-handler/result-code-enum';
 import { BanBlogInputModel } from '../inputModel/banBlog-input-model';
 import { Result } from '../../../../exception-handler/result-type';
@@ -13,9 +12,7 @@ export class BanBlogCommand {
 export class BanBlogUseCase {
   constructor(private readonly blogsRepository: BlogRepository) {}
   async execute(command: BanBlogCommand): Promise<Result<any>> {
-    const blog: BlogDocument = await this.blogsRepository.getBlogById(
-      command.blogId,
-    );
+    const blog = await this.blogsRepository.getBlogById(command.blogId);
 
     if (!blog) {
       const errorMessage = {
@@ -27,10 +24,12 @@ export class BanBlogUseCase {
       };
     }
 
-    blog.banBlog(command.banStatus.isBanned);
+    const isBanned = await this.blogsRepository.banBlog(
+      command.banStatus.isBanned,
+      blog.id,
+    );
+    //blog.banBlog(command.banStatus.isBanned);
 
-    await this.blogsRepository.save(blog);
-
-    return { code: ResultCode.Success };
+    return { code: isBanned ? ResultCode.Success : ResultCode.NotFound };
   }
 }

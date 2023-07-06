@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { BlogDocument } from '../../entities/blog.entity';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { CreateBlogDto } from '../../blogger/inputModel-Dto/createBlog.dto';
@@ -79,6 +78,24 @@ export class BlogRepository {
     return result[1] === 1;
   }
 
+  async banBlog(isBanned: boolean, blogId: string) {
+    await this.dataSource.query(
+      `UPDATE public.blogs
+    SET "isBanned"=$1,
+    WHERE "id" = $2;`,
+      [isBanned, blogId],
+    );
+
+    const result2 = await this.dataSource.query(
+      `UPDATE public.blog_ban_info
+            SET "isBanned"=$1, "banDate"=$2
+            WHERE "id"=$3;`,
+      [isBanned, new Date().toISOString(), blogId],
+    );
+
+    return result2[1] === 1;
+  }
+
   async deleteBlogOwnerInfo(userId: string) {
     const result = await this.dataSource.query(
       `UPDATE public.blog_owner_info bo
@@ -94,10 +111,6 @@ export class BlogRepository {
     //   },
     // );
     return result[1] === 1;
-  }
-
-  async save(blog: BlogDocument): Promise<BlogDocument> {
-    return await blog.save();
   }
 
   async deleteBlogById(id: string): Promise<boolean> {
