@@ -1,23 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Comment, CommentDocument } from '../../entities/comment.entity';
-import { Model } from 'mongoose';
-import {
-  CommentLike,
-  CommentLikeDocument,
-} from '../../entities/commentLike.entity';
 import { ObjectId } from 'mongodb';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
 @Injectable()
 export class CommentsRepository {
-  constructor(
-    @InjectDataSource() private dataSource: DataSource,
-    @InjectModel(Comment.name) private CommentModel: Model<CommentDocument>,
-    @InjectModel(CommentLike.name)
-    private CommentLikeModel: Model<CommentLikeDocument>,
-  ) {}
+  constructor(@InjectDataSource() private dataSource: DataSource) {}
 
   async createComment(commentData) {
     let commentId = await this.dataSource.query(
@@ -56,19 +44,19 @@ export class CommentsRepository {
     return commentId;
   }
 
-  async save(newComment: CommentDocument): Promise<CommentDocument> {
-    return newComment.save();
-  }
-
-  async setBanStatusForComment(userId: string, banStatus: boolean) {
-    await this.CommentModel.updateMany(
-      { 'commentatorInfo.userId': userId },
-      { $set: { 'commentatorInfo.isBanned': banStatus } },
+  async getComment(commentId) {
+    const comment = await this.dataSource.query(
+      `select * from public.comments c
+              Left join public.commentator_info ci on 
+              c."id" = ci."commentId"
+              Left join public.post_info pi on
+              c."id" = pi."commentId"
+              Where "id"= $1`,
+      [commentId],
     );
-  }
 
-  async getComment(commentId): Promise<CommentDocument | null> {
-    return this.CommentModel.findOne({ _id: new ObjectId(commentId) });
+    return comment[0];
+    //return this.CommentModel.findOne({ _id: new ObjectId(commentId) });
   }
 
   // async getCommentByBlogId(blogId): Promise<CommentDocument | null> {
