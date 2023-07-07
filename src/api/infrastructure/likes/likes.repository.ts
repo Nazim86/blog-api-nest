@@ -35,7 +35,7 @@ export class LikesRepository {
       `INSERT INTO public.post_like(
              "postId", "userId", "addedAt", status, login, "banStatus")
               VALUES ( $1, $2, $3, $4, $5, $6)
-              on conflict ("postId")
+              on conflict ("postId","userId")
               Do Update set status = Excluded.status, "addedAt"=Excluded."addedAt";`,
       [
         postId,
@@ -48,6 +48,28 @@ export class LikesRepository {
     );
 
     return postLike[0];
+  }
+
+  async createCommentLike(
+    commentId: string,
+    userId: string,
+    createLikeDto: CreateLikeDto,
+  ) {
+    const commentLike = await this.dataSource.query(
+      `INSERT INTO public.comment_like(
+            "commentId", "userId", "addedAt","status", "banStatus")
+              VALUES ( $1, $2, $3, $4, $5)
+              on conflict("commentId","userId")
+              Do Update Set "status" = Excluded."status", "addedAt" = Excluded."addedAt";`,
+      [
+        commentId,
+        userId,
+        new Date().toISOString(),
+        createLikeDto.likeStatus,
+        false,
+      ],
+    );
+    return commentLike[0];
   }
 
   async setBanStatusForCommentLike(userId: string, banStatus: boolean) {

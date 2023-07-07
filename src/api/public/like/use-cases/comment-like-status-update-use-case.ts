@@ -1,13 +1,8 @@
 import { CommandHandler } from '@nestjs/cqrs';
 import { CommentDocument } from '../../../entities/comment.entity';
-import { InjectModel } from '@nestjs/mongoose';
 import { CommentsRepository } from '../../../infrastructure/comments/comments.repository';
 import { CreateLikeDto } from '../createLikeDto';
-import {
-  CommentLike,
-  CommentLikeDocument,
-  CommentLikeModelType,
-} from '../../../entities/commentLike.entity';
+
 import { LikesRepository } from '../../../infrastructure/likes/likes.repository';
 
 export class CommentLikeStatusUpdateCommand {
@@ -23,8 +18,6 @@ export class CommentLikeStatusUpdateUseCase {
   constructor(
     private readonly likesRepository: LikesRepository,
     private readonly commentsRepository: CommentsRepository,
-    @InjectModel(CommentLike.name)
-    private CommentLikeModel: CommentLikeModelType,
   ) {}
   async execute(command: CommentLikeStatusUpdateCommand): Promise<boolean> {
     const comment: CommentDocument | null =
@@ -32,29 +25,38 @@ export class CommentLikeStatusUpdateUseCase {
 
     if (!comment) return false;
 
-    const commentLike: CommentLikeDocument | null =
-      await this.likesRepository.findCommentLike(
-        command.commentId,
-        command.userId,
-      );
-
-    if (!commentLike) {
-      const newCommentLike = this.CommentLikeModel.createCommentLike(
-        command.commentId,
-        command.userId,
-        command.createLikeDto,
-        this.CommentLikeModel,
-      );
-      await this.likesRepository.save(newCommentLike);
-      return true;
-    }
-
-    commentLike.updateCommentLikeStatus(
-      //commentLike._id.toString(),
-      //userId,
+    const commentLike = await this.likesRepository.createCommentLike(
+      command.commentId,
+      command.userId,
       command.createLikeDto,
     );
-    await this.likesRepository.save(commentLike);
+
+    // const commentLike: CommentLikeDocument | null =
+    //   await this.likesRepository.findCommentLike(
+    //     command.commentId,
+    //     command.userId,
+    //   );
+    //
+    // if (!commentLike) {
+    //   const newCommentLike = this.CommentLikeModel.createCommentLike(
+    //     command.commentId,
+    //     command.userId,
+    //     command.createLikeDto,
+    //     this.CommentLikeModel,
+    //   );
+    //   await this.likesRepository.save(newCommentLike);
+    //   return true;
+    // }
+    //
+    // commentLike.updateCommentLikeStatus(
+    //   //commentLike._id.toString(),
+    //   //userId,
+    //   command.createLikeDto,
+    // );
+    // await this.likesRepository.save(commentLike);
+
+    console.log(commentLike);
+
     return true;
   }
 }

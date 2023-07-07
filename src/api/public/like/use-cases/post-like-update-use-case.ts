@@ -61,6 +61,8 @@ export class PostLikeUpdateUseCase {
     //
     // await this.likesRepository.save(postLike);
 
+    console.log(postLike);
+
     return true;
   }
 }
