@@ -180,8 +180,10 @@ export class UsersRepository {
     const bannedUser = await this.dataSource.query(
       `Insert into public.users_ban_by_blogger("isBanned", "banDate", "banReason", "blogId", "userId")
                 values($1,$2,$3,$4,$5)
-                on conflict ("blogId", "userId")
-                do Update set "isBanned"=$1, "banDate"=$2, "banReason"=$3, "blogId"=$3, "userId"=$4`,
+                on conflict ("blogId","userId")
+                do Update set "isBanned"=Excluded."isBanned", "banDate"=$2, 
+                "banReason"=Excluded."banReason", "blogId"=Excluded."blogId", 
+                "userId"=Excluded."userId"`,
       [isBanned, new Date().toISOString(), banReason, blogId, userId],
     );
 

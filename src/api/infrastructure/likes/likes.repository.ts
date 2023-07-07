@@ -1,5 +1,6 @@
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
+import { CreateLikeDto } from '../../public/like/createLikeDto';
 
 export class LikesRepository {
   constructor(@InjectDataSource() protected dataSource: DataSource) {}
@@ -22,6 +23,31 @@ export class LikesRepository {
     );
     return commentLike[0];
     //return this.CommentLikeModel.findOne({ commentId, userId });
+  }
+
+  async createPostLike(
+    postId: string,
+    userId: string,
+    createPostLikeDto: CreateLikeDto,
+    login: string,
+  ) {
+    const postLike = await this.dataSource.query(
+      `INSERT INTO public.post_like(
+             "postId", "userId", "addedAt", status, login, "banStatus")
+              VALUES ( $1, $2, $3, $4, $5, $6)
+              on conflict ("postId")
+              Do Update set status = Excluded.status, "addedAt"=Excluded."addedAt";`,
+      [
+        postId,
+        userId,
+        new Date().toISOString(),
+        createPostLikeDto.likeStatus,
+        login,
+        false,
+      ],
+    );
+
+    return postLike[0];
   }
 
   async setBanStatusForCommentLike(userId: string, banStatus: boolean) {
