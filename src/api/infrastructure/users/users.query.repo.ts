@@ -1,8 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { User, UserDocument } from '../../entities/user.entity';
-import { Model } from 'mongoose';
-
 import { UserViewType } from './types/user-view-type';
 import {
   BanStatusEnum,
@@ -10,11 +6,6 @@ import {
 } from '../../superadmin/users/user-pagination';
 import { PaginationType } from '../../../common/pagination';
 import { filterForUserQuery } from '../../../common/filterForUserQuery';
-import {
-  BloggerBanUser,
-  BloggerBanUserDocument,
-  BloggerBanUserModelType,
-} from '../../entities/user-ban-by-blogger.entity';
 import { RoleEnum } from '../../../enums/role-enum';
 import { BlogRepository } from '../blogs/blog.repository';
 import { ResultCode } from '../../../exception-handler/result-code-enum';
@@ -25,20 +16,17 @@ import { DataSource } from 'typeorm';
 @Injectable()
 export class UserQueryRepo {
   constructor(
-    @InjectModel(User.name) private UserModel: Model<UserDocument>,
-    @InjectModel(BloggerBanUser.name)
-    private UserBanModel: BloggerBanUserModelType,
     private readonly blogsRepository: BlogRepository,
     @InjectDataSource() protected dataSource: DataSource,
   ) {}
 
-  private userMapping = (newUser: UserDocument[]): UserViewType[] => {
-    return newUser.map((user: UserDocument): UserViewType => {
+  private userMapping = (newUser): UserViewType[] => {
+    return newUser.map((user): UserViewType => {
       return {
-        id: user._id.toString(),
-        login: user.accountData.login,
-        email: user.accountData.email,
-        createdAt: user.accountData.createdAt,
+        id: user.id,
+        login: user.login,
+        email: user.email,
+        createdAt: user.createdAt,
       };
     });
   };
@@ -59,17 +47,15 @@ export class UserQueryRepo {
     });
   };
 
-  private bannedUserMappingForBlog = (
-    bannedUsers: BloggerBanUserDocument[],
-  ) => {
-    return bannedUsers.map((bannedUser: BloggerBanUserDocument) => {
+  private bannedUserMappingForBlog = (bannedUsers) => {
+    return bannedUsers.map((bannedUser) => {
       return {
         id: bannedUser.userId,
         login: bannedUser.login,
         banInfo: {
-          isBanned: bannedUser.banInfo.isBanned,
-          banDate: bannedUser.banInfo.banDate,
-          banReason: bannedUser.banInfo.banReason,
+          isBanned: bannedUser.isBanned,
+          banDate: bannedUser.banDate,
+          banReason: bannedUser.banReason,
         },
       };
     });
@@ -106,21 +92,49 @@ export class UserQueryRepo {
 
     //filter.$and.push({ 'banInfo.blogId': blogId });
 
-    const skipSize = paginatedQuery.skipSize; //(paginatedQuery.pageNumber - 1) * paginatedQuery.pageSize;
-    const totalCount = await this.UserBanModel.countDocuments(filter);
+    const skipSize = paginatedQuery.skipSize;
+
+    let totalCount = await this.dataSource.query(
+      `SELECT COUNT(*)
+    FROM public.users u
+    WHERE (u."login" ilike $1 OR u."email" ilike $2) And (u."isBanned"=$3 or u."isBanned"=$4);`,
+      [
+        filter.searchLogin,
+        filter.searchEmail,
+        filter.banStatus01,
+        filter.banStatus02,
+      ],
+    );
+
+    totalCount = Number(totalCount[0].count);
+    //const totalCount = await this.UserBanModel.countDocuments(filter);
 
     const pagesCount = paginatedQuery.totalPages(totalCount); //Math.ceil(totalCount / paginatedQuery.pageSize);
 
-    const sortDirection = paginatedQuery.sortDirection === 'asc' ? 1 : -1;
+    //const sortDirection = paginatedQuery.sortDirection === 'asc' ? 1 : -1;
 
-    const bannedUsersForBlog: BloggerBanUserDocument[] =
-      await this.UserBanModel.find(filter)
-        .sort({
-          [paginatedQuery.sortBy]: sortDirection,
-        })
-        .skip(skipSize)
-        .limit(paginatedQuery.pageSize)
-        .lean();
+    const bannedUsersForBlog = await this.dataSource.query(
+      `SELECT u."id", u.login,u.email,u."isBanned", u."createdAt", ub."banDate",ub."banReason" 
+    FROM public.users u
+    Left join public.users_ban_by_sa ub on u."id" = ub."userId"
+    WHERE (u."login" ilike $1 OR u."email" ilike $2) And (u."isBanned"=$3 or u."isBanned"=$4)
+    Order by "${paginatedQuery.sortBy}" ${paginatedQuery.sortDirection}
+    Limit ${paginatedQuery.pageSize} Offset ${skipSize};`,
+      [
+        filter.searchLogin,
+        filter.searchEmail,
+        filter.banStatus01,
+        filter.banStatus02,
+      ],
+    );
+
+    // const bannedUsersForBlog = await this.UserBanModel.find(filter)
+    //   .sort({
+    //     [paginatedQuery.sortBy]: sortDirection,
+    //   })
+    //   .skip(skipSize)
+    //   .limit(paginatedQuery.pageSize)
+    //   .lean();
 
     const mappedBannedUsers = this.bannedUserMappingForBlog(bannedUsersForBlog);
 
