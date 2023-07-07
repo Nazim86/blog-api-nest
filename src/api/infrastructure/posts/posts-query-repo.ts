@@ -1,10 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Post, PostDocument } from '../../entities/post.entity';
-import { Model } from 'mongoose';
 import { PostsViewType } from './types/posts-view-type';
 import { NewestLikesType } from './types/posts-db-type';
-import { PostLike, PostLikeDocument } from '../../entities/postLike.entity';
 import { LikeEnum } from '../../public/like/like.enum';
 import { QueryPaginationType } from '../../../types/query-pagination-type';
 import { newestLikesMapping } from '../../public/like/post-likes.mapping';
@@ -18,8 +14,6 @@ import { DataSource } from 'typeorm';
 export class PostsQueryRepo {
   constructor(
     @InjectDataSource() private dataSource: DataSource,
-    @InjectModel(Post.name) private PostModel: Model<PostDocument>,
-    @InjectModel(PostLike.name) private PostLikeModel: Model<PostLikeDocument>,
     private readonly postMapping: PostMapping,
     private readonly blogsRepository: BlogRepository,
   ) {}

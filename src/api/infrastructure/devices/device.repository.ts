@@ -1,19 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { Device, DeviceDocument } from '../../entities/device.entity';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
 @Injectable()
 export class DeviceRepository {
-  constructor(
-    @InjectModel(Device.name) private DeviceModel: Model<DeviceDocument>,
-    @InjectDataSource() private dataSource: DataSource,
-  ) {}
-  async save(device: DeviceDocument) {
-    return device.save();
-  }
+  constructor(@InjectDataSource() private dataSource: DataSource) {}
 
   async getDevicesByDeviceId(deviceId: string) {
     const device = await this.dataSource.query(
@@ -94,16 +85,16 @@ export class DeviceRepository {
     return true;
   }
 
-  async deleteOldSession() {
-    try {
-      const query = { expiration: { $lte: new Date().getTime() } };
-      if (!query) {
-        return;
-      }
-      const result = await this.DeviceModel.deleteMany({ query });
-      console.log(`${result.deletedCount} expired tokens deleted`);
-    } catch (err) {
-      console.error(err);
-    }
-  }
+  // async deleteOldSession() {
+  //   try {
+  //     const query = { expiration: { $lte: new Date().getTime() } };
+  //     if (!query) {
+  //       return;
+  //     }
+  //     const result = await this.DeviceModel.deleteMany({ query });
+  //     console.log(`${result.deletedCount} expired tokens deleted`);
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // }
 }

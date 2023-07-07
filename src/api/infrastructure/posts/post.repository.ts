@@ -1,5 +1,3 @@
-import { Post, PostDocument, PostModelType } from '../../entities/post.entity';
-import { InjectModel } from '@nestjs/mongoose';
 import { Injectable } from '@nestjs/common';
 import { CreatePostDto } from '../../public/post/createPostDto';
 import { InjectDataSource } from '@nestjs/typeorm';
@@ -7,11 +5,8 @@ import { DataSource } from 'typeorm';
 
 @Injectable()
 export class PostRepository {
-  constructor(
-    @InjectDataSource() private dataSource: DataSource,
-    @InjectModel(Post.name) private PostModel: PostModelType,
-  ) {}
-  async getPostById(postId: string): Promise<PostDocument | null> {
+  constructor(@InjectDataSource() private dataSource: DataSource) {}
+  async getPostById(postId: string) {
     try {
       let post = await this.dataSource.query(
         `SELECT * FROM public.posts where "id"=$1`,
