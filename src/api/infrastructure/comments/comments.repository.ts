@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
+import { CreateCommentDto } from '../../public/comments/createComment.Dto';
 
 @Injectable()
 export class CommentsRepository {
@@ -41,6 +42,17 @@ export class CommentsRepository {
     );
 
     return commentId;
+  }
+
+  async updateComment(commentId: string, createCommentDto: CreateCommentDto) {
+    const isUpdated = await this.dataSource.query(
+      `UPDATE public.comments
+            SET  content=$1
+            WHERE "id" = $2;`,
+      [commentId, createCommentDto.content],
+    );
+
+    return isUpdated[1] === 1;
   }
 
   async getComment(commentId) {

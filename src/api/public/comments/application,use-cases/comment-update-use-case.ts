@@ -1,13 +1,7 @@
 import { CommandHandler } from '@nestjs/cqrs';
 import { CreateCommentDto } from '../createComment.Dto';
-import {
-  Comment,
-  CommentDocument,
-  CommentModelType,
-} from '../../../entities/comment.entity';
 import { PostRepository } from '../../../infrastructure/posts/post.repository';
 import { UsersRepository } from '../../../infrastructure/users/users.repository';
-import { InjectModel } from '@nestjs/mongoose';
 import { CommentsRepository } from '../../../infrastructure/comments/comments.repository';
 import { Result } from '../../../../exception-handler/result-type';
 import { ResultCode } from '../../../../exception-handler/result-code-enum';
@@ -26,25 +20,29 @@ export class CommentUpdateUseCase {
     private readonly postsRepository: PostRepository,
     private readonly usersRepository: UsersRepository,
     private readonly commentsRepository: CommentsRepository,
-    @InjectModel(Comment.name) private CommentModel: CommentModelType,
   ) {}
   async execute(command: CommentUpdateCommand): Promise<Result<ResultCode>> {
-    const comment: CommentDocument = await this.commentsRepository.getComment(
-      command.commentId,
-    );
+    const comment = await this.commentsRepository.getComment(command.commentId);
 
     if (!comment) return { code: ResultCode.NotFound };
 
-    if (comment && comment.commentatorInfo.userId !== command.userId) {
+    if (comment && comment.userId !== command.userId) {
       return {
         code: ResultCode.Forbidden,
       };
     }
 
-    comment.updateComment(command.createCommentDto);
+    const isCommentUpdated = await this.commentsRepository.updateComment(
+      comment.id,
+      command.createCommentDto,
+    );
 
-    await this.commentsRepository.save(comment);
+    // comment.updateComment(command.createCommentDto);
+    //
+    // await this.commentsRepository.save(comment);
 
-    return;
+    return {
+      code: isCommentUpdated ? ResultCode.Success : ResultCode.NotFound,
+    };
   }
 }
