@@ -2,7 +2,7 @@ import { IsNotEmpty, IsString, IsUrl, Length } from 'class-validator';
 import { Transform } from 'class-transformer';
 
 export class CreateBlogDto {
-  @Transform(({ value }) => value.trim())
+  //@Transform(({ value }) => value.trim())
   @Length(0, 15)
   @IsNotEmpty()
   @IsString()

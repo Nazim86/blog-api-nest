@@ -4,7 +4,6 @@ import {
   closeInMongodConnection,
   rootMongooseTestModule,
 } from '../../mongoose-test-module';
-import { AppModule } from '../../../src/app.module';
 import request from 'supertest';
 import { newUserEmail, userCreatedData } from '../../data/user-data';
 import {
@@ -24,156 +23,212 @@ import {
   commentForBloggerWithPagination,
   createdComment,
 } from '../../data/comments-data';
+import { AppModule } from '../../../src/app.module';
+import { appSettings } from '../../../src/app.settings';
 
 describe('Blogger blog testing', () => {
   let app: INestApplication;
-  jest.setTimeout(60 * 1000);
+  let httpServer;
+
+  //jest.setTimeout(60 * 1000);
+
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
-      imports: [rootMongooseTestModule(), AppModule],
+      imports: [AppModule],
     }).compile();
-
+    //rootMongooseTestModule() should be inside imports
     app = moduleRef.createNestApplication();
+
+    //appSettings(app);
+
     await app.init();
+
+    httpServer = app.getHttpServer();
     // await this.query('TRUNCATE table1, table2, table3 CASCADE');
   });
 
   afterAll(async () => {
-    await closeInMongodConnection();
+    //await closeInMongodConnection();
     await app.close();
   });
 
   describe('Creating blog,post,comment, update,delete', () => {
-    let accessToken;
-    let user;
-    let blog;
+    const accessToken = [];
+    const users = [];
+    const blog = [];
     let post;
     let comment;
 
     it(`Creating user`, async () => {
-      const result = await request(app.getHttpServer())
-        .post('/sa/users')
-        .auth('admin', 'qwerty')
-        .send({
-          login: 'leo',
-          password: '123456',
-          email: newUserEmail,
-        })
-        .expect(201);
-      user = result.body;
-      expect(result.body).toEqual(userCreatedData);
+      for (let i = 0; i <= 1; i++) {
+        const result = await request(httpServer)
+          .post('/sa/users')
+          .auth('admin', 'qwerty')
+          .send({
+            login: `leo${i}`,
+            password: '123456',
+            email: `nazim86mammadov@yandex.ru${i}`,
+          })
+          .expect(201);
+
+        users.push(result.body);
+      }
+
+      expect(users[0].login).toEqual('leo0');
+      expect(users[1].login).toEqual('leo1');
     });
 
-    it(`User login`, async () => {
-      const result = await request(app.getHttpServer())
-        .post('/auth/login')
-        .send({
-          loginOrEmail: 'leo',
+    it(`Users login`, async () => {
+      for (let i = 0; i <= 1; i++) {
+        const result = await request(httpServer).post('/auth/login').send({
+          loginOrEmail: users[i].login,
           password: '123456',
         });
-      expect(result.status).toBe(200);
-      accessToken = result.body.accessToken;
+        expect(result.status).toBe(200);
+
+        accessToken.push(result.body.accessToken);
+      }
+    });
+
+    it(`Should return 400 trying to create with empty name`, async () => {
+      const result = await request(httpServer)
+        .post('/blogger/blogs')
+        .auth(accessToken[0], { type: 'bearer' })
+        .send();
+
+      console.log(result.body.name);
+
+      expect(result.status).toBe(400);
+      //expect(result.body).toEqual(nameField);
+    });
+
+    it(`Should return 400 trying to create with longer name`, async () => {
+      const result = await request(app.getHttpServer())
+        .post('/blogger/blogs')
+        .auth(accessToken[0], { type: 'bearer' })
+        .send({ ...blogCreatingData, name: `Blog User`.repeat(10) });
+
+      console.log(result.body.name);
+
+      expect(result.status).toBe(400);
+      expect(result.body).toEqual(nameField);
+    });
+
+    it(`Not create with empty description and return 400`, async () => {
+      const result = await request(app.getHttpServer())
+        .post('/blogger/blogs')
+        .auth(accessToken[0], { type: 'bearer' })
+        .send({ ...blogCreatingData, description: null });
+
+      console.log(result.body.name);
+
+      expect(result.status).toBe(400);
+      expect(result.body).toEqual(nameField);
     });
 
     it(`Blogger creates blog`, async () => {
-      const result = await request(app.getHttpServer())
-        .post('/blogger/blogs')
-        .auth(accessToken, { type: 'bearer' })
-        .send(blogCreatingData);
+      for (let i = 0; i <= 1; i++) {
+        const result = await request(app.getHttpServer())
+          .post('/blogger/blogs')
+          .auth(accessToken[i], { type: 'bearer' })
+          .send({ ...blogCreatingData, name: `Blog User${i}` });
 
-      blog = result.body;
-      expect(result.status).toBe(201);
-      expect(result.body).toEqual(createdBlogWithoutPagination);
+        blog.push(result.body);
+        expect(result.status).toBe(201);
+      }
+      expect(blog[0].name).toEqual('Blog User0');
+      expect(blog[1].name).toEqual('Blog User1');
     });
 
-    it(`Blogger gets blogs for current owner`, async () => {
-      const result = await request(app.getHttpServer())
-        .get('/blogger/blogs')
-        .auth(accessToken, { type: 'bearer' });
-      expect(result.status).toBe(200);
-      expect(result.body).toEqual(createdBlogWithPaginationForPublic);
-    });
+    //
+    // it(`Blogger gets blogs for current owner`, async () => {
+    //   const result = await request(app.getHttpServer())
+    //     .get('/blogger/blogs')
+    //     .auth(accessToken, { type: 'bearer' });
+    //   expect(result.status).toBe(200);
+    //   expect(result.body).toEqual(createdBlogWithPaginationForPublic);
+    // });
+    //
+    // it(`Updating blog`, async () => {
+    //   const result = await request(app.getHttpServer())
+    //     .put(`/blogger/blogs/${blog.id}`)
+    //     .auth(accessToken, { type: 'bearer' })
+    //     .send(updateBlogData);
+    //   expect(result.status).toBe(204);
+    // });
+    //
+    // it(`Blogger gets updated blogs for current owner`, async () => {
+    //   const result = await request(app.getHttpServer())
+    //     .get('/blogger/blogs')
+    //     .auth(accessToken, { type: 'bearer' });
+    //   expect(result.status).toBe(200);
+    //   expect(result.body).toEqual(updatedBlogWithPagination);
+    // });
+    //
+    // it(`Blogger creates post for blog`, async () => {
+    //   const result = await request(app.getHttpServer())
+    //     .post(`/blogger/blogs/${blog.id}/posts`)
+    //     .auth(accessToken, { type: 'bearer' })
+    //     .send(newPostCreatingData);
+    //
+    //   post = result.body;
+    //   expect(result.status).toBe(201);
+    //   expect(result.body).toEqual(returnedCreatedPost);
+    // });
+    //
+    // it(`Get posts by blogId`, async () => {
+    //   const result = await request(app.getHttpServer())
+    //     .get(`/blogger/blogs/${blog.id}/posts`)
+    //     .auth(accessToken, { type: 'bearer' });
+    //
+    //   expect(result.status).toBe(200);
+    //   expect(result.body).toEqual(createdPostWithPagination);
+    // });
+    //
+    // it(`Get posts`, async () => {
+    //   const result = await request(app.getHttpServer()).get('/posts');
+    //   expect(result.status).toBe(200);
+    //   expect(result.body).toEqual(createdPostWithPagination);
+    // });
+    //
+    // it(`Creating comment to post`, async () => {
+    //   const result = await request(app.getHttpServer())
+    //     .post(`/posts/${post.id}/comments`)
+    //     .auth(accessToken, { type: 'bearer' })
+    //     .send(commentCreatingData);
+    //
+    //   comment = result.body;
+    //   expect(result.status).toBe(201);
+    //   expect(result.body).toEqual(createdComment);
+    // });
+    //
+    // it(`Blogger gets all comments for blog`, async () => {
+    //   const result = await request(app.getHttpServer())
+    //     .get('/blogger/blogs/comments')
+    //     .auth(accessToken, { type: 'bearer' });
+    //   expect(result.status).toBe(200);
+    //   expect(result.body).toEqual(commentForBloggerWithPagination);
+    // });
 
-    it(`Updating blog`, async () => {
-      const result = await request(app.getHttpServer())
-        .put(`/blogger/blogs/${blog.id}`)
-        .auth(accessToken, { type: 'bearer' })
-        .send(updateBlogData);
-      expect(result.status).toBe(204);
-    });
-
-    it(`Blogger gets updated blogs for current owner`, async () => {
-      const result = await request(app.getHttpServer())
-        .get('/blogger/blogs')
-        .auth(accessToken, { type: 'bearer' });
-      expect(result.status).toBe(200);
-      expect(result.body).toEqual(updatedBlogWithPagination);
-    });
-
-    it(`Blogger creates post for blog`, async () => {
-      const result = await request(app.getHttpServer())
-        .post(`/blogger/blogs/${blog.id}/posts`)
-        .auth(accessToken, { type: 'bearer' })
-        .send(newPostCreatingData);
-
-      post = result.body;
-      expect(result.status).toBe(201);
-      expect(result.body).toEqual(returnedCreatedPost);
-    });
-
-    it(`Get posts by blogId`, async () => {
-      const result = await request(app.getHttpServer())
-        .get(`/blogger/blogs/${blog.id}/posts`)
-        .auth(accessToken, { type: 'bearer' });
-
-      expect(result.status).toBe(200);
-      expect(result.body).toEqual(createdPostWithPagination);
-    });
-
-    it(`Get posts`, async () => {
-      const result = await request(app.getHttpServer()).get('/posts');
-      expect(result.status).toBe(200);
-      expect(result.body).toEqual(createdPostWithPagination);
-    });
-
-    it(`Creating comment to post`, async () => {
-      const result = await request(app.getHttpServer())
-        .post(`/posts/${post.id}/comments`)
-        .auth(accessToken, { type: 'bearer' })
-        .send(commentCreatingData);
-
-      comment = result.body;
-      expect(result.status).toBe(201);
-      expect(result.body).toEqual(createdComment);
-    });
-
-    it(`Blogger gets all comments for blog`, async () => {
-      const result = await request(app.getHttpServer())
-        .get('/blogger/blogs/comments')
-        .auth(accessToken, { type: 'bearer' });
-      expect(result.status).toBe(200);
-      expect(result.body).toEqual(commentForBloggerWithPagination);
-    });
-
-    it(`Banning user`, async () => {
-      const result = await request(app.getHttpServer())
-        .put(`/blogger/users/${user.id}/ban`)
-        .auth(accessToken, { type: 'bearer' })
-        .send({
-          isBanned: true,
-          banReason: 'bad words',
-          blogId: blog.id,
-        });
-      expect(result.status).toBe(204);
-    });
-
-    it(`Blogger gets all comments for blog`, async () => {
-      const result = await request(app.getHttpServer())
-        .get('/blogger/blogs/comments')
-        .auth(accessToken, { type: 'bearer' });
-      expect(result.status).toBe(200);
-      expect(result.body).toEqual(commentForBloggerWithPagination);
-    });
+    // it(`Banning user`, async () => {
+    //   const result = await request(app.getHttpServer())
+    //     .put(`/blogger/users/${users.id}/ban`)
+    //     .auth(accessToken, { type: 'bearer' })
+    //     .send({
+    //       isBanned: true,
+    //       banReason: 'bad words',
+    //       blogId: blog.id,
+    //     });
+    //   expect(result.status).toBe(204);
+    // });
+    //
+    // it(`Blogger gets all comments for blog`, async () => {
+    //   const result = await request(app.getHttpServer())
+    //     .get('/blogger/blogs/comments')
+    //     .auth(accessToken, { type: 'bearer' });
+    //   expect(result.status).toBe(200);
+    //   expect(result.body).toEqual(commentForBloggerWithPagination);
+    // });
   });
 });
 

@@ -1,9 +1,7 @@
 import { CommandHandler } from '@nestjs/cqrs';
-import { BlogDocument } from '../../entities/blog.entity';
 import { BlogRepository } from '../../infrastructure/blogs/blog.repository';
 import { ResultCode } from '../../../exception-handler/result-code-enum';
 import { Result } from '../../../exception-handler/result-type';
-import { PostDocument } from '../../entities/post.entity';
 import { PostRepository } from '../../infrastructure/posts/post.repository';
 
 export class PostDeleteCommand {
@@ -18,21 +16,16 @@ export class PostDeleteUseCase {
   ) {}
 
   async execute(command: PostDeleteCommand): Promise<Result<ResultCode>> {
-    const post: PostDocument = await this.postRepository.getPostById(
-      command.params.postId,
-    );
+    const post = await this.postRepository.getPostById(command.params.postId);
     if (!post) return { code: ResultCode.NotFound };
 
-    const blog: BlogDocument = await this.blogRepository.getBlogById(
-      command.params.blogId,
-    );
+    const blog = await this.blogRepository.getBlogById(command.params.blogId);
 
     if (!blog) {
       return { code: ResultCode.NotFound };
     }
 
-    if (blog.blogOwnerInfo.userId !== command.userId)
-      return { code: ResultCode.Forbidden };
+    if (blog.userId !== command.userId) return { code: ResultCode.Forbidden };
 
     const isPostDeleted = await this.postRepository.deletePostById(post.id);
 
