@@ -45,6 +45,12 @@ export class DeleteController {
     await this.dataSource.query(`Delete from public.email_confirmation`);
     await this.dataSource.query(`Delete from public.password_recovery`);
     await this.dataSource.query(`Delete from public.users_ban_by_sa`);
+    await this.dataSource.query(`Delete from public.blog_ban_info`);
+    await this.dataSource.query(`Delete from public.posts`);
+    await this.dataSource.query(`Delete from public.comments`);
+    await this.dataSource.query(`Delete from public.post_info`);
+    await this.dataSource.query(`Delete from public.commentator_info`);
+    await this.dataSource.query(`Delete from public.post_like`);
 
     return;
   }

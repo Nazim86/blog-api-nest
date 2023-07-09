@@ -180,7 +180,7 @@ export class UsersRepository {
     const bannedUser = await this.dataSource.query(
       `Insert into public.users_ban_by_blogger("isBanned", "banDate", "banReason", "blogId", "userId")
                 values($1,$2,$3,$4,$5)
-                on conflict ("blogId","userId")
+                on conflict ("blogId")
                 do Update set "isBanned"=Excluded."isBanned", "banDate"=$2, 
                 "banReason"=Excluded."banReason", "blogId"=Excluded."blogId", 
                 "userId"=Excluded."userId"`,
@@ -226,12 +226,10 @@ export class UsersRepository {
 
   async deleteUser(id: string): Promise<boolean> {
     try {
-      console.log(id);
       const result = await this.dataSource.query(
         `DELETE FROM public."users" u WHERE u."id" = $1;`,
         [id],
       );
-      console.log('delete user', result[1]);
       return result[1] === 1;
     } catch (e) {
       return false;

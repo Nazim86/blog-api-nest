@@ -39,7 +39,7 @@ describe('Blogger blog testing', () => {
     //rootMongooseTestModule() should be inside imports
     app = moduleRef.createNestApplication();
 
-    //appSettings(app);
+    app = appSettings(app);
 
     await app.init();
 
@@ -59,6 +59,10 @@ describe('Blogger blog testing', () => {
     let post;
     let comment;
 
+    it('should wipe all data in db', async () => {
+      const response = await request(httpServer).delete('/testing/all-data');
+      expect(response.status).toBe(204);
+    });
     it(`Creating user`, async () => {
       for (let i = 0; i <= 1; i++) {
         const result = await request(httpServer)
@@ -67,10 +71,10 @@ describe('Blogger blog testing', () => {
           .send({
             login: `leo${i}`,
             password: '123456',
-            email: `nazim86mammadov@yandex.ru${i}`,
+            email: `nazim86mammadov${i}@yandex.ru`,
           })
           .expect(201);
-
+        console.log(result.body);
         users.push(result.body);
       }
 

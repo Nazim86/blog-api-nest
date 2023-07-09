@@ -36,4 +36,5 @@ export const appSettings = (app: INestApplication) => {
   );
   app.enableCors();
   app.useGlobalFilters(new HttpExceptionFilter()); //new ErrorExceptionFilter()
+  return app;
 };

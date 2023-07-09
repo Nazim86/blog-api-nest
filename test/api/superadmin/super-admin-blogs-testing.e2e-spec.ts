@@ -20,9 +20,11 @@ import {
   newUserEmail,
   userCreatedData,
 } from '../../data/user-data';
+import { appSettings } from '../../../src/app.settings';
 
 describe('Super Admin blogs testing', () => {
   let app: INestApplication;
+  let httpServer;
   jest.setTimeout(60 * 1000);
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -30,7 +32,12 @@ describe('Super Admin blogs testing', () => {
     }).compile();
 
     app = moduleRef.createNestApplication();
+
+    app = appSettings(app);
+
     await app.init();
+
+    httpServer = app.getHttpServer();
   });
 
   afterAll(async () => {
@@ -42,6 +49,12 @@ describe('Super Admin blogs testing', () => {
     let accessToken;
     let blog;
     let user;
+
+    it('should wipe all data in db', async () => {
+      const response = await request(httpServer).delete('/testing/all-data');
+      expect(response.status).toBe(204);
+    });
+
     it(`Creating user`, async () => {
       const result = await request(app.getHttpServer())
         .post('/sa/users')

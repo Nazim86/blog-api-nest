@@ -29,7 +29,9 @@ export class SuperAdminBlogsController {
   ) {}
   @Get()
   async getBlogs(@Query() query: BlogPagination<PaginationType>) {
-    return await this.blogsQueryRepo.getBlog(query, RoleEnum.SA);
+    const blogs = await this.blogsQueryRepo.getBlog(query, RoleEnum.SA);
+    console.log('getBlog', blogs);
+    return blogs;
   }
 
   @Put(':blogId/bind-with-user/:userId')

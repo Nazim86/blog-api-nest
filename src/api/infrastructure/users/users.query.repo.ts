@@ -9,7 +9,6 @@ import { filterForUserQuery } from '../../../common/filterForUserQuery';
 import { RoleEnum } from '../../../enums/role-enum';
 import { BlogRepository } from '../blogs/blog.repository';
 import { ResultCode } from '../../../exception-handler/result-code-enum';
-import { BlogDocument } from '../../entities/blog.entity';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
@@ -81,14 +80,11 @@ export class UserQueryRepo {
       RoleEnum.Blogger,
     );
 
-    const blog: BlogDocument | null = await this.blogsRepository.getBlogById(
-      blogId,
-    );
+    const blog = await this.blogsRepository.getBlogById(blogId);
 
     if (!blog) return { code: ResultCode.NotFound };
 
-    if (blog.blogOwnerInfo.userId !== userId)
-      return { code: ResultCode.Forbidden };
+    if (blog.userId !== userId) return { code: ResultCode.Forbidden };
 
     //filter.$and.push({ 'banInfo.blogId': blogId });
 
@@ -127,6 +123,8 @@ export class UserQueryRepo {
         filter.banStatus02,
       ],
     );
+
+    console.log(bannedUsersForBlog);
 
     // const bannedUsersForBlog = await this.UserBanModel.find(filter)
     //   .sort({

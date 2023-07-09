@@ -79,9 +79,9 @@ export class BlogRepository {
   }
 
   async banBlog(isBanned: boolean, blogId: string) {
-    await this.dataSource.query(
+    const result1 = await this.dataSource.query(
       `UPDATE public.blogs
-    SET "isBanned"=$1,
+    SET "isBanned"=$1
     WHERE "id" = $2;`,
       [isBanned, blogId],
     );
@@ -89,11 +89,11 @@ export class BlogRepository {
     const result2 = await this.dataSource.query(
       `UPDATE public.blog_ban_info
             SET "isBanned"=$1, "banDate"=$2
-            WHERE "id"=$3;`,
+            WHERE "blogId"=$3;`,
       [isBanned, new Date().toISOString(), blogId],
     );
 
-    return result2[1] === 1;
+    return result1[1] && result2[1] === 1;
   }
 
   async bindBlogWithUser(userId: string, login: string, blogId: string) {
