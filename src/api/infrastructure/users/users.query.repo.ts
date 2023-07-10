@@ -95,14 +95,8 @@ export class UserQueryRepo {
     FROM public.users_ban_by_blogger ubb
     Left join public.users u on
     u."id" = ubb."userId"
-    WHERE u."login" ilike $1 and ubb."userId" = $2 and ubb."blogId" = $3  And (ubb."isBanned"=$4 or ubb."isBanned"=$5);`,
-      [
-        filter.searchLogin,
-        userId,
-        blogId,
-        filter.banStatus01,
-        filter.banStatus02,
-      ],
+    WHERE u."login" ilike $1 and ubb."blogId" = $2  And (ubb."isBanned"=$3 or ubb."isBanned"=$4);`,
+      [filter.searchLogin, blogId, filter.banStatus01, filter.banStatus02],
     );
 
     console.log(totalCount[0].count);
@@ -118,16 +112,10 @@ export class UserQueryRepo {
       `SELECT  u.login,u.email,ubb.*
     FROM public.users u
     Left join public.users_ban_by_blogger ubb on u."id" = ubb."userId"
-    WHERE u."login" ilike $1 and ubb."userId" = $2 and ubb."blogId" = $3  And (ubb."isBanned"=$4 or ubb."isBanned"=$5)
+    WHERE u."login" ilike $1 and ubb."blogId" = $2  And (ubb."isBanned"=$3 or ubb."isBanned"=$4)
     Order by "${paginatedQuery.sortBy}" ${paginatedQuery.sortDirection}
     Limit ${paginatedQuery.pageSize} Offset ${skipSize};`,
-      [
-        filter.searchLogin,
-        userId,
-        blogId,
-        filter.banStatus01,
-        filter.banStatus02,
-      ],
+      [filter.searchLogin, blogId, filter.banStatus01, filter.banStatus02],
     );
     console.log(bannedUsersForBlog);
     // const bannedUsersForBlog = await this.UserBanModel.find(filter)
