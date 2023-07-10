@@ -170,24 +170,24 @@ export class UsersRepository {
     return bannedUser[0];
   }
 
-  async bloggerBanUser(
-    isBanned: boolean,
-    banReason: string,
-    userId: string,
-    userBanDto: UserBanDto,
-    blogId: string,
-  ) {
-    const bannedUser = await this.dataSource.query(
+  async bloggerBanUser(userId: string, userBanDto: UserBanDto, blogId: string) {
+    const result1 = await this.dataSource.query(
       `Insert into public.users_ban_by_blogger("isBanned", "banDate", "banReason", "blogId", "userId")
                 values($1,$2,$3,$4,$5)
-                on conflict ("blogId")
-                do Update set "isBanned"=Excluded."isBanned", "banDate"=$2, 
-                "banReason"=Excluded."banReason", "blogId"=Excluded."blogId", 
-                "userId"=Excluded."userId"`,
-      [isBanned, new Date().toISOString(), banReason, blogId, userId],
+      on conflict ("blogId","userId")
+      do Update set "isBanned"=Excluded."isBanned", "banDate"=$2,
+      "banReason"=Excluded."banReason", "blogId"=Excluded."blogId",
+      "userId"=Excluded."userId"`,
+      [
+        userBanDto.isBanned,
+        new Date().toISOString(),
+        userBanDto.banReason,
+        blogId,
+        userId,
+      ],
     );
 
-    return bannedUser[1] === 1;
+    return true; //result1[1] === 1;
   }
 
   async banUser(userId, banUserDto: BanUserDto) {

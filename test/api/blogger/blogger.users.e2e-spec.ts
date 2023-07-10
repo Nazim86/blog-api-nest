@@ -12,9 +12,12 @@ import {
   blogCreatingData,
   createdBlogWithoutPagination,
 } from '../../data/blogs-data';
+import { appSettings } from '../../../src/app.settings';
 
 describe('Blogger user testing', () => {
   let app: INestApplication;
+  let httpServer;
+
   jest.setTimeout(60 * 1000);
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -22,7 +25,11 @@ describe('Blogger user testing', () => {
     }).compile();
 
     app = moduleRef.createNestApplication();
+    app = appSettings(app);
+
     await app.init();
+
+    httpServer = app.getHttpServer();
   });
 
   afterAll(async () => {
@@ -34,6 +41,11 @@ describe('Blogger user testing', () => {
     let accessToken;
     let user;
     let blog;
+
+    it('should wipe all data in db', async () => {
+      const response = await request(httpServer).delete('/testing/all-data');
+      expect(response.status).toBe(204);
+    });
 
     it(`Creating user`, async () => {
       const result = await request(app.getHttpServer())
@@ -77,7 +89,7 @@ describe('Blogger user testing', () => {
         .auth(accessToken, { type: 'bearer' })
         .send({
           isBanned: true,
-          banReason: 'bad words',
+          banReason: 'repeated bad words many times ',
           blogId: blog.id,
         });
       expect(result.status).toBe(204);
@@ -101,6 +113,18 @@ describe('Blogger user testing', () => {
         ],
       });
     });
+
+    // it(`Unban user by Blogger`, async () => {
+    //   const result = await request(app.getHttpServer())
+    //     .put(`/blogger/users/${user.id}/ban`)
+    //     .auth(accessToken, { type: 'bearer' })
+    //     .send({
+    //       isBanned: false,
+    //       banReason: 'repeated bad words many times',
+    //       blogId: blog.id,
+    //     });
+    //   expect(result.status).toBe(204);
+    // });
 
     //TODO Unban users and then check
     //TODO check user if it want to get banned user for its blog or not

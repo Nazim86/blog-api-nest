@@ -74,7 +74,6 @@ describe('Blogger blog testing', () => {
             email: `nazim86mammadov${i}@yandex.ru`,
           })
           .expect(201);
-        console.log(result.body);
         users.push(result.body);
       }
 
@@ -100,8 +99,6 @@ describe('Blogger blog testing', () => {
         .auth(accessToken[0], { type: 'bearer' })
         .send();
 
-      console.log(result.body.name);
-
       expect(result.status).toBe(400);
       //expect(result.body).toEqual(nameField);
     });
@@ -112,8 +109,6 @@ describe('Blogger blog testing', () => {
         .auth(accessToken[0], { type: 'bearer' })
         .send({ ...blogCreatingData, name: `Blog User`.repeat(10) });
 
-      console.log(result.body.name);
-
       expect(result.status).toBe(400);
       expect(result.body).toEqual(nameField);
     });
@@ -123,8 +118,6 @@ describe('Blogger blog testing', () => {
         .post('/blogger/blogs')
         .auth(accessToken[0], { type: 'bearer' })
         .send({ ...blogCreatingData, description: null });
-
-      console.log(result.body.name);
 
       expect(result.status).toBe(400);
       expect(result.body).toEqual(nameField);
@@ -144,15 +137,17 @@ describe('Blogger blog testing', () => {
       expect(blog[1].name).toEqual('Blog User1');
     });
 
-    //
-    // it(`Blogger gets blogs for current owner`, async () => {
-    //   const result = await request(app.getHttpServer())
-    //     .get('/blogger/blogs')
-    //     .auth(accessToken, { type: 'bearer' });
-    //   expect(result.status).toBe(200);
-    //   expect(result.body).toEqual(createdBlogWithPaginationForPublic);
-    // });
-    //
+    it(`Blogger gets blogs for current owner`, async () => {
+      for (let i = 0; i <= 1; i++) {
+        const result = await request(app.getHttpServer())
+          .get('/blogger/blogs')
+          .auth(accessToken[i], { type: 'bearer' });
+        expect(result.status).toBe(200);
+        console.log('current owner', result.body);
+        expect(result.body.items[0].name).toEqual(`Blog User${i}`);
+      }
+    });
+
     // it(`Updating blog`, async () => {
     //   const result = await request(app.getHttpServer())
     //     .put(`/blogger/blogs/${blog.id}`)

@@ -42,8 +42,6 @@ export class BloggerBanUserUseCase {
       }
 
       const bannedUser = await this.usersRepository.bloggerBanUser(
-        user.isBanned,
-        user.banReason,
         command.userId,
         command.userBanDto,
         blog.id,

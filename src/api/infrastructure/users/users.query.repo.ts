@@ -92,15 +92,20 @@ export class UserQueryRepo {
 
     let totalCount = await this.dataSource.query(
       `SELECT COUNT(*)
-    FROM public.users u
-    WHERE (u."login" ilike $1 OR u."email" ilike $2) And (u."isBanned"=$3 or u."isBanned"=$4);`,
+    FROM public.users_ban_by_blogger ubb
+    Left join public.users u on
+    u."id" = ubb."userId"
+    WHERE u."login" ilike $1 and ubb."userId" = $2 and ubb."blogId" = $3  And (ubb."isBanned"=$4 or ubb."isBanned"=$5);`,
       [
         filter.searchLogin,
-        filter.searchEmail,
+        userId,
+        blogId,
         filter.banStatus01,
         filter.banStatus02,
       ],
     );
+
+    console.log(totalCount[0].count);
 
     totalCount = Number(totalCount[0].count);
     //const totalCount = await this.UserBanModel.countDocuments(filter);
@@ -110,22 +115,21 @@ export class UserQueryRepo {
     //const sortDirection = paginatedQuery.sortDirection === 'asc' ? 1 : -1;
 
     const bannedUsersForBlog = await this.dataSource.query(
-      `SELECT u."id", u.login,u.email,u."isBanned", u."createdAt", ub."banDate",ub."banReason" 
+      `SELECT  u.login,u.email,ubb.*
     FROM public.users u
-    Left join public.users_ban_by_sa ub on u."id" = ub."userId"
-    WHERE (u."login" ilike $1 OR u."email" ilike $2) And (u."isBanned"=$3 or u."isBanned"=$4)
+    Left join public.users_ban_by_blogger ubb on u."id" = ubb."userId"
+    WHERE u."login" ilike $1 and ubb."userId" = $2 and ubb."blogId" = $3  And (ubb."isBanned"=$4 or ubb."isBanned"=$5)
     Order by "${paginatedQuery.sortBy}" ${paginatedQuery.sortDirection}
     Limit ${paginatedQuery.pageSize} Offset ${skipSize};`,
       [
         filter.searchLogin,
-        filter.searchEmail,
+        userId,
+        blogId,
         filter.banStatus01,
         filter.banStatus02,
       ],
     );
-
     console.log(bannedUsersForBlog);
-
     // const bannedUsersForBlog = await this.UserBanModel.find(filter)
     //   .sort({
     //     [paginatedQuery.sortBy]: sortDirection,
