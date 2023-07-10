@@ -53,10 +53,10 @@ const mongooseModels = [
 const useCases = [DeviceCreateUseCase, DeviceUpdateUseCase];
 @Module({
   imports: [
-    ThrottlerModule.forRoot({
-      ttl: 1,
-      limit: 1000,
-    }),
+    // ThrottlerModule.forRoot({
+    //   ttl: 1,
+    //   limit: 1000,
+    // }),
     ScheduleModule.forRoot(),
     UsersModule,
     PassportModule,
@@ -92,10 +92,10 @@ const useCases = [DeviceCreateUseCase, DeviceUpdateUseCase];
     UserQueryRepo,
     RefreshTokenStrategy,
     DeviceQueryRepo,
-    {
-      provide: APP_GUARD,
-      useClass: ThrottlerGuard,
-    },
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: ThrottlerGuard,
+    // },
     ...useCases,
   ],
 

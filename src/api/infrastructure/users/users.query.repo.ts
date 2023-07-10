@@ -99,8 +99,6 @@ export class UserQueryRepo {
       [filter.searchLogin, blogId, filter.banStatus01, filter.banStatus02],
     );
 
-    console.log(totalCount[0].count);
-
     totalCount = Number(totalCount[0].count);
     //const totalCount = await this.UserBanModel.countDocuments(filter);
 
@@ -117,7 +115,6 @@ export class UserQueryRepo {
     Limit ${paginatedQuery.pageSize} Offset ${skipSize};`,
       [filter.searchLogin, blogId, filter.banStatus01, filter.banStatus02],
     );
-    console.log(bannedUsersForBlog);
     // const bannedUsersForBlog = await this.UserBanModel.find(filter)
     //   .sort({
     //     [paginatedQuery.sortBy]: sortDirection,

@@ -96,7 +96,6 @@ export const newPostCreatingData = {
   title: 'ChatGPT',
   shortDescription: 'AI',
   content: 'About Ai technologies',
-  blogId: '6409dca9e947f5d966149e41',
 };
 
 export const newPostByBlogIdData = {
