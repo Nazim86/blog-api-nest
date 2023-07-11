@@ -8,6 +8,7 @@ import { newPostCreatingData } from '../../data/posts-data';
 import {
   commentCreatingData,
   commentUpdatingData,
+  dislikeComment,
   likeComment,
 } from '../../data/comments-data';
 
@@ -129,7 +130,22 @@ describe('Public comments testing', () => {
       expect(result.status).toBe(204);
     });
 
-    it(`Should get "None" in my status after Like comment and get with unauthorized user return 204 `, async () => {
+    it(`Should get myStatus "None" after like comment and get with unauthorized user return 204 `, async () => {
+      const result = await request(httpServer)
+        .put(`/comments/${comments[5].id}/like-status`)
+        .auth(accessTokens[5], { type: 'bearer' })
+        .send(likeComment);
+
+      const getComment = await request(httpServer)
+        .get(`/comments/${comments[5].id}`)
+        .send();
+
+      expect(result.status).toBe(204);
+      expect(getComment.body.likesInfo.myStatus).toEqual('None');
+      expect(getComment.body.likesInfo.likesCount).toBe(1);
+    });
+
+    it(`Should get myStatus "Like" after like comment and get with unauthorized user return 204 `, async () => {
       const result = await request(httpServer)
         .put(`/comments/${comments[5].id}/like-status`)
         .auth(accessTokens[5], { type: 'bearer' })
@@ -138,11 +154,66 @@ describe('Public comments testing', () => {
       const getComment = await request(httpServer)
         .get(`/comments/${comments[5].id}`)
         .auth(accessTokens[5], { type: 'bearer' })
-
         .send();
 
       expect(result.status).toBe(204);
-      expect(getComment.body.likesInfo.myStatus).toEqual('None');
+      expect(getComment.body.likesInfo.myStatus).toEqual('Like');
+      expect(getComment.body.likesInfo.likesCount).toBe(1);
+    });
+
+    it(`like the comment by user 1, user 2, user 3, user 4. get the comment after each like by user 1. status 204 `, async () => {
+      for (let i = 0; i <= 5; i++) {
+        const result = await request(httpServer)
+          .put(`/comments/${comments[0].id}/like-status`)
+          .auth(accessTokens[i], { type: 'bearer' })
+          .send(likeComment);
+
+        const getComment = await request(httpServer)
+          .get(`/comments/${comments[0].id}`)
+          .auth(accessTokens[0], { type: 'bearer' })
+          .send();
+
+        expect(result.status).toBe(204);
+        expect(getComment.body.likesInfo.myStatus).toEqual('Like');
+        expect(getComment.body.likesInfo.likesCount).toBe(i + 1);
+      }
+    });
+
+    it(`dislike the comment by user 1, user 2; like the comment by user 3; get the comment after each like by user 1; status 204 `, async () => {
+      for (let i = 0; i <= 5; i++) {
+        const result = await request(httpServer)
+          .put(`/comments/${comments[0].id}/like-status`)
+          .auth(accessTokens[i], { type: 'bearer' })
+          .send(dislikeComment);
+
+        const getComment = await request(httpServer)
+          .get(`/comments/${comments[0].id}`)
+          .auth(accessTokens[0], { type: 'bearer' })
+          .send();
+
+        expect(result.status).toBe(204);
+        expect(getComment.body.likesInfo.myStatus).toEqual('Dislike');
+        expect(getComment.body.likesInfo.likesCount).toBe(5 - i);
+        expect(getComment.body.likesInfo.dislikesCount).toBe(i + 1);
+      }
+    });
+
+    it(`like the comment twice by user 1; get the comment after each like by user 1. Should increase like's count once; status 204 `, async () => {
+      for (let i = 0; i <= 1; i++) {
+        const result = await request(httpServer)
+          .put(`/comments/${comments[4].id}/like-status`)
+          .auth(accessTokens[0], { type: 'bearer' })
+          .send(likeComment);
+
+        const getComment = await request(httpServer)
+          .get(`/comments/${comments[4].id}`)
+          .auth(accessTokens[0], { type: 'bearer' })
+          .send();
+
+        expect(result.status).toBe(204);
+        expect(getComment.body.likesInfo.myStatus).toEqual('Like');
+        expect(getComment.body.likesInfo.likesCount).toBe(1);
+      }
     });
   });
 });

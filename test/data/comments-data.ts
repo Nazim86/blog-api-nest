@@ -100,3 +100,4 @@ export const commentUpdatingData = {
 };
 
 export const likeComment = { likeStatus: 'Like' };
+export const dislikeComment = { likeStatus: 'Dislike' };
