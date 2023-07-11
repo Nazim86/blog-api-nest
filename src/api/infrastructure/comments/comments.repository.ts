@@ -45,14 +45,12 @@ export class CommentsRepository {
   }
 
   async updateComment(commentId: string, createCommentDto: CreateCommentDto) {
-    console.log('commentId', commentId);
     const isUpdated = await this.dataSource.query(
       `UPDATE public.comments
             SET  "content"=$1
             WHERE "id" = $2;`,
       [createCommentDto.content, commentId],
     );
-    console.log('isUpdated', isUpdated);
     return isUpdated[1] === 1;
   }
 

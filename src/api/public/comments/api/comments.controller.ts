@@ -41,7 +41,6 @@ export class CommentsController {
     @Body() createCommentDto: CreateCommentDto,
     @UserId() userId: string,
   ) {
-    console.log('updateCommentByCommentId');
     const isUpdated: Result<ResultCode> = await this.commandBus.execute(
       new CommentUpdateCommand(commentId, createCommentDto, userId),
     );
