@@ -111,14 +111,17 @@ export class PostsController {
     @Param('id') postId: string,
     @Body() createCommentDto: CreateCommentDto,
   ) {
-    const isCreated = await this.commandBus.execute(
+    const commentId = await this.commandBus.execute(
       new CommentCreateCommand(createCommentDto, postId, userId),
     );
 
-    if (isCreated.code !== ResultCode.Success) {
-      return exceptionHandler(isCreated.code);
+    if (commentId.code !== ResultCode.Success) {
+      return exceptionHandler(commentId.code);
     }
-    return await this.commentsQueryRepo.getComment(isCreated.data);
+
+    const comment = await this.commentsQueryRepo.getComment(commentId.data);
+
+    return comment;
   }
 
   @UseGuards(AccessTokenGuard)

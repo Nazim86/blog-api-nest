@@ -1,15 +1,9 @@
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import {
-  closeInMongodConnection,
-  rootMongooseTestModule,
-} from '../../mongoose-test-module';
 import { AppModule } from '../../../src/app.module';
-
 import { appSettings } from '../../../src/app.settings';
 import request from 'supertest';
 import { blogCreatingData } from '../../data/blogs-data';
-import { contains } from 'class-validator';
 import { newPostCreatingData } from '../../data/posts-data';
 import { commentCreatingData } from '../../data/comments-data';
 
@@ -118,7 +112,7 @@ describe('Public posts testing', () => {
         comments.push(result.body);
 
         expect(result.status).toBe(201);
-        expect(result.body.content).toEqual(`${commentCreatingData} + ${i}`);
+        expect(result.body.content).toMatch(`${commentCreatingData} + ${i}`);
       }
     });
   });

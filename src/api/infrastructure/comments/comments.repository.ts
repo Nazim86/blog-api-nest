@@ -23,22 +23,22 @@ export class CommentsRepository {
     commentId = commentId[0].id;
 
     await this.dataSource.query(
-      `INSERT INTO public.commentator_info(
-                     "userId", "userLogin", "isBanned", "commentId") 
-                    VALUES ($1, $2, $3, $4);`,
-      [commentData.userId, commentData.login, false, commentId],
-    );
-
-    await this.dataSource.query(
       `INSERT INTO public.post_info(
-             title, "blogId", "blogName", "blogOwnerId", "commentId")
-            VALUES ( $1, $2, $3, $4, $5);`,
+        title, "blogId", "blogName", "blogOwnerId", "commentId")
+        VALUES ( $1, $2, $3, $4, $5);`,
       [
         commentData.title,
         commentData.blogId,
         commentData.blogOwnerId,
+        commentData.blogOwnerId,
         commentId,
       ],
+    );
+    await this.dataSource.query(
+      `INSERT INTO public.commentator_info(
+             "userId", "userLogin", "isBanned", "commentId")
+            VALUES ( $1, $2, $3, $4);`,
+      [commentData.userId, commentData.login, false, commentId],
     );
 
     return commentId;

@@ -41,7 +41,7 @@ export class CommentCreateUseCase {
       return { code: ResultCode.Forbidden };
     }
 
-    const newComment = await this.commentsRepository.createComment({
+    const commentId = await this.commentsRepository.createComment({
       createCommentDto: command.createCommentDto,
       postId: command.postId,
       userId: command.userId,
@@ -64,6 +64,6 @@ export class CommentCreateUseCase {
     // );
 
     //await this.commentsRepository.save(newComment);
-    return { data: newComment.id, code: ResultCode.Success };
+    return { data: commentId, code: ResultCode.Success };
   }
 }
