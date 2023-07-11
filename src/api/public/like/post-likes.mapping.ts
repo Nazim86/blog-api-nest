@@ -1,9 +1,9 @@
 export const newestLikesMapping = (postLikes) => {
-  return postLikes.map((likes) => {
+  return postLikes.map((like) => {
     return {
-      addedAt: likes.addedAt,
-      userId: likes.userId,
-      login: likes.login,
+      addedAt: like.addedAt,
+      userId: like.userId,
+      login: like.login,
     };
   });
 };

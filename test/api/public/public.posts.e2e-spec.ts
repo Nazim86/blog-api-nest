@@ -7,7 +7,7 @@ import { blogCreatingData } from '../../data/blogs-data';
 import { newPostCreatingData } from '../../data/posts-data';
 import {
   commentCreatingData,
-  commentUpdatingData,
+  commentWithPagination,
 } from '../../data/comments-data';
 
 describe('Public posts testing', () => {
@@ -119,14 +119,18 @@ describe('Public posts testing', () => {
       }
     });
 
-    it(`Public update comment by id and return 204 `, async () => {
-      console.log('commentId in e2e test', comments[5].id);
+    it(`Get comment by post id and return 200 `, async () => {
       const result = await request(httpServer)
-        .put(`/comments/${comments[5].id}`)
+        .get(`/posts/${posts[5].id}/comments`)
         .auth(accessTokens[5], { type: 'bearer' })
-        .send(commentUpdatingData);
+        .send();
 
-      expect(result.status).toBe(204);
+      console.log(result.body);
+      expect(result.status).toBe(200);
+      expect(result.body).toEqual({
+        ...commentWithPagination,
+        content: 'Learning to code in IT incubator + 5',
+      });
     });
   });
 });

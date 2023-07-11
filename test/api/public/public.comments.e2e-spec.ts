@@ -215,5 +215,22 @@ describe('Public comments testing', () => {
         expect(getComment.body.likesInfo.likesCount).toBe(1);
       }
     });
+
+    it(`like the comment by user 1 then get by user 2; dislike the comment by user 2 then get by the user 1; status 204 `, async () => {
+      console.log('inside what I want');
+      const result = await request(httpServer)
+        .put(`/comments/${comments[2].id}/like-status`)
+        .auth(accessTokens[0], { type: 'bearer' })
+        .send(likeComment);
+
+      const getComment = await request(httpServer)
+        .get(`/comments/${comments[2].id}`)
+        .auth(accessTokens[1], { type: 'bearer' })
+        .send();
+
+      expect(result.status).toBe(204);
+      expect(getComment.body.likesInfo.myStatus).toEqual('Like');
+      expect(getComment.body.likesInfo.likesCount).toBe(1);
+    });
   });
 });
