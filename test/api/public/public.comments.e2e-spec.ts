@@ -129,13 +129,20 @@ describe('Public comments testing', () => {
       expect(result.status).toBe(204);
     });
 
-    it(`Like comment and return 204 `, async () => {
+    it(`Should get "None" in my status after Like comment and get with unauthorized user return 204 `, async () => {
       const result = await request(httpServer)
         .put(`/comments/${comments[5].id}/like-status`)
         .auth(accessTokens[5], { type: 'bearer' })
         .send(likeComment);
 
+      const getComment = await request(httpServer)
+        .get(`/comments/${comments[5].id}`)
+        .auth(accessTokens[5], { type: 'bearer' })
+
+        .send();
+
       expect(result.status).toBe(204);
+      expect(getComment.body.likesInfo.myStatus).toEqual('None');
     });
   });
 });

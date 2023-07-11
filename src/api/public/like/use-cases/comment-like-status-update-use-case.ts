@@ -55,8 +55,6 @@ export class CommentLikeStatusUpdateUseCase {
     // );
     // await this.likesRepository.save(commentLike);
 
-    console.log(commentLike);
-
     return true;
   }
 }

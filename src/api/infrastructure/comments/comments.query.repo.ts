@@ -204,8 +204,8 @@ export class CommentsQueryRepo {
         //   userId,
         // });
 
-        if (likeInDb) {
-          myStatus = likeInDb.status;
+        if (likeInDb.length > 0) {
+          myStatus = likeInDb[0].status;
         }
       }
 
