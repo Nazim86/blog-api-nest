@@ -45,24 +45,27 @@ export class CommentsRepository {
   }
 
   async updateComment(commentId: string, createCommentDto: CreateCommentDto) {
+    console.log('commentId', commentId);
     const isUpdated = await this.dataSource.query(
       `UPDATE public.comments
-            SET  content=$1
+            SET  "content"=$1
             WHERE "id" = $2;`,
-      [commentId, createCommentDto.content],
+      [createCommentDto.content, commentId],
     );
-
+    console.log('isUpdated', isUpdated);
     return isUpdated[1] === 1;
   }
 
   async getComment(commentId) {
     const comment = await this.dataSource.query(
-      `select * from public.comments c
+      `select c.*, ci."userId", ci."userLogin", ci."commentId", ci."isBanned",
+               pi.title, pi."blogId", pi."blogName", pi."blogOwnerId", pi."commentId"
+                from public.comments c
               Left join public.commentator_info ci on 
               c."id" = ci."commentId"
               Left join public.post_info pi on
               c."id" = pi."commentId"
-              Where "id"= $1`,
+              Where c."id"= $1`,
       [commentId],
     );
 

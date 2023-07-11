@@ -32,6 +32,9 @@ export class CommentUpdateUseCase {
       };
     }
 
+    console.log('commentId in CommentUpdateCommand', command.commentId);
+    console.log('comment.Id in CommentUpdateCommand', comment.id);
+
     const isCommentUpdated = await this.commentsRepository.updateComment(
       comment.id,
       command.createCommentDto,

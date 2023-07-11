@@ -20,9 +20,10 @@ import { Result } from '../../../../exception-handler/result-type';
 import { ResultCode } from '../../../../exception-handler/result-code-enum';
 import { exceptionHandler } from '../../../../exception-handler/exception-handler';
 import { CommandBus } from '@nestjs/cqrs';
-import { CommentCreateCommand } from '../application,use-cases/comment-create-use-case';
 import { CommentLikeStatusUpdateCommand } from '../../like/use-cases/comment-like-status-update-use-case';
 import { CommentDeleteCommand } from '../application,use-cases/comment-delete-use-case';
+import { UserId } from '../../../../decorators/UserId';
+import { CommentUpdateCommand } from '../application,use-cases/comment-update-use-case';
 
 @Controller('comments')
 export class CommentsController {
@@ -38,10 +39,11 @@ export class CommentsController {
   async updateCommentByCommentId(
     @Param('id') commentId: string,
     @Body() createCommentDto: CreateCommentDto,
-    @Request() req,
+    @UserId() userId: string,
   ) {
+    console.log('updateCommentByCommentId');
     const isUpdated: Result<ResultCode> = await this.commandBus.execute(
-      new CommentCreateCommand(commentId, createCommentDto, req.user.userId),
+      new CommentUpdateCommand(commentId, createCommentDto, userId),
     );
 
     if (isUpdated.code !== ResultCode.Success) {

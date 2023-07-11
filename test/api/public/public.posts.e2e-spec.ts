@@ -5,7 +5,10 @@ import { appSettings } from '../../../src/app.settings';
 import request from 'supertest';
 import { blogCreatingData } from '../../data/blogs-data';
 import { newPostCreatingData } from '../../data/posts-data';
-import { commentCreatingData } from '../../data/comments-data';
+import {
+  commentCreatingData,
+  commentUpdatingData,
+} from '../../data/comments-data';
 
 describe('Public posts testing', () => {
   let app: INestApplication;
@@ -84,7 +87,7 @@ describe('Public posts testing', () => {
       expect(blogs[1].name).toEqual('Blog User1');
     });
 
-    it(`Blogger creates post for blog`, async () => {
+    it(`Blogger creates post for blog and return 201`, async () => {
       for (let i = 0; i <= 5; i++) {
         const result = await request(app.getHttpServer())
           .post(`/blogger/blogs/${blogs[i].id}/posts`)
@@ -100,20 +103,30 @@ describe('Public posts testing', () => {
       }
     });
 
-    it(`Public creates comments for post`, async () => {
+    it(`Public creates comments for post and return 201`, async () => {
       for (let i = 0; i <= 5; i++) {
         const result = await request(app.getHttpServer())
           .post(`/posts/${posts[i].id}/comments`)
           .auth(accessTokens[i], { type: 'bearer' })
           .send({ content: `${commentCreatingData.content} + ${i}` });
 
-        console.log(result.body);
-
         comments.push(result.body);
 
         expect(result.status).toBe(201);
-        expect(result.body.content).toMatch(`${commentCreatingData} + ${i}`);
+        expect(result.body.content).toEqual(
+          `${commentCreatingData.content} + ${i}`,
+        );
       }
+    });
+
+    it(`Public update comment by id and return 204 `, async () => {
+      console.log('commentId in e2e test', comments[5].id);
+      const result = await request(httpServer)
+        .put(`/comments/${comments[5].id}`)
+        .auth(accessTokens[5], { type: 'bearer' })
+        .send(commentUpdatingData);
+
+      expect(result.status).toBe(204);
     });
   });
 });
