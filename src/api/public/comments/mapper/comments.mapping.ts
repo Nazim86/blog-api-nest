@@ -34,7 +34,7 @@ export class CommentsMapping {
         //   commentId,
         //   userId: comment.commentatorInfo.userId,
         // });
-        if (likeInDb) {
+        if (likeInDb.length > 0) {
           myStatus = likeInDb.status;
         }
       }

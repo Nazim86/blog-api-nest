@@ -111,7 +111,7 @@ export const updatedPostData = {
   blogId: '6409dca9e947f5d966149e41',
 };
 
-export const returnedCreatedPost = {
+export const postStructure = {
   id: expect.any(String),
   title: 'ChatGPT',
   shortDescription: 'AI',
@@ -120,9 +120,9 @@ export const returnedCreatedPost = {
   blogName: 'Blog updated',
   createdAt: expect.any(String),
   extendedLikesInfo: {
-    likesCount: 0,
-    dislikesCount: 0,
-    myStatus: 'None',
+    likesCount: expect.any(String),
+    dislikesCount: expect.any(String),
+    myStatus: expect.any(String),
     newestLikes: [],
   },
 };
@@ -261,3 +261,6 @@ export const likedPostData = [
     },
   },
 ];
+
+export const postLike = { likeStatus: 'Like' };
+export const postDislike = { likeStatus: 'Dislike' };

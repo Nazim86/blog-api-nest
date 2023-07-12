@@ -190,8 +190,6 @@ export class CommentsQueryRepo {
         return null;
       }
 
-      console.log('userId', userId);
-
       let myStatus = 'None';
 
       if (userId) {
@@ -206,14 +204,10 @@ export class CommentsQueryRepo {
         //   userId,
         // });
 
-        console.log('likeInDb', likeInDb);
-
         if (likeInDb.length > 0) {
           myStatus = likeInDb[0].status;
         }
       }
-
-      console.log('mystatus', myStatus);
 
       let likesCount = await this.dataSource.query(
         `SELECT count(*) 
@@ -257,7 +251,6 @@ export class CommentsQueryRepo {
         },
       };
     } catch (e) {
-      console.log('error', e);
       return null;
     }
   }

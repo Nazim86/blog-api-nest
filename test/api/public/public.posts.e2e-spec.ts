@@ -4,7 +4,11 @@ import { AppModule } from '../../../src/app.module';
 import { appSettings } from '../../../src/app.settings';
 import request from 'supertest';
 import { blogCreatingData } from '../../data/blogs-data';
-import { newPostCreatingData } from '../../data/posts-data';
+import {
+  newPostCreatingData,
+  postLike,
+  postStructure,
+} from '../../data/posts-data';
 import {
   commentCreatingData,
   commentWithPagination,
@@ -125,12 +129,38 @@ describe('Public posts testing', () => {
         .auth(accessTokens[5], { type: 'bearer' })
         .send();
 
-      console.log(result.body);
       expect(result.status).toBe(200);
       expect(result.body).toEqual({
         ...commentWithPagination,
-        content: 'Learning to code in IT incubator + 5',
+        items: [
+          {
+            ...commentWithPagination.items[0],
+            content: 'Learning to code in IT incubator + 5',
+          },
+        ],
       });
+    });
+
+    it(`like the post by user 1, user 2, user 3, user 4. get the post after each like by user 1. 
+    NewestLikes should be sorted in descending and return 204`, async () => {
+      for (let i = 0; i <= 5; i++) {
+        const result = await request(app.getHttpServer())
+          .put(`/posts/${posts[1].id}/like-status`)
+          .auth(accessTokens[i], { type: 'bearer' })
+          .send(postLike);
+
+        expect(result.status).toBe(204);
+
+        const getPost = await request(app.getHttpServer())
+          .get(`/posts/${posts[1].id}`)
+          .auth(accessTokens[0], { type: 'bearer' })
+          .send();
+
+        console.log(getPost.body.extendedLikesInfo.likesCount);
+        expect(getPost.status).toBe(200);
+        expect(getPost.body).toEqual(postStructure);
+        expect(getPost.body.extendedLikesInfo.likesCount).toBe(i + 1);
+      }
     });
   });
 });
