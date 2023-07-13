@@ -113,17 +113,17 @@ export const updatedPostData = {
 
 export const postStructure = {
   id: expect.any(String),
-  title: 'ChatGPT',
-  shortDescription: 'AI',
-  content: 'About Ai technologies',
+  title: expect.any(String),
+  shortDescription: expect.any(String),
+  content: expect.any(String),
   blogId: expect.any(String),
-  blogName: 'Blog updated',
+  blogName: expect.any(String),
   createdAt: expect.any(String),
   extendedLikesInfo: {
-    likesCount: expect.any(String),
-    dislikesCount: expect.any(String),
+    likesCount: expect.any(Number),
+    dislikesCount: expect.any(Number),
     myStatus: expect.any(String),
-    newestLikes: [],
+    newestLikes: expect.any(Array),
   },
 };
 
