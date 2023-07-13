@@ -21,7 +21,7 @@ export class PostsQueryRepo {
   async getPostById(postId: string, userId?: string | undefined) {
     try {
       let post = await this.dataSource.query(
-        `SELECT p.* FROM public.posts p where p."id"=$1`,
+        `SELECT * FROM public.posts  where "id"=$1`,
         [postId],
       );
 
@@ -72,10 +72,10 @@ export class PostsQueryRepo {
       const sortBy = 'addedAt';
 
       const getLast3Likes = await this.dataSource.query(
-        `SELECT count(*) 
+        `SELECT pl.*
         FROM public.post_like pl 
         Where pl."postId"=$1 and pl."status"=$2 and pl."banStatus"=$3
-        Group by pl."addedAt"
+        Group by pl.id, pl."addedAt"
         Order by "${sortBy}" desc
         Limit 3;`,
         [post.id, LikeEnum.Like, false],
@@ -99,6 +99,7 @@ export class PostsQueryRepo {
         },
       };
     } catch (e) {
+      console.log(e);
       return false;
     }
   }

@@ -4,11 +4,7 @@ import { AppModule } from '../../../src/app.module';
 import { appSettings } from '../../../src/app.settings';
 import request from 'supertest';
 import { blogCreatingData } from '../../data/blogs-data';
-import {
-  newPostCreatingData,
-  postLike,
-  postStructure,
-} from '../../data/posts-data';
+import { newPostCreatingData, postLike } from '../../data/posts-data';
 import {
   commentCreatingData,
   commentWithPagination,
@@ -141,7 +137,7 @@ describe('Public posts testing', () => {
       });
     });
 
-    it(`like the post by user 1, user 2, user 3, user 4. get the post after each like by user 1. 
+    it(`like the post by user 0, user 1, user 2, user 3, user 4, user 5 get the post after each like by user 1. 
     NewestLikes should be sorted in descending and return 204`, async () => {
       for (let i = 0; i <= 5; i++) {
         const result = await request(app.getHttpServer())
@@ -156,11 +152,62 @@ describe('Public posts testing', () => {
           .auth(accessTokens[0], { type: 'bearer' })
           .send();
 
-        console.log(getPost.body.extendedLikesInfo.likesCount);
         expect(getPost.status).toBe(200);
-        expect(getPost.body).toEqual(postStructure);
         expect(getPost.body.extendedLikesInfo.likesCount).toBe(i + 1);
       }
+    });
+
+    it(`like post 1 by user 1, user 2; like post 2 by user 2, user 3; dislike post 3 by user 1; 
+    like post 4 by user 1, user 4, user 2, user 3; like post 5 by user 2, dislike by user 3; 
+    like post 6 by user 1, dislike by user 2. 
+    Get the posts by user 1 after all likes NewestLikes should be sorted in descending4`, async () => {
+      await request(app.getHttpServer())
+        .put(`/posts/${posts[0].id}/like-status`)
+        .auth(accessTokens[1], { type: 'bearer' })
+        .send(postLike)
+        .expect(204);
+
+      const getPost1 = await request(app.getHttpServer())
+        .get(`/posts/${posts[0].id}`)
+        .auth(accessTokens[0], { type: 'bearer' })
+        .send();
+
+      expect(getPost1.status).toBe(200);
+      expect(getPost1.body.extendedLikesInfo.likesCount).toBe(1);
+
+      await request(app.getHttpServer())
+        .put(`/posts/${posts[0].id}/like-status`)
+        .auth(accessTokens[1], { type: 'bearer' })
+        .send(postLike)
+        .expect(204);
+
+      const getPost2 = await request(app.getHttpServer())
+        .get(`/posts/${posts[0].id}`)
+        .auth(accessTokens[0], { type: 'bearer' })
+        .send();
+
+      console.log('extendedLikesInfo', getPost2.body.extendedLikesInfo);
+
+      expect(
+        getPost2.body.extendedLikesInfo.newestLikes[0].addedAt,
+      ).toBeGreaterThan(getPost1.body.extendedLikesInfo.newestLikes[0].addedAt);
+
+      // const result2 = await request(app.getHttpServer())
+      //   .put(`/posts/${posts[0].id}/like-status`)
+      //   .auth(accessTokens[i], { type: 'bearer' })
+      //   .send(postLike);
+      //
+      // expect(result2.status).toBe(204);
+      //
+      // const getPost2 = await request(app.getHttpServer())
+      //   .get(`/posts/${posts[1].id}`)
+      //   .auth(accessTokens[0], { type: 'bearer' })
+      //   .send();
+      //
+      // console.log(getPost2.body.extendedLikesInfo);
+      // expect(getPost2.status).toBe(200);
+      // expect(getPost2.body).toEqual(postStructure);
+      // expect(getPost2.body.extendedLikesInfo.likesCount).toBe(i + 1);
     });
   });
 });

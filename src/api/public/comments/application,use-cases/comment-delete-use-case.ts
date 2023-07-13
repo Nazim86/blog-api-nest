@@ -1,6 +1,5 @@
 import { Result } from '../../../../exception-handler/result-type';
 import { ResultCode } from '../../../../exception-handler/result-code-enum';
-import { CommentDocument } from '../../../entities/comment.entity';
 import { CommandHandler } from '@nestjs/cqrs';
 import { CommentsRepository } from '../../../infrastructure/comments/comments.repository';
 
@@ -12,11 +11,9 @@ export class CommentDeleteUseCase {
   constructor(private readonly commentsRepository: CommentsRepository) {}
 
   async execute(command: CommentDeleteCommand): Promise<Result<ResultCode>> {
-    const comment: CommentDocument = await this.commentsRepository.getComment(
-      command.commentId,
-    );
+    const comment = await this.commentsRepository.getComment(command.commentId);
 
-    if (comment && comment.commentatorInfo.userId !== command.userId) {
+    if (comment && comment.userId !== command.userId) {
       return {
         code: ResultCode.Forbidden,
       };

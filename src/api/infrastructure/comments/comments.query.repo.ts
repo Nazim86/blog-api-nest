@@ -199,6 +199,8 @@ export class CommentsQueryRepo {
           [commentId, userId],
         );
 
+        console.log('likeInDb in getComment', likeInDb);
+
         // const likeInDb = await this.CommentLikeModel.findOne({
         //   commentId,
         //   userId,

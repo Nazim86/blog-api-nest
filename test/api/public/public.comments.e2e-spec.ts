@@ -217,7 +217,6 @@ describe('Public comments testing', () => {
     });
 
     it(`like the comment by user 1 then get by user 2; dislike the comment by user 2 then get by the user 1; status 204 `, async () => {
-      console.log('inside what I want');
       const result = await request(httpServer)
         .put(`/comments/${comments[2].id}/like-status`)
         .auth(accessTokens[0], { type: 'bearer' })
@@ -231,6 +230,54 @@ describe('Public comments testing', () => {
       expect(result.status).toBe(204);
       expect(getComment.body.likesInfo.myStatus).toEqual('Like');
       expect(getComment.body.likesInfo.likesCount).toBe(1);
+    });
+
+    it(`like comment 1 by user 1, user 2; like comment 2 by user 2, user 3; 
+    dislike comment 3 by user 1; like comment 4 by user 1, user 4, user 2, user 3; 
+    like comment 5 by user 2, dislike by user 3; like comment 6 by user 1, dislike by user 2. 
+    Get the comments by user 1 after all likes ; status 200; content: `, async () => {
+      const getComment = await request(httpServer)
+        .get(`/comments/${comments[0].id}`)
+        .auth(accessTokens[0], { type: 'bearer' })
+        .send();
+
+      console.log('get comment befprr for loop', getComment.body);
+      for (let i = 0; i <= 1; i++) {
+        await request(httpServer)
+          .put(`/comments/${comments[0].id}/like-status`)
+          .auth(accessTokens[i], { type: 'bearer' })
+          .send(likeComment)
+          .expect(204);
+
+        const getComment = await request(httpServer)
+          .get(`/comments/${comments[0].id}`)
+          .auth(accessTokens[0], { type: 'bearer' })
+          .send();
+
+        expect(getComment.body.likesInfo.myStatus).toEqual('Like');
+        expect(getComment.body.likesInfo.likesCount).toBe(1);
+        expect(getComment.body.likesInfo.dislikesCount).toBe(5);
+
+        await request(httpServer)
+          .put(`/comments/${comments[1].id}/like-status`)
+          .auth(accessTokens[i + 1], { type: 'bearer' })
+          .send(likeComment)
+          .expect(204);
+
+        const getComment2 = await request(httpServer)
+          .get(`/comments/${comments[1].id}`)
+          .auth(accessTokens[0], { type: 'bearer' })
+          .send();
+
+        expect(getComment2.body.likesInfo.myStatus).toEqual('Like');
+        expect(getComment2.body.likesInfo.likesCount).toBe(1);
+      }
+
+      // await request(httpServer)
+      //   .put(`/comments/${comments[0].id}/like-status`)
+      //   .auth(accessTokens[1], { type: 'bearer' })
+      //   .send(likeComment)
+      //   .expect(204);
     });
   });
 });

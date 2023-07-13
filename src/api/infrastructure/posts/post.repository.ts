@@ -52,7 +52,6 @@ export class PostRepository {
         new Date().toISOString(),
       ],
     );
-
     return newPost[0].id;
   }
 
