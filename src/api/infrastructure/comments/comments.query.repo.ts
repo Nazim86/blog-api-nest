@@ -90,6 +90,7 @@ export class CommentsQueryRepo {
   async getCommentsForPost(
     postId: string,
     query,
+    userId?: string,
   ): Promise<QueryPaginationType<CommentsViewType[]> | null> {
     const paginatedQuery: Pagination<PaginationType> = new Pagination(
       query.pageNumber,
@@ -148,7 +149,7 @@ export class CommentsQueryRepo {
     //   .lean();
 
     const mappedComment: Promise<CommentsViewType>[] =
-      await this.commentMapping.commentMapping(getCommentsForPost);
+      await this.commentMapping.commentMapping(getCommentsForPost, userId);
 
     const resolvedComments: CommentsViewType[] = await Promise.all(
       mappedComment,
@@ -200,6 +201,7 @@ export class CommentsQueryRepo {
         );
 
         console.log('likeInDb in getComment', likeInDb);
+        console.log('user id', user.id);
 
         // const likeInDb = await this.CommentLikeModel.findOne({
         //   commentId,

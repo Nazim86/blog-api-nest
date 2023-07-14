@@ -69,7 +69,8 @@ export class LikesRepository {
         false,
       ],
     );
-    return commentLike[0];
+
+    return true;
   }
 
   async setBanStatusForCommentLike(userId: string, banStatus: boolean) {
@@ -80,6 +81,10 @@ export class LikesRepository {
       [banStatus, userId],
     );
     //updateMany({ userId }, { $set: { banStatus: banStatus } });
+  }
+
+  async resetLikeRepository() {
+    return this.dataSource.query(`Truncate public.comment_like`);
   }
 
   async setBanStatusForPostLike(userId: string, banStatus: boolean) {

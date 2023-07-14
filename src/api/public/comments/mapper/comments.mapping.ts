@@ -18,16 +18,19 @@ export class CommentsMapping {
 
   //TODO: Question Why there is two promises?
   //TODO: Question Why I cannot change CommentsDbType? When change .map is not recognized
-  async commentMapping(array): Promise<Promise<CommentsViewType>[]> {
+  async commentMapping(
+    array,
+    userId: string,
+  ): Promise<Promise<CommentsViewType>[]> {
     return array.map(async (comment): Promise<CommentsViewType> => {
       //const commentId = comment._id.toString();
       let myStatus = 'None';
 
-      if (comment.userId) {
+      if (userId) {
         const likeInDb = await this.dataSource.query(
           `SELECT * FROM public.comment_like
                  Where "commentId"=$1 and "userId" = $2;`,
-          [comment.id, comment.userId],
+          [comment.id, userId],
         );
 
         // const likeInDb = await this.CommentLikeModel.findOne({
@@ -35,7 +38,7 @@ export class CommentsMapping {
         //   userId: comment.commentatorInfo.userId,
         // });
         if (likeInDb.length > 0) {
-          myStatus = likeInDb.status;
+          myStatus = likeInDb[0].status;
         }
       }
 

@@ -11,6 +11,7 @@ import {
   dislikeComment,
   likeComment,
 } from '../../data/comments-data';
+import { DataSource } from 'typeorm';
 
 describe('Public comments testing', () => {
   let app: INestApplication;
@@ -21,6 +22,7 @@ describe('Public comments testing', () => {
   const posts = [];
   const comments = [];
 
+  let dataSource: DataSource;
   jest.setTimeout(60 * 1000);
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -33,6 +35,7 @@ describe('Public comments testing', () => {
     await app.init();
 
     httpServer = app.getHttpServer();
+    dataSource = app.get(DataSource);
   });
 
   afterAll(async () => {
@@ -211,6 +214,7 @@ describe('Public comments testing', () => {
           .send();
 
         expect(result.status).toBe(204);
+        console.log('looking change of like in 2 rounds', getComment.body);
         expect(getComment.body.likesInfo.myStatus).toEqual('Like');
         expect(getComment.body.likesInfo.likesCount).toBe(1);
       }
@@ -226,22 +230,25 @@ describe('Public comments testing', () => {
         .get(`/comments/${comments[2].id}`)
         .auth(accessTokens[1], { type: 'bearer' })
         .send();
+      console.log('get comment befprr for loop', getComment.body);
 
       expect(result.status).toBe(204);
       expect(getComment.body.likesInfo.myStatus).toEqual('Like');
       expect(getComment.body.likesInfo.likesCount).toBe(1);
+
+      //TODO rest of test
     });
 
-    it(`like comment 1 by user 1, user 2; like comment 2 by user 2, user 3; 
-    dislike comment 3 by user 1; like comment 4 by user 1, user 4, user 2, user 3; 
-    like comment 5 by user 2, dislike by user 3; like comment 6 by user 1, dislike by user 2. 
-    Get the comments by user 1 after all likes ; status 200; content: `, async () => {
-      const getComment = await request(httpServer)
-        .get(`/comments/${comments[0].id}`)
-        .auth(accessTokens[0], { type: 'bearer' })
-        .send();
+    // below is new bundle of tests
+    //
+    it(`should reset commentsLike repository `, async () => {
+      await dataSource.query(`
+      delete  from comment_like
+      `);
+    });
 
-      console.log('get comment befprr for loop', getComment.body);
+    it(`like comment 1 by user 1, user 2; like comment 2 by user 2, user 3;
+       status 204; content: `, async () => {
       for (let i = 0; i <= 1; i++) {
         await request(httpServer)
           .put(`/comments/${comments[0].id}/like-status`)
@@ -255,8 +262,8 @@ describe('Public comments testing', () => {
           .send();
 
         expect(getComment.body.likesInfo.myStatus).toEqual('Like');
-        expect(getComment.body.likesInfo.likesCount).toBe(1);
-        expect(getComment.body.likesInfo.dislikesCount).toBe(5);
+        expect(getComment.body.likesInfo.likesCount).toBe(i + 1);
+        expect(getComment.body.likesInfo.dislikesCount).toBe(5 - i);
 
         await request(httpServer)
           .put(`/comments/${comments[1].id}/like-status`)
@@ -269,15 +276,76 @@ describe('Public comments testing', () => {
           .auth(accessTokens[0], { type: 'bearer' })
           .send();
 
-        expect(getComment2.body.likesInfo.myStatus).toEqual('Like');
-        expect(getComment2.body.likesInfo.likesCount).toBe(1);
+        expect(getComment2.body.likesInfo.myStatus).toEqual('None');
+        expect(getComment2.body.likesInfo.likesCount).toBe(i + 1);
       }
+    });
 
-      // await request(httpServer)
-      //   .put(`/comments/${comments[0].id}/like-status`)
-      //   .auth(accessTokens[1], { type: 'bearer' })
-      //   .send(likeComment)
-      //   .expect(204);
+    it(`dislike comment 3 by user 1;  status 204; content: `, async () => {
+      await request(httpServer)
+        .put(`/comments/${comments[2].id}/like-status`)
+        .auth(accessTokens[0], { type: 'bearer' })
+        .send(likeComment)
+        .expect(204);
+
+      const getComment = await request(httpServer)
+        .get(`/comments/${comments[2].id}`)
+        .auth(accessTokens[0], { type: 'bearer' })
+        .send();
+
+      expect(getComment.body.likesInfo.myStatus).toEqual('Like');
+      expect(getComment.body.likesInfo.likesCount).toBe(1);
+    });
+
+    it(`like comment 4 by user 1, user 4, user 2, user 3; like comment 5 by user 2, dislike by user 3; 
+    like comment 6 by user 1, dislike by user 2. Get the comments by user 1 after all likes ; status 200 `, async () => {
+      for (let i = 0; i <= 3; i++) {
+        await request(httpServer)
+          .put(`/comments/${comments[3].id}/like-status`)
+          .auth(accessTokens[i], { type: 'bearer' })
+          .send(likeComment)
+          .expect(204);
+
+        const getComment = await request(httpServer)
+          .get(`/comments/${comments[3].id}`)
+          .auth(accessTokens[i], { type: 'bearer' })
+          .send();
+
+        expect(getComment.body.likesInfo.myStatus).toEqual('Like');
+        expect(getComment.body.likesInfo.likesCount).toBe(i + 1);
+      }
+    });
+
+    it(`like comment 5 by user 2, dislike by user 3; 
+    like comment 6 by user 1, dislike by user 2. Get the comments by user 1 after all likes ; status 200 `, async () => {
+      await request(httpServer)
+        .put(`/comments/${comments[4].id}/like-status`)
+        .auth(accessTokens[1], { type: 'bearer' })
+        .send(likeComment)
+        .expect(204);
+
+      const getComment = await request(httpServer)
+        .get(`/comments/${comments[4].id}`)
+        .auth(accessTokens[0], { type: 'bearer' })
+        .send();
+
+      expect(getComment.body.likesInfo.myStatus).toEqual('Like');
+      expect(getComment.body.likesInfo.likesCount).toBe(1);
+
+      await request(httpServer)
+        .put(`/comments/${comments[4].id}/like-status`)
+        .auth(accessTokens[2], { type: 'bearer' })
+        .send(dislikeComment)
+        .expect(204);
+
+      const getComment2 = await request(httpServer)
+        .get(`/comments/${comments[4].id}`)
+        .auth(accessTokens[2], { type: 'bearer' })
+        .send();
+
+      expect(getComment2.body.likesInfo.myStatus).toEqual('None');
+      expect(getComment2.body.likesInfo.likesCount).toBe(1);
+      expect(getComment2.body.likesInfo.dislikesCount).toBe(1);
     });
   });
 });

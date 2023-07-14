@@ -92,11 +92,27 @@ export class PostsController {
 
   @Get(':id/comments')
   async getCommentByPostId(
+    @Request() req,
     @Param('id') postId: string,
     @Query() query: Pagination<PaginationType>,
   ) {
+    const accessToken: string | undefined =
+      req.headers.authorization?.split(' ')[1];
+
+    let userId = undefined;
+
+    if (accessToken) {
+      const tokenData = await this.jwtService.getTokenMetaData(
+        accessToken,
+        settings.ACCESS_TOKEN_SECRET,
+      );
+      if (tokenData) {
+        userId = tokenData.userId;
+      }
+    }
+
     const getCommentsForPost: QueryPaginationType<CommentsViewType[]> | null =
-      await this.commentsQueryRepo.getCommentsForPost(postId, query);
+      await this.commentsQueryRepo.getCommentsForPost(postId, query, userId);
 
     if (!getCommentsForPost) {
       return exceptionHandler(ResultCode.NotFound);
