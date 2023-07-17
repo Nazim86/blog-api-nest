@@ -42,17 +42,17 @@ export class BanUserUseCase {
 
       //user.banUser(command.banUserDto);
 
-      // await this.likesRepository.setBanStatusForCommentLike(
-      //   command.userId,
-      //   true,
-      // );
-      //
-      // await this.likesRepository.setBanStatusForPostLike(command.userId, true);
-      //
-      // await this.commentsRepository.setBanStatusForComment(
-      //   command.userId,
-      //   true,
-      // );
+      await this.likesRepository.setBanStatusForCommentLike(
+        command.userId,
+        true,
+      );
+
+      await this.likesRepository.setBanStatusForPostLike(command.userId, true);
+
+      await this.commentsRepository.setBanStatusForComment(
+        command.userId,
+        true,
+      );
 
       await this.deviceRepository.deleteDeviceByUserId(command.userId);
     }
@@ -64,16 +64,16 @@ export class BanUserUseCase {
       await this.usersRepository.unBanUser(command.userId);
       // user.unBanUser();
 
-      // await this.likesRepository.setBanStatusForCommentLike(
-      //   command.userId,
-      //   false,
-      // );
-      //
-      // await this.likesRepository.setBanStatusForPostLike(command.userId, false);
-      // await this.commentsRepository.setBanStatusForComment(
-      //   command.userId,
-      //   false,
-      // );
+      await this.likesRepository.setBanStatusForCommentLike(
+        command.userId,
+        false,
+      );
+
+      await this.likesRepository.setBanStatusForPostLike(command.userId, false);
+      await this.commentsRepository.setBanStatusForComment(
+        command.userId,
+        false,
+      );
     }
 
     // await this.usersRepository.save(user);

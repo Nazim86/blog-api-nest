@@ -71,9 +71,18 @@ export class CommentsRepository {
     //return this.CommentModel.findOne({ _id: new ObjectId(commentId) });
   }
 
-  // async getCommentByBlogId(blogId): Promise<CommentDocument | null> {
-  //   return this.CommentModel.findOne({ 'postInfo.blogId': blogId });
-  // }
+  async setBanStatusForComment(userId: string, banStatus: boolean) {
+    await this.dataSource.query(
+      `UPDATE public.commentator_info
+        SET  "isBanned"=$1
+        WHERE "userId"=$2;`,
+      [banStatus, userId],
+    );
+    // await this.CommentModel.updateMany(
+    //   { 'commentatorInfo.userId': userId },
+    //   { $set: { 'commentatorInfo.isBanned': banStatus } },
+    // );
+  }
 
   async deleteComment(commentId: string): Promise<boolean> {
     const result = await this.dataSource.query(
