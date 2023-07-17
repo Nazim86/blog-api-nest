@@ -218,6 +218,20 @@ describe('Public posts testing', () => {
 
       const allPosts = await getPosts(httpServer);
 
+      //newestLikes test
+      expect(
+        allPosts.body.items[2].extendedLikesInfo.newestLikes[0].login,
+      ).toEqual('leo3');
+
+      expect(
+        allPosts.body.items[2].extendedLikesInfo.newestLikes[1].login,
+      ).toEqual('leo2');
+
+      expect(
+        allPosts.body.items[2].extendedLikesInfo.newestLikes[2].login,
+      ).toEqual('leo4');
+
+      //getting all comments after likes, checking likesCount and status
       for (let i = 0; i < allPosts.body.items.length; i++) {
         const postId = allPosts.body.items[i].id;
         const post = allPosts.body.items.find((p) => p.id === postId);
