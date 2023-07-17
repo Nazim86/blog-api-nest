@@ -4,20 +4,28 @@ import { AppModule } from '../../../src/app.module';
 import { appSettings } from '../../../src/app.settings';
 import request from 'supertest';
 import { blogCreatingData } from '../../data/blogs-data';
-import { newPostCreatingData, postLike } from '../../data/posts-data';
+import { newPostCreatingData, postLikeDto } from '../../data/posts-data';
 import {
   commentCreatingData,
   commentWithPagination,
 } from '../../data/comments-data';
+import { creatingUser } from '../../functions/user_functions';
+import { createUserDto } from '../../data/user-data';
+import { DataSource } from 'typeorm';
+import { getPosts, likePost } from '../../functions/post_functions';
 
 describe('Public posts testing', () => {
   let app: INestApplication;
   let httpServer;
+  let dataSource: DataSource;
   const users = [];
   const blogs = [];
   const accessTokens = [];
   const posts = [];
   const comments = [];
+
+  const countOfUsers = 5;
+  const postCounts = 5;
 
   jest.setTimeout(60 * 1000);
   beforeAll(async () => {
@@ -31,6 +39,8 @@ describe('Public posts testing', () => {
     await app.init();
 
     httpServer = app.getHttpServer();
+
+    dataSource = app.get(DataSource);
   });
 
   afterAll(async () => {
@@ -44,25 +54,21 @@ describe('Public posts testing', () => {
     });
 
     it(`Creating user`, async () => {
-      for (let i = 0; i <= 5; i++) {
-        const result = await request(httpServer)
-          .post('/sa/users')
-          .auth('admin', 'qwerty')
-          .send({
-            login: `leo${i}`,
-            password: '123456',
-            email: `nazim86mammadov${i}@yandex.ru`,
-          })
-          .expect(201);
-        users.push(result.body);
+      for (let i = 0; i < countOfUsers; i++) {
+        const user = await creatingUser(httpServer, {
+          ...createUserDto,
+          login: `leo${i}`,
+          email: `nazim86mammadov${i}@yandex.ru`,
+        });
+        expect(user.status).toBe(201);
+        expect(user.body.login).toEqual(`leo${i}`);
+        expect(user.body.email).toEqual(`nazim86mammadov${i}@yandex.ru`);
+        users.push(user.body);
       }
-
-      expect(users[0].login).toEqual('leo0');
-      expect(users[1].login).toEqual('leo1');
     });
 
     it(`Users login`, async () => {
-      for (let i = 0; i <= 5; i++) {
+      for (let i = 0; i < 5; i++) {
         const result = await request(httpServer).post('/auth/login').send({
           loginOrEmail: users[i].login,
           password: '123456',
@@ -74,7 +80,7 @@ describe('Public posts testing', () => {
     });
 
     it(`Blogger creates blog`, async () => {
-      for (let i = 0; i <= 5; i++) {
+      for (let i = 0; i < 5; i++) {
         const result = await request(app.getHttpServer())
           .post('/blogger/blogs')
           .auth(accessTokens[i], { type: 'bearer' })
@@ -88,7 +94,7 @@ describe('Public posts testing', () => {
     });
 
     it(`Blogger creates post for blog and return 201`, async () => {
-      for (let i = 0; i <= 5; i++) {
+      for (let i = 0; i < 5; i++) {
         const result = await request(app.getHttpServer())
           .post(`/blogger/blogs/${blogs[i].id}/posts`)
           .auth(accessTokens[i], { type: 'bearer' })
@@ -104,7 +110,7 @@ describe('Public posts testing', () => {
     });
 
     it(`Public creates comments for post and return 201`, async () => {
-      for (let i = 0; i <= 5; i++) {
+      for (let i = 0; i < 5; i++) {
         const result = await request(app.getHttpServer())
           .post(`/posts/${posts[i].id}/comments`)
           .auth(accessTokens[i], { type: 'bearer' })
@@ -121,8 +127,8 @@ describe('Public posts testing', () => {
 
     it(`Get comment by post id and return 200 `, async () => {
       const result = await request(httpServer)
-        .get(`/posts/${posts[5].id}/comments`)
-        .auth(accessTokens[5], { type: 'bearer' })
+        .get(`/posts/${posts[4].id}/comments`)
+        .auth(accessTokens[4], { type: 'bearer' })
         .send();
 
       expect(result.status).toBe(200);
@@ -131,7 +137,7 @@ describe('Public posts testing', () => {
         items: [
           {
             ...commentWithPagination.items[0],
-            content: 'Learning to code in IT incubator + 5',
+            content: 'Learning to code in IT incubator + 4',
           },
         ],
       });
@@ -139,11 +145,11 @@ describe('Public posts testing', () => {
 
     it(`like the post by user 0, user 1, user 2, user 3, user 4, user 5 get the post after each like by user 1. 
     NewestLikes should be sorted in descending and return 204`, async () => {
-      for (let i = 0; i <= 5; i++) {
+      for (let i = 0; i < 5; i++) {
         const result = await request(app.getHttpServer())
           .put(`/posts/${posts[1].id}/like-status`)
           .auth(accessTokens[i], { type: 'bearer' })
-          .send(postLike);
+          .send(postLikeDto);
 
         expect(result.status).toBe(204);
 
@@ -157,57 +163,32 @@ describe('Public posts testing', () => {
       }
     });
 
+    it(`should reset commentsLike repository `, async () => {
+      await dataSource.query(`
+      truncate  post_like
+      `);
+    });
+
     it(`like post 1 by user 1, user 2; like post 2 by user 2, user 3; dislike post 3 by user 1; 
     like post 4 by user 1, user 4, user 2, user 3; like post 5 by user 2, dislike by user 3; 
     like post 6 by user 1, dislike by user 2. 
-    Get the posts by user 1 after all likes NewestLikes should be sorted in descending4`, async () => {
-      await request(app.getHttpServer())
-        .put(`/posts/${posts[0].id}/like-status`)
-        .auth(accessTokens[1], { type: 'bearer' })
-        .send(postLike)
-        .expect(204);
+    Get the posts by user 1 after all likes NewestLikes should be sorted in descending`, async () => {
+      for (let i = 0; i < 2; i++) {
+        await likePost(httpServer, posts[0].id, accessTokens[i], postLikeDto);
 
-      const getPost1 = await request(app.getHttpServer())
-        .get(`/posts/${posts[0].id}`)
-        .auth(accessTokens[0], { type: 'bearer' })
-        .send();
+        const result = await getPosts(httpServer);
 
-      expect(getPost1.status).toBe(200);
-      expect(getPost1.body.extendedLikesInfo.likesCount).toBe(1);
+        // console.log(
+        //   'postlIke',
+        //   result.body.items[4].extendedLikesInfo.newestLikes[i],
+        // );
+        //console.log('users', users);
 
-      await request(app.getHttpServer())
-        .put(`/posts/${posts[0].id}/like-status`)
-        .auth(accessTokens[1], { type: 'bearer' })
-        .send(postLike)
-        .expect(204);
-
-      const getPost2 = await request(app.getHttpServer())
-        .get(`/posts/${posts[0].id}`)
-        .auth(accessTokens[0], { type: 'bearer' })
-        .send();
-
-      console.log('extendedLikesInfo', getPost2.body.extendedLikesInfo);
-
-      expect(
-        getPost2.body.extendedLikesInfo.newestLikes[0].addedAt,
-      ).toBeGreaterThan(getPost1.body.extendedLikesInfo.newestLikes[0].addedAt);
-
-      // const result2 = await request(app.getHttpServer())
-      //   .put(`/posts/${posts[0].id}/like-status`)
-      //   .auth(accessTokens[i], { type: 'bearer' })
-      //   .send(postLike);
-      //
-      // expect(result2.status).toBe(204);
-      //
-      // const getPost2 = await request(app.getHttpServer())
-      //   .get(`/posts/${posts[1].id}`)
-      //   .auth(accessTokens[0], { type: 'bearer' })
-      //   .send();
-      //
-      // console.log(getPost2.body.extendedLikesInfo);
-      // expect(getPost2.status).toBe(200);
-      // expect(getPost2.body).toEqual(postStructure);
-      // expect(getPost2.body.extendedLikesInfo.likesCount).toBe(i + 1);
+        expect(result.body.items[4].extendedLikesInfo.likesCount).toBe(i + 1);
+        expect(
+          result.body.items[4].extendedLikesInfo.newestLikes[i].login,
+        ).toEqual(users[i].login);
+      }
     });
   });
 });

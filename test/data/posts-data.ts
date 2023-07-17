@@ -262,5 +262,5 @@ export const likedPostData = [
   },
 ];
 
-export const postLike = { likeStatus: 'Like' };
-export const postDislike = { likeStatus: 'Dislike' };
+export const postLikeDto = { likeStatus: 'Like' };
+export const postDislikeDto = { likeStatus: 'Dislike' };

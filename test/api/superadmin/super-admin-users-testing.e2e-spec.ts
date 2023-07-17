@@ -7,23 +7,14 @@ import {
   closeInMongodConnection,
   rootMongooseTestModule,
 } from '../../mongoose-test-module';
-import {
-  blogCreatingData,
-  blogWithBlogOwnerInfoNull,
-  createdBlogWithoutPagination,
-  createdBlogWithPaginationForPublic,
-  createdBlogWithPaginationForSa,
-  emptyBlogDataWithPagination,
-} from '../../data/blogs-data';
-import {
-  createUserDto,
-  emptyUsersDataWithPagination,
-  newUserEmail,
-  userBanDto,
-  userCreatedData,
-} from '../../data/user-data';
+
+import { createUserDto, userBanDto } from '../../data/user-data';
 import { appSettings } from '../../../src/app.settings';
-import { banUserBySA, creatingUser, getUsers } from '../../functions/functions';
+import {
+  banUserBySA,
+  creatingUser,
+  getUsers,
+} from '../../functions/user_functions';
 
 describe('Super Admin blogs testing', () => {
   let app: INestApplication;

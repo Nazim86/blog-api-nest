@@ -16,7 +16,6 @@ import {
 import {
   createdPostWithPagination,
   newPostCreatingData,
-  returnedCreatedPost,
 } from '../../data/posts-data';
 import {
   commentCreatingData,

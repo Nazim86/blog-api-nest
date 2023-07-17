@@ -14,8 +14,6 @@ export class PostMapping {
     @InjectDataSource() private dataSource: DataSource,
   ) {}
 
-  //TODO: Question Why there is two promises?
-  //TODO: Question Why I cannot change CommentsDbType? When change .map is not recognized
   async postViewMapping(
     posts,
     userId: string | undefined,
@@ -31,7 +29,6 @@ export class PostMapping {
         );
 
         likeInDb = likeInDb[0];
-        //const likeInDb = await this.PostLikeModel.findOne({ postId, userId });
         if (likeInDb) {
           myStatus = likeInDb.status;
         }
@@ -53,37 +50,17 @@ export class PostMapping {
 
       dislikesCount = Number(dislikesCount[0].count);
 
-      // const likesCount = await this.PostLikeModel.countDocuments({
-      //   postId,
-      //   status: LikeEnum.Like,
-      //   banStatus: false,
-      // });
-      // const dislikesCount = await this.PostLikeModel.countDocuments({
-      //   postId,
-      //   status: LikeEnum.Dislike,
-      //   banStatus: false,
-      // });
-
       const sortBy = 'addedAt';
 
       const getLast3Likes = await this.dataSource.query(
-        `SELECT count(*) 
+        `SELECT pl.*
         FROM public.post_like pl 
         Where pl."postId"=$1 and pl."status"=$2 and pl."banStatus"=$3
-        Group by pl."addedAt"
+        Group by pl.id, pl."addedAt"
         Order by "${sortBy}" desc
         Limit 3;`,
         [post.id, LikeEnum.Like, false],
       );
-
-      //   await this.PostLikeModel.find({
-      //   postId,
-      //   status: LikeEnum.Like,
-      //   banStatus: false,
-      // })
-      //   .sort({ addedAt: -1 }) // sort by addedAt in descending order
-      //   .limit(3) // limit to 3 results
-      //   .lean();
 
       const newestLikes: NewestLikesType[] = newestLikesMapping(getLast3Likes);
       return {

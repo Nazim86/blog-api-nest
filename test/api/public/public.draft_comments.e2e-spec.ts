@@ -6,8 +6,8 @@ import request from 'supertest';
 import { blogCreatingData } from '../../data/blogs-data';
 import {
   newPostCreatingData,
-  postDislike,
-  postLike,
+  postDislikeDto,
+  postLikeDto,
 } from '../../data/posts-data';
 import { commentCreatingData } from '../../data/comments-data';
 import { DataSource } from 'typeorm';
@@ -127,7 +127,7 @@ describe('Public comments testing', () => {
         await request(httpServer)
           .put(`/comments/${commentId}/like-status`)
           .auth(t, { type: 'bearer' })
-          .send(postLike);
+          .send(postLikeDto);
       }
     };
 
@@ -136,7 +136,7 @@ describe('Public comments testing', () => {
         await request(httpServer)
           .put(`/comments/${commentId}/like-status`)
           .auth(t, { type: 'bearer' })
-          .send(postDislike);
+          .send(postDislikeDto);
       }
     };
 
