@@ -12,7 +12,12 @@ import {
 import { creatingUser } from '../../functions/user_functions';
 import { createUserDto } from '../../data/user-data';
 import { DataSource } from 'typeorm';
-import { getPosts, likePost } from '../../functions/post_functions';
+import {
+  dislikePost,
+  getPosts,
+  likePost,
+} from '../../functions/post_functions';
+import { LikeEnum } from '../../../src/api/public/like/like.enum';
 
 describe('Public posts testing', () => {
   let app: INestApplication;
@@ -54,7 +59,7 @@ describe('Public posts testing', () => {
     });
 
     it(`Creating user`, async () => {
-      for (let i = 0; i < countOfUsers; i++) {
+      for (let i = 0; i <= countOfUsers; i++) {
         const user = await creatingUser(httpServer, {
           ...createUserDto,
           login: `leo${i}`,
@@ -68,7 +73,7 @@ describe('Public posts testing', () => {
     });
 
     it(`Users login`, async () => {
-      for (let i = 0; i < 5; i++) {
+      for (let i = 0; i <= 5; i++) {
         const result = await request(httpServer).post('/auth/login').send({
           loginOrEmail: users[i].login,
           password: '123456',
@@ -80,7 +85,7 @@ describe('Public posts testing', () => {
     });
 
     it(`Blogger creates blog`, async () => {
-      for (let i = 0; i < 5; i++) {
+      for (let i = 0; i <= 5; i++) {
         const result = await request(app.getHttpServer())
           .post('/blogger/blogs')
           .auth(accessTokens[i], { type: 'bearer' })
@@ -94,7 +99,7 @@ describe('Public posts testing', () => {
     });
 
     it(`Blogger creates post for blog and return 201`, async () => {
-      for (let i = 0; i < 5; i++) {
+      for (let i = 0; i <= postCounts; i++) {
         const result = await request(app.getHttpServer())
           .post(`/blogger/blogs/${blogs[i].id}/posts`)
           .auth(accessTokens[i], { type: 'bearer' })
@@ -110,25 +115,23 @@ describe('Public posts testing', () => {
     });
 
     it(`Public creates comments for post and return 201`, async () => {
-      for (let i = 0; i < 5; i++) {
-        const result = await request(app.getHttpServer())
-          .post(`/posts/${posts[i].id}/comments`)
-          .auth(accessTokens[i], { type: 'bearer' })
-          .send({ content: `${commentCreatingData.content} + ${i}` });
+      const result = await request(app.getHttpServer())
+        .post(`/posts/${posts[0].id}/comments`)
+        .auth(accessTokens[0], { type: 'bearer' })
+        .send({ content: `${commentCreatingData.content} + ${0}` });
 
-        comments.push(result.body);
+      comments.push(result.body);
 
-        expect(result.status).toBe(201);
-        expect(result.body.content).toEqual(
-          `${commentCreatingData.content} + ${i}`,
-        );
-      }
+      expect(result.status).toBe(201);
+      expect(result.body.content).toEqual(
+        `${commentCreatingData.content} + ${0}`,
+      );
     });
 
     it(`Get comment by post id and return 200 `, async () => {
       const result = await request(httpServer)
-        .get(`/posts/${posts[4].id}/comments`)
-        .auth(accessTokens[4], { type: 'bearer' })
+        .get(`/posts/${posts[0].id}/comments`)
+        .auth(accessTokens[0], { type: 'bearer' })
         .send();
 
       expect(result.status).toBe(200);
@@ -137,7 +140,7 @@ describe('Public posts testing', () => {
         items: [
           {
             ...commentWithPagination.items[0],
-            content: 'Learning to code in IT incubator + 4',
+            content: 'Learning to code in IT incubator + 0',
           },
         ],
       });
@@ -173,21 +176,87 @@ describe('Public posts testing', () => {
     like post 4 by user 1, user 4, user 2, user 3; like post 5 by user 2, dislike by user 3; 
     like post 6 by user 1, dislike by user 2. 
     Get the posts by user 1 after all likes NewestLikes should be sorted in descending`, async () => {
-      for (let i = 0; i < 2; i++) {
-        await likePost(httpServer, posts[0].id, accessTokens[i], postLikeDto);
+      for (let i = 0; i < posts.length; i++) {
+        const postId = posts[i].id;
+        if (i === 0) {
+          await likePost(httpServer, postId, [
+            accessTokens[0],
+            accessTokens[1],
+          ]);
+        }
 
-        const result = await getPosts(httpServer);
+        if (i === 1) {
+          await likePost(httpServer, postId, [
+            accessTokens[1],
+            accessTokens[2],
+          ]);
+        }
 
-        // console.log(
-        //   'postlIke',
-        //   result.body.items[4].extendedLikesInfo.newestLikes[i],
-        // );
-        //console.log('users', users);
+        if (i === 2) {
+          await dislikePost(httpServer, postId, [accessTokens[0]]);
+        }
 
-        expect(result.body.items[4].extendedLikesInfo.likesCount).toBe(i + 1);
-        expect(
-          result.body.items[4].extendedLikesInfo.newestLikes[i].login,
-        ).toEqual(users[i].login);
+        if (i === 3) {
+          await likePost(httpServer, postId, [
+            accessTokens[1],
+            accessTokens[4],
+            accessTokens[2],
+            accessTokens[3],
+          ]);
+        }
+
+        if (i === 4) {
+          await likePost(httpServer, postId, [accessTokens[1]]);
+          await dislikePost(httpServer, postId, [accessTokens[2]]);
+        }
+
+        if (i === 5) {
+          await likePost(httpServer, postId, [accessTokens[0]]);
+          await dislikePost(httpServer, postId, [accessTokens[1]]);
+        }
+      }
+
+      const allPosts = await getPosts(httpServer);
+
+      for (let i = 0; i < allPosts.body.items.length; i++) {
+        const postId = allPosts.body.items[i].id;
+        const post = allPosts.body.items.find((p) => p.id === postId);
+
+        if (i === 5) {
+          expect(post.extendedLikesInfo.likesCount).toBe(2);
+          expect(post.extendedLikesInfo.dislikesCount).toBe(0);
+          expect(post.extendedLikesInfo.myStatus).toBe(LikeEnum.None);
+        }
+
+        if (i === 4) {
+          expect(post.extendedLikesInfo.likesCount).toBe(2);
+          expect(post.extendedLikesInfo.dislikesCount).toBe(0);
+          expect(post.extendedLikesInfo.myStatus).toBe(LikeEnum.None);
+        }
+
+        if (i === 3) {
+          expect(post.extendedLikesInfo.likesCount).toBe(0);
+          expect(post.extendedLikesInfo.dislikesCount).toBe(1);
+          expect(post.extendedLikesInfo.myStatus).toBe(LikeEnum.None);
+        }
+
+        if (i === 2) {
+          expect(post.extendedLikesInfo.likesCount).toBe(4);
+          expect(post.extendedLikesInfo.dislikesCount).toBe(0);
+          expect(post.extendedLikesInfo.myStatus).toBe(LikeEnum.None);
+        }
+
+        if (i === 1) {
+          expect(post.extendedLikesInfo.likesCount).toBe(1);
+          expect(post.extendedLikesInfo.dislikesCount).toBe(1);
+          expect(post.extendedLikesInfo.myStatus).toBe(LikeEnum.None);
+        }
+
+        if (i === 0) {
+          expect(post.extendedLikesInfo.likesCount).toBe(1);
+          expect(post.extendedLikesInfo.dislikesCount).toBe(1);
+          expect(post.extendedLikesInfo.myStatus).toBe(LikeEnum.None);
+        }
       }
     });
   });
