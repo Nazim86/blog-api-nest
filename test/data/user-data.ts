@@ -1,5 +1,16 @@
 export const newUserEmail = 'nazim86mammadov@yandex.ru';
 
+export const createUserDto = {
+  login: 'leo',
+  password: '123456',
+  email: newUserEmail,
+};
+
+export const userBanDto = {
+  isBanned: true,
+  banReason: 'asdasdasasdasdadasdaasdad',
+};
+
 export const userPaginationValues = {
   pageNumber: 1,
   pageSize: 10,

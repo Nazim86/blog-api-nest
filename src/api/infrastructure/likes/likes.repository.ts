@@ -55,7 +55,7 @@ export class LikesRepository {
     userId: string,
     createLikeDto: CreateLikeDto,
   ) {
-    const commentLike = await this.dataSource.query(
+    await this.dataSource.query(
       `INSERT INTO public.comment_like(
             "commentId", "userId", "addedAt","status", "banStatus")
               VALUES ( $1, $2, $3, $4, $5)
@@ -75,9 +75,9 @@ export class LikesRepository {
 
   async setBanStatusForCommentLike(userId: string, banStatus: boolean) {
     return this.dataSource.query(
-      `UPDATE public.comment_like cl
-        SET cl."banStatus"=$1
-        WHERE cl."userId"=$2;`,
+      `UPDATE public.comment_like
+        SET "banStatus"=$1
+        WHERE "userId"=$2;`,
       [banStatus, userId],
     );
     //updateMany({ userId }, { $set: { banStatus: banStatus } });
@@ -89,9 +89,9 @@ export class LikesRepository {
 
   async setBanStatusForPostLike(userId: string, banStatus: boolean) {
     return this.dataSource.query(
-      `UPDATE public.post_like pl
-    SET pl."banStatus"=$1
-    WHERE pl."userId"= $2;`,
+      `UPDATE public.post_like
+    SET "banStatus"=$1
+    WHERE "userId"= $2;`,
       [banStatus, userId],
     );
     // updateMany(
