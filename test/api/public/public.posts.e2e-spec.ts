@@ -17,6 +17,7 @@ import {
   getPostById,
   getPosts,
   likePost,
+  setNonePost,
 } from '../../functions/post_functions';
 import { LikeEnum } from '../../../src/api/public/like/like.enum';
 
@@ -229,6 +230,66 @@ describe('Public posts testing', () => {
 
       expect(post.body.extendedLikesInfo.likesCount).toBe(1);
       expect(post.body.extendedLikesInfo.dislikesCount).toBe(0);
+      expect(post.body.extendedLikesInfo.myStatus).toBe(LikeEnum.Like);
+    });
+
+    it(`should reset commentsLike repository `, async () => {
+      await dataSource.query(`
+      truncate  post_like
+      `);
+    });
+
+    it(`like the post by user 1; dislike the post by user 1; set 'none' status by user 1; 
+      get the post after each like by user 1; status 204; `, async () => {
+      const postId = posts[0].id;
+      await likePost(httpServer, postId, [accessTokens[0]]);
+
+      let post = await getPostById(httpServer, postId, accessTokens[0]);
+
+      expect(post.body.extendedLikesInfo.likesCount).toBe(1);
+      expect(post.body.extendedLikesInfo.dislikesCount).toBe(0);
+      expect(post.body.extendedLikesInfo.myStatus).toBe(LikeEnum.Like);
+
+      await dislikePost(httpServer, postId, [accessTokens[0]]);
+
+      post = await getPostById(httpServer, postId, accessTokens[0]);
+
+      expect(post.body.extendedLikesInfo.likesCount).toBe(0);
+      expect(post.body.extendedLikesInfo.dislikesCount).toBe(1);
+      expect(post.body.extendedLikesInfo.myStatus).toBe(LikeEnum.Dislike);
+
+      await setNonePost(httpServer, postId, [accessTokens[0]]);
+
+      post = await getPostById(httpServer, postId, accessTokens[0]);
+
+      expect(post.body.extendedLikesInfo.likesCount).toBe(0);
+      expect(post.body.extendedLikesInfo.dislikesCount).toBe(0);
+      expect(post.body.extendedLikesInfo.myStatus).toBe(LikeEnum.None);
+    });
+
+    it(`should reset commentsLike repository `, async () => {
+      await dataSource.query(`
+      truncate  post_like
+      `);
+    });
+
+    it(`like the post by user 1 then get by user 2; 
+    dislike the post by user 2 then get by the user 1; status 204; `, async () => {
+      const postId = posts[0].id;
+      await likePost(httpServer, postId, [accessTokens[0]]);
+
+      let post = await getPostById(httpServer, postId, accessTokens[1]);
+
+      expect(post.body.extendedLikesInfo.likesCount).toBe(1);
+      expect(post.body.extendedLikesInfo.dislikesCount).toBe(0);
+      expect(post.body.extendedLikesInfo.myStatus).toBe(LikeEnum.None);
+
+      await dislikePost(httpServer, postId, [accessTokens[1]]);
+
+      post = await getPostById(httpServer, postId, accessTokens[0]);
+
+      expect(post.body.extendedLikesInfo.likesCount).toBe(1);
+      expect(post.body.extendedLikesInfo.dislikesCount).toBe(1);
       expect(post.body.extendedLikesInfo.myStatus).toBe(LikeEnum.Like);
     });
 

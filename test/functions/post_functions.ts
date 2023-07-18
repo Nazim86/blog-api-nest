@@ -1,5 +1,5 @@
 import request from 'supertest';
-import { postDislikeDto, postLikeDto } from '../data/posts-data';
+import { nonePostDto, postDislikeDto, postLikeDto } from '../data/posts-data';
 
 export const likePost = async (httpServer, postId, accessTokens) => {
   for (const token of accessTokens) {
@@ -17,6 +17,16 @@ export const dislikePost = async (httpServer, postId, accessTokens) => {
       .put(`/posts/${postId}/like-status`)
       .auth(token, { type: 'bearer' })
       .send(postDislikeDto);
+  }
+  return;
+};
+
+export const setNonePost = async (httpServer, postId, accessTokens) => {
+  for (const token of accessTokens) {
+    await request(httpServer)
+      .put(`/posts/${postId}/like-status`)
+      .auth(token, { type: 'bearer' })
+      .send(nonePostDto);
   }
   return;
 };

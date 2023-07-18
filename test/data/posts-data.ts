@@ -264,3 +264,5 @@ export const likedPostData = [
 
 export const postLikeDto = { likeStatus: 'Like' };
 export const postDislikeDto = { likeStatus: 'Dislike' };
+
+export const nonePostDto = { likeStatus: 'None' };
