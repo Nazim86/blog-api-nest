@@ -4,7 +4,7 @@ import { AppModule } from '../../../src/app.module';
 import { appSettings } from '../../../src/app.settings';
 import request from 'supertest';
 import { blogCreatingData } from '../../data/blogs-data';
-import { newPostCreatingData, postLikeDto } from '../../data/posts-data';
+import { newPostCreatingData } from '../../data/posts-data';
 import {
   commentCreatingData,
   commentWithPagination,
@@ -14,6 +14,7 @@ import { createUserDto } from '../../data/user-data';
 import { DataSource } from 'typeorm';
 import {
   dislikePost,
+  getPostById,
   getPosts,
   likePost,
 } from '../../functions/post_functions';
@@ -148,21 +149,43 @@ describe('Public posts testing', () => {
 
     it(`like the post by user 0, user 1, user 2, user 3, user 4, user 5 get the post after each like by user 1. 
     NewestLikes should be sorted in descending and return 204`, async () => {
-      for (let i = 0; i < 5; i++) {
-        const result = await request(app.getHttpServer())
-          .put(`/posts/${posts[1].id}/like-status`)
-          .auth(accessTokens[i], { type: 'bearer' })
-          .send(postLikeDto);
+      for (let i = 0; i <= 5; i++) {
+        const postId = posts[0].id;
 
-        expect(result.status).toBe(204);
+        await likePost(httpServer, postId, [accessTokens[i]]);
+        const post = await getPostById(httpServer, postId, accessTokens[0]);
+        console.log(post.body.extendedLikesInfo.likesCount);
+        expect(post.body.extendedLikesInfo.likesCount).toBe(i + 1);
 
-        const getPost = await request(app.getHttpServer())
-          .get(`/posts/${posts[1].id}`)
-          .auth(accessTokens[0], { type: 'bearer' })
-          .send();
+        if (i === 0) {
+          expect(post.body.extendedLikesInfo.myStatus).toBe(LikeEnum.Like);
+        }
 
-        expect(getPost.status).toBe(200);
-        expect(getPost.body.extendedLikesInfo.likesCount).toBe(i + 1);
+        if (i === 1) {
+          expect(post.body.extendedLikesInfo.myStatus).toBe(LikeEnum.Like);
+        }
+
+        if (i === 2) {
+          expect(post.body.extendedLikesInfo.myStatus).toBe(LikeEnum.Like);
+        }
+
+        if (i === 3) {
+          expect(post.body.extendedLikesInfo.myStatus).toBe(LikeEnum.Like);
+        }
+
+        if (i === 5) {
+          expect(post.body.extendedLikesInfo.myStatus).toBe(LikeEnum.Like);
+          expect(post.body.extendedLikesInfo.newestLikes[0].login).toEqual(
+            'leo5',
+          );
+          expect(post.body.extendedLikesInfo.newestLikes[1].login).toEqual(
+            'leo4',
+          );
+
+          expect(post.body.extendedLikesInfo.newestLikes[2].login).toEqual(
+            'leo3',
+          );
+        }
       }
     });
 
