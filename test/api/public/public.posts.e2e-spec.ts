@@ -195,6 +195,49 @@ describe('Public posts testing', () => {
       `);
     });
 
+    it(`dislike the post by user 1, user 2; like the post by user 3; 
+    get the post after each like by user 1; status 204; `, async () => {
+      const postId = posts[0].id;
+      await dislikePost(httpServer, postId, [accessTokens[0], accessTokens[1]]);
+      let post = await getPostById(httpServer, postId, accessTokens[0]);
+
+      expect(post.body.extendedLikesInfo.likesCount).toBe(0);
+      expect(post.body.extendedLikesInfo.dislikesCount).toBe(2);
+      expect(post.body.extendedLikesInfo.myStatus).toBe(LikeEnum.Dislike);
+
+      await likePost(httpServer, postId, [accessTokens[2]]);
+
+      post = await getPostById(httpServer, postId, accessTokens[0]);
+
+      expect(post.body.extendedLikesInfo.likesCount).toBe(1);
+      expect(post.body.extendedLikesInfo.dislikesCount).toBe(2);
+      expect(post.body.extendedLikesInfo.myStatus).toBe(LikeEnum.Dislike);
+    });
+
+    it(`should reset commentsLike repository `, async () => {
+      await dataSource.query(`
+      truncate  post_like
+      `);
+    });
+
+    it(`like the post twice by user 1; get the post after each like by user 1. 
+    Should increase like's count once; status 204 `, async () => {
+      const postId = posts[0].id;
+      await likePost(httpServer, postId, [accessTokens[0], accessTokens[0]]);
+
+      const post = await getPostById(httpServer, postId, accessTokens[0]);
+
+      expect(post.body.extendedLikesInfo.likesCount).toBe(1);
+      expect(post.body.extendedLikesInfo.dislikesCount).toBe(0);
+      expect(post.body.extendedLikesInfo.myStatus).toBe(LikeEnum.Like);
+    });
+
+    it(`should reset commentsLike repository `, async () => {
+      await dataSource.query(`
+      truncate  post_like
+      `);
+    });
+
     it(`like post 1 by user 1, user 2; like post 2 by user 2, user 3; dislike post 3 by user 1; 
     like post 4 by user 1, user 4, user 2, user 3; like post 5 by user 2, dislike by user 3; 
     like post 6 by user 1, dislike by user 2. 
