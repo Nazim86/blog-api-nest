@@ -4,7 +4,9 @@ import { INestApplication } from '@nestjs/common';
 import { appSettings } from '../../../../src/app.settings';
 import { AppModule } from '../../../../src/app.module';
 import {
+  getCurrentUser,
   loginUser,
+  logout,
   newRefreshToken,
   passwordRecovery,
   registrationConfirmation,
@@ -14,6 +16,8 @@ import {
 } from '../../../functions/user_functions';
 import { createUserDto, emailDto, loginDto } from '../../../data/user-data';
 import { UsersRepository } from '../../../../src/api/infrastructure/users/users.repository';
+import { ht } from 'date-fns/locale';
+import { JwtService } from '../../../../src/jwt/jwt.service';
 
 describe('Auth controller testing', () => {
   let app: INestApplication;
@@ -24,8 +28,9 @@ describe('Auth controller testing', () => {
   let confirmationCode;
   let refreshToken;
   let userSignIn;
-  let passwordRecoveryCode;
   let user;
+  let accessToken;
+  let jwtService: JwtService;
 
   jest.setTimeout(60 * 1000);
   beforeAll(async () => {
@@ -42,6 +47,7 @@ describe('Auth controller testing', () => {
     httpServer = app.getHttpServer();
 
     usersRepository = app.get(UsersRepository);
+    jwtService = app.get(JwtService);
   });
 
   afterAll(async () => {
@@ -102,7 +108,7 @@ describe('Auth controller testing', () => {
       it(`should sign in user; status 200; content: JWT token;;`, async () => {
         userSignIn = await loginUser(httpServer, loginDto);
         refreshToken = userSignIn.headers['set-cookie'][0];
-        const accessToken = userSignIn.body;
+        accessToken = userSignIn.body.accessToken;
 
         expect(userSignIn.status).toBe(200);
         expect(accessToken).toBeDefined();
@@ -142,8 +148,35 @@ describe('Auth controller testing', () => {
           password: '1234567',
         });
 
+        refreshToken = userSignIn.headers['set-cookie'][0];
+        const accessToken = userSignIn.body;
+
         expect(userSignIn.status).toBe(200);
-        // expect();
+        expect(accessToken).toBeDefined();
+        expect(refreshToken).toContain('refreshToken=');
+      });
+
+      it(`should not login with old password and return 400;`, async () => {
+        const userSignIn = await loginUser(httpServer, {
+          ...loginDto,
+          password: '123456',
+        });
+        expect(userSignIn.status).toBe(401);
+        expect(userSignIn.body.accessToken).not.toBeDefined();
+      });
+
+      it(`should get current user and return 200 ;`, async () => {
+        const currentUser = await getCurrentUser(httpServer, accessToken);
+        expect(currentUser.status).toBe(200);
+        expect(currentUser.body.login).toEqual('leo');
+        expect(currentUser.body.email).toEqual('nazim86mammadov@yandex.ru');
+      });
+
+      it(`should logout and return 200 ;`, async () => {
+        const result = await logout(httpServer, refreshToken);
+        const isTokenValid = await jwtService.getTokenMetaData(refreshToken);
+        expect(result.status).toBe(204);
+        expect(isTokenValid).toBe(null);
       });
     },
   );

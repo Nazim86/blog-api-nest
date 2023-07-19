@@ -66,7 +66,6 @@ export class DeviceRepository {
                     WHERE d."deviceId"=$1 and d."userId" =$2;`,
       [deviceId, userId],
     );
-    console.log(result);
     return result[1] === 1;
   }
 

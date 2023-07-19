@@ -56,3 +56,17 @@ export const passwordRecovery = async (httpServer, emailDto) => {
 export const setNewPassword = async (httpServer, recoveryCode) => {
   return request(httpServer).post(`/auth/new-password`).send(recoveryCode);
 };
+
+export const getCurrentUser = async (httpServer, accessToken) => {
+  return request(httpServer)
+    .get(`/auth/me`)
+    .auth(accessToken, { type: 'bearer' })
+    .send();
+};
+
+export const logout = async (httpServer, refreshToken) => {
+  return request(httpServer)
+    .post(`/auth/logout`)
+    .set('Cookie', `${refreshToken}`)
+    .send();
+};
