@@ -6,8 +6,10 @@ import { AppModule } from '../../../../src/app.module';
 import {
   loginUser,
   newRefreshToken,
+  passwordRecovery,
   registrationConfirmation,
   resendRegistrationEmail,
+  setNewPassword,
   userRegistration,
 } from '../../../functions/user_functions';
 import { createUserDto, emailDto, loginDto } from '../../../data/user-data';
@@ -22,6 +24,8 @@ describe('Auth controller testing', () => {
   let confirmationCode;
   let refreshToken;
   let userSignIn;
+  let passwordRecoveryCode;
+  let user;
 
   jest.setTimeout(60 * 1000);
   beforeAll(async () => {
@@ -60,7 +64,7 @@ describe('Auth controller testing', () => {
 
       it(`should send email with new code if user exists 
       but not confirmed yet; status 204`, async () => {
-        let user = await usersRepository.findUserByLoginOrEmail(`leo`);
+        user = await usersRepository.findUserByLoginOrEmail(`leo`);
         const confirmationCodeBefore = user.confirmationCode;
 
         const result = await resendRegistrationEmail(httpServer, emailDto);
@@ -97,8 +101,12 @@ describe('Auth controller testing', () => {
 
       it(`should sign in user; status 200; content: JWT token;;`, async () => {
         userSignIn = await loginUser(httpServer, loginDto);
-        //refreshToken = result.body;
+        refreshToken = userSignIn.headers['set-cookie'][0];
+        const accessToken = userSignIn.body;
+
         expect(userSignIn.status).toBe(200);
+        expect(accessToken).toBeDefined();
+        expect(refreshToken).toContain('refreshToken=');
       });
 
       it(`should refresh JWT token and return 200;`, async () => {
@@ -112,6 +120,30 @@ describe('Auth controller testing', () => {
         refreshToken = getNewRefreshToken.headers['set-cookie'][0];
         expect(userSignIn.status).toBe(200);
         expect(getNewRefreshToken).not.toEqual(oldRefreshToken);
+      });
+
+      it(`should send email with password recovery code and link and return 204;`, async () => {
+        const result = await passwordRecovery(httpServer, emailDto);
+        expect(result.status).toBe(204);
+      });
+
+      it(`should set new password and return 204;`, async () => {
+        user = await usersRepository.findUserByLoginOrEmail(`leo`);
+        const recoveryCode = user.recoveryCode;
+
+        const result = await setNewPassword(httpServer, {
+          newPassword: '1234567',
+          recoveryCode: recoveryCode,
+        });
+        expect(result.status).toBe(204);
+
+        userSignIn = await loginUser(httpServer, {
+          ...loginDto,
+          password: '1234567',
+        });
+
+        expect(userSignIn.status).toBe(200);
+        // expect();
       });
     },
   );

@@ -48,3 +48,11 @@ export const newRefreshToken = async (httpServer, refreshToken) => {
     .set('Cookie', `${refreshToken}`)
     .send();
 };
+
+export const passwordRecovery = async (httpServer, emailDto) => {
+  return request(httpServer).post(`/auth/password-recovery`).send(emailDto);
+};
+
+export const setNewPassword = async (httpServer, recoveryCode) => {
+  return request(httpServer).post(`/auth/new-password`).send(recoveryCode);
+};

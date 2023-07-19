@@ -240,10 +240,13 @@ export class UsersRepository {
 
   async findUserByLoginOrEmail(loginOrEmail: string) {
     const user = await this.dataSource.query(
-      `SELECT u.*, ec."confirmationCode",ec."emailExpiration"
+      `SELECT u.*, ec."confirmationCode",ec."emailExpiration", 
+    pr."recoveryCode", pr."recoveryCodeExpiration"
     FROM public.users u
     Left join public.email_confirmation ec on 
     ec."userId" = u."id"
+    Left Join public.password_recovery pr on
+    pr."userId"=u."id"
     where u."login"= $1 OR u."email" = $1;`,
       [loginOrEmail],
     );

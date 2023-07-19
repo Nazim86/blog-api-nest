@@ -189,6 +189,7 @@ export class AuthController {
 
   @Throttle(5, 10)
   @Post('password-recovery')
+  @HttpCode(204)
   async sendPasswordRecoveryCode(@Body() emailDto: EmailDto) {
     const isRecoveryEmailSent: Result<any> = await this.commandBus.execute(
       new SendRecoveryCodeCommand(emailDto),
