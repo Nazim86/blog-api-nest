@@ -1,5 +1,7 @@
 export const newUserEmail = 'nazim86mammadov@yandex.ru';
 
+export const emailDto = { email: 'nazim86mammadov@yandex.ru' };
+
 export const createUserDto = {
   login: 'leo',
   password: '123456',

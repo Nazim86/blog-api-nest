@@ -27,8 +27,8 @@ export class CreateUserUseCase {
       false,
     );
 
-    //const result: UserDocument = await this.userRepository.save(newUser);
     const user = await this.userRepository.findUserById(userId);
+
     try {
       await this.mailService.sendUserConfirmationEmail(
         user.confirmationCode,

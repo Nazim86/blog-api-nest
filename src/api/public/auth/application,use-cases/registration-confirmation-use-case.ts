@@ -11,7 +11,6 @@ export class RegistrationConfirmationUseCase {
   constructor(private readonly userRepository: UsersRepository) {}
 
   async execute(command: RegistrationConfirmationCommand): Promise<boolean> {
-    console.log(command.confirmationCodeDto.code);
     const user = await this.userRepository.findUserByConfirmationCode(
       command.confirmationCodeDto.code,
     );

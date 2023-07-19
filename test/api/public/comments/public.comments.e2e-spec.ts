@@ -1,16 +1,16 @@
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { AppModule } from '../../../src/app.module';
-import { appSettings } from '../../../src/app.settings';
+import { AppModule } from '../../../../src/app.module';
+import { appSettings } from '../../../../src/app.settings';
 import request from 'supertest';
-import { blogCreatingData } from '../../data/blogs-data';
-import { newPostCreatingData } from '../../data/posts-data';
+import { blogCreatingData } from '../../../data/blogs-data';
+import { newPostCreatingData } from '../../../data/posts-data';
 import {
   commentCreatingData,
   commentUpdatingData,
   dislikeComment,
   likeComment,
-} from '../../data/comments-data';
+} from '../../../data/comments-data';
 import { DataSource } from 'typeorm';
 
 describe('Public comments testing', () => {

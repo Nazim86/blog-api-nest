@@ -11,7 +11,7 @@ import { UserBanDto } from '../../blogger/inputModel-Dto/userBan.dto';
 
 @Injectable()
 export class UsersRepository {
-  constructor(@InjectDataSource() protected dataSource: DataSource) {}
+  constructor(@InjectDataSource() private dataSource: DataSource) {}
 
   async createUser(
     createUserDto: CreateUserDto,
@@ -37,13 +37,15 @@ export class UsersRepository {
       [newUser[0].id],
     );
 
+    const confirmationCode = uuid();
+
     await this.dataSource.query(
       `INSERT INTO public.email_confirmation(
         "userId", "confirmationCode", "emailExpiration")
         VALUES ($1, $2, $3);`,
       [
         newUser[0].id,
-        uuid(),
+        confirmationCode,
         add(new Date(), {
           hours: 1,
           minutes: 3,
@@ -238,11 +240,14 @@ export class UsersRepository {
 
   async findUserByLoginOrEmail(loginOrEmail: string) {
     const user = await this.dataSource.query(
-      `SELECT u.*
+      `SELECT u.*, ec."confirmationCode",ec."emailExpiration"
     FROM public.users u
+    Left join public.email_confirmation ec on 
+    ec."userId" = u."id"
     where u."login"= $1 OR u."email" = $1;`,
       [loginOrEmail],
     );
+
     return user[0];
   }
 

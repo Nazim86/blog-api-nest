@@ -23,3 +23,17 @@ export const banUserBySA = async (httpServer, userId, banUserDto) => {
     .send(banUserDto)
     .expect(200);
 };
+
+export const userRegistration = async (httpServer, createUserDto) => {
+  return request(httpServer).post(`/auth/registration`).send(createUserDto);
+};
+
+export const resendRegistrationEmail = async (httpServer, emailDto) => {
+  return request(httpServer)
+    .post(`/auth/registration-email-resending`)
+    .send(emailDto);
+};
+
+export const registrationConfirmation = async (httpServer, code) => {
+  return request(httpServer).post(`/auth/registration-confirmation`).send(code);
+};

@@ -1,16 +1,16 @@
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { AppModule } from '../../../src/app.module';
-import { appSettings } from '../../../src/app.settings';
+import { AppModule } from '../../../../src/app.module';
+import { appSettings } from '../../../../src/app.settings';
 import request from 'supertest';
-import { blogCreatingData } from '../../data/blogs-data';
-import { newPostCreatingData } from '../../data/posts-data';
+import { blogCreatingData } from '../../../data/blogs-data';
+import { newPostCreatingData } from '../../../data/posts-data';
 import {
   commentCreatingData,
   commentWithPagination,
-} from '../../data/comments-data';
-import { creatingUser } from '../../functions/user_functions';
-import { createUserDto } from '../../data/user-data';
+} from '../../../data/comments-data';
+import { creatingUser } from '../../../functions/user_functions';
+import { createUserDto } from '../../../data/user-data';
 import { DataSource } from 'typeorm';
 import {
   dislikePost,
@@ -18,8 +18,8 @@ import {
   getPosts,
   likePost,
   setNonePost,
-} from '../../functions/post_functions';
-import { LikeEnum } from '../../../src/api/public/like/like.enum';
+} from '../../../functions/post_functions';
+import { LikeEnum } from '../../../../src/api/public/like/like.enum';
 
 describe('Public posts testing', () => {
   let app: INestApplication;
@@ -155,7 +155,6 @@ describe('Public posts testing', () => {
 
         await likePost(httpServer, postId, [accessTokens[i]]);
         const post = await getPostById(httpServer, postId, accessTokens[0]);
-        console.log(post.body.extendedLikesInfo.likesCount);
         expect(post.body.extendedLikesInfo.likesCount).toBe(i + 1);
 
         if (i === 0) {
