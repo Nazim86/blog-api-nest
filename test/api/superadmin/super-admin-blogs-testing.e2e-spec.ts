@@ -15,12 +15,13 @@ import {
   createdBlogWithPaginationForSa,
   emptyBlogDataWithPagination,
 } from '../../data/blogs-data';
-import {
-  emptyUsersDataWithPagination,
-  newUserEmail,
-  userCreatedData,
-} from '../../data/user-data';
+import { createUserDto, loginDto } from '../../data/user-data';
 import { appSettings } from '../../../src/app.settings';
+import {
+  creatingUser,
+  deleteUser,
+  loginUser,
+} from '../../functions/user_functions';
 
 describe('Super Admin blogs testing', () => {
   let app: INestApplication;
@@ -55,32 +56,13 @@ describe('Super Admin blogs testing', () => {
       expect(response.status).toBe(204);
     });
 
-    it(`Creating user`, async () => {
-      const result = await request(app.getHttpServer())
-        .post('/sa/users')
-        .auth('admin', 'qwerty')
-        .send({
-          login: 'leo',
-          password: '123456',
-          email: newUserEmail,
-        })
-        .expect(201);
-      user = result.body;
-      expect(result.body).toEqual(userCreatedData);
-    });
-
-    it(`User login`, async () => {
-      const result = await request(app.getHttpServer())
-        .post('/auth/login')
-        .send({
-          loginOrEmail: 'leo',
-          password: '123456',
-        });
-      expect(result.status).toBe(200);
-      accessToken = result.body.accessToken;
-    });
-
     it(`Blogger creates blog`, async () => {
+      const createUser = await creatingUser(httpServer, createUserDto);
+      user = createUser.body;
+
+      const userSignIn = await loginUser(httpServer, loginDto);
+      accessToken = userSignIn.body.accessToken;
+
       const result = await request(app.getHttpServer())
         .post('/blogger/blogs')
         .auth(accessToken, { type: 'bearer' })
@@ -138,26 +120,9 @@ describe('Super Admin blogs testing', () => {
       expect(result.body).toEqual(createdBlogWithPaginationForPublic);
     });
 
-    it(`Deleting user`, async () => {
-      const result = await request(app.getHttpServer())
-        .delete(`/sa/users/${user.id}`)
-        .auth('admin', 'qwerty')
-        .send({
-          isBanned: false,
-        });
-      expect(result.status).toBe(204);
-    });
+    it(`After deleting user BlogOwnerInfo.login should be null`, async () => {
+      await deleteUser(httpServer, user.id);
 
-    it(`Super Admin should get no users`, async () => {
-      const result = await request(app.getHttpServer())
-        .get('/sa/users')
-        .auth('admin', 'qwerty');
-
-      expect(result.status).toBe(200);
-      expect(result.body).toEqual(emptyUsersDataWithPagination);
-    });
-
-    it(`BlogOwnerInfo.login should be null`, async () => {
       const result = await request(app.getHttpServer())
         .get('/sa/blogs')
         .auth('admin', 'qwerty');
@@ -166,19 +131,12 @@ describe('Super Admin blogs testing', () => {
     });
 
     it(`Creating user`, async () => {
-      const result = await request(app.getHttpServer())
-        .post('/sa/users')
-        .auth('admin', 'qwerty')
-        .send({
-          login: 'leonid',
-          password: '123456',
-          email: newUserEmail,
-        })
-        .expect(201);
+      const result = await creatingUser(httpServer, createUserDto);
+      expect(result.status).toBe(201);
       user = result.body;
     });
 
-    it(`Should bing blog with user`, async () => {
+    it(`Should bind blog with user`, async () => {
       const result = await request(app.getHttpServer())
         .put(`/sa/blogs/${blog.id}/bind-with-user/${user.id}`)
         .auth('admin', 'qwerty');
