@@ -4,11 +4,13 @@ import { INestApplication } from '@nestjs/common';
 import { appSettings } from '../../../../src/app.settings';
 import { AppModule } from '../../../../src/app.module';
 import {
+  loginUser,
+  newRefreshToken,
   registrationConfirmation,
   resendRegistrationEmail,
   userRegistration,
 } from '../../../functions/user_functions';
-import { createUserDto, emailDto } from '../../../data/user-data';
+import { createUserDto, emailDto, loginDto } from '../../../data/user-data';
 import { UsersRepository } from '../../../../src/api/infrastructure/users/users.repository';
 
 describe('Auth controller testing', () => {
@@ -18,6 +20,8 @@ describe('Auth controller testing', () => {
   const users = [];
   let usersRepository: UsersRepository;
   let confirmationCode;
+  let refreshToken;
+  let userSignIn;
 
   jest.setTimeout(60 * 1000);
   beforeAll(async () => {
@@ -84,6 +88,30 @@ describe('Auth controller testing', () => {
           code: confirmationCode,
         });
         expect(result.status).toBe(400);
+      });
+
+      it(`should return error if email already confirmed; status 400;`, async () => {
+        const result = await resendRegistrationEmail(httpServer, emailDto);
+        expect(result.status).toBe(400);
+      });
+
+      it(`should sign in user; status 200; content: JWT token;;`, async () => {
+        userSignIn = await loginUser(httpServer, loginDto);
+        //refreshToken = result.body;
+        expect(userSignIn.status).toBe(200);
+      });
+
+      it(`should refresh JWT token and return 200;`, async () => {
+        const oldRefreshToken = userSignIn.headers['set-cookie'][0];
+
+        const getNewRefreshToken = await newRefreshToken(
+          httpServer,
+          oldRefreshToken,
+        );
+        //refreshToken = result.body;
+        refreshToken = getNewRefreshToken.headers['set-cookie'][0];
+        expect(userSignIn.status).toBe(200);
+        expect(getNewRefreshToken).not.toEqual(oldRefreshToken);
       });
     },
   );

@@ -8,6 +8,11 @@ export const createUserDto = {
   email: newUserEmail,
 };
 
+export const loginDto = {
+  loginOrEmail: 'leo',
+  password: '123456',
+};
+
 export const userBanDto = {
   isBanned: true,
   banReason: 'asdasdasasdasdadasdaasdad',

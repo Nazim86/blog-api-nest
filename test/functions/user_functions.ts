@@ -37,3 +37,14 @@ export const resendRegistrationEmail = async (httpServer, emailDto) => {
 export const registrationConfirmation = async (httpServer, code) => {
   return request(httpServer).post(`/auth/registration-confirmation`).send(code);
 };
+
+export const loginUser = async (httpServer, loginDto) => {
+  return request(httpServer).post(`/auth/login`).send(loginDto);
+};
+
+export const newRefreshToken = async (httpServer, refreshToken) => {
+  return request(httpServer)
+    .post(`/auth/refresh-token`)
+    .set('Cookie', `${refreshToken}`)
+    .send();
+};
