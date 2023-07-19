@@ -16,14 +16,11 @@ import {
 } from '../../../functions/user_functions';
 import { createUserDto, emailDto, loginDto } from '../../../data/user-data';
 import { UsersRepository } from '../../../../src/api/infrastructure/users/users.repository';
-import { ht } from 'date-fns/locale';
 import { JwtService } from '../../../../src/jwt/jwt.service';
 
 describe('Auth controller testing', () => {
   let app: INestApplication;
   let httpServer;
-  const countOfUsers = 5;
-  const users = [];
   let usersRepository: UsersRepository;
   let confirmationCode;
   let refreshToken;

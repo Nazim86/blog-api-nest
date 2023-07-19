@@ -24,6 +24,15 @@ export const banUserBySA = async (httpServer, userId, banUserDto) => {
     .expect(200);
 };
 
+export const deleteUser = async (httpServer, userId) => {
+  return request(httpServer)
+    .delete(`/sa/users/${userId}`)
+    .auth('admin', 'qwerty')
+    .send({
+      isBanned: false,
+    });
+};
+
 export const userRegistration = async (httpServer, createUserDto) => {
   return request(httpServer).post(`/auth/registration`).send(createUserDto);
 };

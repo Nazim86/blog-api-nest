@@ -13,6 +13,7 @@ import { appSettings } from '../../../src/app.settings';
 import {
   banUserBySA,
   creatingUser,
+  deleteUser,
   getUsers,
 } from '../../functions/user_functions';
 
@@ -43,10 +44,6 @@ describe('Super Admin blogs testing', () => {
   });
 
   describe('Creating user,blog,binding,banning,unbaning ', () => {
-    let accessToken;
-    let blog;
-    let user;
-
     it('should wipe all data in db', async () => {
       const response = await request(httpServer).delete('/testing/all-data');
       expect(response.status).toBe(204);
@@ -78,20 +75,18 @@ describe('Super Admin blogs testing', () => {
 
       const result = await getUsers(httpServer);
 
-      console.log(result.body.items[4].banInfo.isBanned);
-
       expect(result.body.items[4].banInfo.isBanned).toBe(true);
     });
 
-    //
-    // it(`Deleting user`, async () => {
-    //   const result = await request(app.getHttpServer())
-    //     .delete(`/sa/users/${user.id}`)
-    //     .auth('admin', 'qwerty')
-    //     .send({
-    //       isBanned: false,
-    //     });
-    //   expect(result.status).toBe(204);
-    // });
+    it(`Deleting user`, async () => {
+      let result = await getUsers(httpServer);
+      expect(result.body.items.length).toBe(5);
+
+      const isDeleted = await deleteUser(httpServer, users[0].id);
+      expect(isDeleted.status).toBe(204);
+
+      result = await getUsers(httpServer);
+      expect(result.body.items.length).toBe(4);
+    });
   });
 });
