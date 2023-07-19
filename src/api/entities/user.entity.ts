@@ -4,13 +4,6 @@ import { CreateUserDto } from '../superadmin/users/dto/createUser.Dto';
 import { v4 as uuid } from 'uuid';
 import { add } from 'date-fns';
 import { BanUserDto } from '../superadmin/users/dto/banUserDto';
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
 
 export type UserDocument = HydratedDocument<User>;
 export type UserModelStaticType = {
@@ -195,16 +188,3 @@ UserSchema.methods = {
   unBanUser: User.prototype.unBanUser,
   banUser: User.prototype.banUser,
 };
-
-@Entity({ name: 'users_ban_by_sa' })
-export class UserBanInfoEntity {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
-  @Column({ unique: true, type: 'varchar' })
-  isBanned: string;
-
-  @OneToOne(() => User, (u) => u.banInfo, { cascade: true })
-  @JoinColumn({ name: 'userId' })
-  userId: string;
-}

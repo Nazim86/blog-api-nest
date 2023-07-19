@@ -1,5 +1,6 @@
 import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { UserBanInfoEntity } from '../user.entity';
+import { UsersBanBySA } from './users-ban-by-sa';
+import { EmailConfirmation } from './email-confirmation';
 
 @Entity({ name: 'users' })
 export class User {
@@ -21,9 +22,9 @@ export class User {
   @Column({ unique: true, type: 'varchar' })
   isConfirmed: string;
 
-  @Column({ unique: true, type: 'varchar' })
-  isBanned: string;
+  @OneToOne(() => UsersBanBySA, (ub) => ub.userId, {})
+  banInfo: UsersBanBySA;
 
-  @OneToOne(() => UserBanInfoEntity, (ub) => ub.userId, {})
-  banInfo: UserBanInfoEntity;
+  @OneToOne(() => EmailConfirmation, (ec) => ec.userId)
+  emailConfirmation: EmailConfirmation;
 }
