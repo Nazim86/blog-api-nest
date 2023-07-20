@@ -15,13 +15,13 @@ export class UsersBanBySA {
   @Column({ type: 'boolean' })
   isBanned: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   banDate: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   banReason: string;
 
-  @OneToOne(() => User, (u) => u.banInfo, { cascade: true })
+  @OneToOne(() => User, (u) => u.banInfo, { onDelete: 'CASCADE' })
   @JoinColumn()
   user: User;
 }

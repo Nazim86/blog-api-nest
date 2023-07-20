@@ -18,7 +18,7 @@ export class PasswordRecovery {
   @Column({ unique: true, type: 'timestamp without time zone' })
   recoveryCodeExpiration: Date;
 
-  @OneToOne(() => User, (u) => u.passwordRecovery, { cascade: true })
+  @OneToOne(() => User, (u) => u.passwordRecovery, { onDelete: 'CASCADE' })
   @JoinColumn()
   user: User;
 }

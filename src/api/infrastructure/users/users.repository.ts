@@ -20,21 +20,20 @@ export class UsersRepository {
   ) {
     const newUser = await this.dataSource.query(
       `INSERT INTO public."users"(
-      "login", "passwordHash", "email", "createdAt","isConfirmed","isBanned")
-    VALUES ($1, $2, $3, $4, $5, $6) returning id`,
+      "login", "passwordHash", "email", "createdAt","isConfirmed")
+    VALUES ($1, $2, $3, $4, $5) returning id`,
       [
         createUserDto.login,
         passwordHash,
         createUserDto.email,
         new Date().toISOString(),
         isConfirmed,
-        false,
       ],
     );
 
     await this.dataSource.query(
-      `INSERT INTO public.users_ban_by_sa("userId") VALUES ($1);`,
-      [newUser[0].id],
+      `INSERT INTO public.users_ban_by_sa("userId","isBanned") VALUES ($1,$2);`,
+      [newUser[0].id, false],
     );
 
     const confirmationCode = uuid();
@@ -193,20 +192,25 @@ export class UsersRepository {
   }
 
   async banUser(userId, banUserDto: BanUserDto) {
-    await this.dataSource.query(
-      `UPDATE public.users u SET "isBanned"=$1
-     WHERE u."id" = $2;`,
-      [banUserDto.isBanned, userId],
-    );
+    // await this.dataSource.query(
+    //   `UPDATE public.users u SET "isBanned"=$1
+    //  WHERE u."id" = $2;`,
+    //   [banUserDto.isBanned, userId],
+    // );
 
-    await this.dataSource.query(
+    const result = await this.dataSource.query(
       `UPDATE public.users_ban_by_sa ub
-    SET "banReason"=$1, "banDate" = $2
-    WHERE ub."userId" = $3;`,
-      [banUserDto.banReason, new Date().toISOString(), userId],
+    SET "banReason"=$1, "banDate" = $2, "isBanned"=$3
+    WHERE ub."userId" = $4;`,
+      [
+        banUserDto.banReason,
+        new Date().toISOString(),
+        banUserDto.isBanned,
+        userId,
+      ],
     );
 
-    return; //userResult[1] === 1 && userBanResult[1] === 1;
+    return result[1] === 1;
   }
 
   async unBanUser(userId) {

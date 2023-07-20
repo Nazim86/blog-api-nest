@@ -18,7 +18,7 @@ export class EmailConfirmation {
   @Column({ unique: true, type: 'timestamp without time zone' })
   emailExpiration: Date;
 
-  @OneToOne(() => User, (u) => u.emailConfirmation, { cascade: true })
+  @OneToOne(() => User, (u) => u.emailConfirmation, { onDelete: 'CASCADE' })
   @JoinColumn()
   user: User;
 }

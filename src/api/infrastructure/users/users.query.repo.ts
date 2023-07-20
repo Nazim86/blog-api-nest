@@ -157,9 +157,10 @@ export class UserQueryRepo {
     const skipSize = paginatedQuery.skipSize; //(paginatedQuery.pageNumber - 1) * paginatedQuery.pageSize;
 
     const totalCount = await this.dataSource.query(
-      `SELECT COUNT(*)
+      `SELECT count(*)
     FROM public.users u
-    WHERE (u."login" ilike $1 OR u."email" ilike $2) And (u."isBanned"=$3 or u."isBanned"=$4);`,
+    Left join public.users_ban_by_sa ub on u."id" = ub."userId"
+    WHERE (u."login" ilike $1 OR u."email" ilike $2) And (ub."isBanned"=$3 or ub."isBanned"=$4);`,
       [
         filter.searchLogin,
         filter.searchEmail,
@@ -171,10 +172,10 @@ export class UserQueryRepo {
     const pagesCount = paginatedQuery.totalPages(totalCount[0].count); //Math.ceil(totalCount / paginatedQuery.pageSize);
 
     const getUsers = await this.dataSource.query(
-      `SELECT u."id", u.login,u.email,u."isBanned", u."createdAt", ub."banDate",ub."banReason" 
+      `SELECT u."id", u.login,u.email,ub."isBanned", u."createdAt", ub."banDate",ub."banReason" 
     FROM public.users u
     Left join public.users_ban_by_sa ub on u."id" = ub."userId"
-    WHERE (u."login" ilike $1 OR u."email" ilike $2) And (u."isBanned"=$3 or u."isBanned"=$4)
+    WHERE (u."login" ilike $1 OR u."email" ilike $2) And (ub."isBanned"=$3 or ub."isBanned"=$4)
     Order by "${paginatedQuery.sortBy}" ${paginatedQuery.sortDirection}
     Limit ${paginatedQuery.pageSize} Offset ${skipSize};`,
       [
