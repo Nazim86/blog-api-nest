@@ -24,11 +24,6 @@ import { CommentsMapping } from './api/public/comments/mapper/comments.mapping';
 import { Comment, CommentSchema } from './api/entities/comment.entity';
 import { UserQueryRepo } from './api/infrastructure/users/users.query.repo';
 import { UsersRepository } from './api/infrastructure/users/users.repository';
-import {
-  User,
-  UserBanInfoEntity,
-  UserSchema,
-} from './api/entities/user.entity';
 import { DeleteController } from './delete/delete.controller';
 
 import * as process from 'process';
@@ -81,6 +76,11 @@ import { CreateUserUseCase } from './api/public/auth/application,use-cases/creat
 import { RegistrationConfirmationUseCase } from './api/public/auth/application,use-cases/registration-confirmation-use-case';
 import { DeviceDeleteByIdUseCase } from './api/public/securityDevices/application,use-cases/device-deleteByDeviceId-use-case';
 import { DeleteDevicesUseCase } from './api/public/securityDevices/application,use-cases/delete-devices-use-case';
+import { UsersBanBySA } from './api/entities/sql/users-ban-by-sa';
+import { EmailConfirmation } from './api/entities/sql/email-confirmation';
+import { User } from './api/entities/sql/user.entity';
+import { UserSchema } from './api/entities/user.entity';
+import { PasswordRecovery } from './api/entities/sql/password-recovery';
 
 const mongooseModels = [
   { name: Device.name, schema: DeviceSchema },
@@ -123,7 +123,7 @@ const useCases = [
   DeleteDevicesUseCase,
 ];
 
-const entities = [User, UserBanInfoEntity];
+const entities = [User, UsersBanBySA, EmailConfirmation, PasswordRecovery];
 
 export const neonConfigForTypeOrm: TypeOrmModuleOptions = {
   type: 'postgres',
@@ -134,7 +134,7 @@ export const neonConfigForTypeOrm: TypeOrmModuleOptions = {
   entities,
   ssl: true,
   database: process.env.PG_DATABASE,
-  autoLoadEntities: false,
+  autoLoadEntities: true,
   synchronize: true,
 };
 
@@ -155,7 +155,7 @@ export const localConfigTypeOrm: TypeOrmModuleOptions = {
     ScheduleModule.forRoot(),
     AuthModule,
     UsersModule,
-    TypeOrmModule.forRoot(localConfigTypeOrm),
+    TypeOrmModule.forRoot(neonConfigForTypeOrm),
     TypeOrmModule.forFeature(entities),
     // MongooseModule.forRootAsync({
     //   useFactory: async () => {

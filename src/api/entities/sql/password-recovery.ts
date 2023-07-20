@@ -7,18 +7,18 @@ import {
 } from 'typeorm';
 import { User } from './user.entity';
 
-@Entity({ name: 'email_confirmation' })
-export class EmailConfirmation {
+@Entity({ name: 'password_recovery' })
+export class PasswordRecovery {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column({ unique: true, type: 'varchar' })
-  confirmationCode: string;
+  recoveryCode: string;
 
   @Column({ unique: true, type: 'timestamp without time zone' })
-  emailExpiration: Date;
+  recoveryCodeExpiration: Date;
 
-  @OneToOne(() => User, (u) => u.emailConfirmation, { cascade: true })
+  @OneToOne(() => User, (u) => u.passwordRecovery, { cascade: true })
   @JoinColumn()
   user: User;
 }

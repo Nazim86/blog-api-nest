@@ -6,13 +6,9 @@ import {
 } from '../../mongoose-test-module';
 import { AppModule } from '../../../src/app.module';
 import request from 'supertest';
-import { newUserEmail, userCreatedData } from '../../data/user-data';
-import {
-  bannedUsersDataForBlog,
-  blogCreatingData,
-  createdBlogWithoutPagination,
-} from '../../data/blogs-data';
+import { blogCreatingData } from '../../data/blogs-data';
 import { appSettings } from '../../../src/app.settings';
+import { creatingUser } from '../../functions/user_functions';
 
 describe('Blogger user testing', () => {
   let app: INestApplication;
@@ -49,15 +45,20 @@ describe('Blogger user testing', () => {
 
     it(`Creating user`, async () => {
       for (let i = 0; i <= 5; i++) {
-        const result = await request(httpServer)
-          .post('/sa/users')
-          .auth('admin', 'qwerty')
-          .send({
-            login: `leo${i}`,
-            password: '123456',
-            email: `nazim86mammadov${i}@yandex.ru`,
-          })
-          .expect(201);
+        const result = await creatingUser(httpServer, {
+          login: `leo${i}`,
+          password: '123456',
+          email: `nazim86mammadov${i}@yandex.ru`,
+        });
+        // const result = await request(httpServer)
+        //   .post('/sa/users')
+        //   .auth('admin', 'qwerty')
+        //   .send({
+        //     login: `leo${i}`,
+        //     password: '123456',
+        //     email: `nazim86mammadov${i}@yandex.ru`,
+        //   })
+        expect(result.status).toBe(201);
         users.push(result.body);
       }
 
