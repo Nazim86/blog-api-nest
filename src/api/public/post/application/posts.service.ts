@@ -1,8 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Post, PostModelType } from '../../../entities/post.entity';
+import {
+  Post,
+  PostModelType,
+} from '../../../entities/mongoose-schemas/post.entity';
 import { PostRepository } from '../../../infrastructure/posts/post.repository';
-import { PostLike, PostLikeModelType } from '../../../entities/postLike.entity';
+import {
+  PostLike,
+  PostLikeModelType,
+} from '../../../entities/mongoose-schemas/postLike.entity';
 
 @Injectable()
 export class PostService {

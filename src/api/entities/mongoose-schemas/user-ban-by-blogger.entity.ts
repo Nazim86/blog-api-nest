@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Model } from 'mongoose';
-import { UserBanDto } from '../blogger/inputModel-Dto/userBan.dto';
+import { UserBanDto } from '../../blogger/inputModel-Dto/userBan.dto';
 
 export type BloggerBanUserDocument = HydratedDocument<BloggerBanUser>;
 

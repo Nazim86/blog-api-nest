@@ -2,7 +2,10 @@ import { NewestLikesType } from '../../../infrastructure/posts/types/posts-db-ty
 import { PostsViewType } from '../../../infrastructure/posts/types/posts-view-type';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { PostLike, PostLikeDocument } from '../../../entities/postLike.entity';
+import {
+  PostLike,
+  PostLikeDocument,
+} from '../../../entities/mongoose-schemas/postLike.entity';
 import { LikeEnum } from '../../like/like.enum';
 import { newestLikesMapping } from '../../like/post-likes.mapping';
 import { InjectDataSource } from '@nestjs/typeorm';

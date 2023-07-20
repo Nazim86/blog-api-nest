@@ -1,15 +1,30 @@
 import { Controller, Delete, HttpCode } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Blog, BlogDocument } from '../api/entities/blog.entity';
+import {
+  Blog,
+  BlogDocument,
+} from '../api/entities/mongoose-schemas/blog.entity';
 import { Model } from 'mongoose';
-import { Post, PostDocument } from '../api/entities/post.entity';
-import { Comment, CommentDocument } from '../api/entities/comment.entity';
-import { User, UserDocument } from '../api/entities/user.entity';
-import { PostLike, PostLikeDocument } from '../api/entities/postLike.entity';
+import {
+  Post,
+  PostDocument,
+} from '../api/entities/mongoose-schemas/post.entity';
+import {
+  Comment,
+  CommentDocument,
+} from '../api/entities/mongoose-schemas/comment.entity';
+import {
+  User,
+  UserDocument,
+} from '../api/entities/mongoose-schemas/user.entity';
+import {
+  PostLike,
+  PostLikeDocument,
+} from '../api/entities/mongoose-schemas/postLike.entity';
 import {
   CommentLike,
   CommentLikeDocument,
-} from '../api/entities/commentLike.entity';
+} from '../api/entities/mongoose-schemas/commentLike.entity';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 

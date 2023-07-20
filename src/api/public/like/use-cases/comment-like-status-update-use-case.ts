@@ -1,5 +1,5 @@
 import { CommandHandler } from '@nestjs/cqrs';
-import { CommentDocument } from '../../../entities/comment.entity';
+import { CommentDocument } from '../../../entities/mongoose-schemas/comment.entity';
 import { CommentsRepository } from '../../../infrastructure/comments/comments.repository';
 import { CreateLikeDto } from '../createLikeDto';
 

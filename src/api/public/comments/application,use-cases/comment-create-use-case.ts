@@ -1,5 +1,5 @@
 import { CommandHandler } from '@nestjs/cqrs';
-import { PostDocument } from '../../../entities/post.entity';
+import { PostDocument } from '../../../entities/mongoose-schemas/post.entity';
 import { PostRepository } from '../../../infrastructure/posts/post.repository';
 import { UsersRepository } from '../../../infrastructure/users/users.repository';
 import { CommentsRepository } from '../../../infrastructure/comments/comments.repository';

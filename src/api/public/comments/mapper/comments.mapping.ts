@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import {
   CommentLike,
   CommentLikeDocument,
-} from '../../../entities/commentLike.entity';
+} from '../../../entities/mongoose-schemas/commentLike.entity';
 import { Model } from 'mongoose';
 import { LikeEnum } from '../../like/like.enum';
 import { InjectDataSource } from '@nestjs/typeorm';

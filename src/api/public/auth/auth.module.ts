@@ -10,20 +10,29 @@ import { DeviceRepository } from '../../infrastructure/devices/device.repository
 import { MailService } from '../../../mail/mail.service';
 import { UsersRepository } from '../../infrastructure/users/users.repository';
 import { MongooseModule } from '@nestjs/mongoose';
-import { User, UserSchema } from '../../entities/user.entity';
+import { User, UserSchema } from '../../entities/mongoose-schemas/user.entity';
 import { JwtService } from '../../../jwt/jwt.service';
-import { Device, DeviceSchema } from '../../entities/device.entity';
+import {
+  Device,
+  DeviceSchema,
+} from '../../entities/mongoose-schemas/device.entity';
 import { DeleteController } from '../../../delete/delete.controller';
 import { AuthController } from './api/auth.controller';
 import { UserQueryRepo } from '../../infrastructure/users/users.query.repo';
-import { Blog, BlogSchema } from '../../entities/blog.entity';
-import { Post, PostSchema } from '../../entities/post.entity';
-import { PostLike, PostLikeSchema } from '../../entities/postLike.entity';
+import { Blog, BlogSchema } from '../../entities/mongoose-schemas/blog.entity';
+import { Post, PostSchema } from '../../entities/mongoose-schemas/post.entity';
+import {
+  PostLike,
+  PostLikeSchema,
+} from '../../entities/mongoose-schemas/postLike.entity';
 import {
   CommentLike,
   CommentLikeSchema,
-} from '../../entities/commentLike.entity';
-import { Comment, CommentSchema } from '../../entities/comment.entity';
+} from '../../entities/mongoose-schemas/commentLike.entity';
+import {
+  Comment,
+  CommentSchema,
+} from '../../entities/mongoose-schemas/comment.entity';
 import { RefreshTokenStrategy } from './strategies/refresh-token.strategy';
 
 import { DevicesController } from '../securityDevices/api/devices.controller';
@@ -36,9 +45,7 @@ import { DeviceUpdateUseCase } from '../securityDevices/application,use-cases/de
 import {
   BloggerBanUser,
   UserBanByBloggerSchema,
-} from '../../entities/user-ban-by-blogger.entity';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { APP_GUARD } from '@nestjs/core';
+} from '../../entities/mongoose-schemas/user-ban-by-blogger.entity';
 
 const mongooseModels = [
   { name: Device.name, schema: DeviceSchema },

@@ -3,7 +3,10 @@ import { InjectModel } from '@nestjs/mongoose';
 import { CommandHandler } from '@nestjs/cqrs';
 
 import { CreatePostDto } from '../../public/post/createPostDto';
-import { Post, PostModelType } from '../../entities/post.entity';
+import {
+  Post,
+  PostModelType,
+} from '../../entities/mongoose-schemas/post.entity';
 import { PostRepository } from '../../infrastructure/posts/post.repository';
 import { ResultCode } from '../../../exception-handler/result-code-enum';
 import { Result } from '../../../exception-handler/result-type';

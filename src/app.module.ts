@@ -4,13 +4,16 @@ export const configModule = ConfigModule.forRoot({ isGlobal: true });
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Blog, BlogSchema } from './api/entities/blog.entity';
+import { Blog, BlogSchema } from './api/entities/mongoose-schemas/blog.entity';
 import { BloggerBlogsController } from './api/blogger/blogger.blogs.controller';
 import { BlogsQueryRepo } from './api/infrastructure/blogs/blogs-query.repository';
-import { Post, PostSchema } from './api/entities/post.entity';
+import { Post, PostSchema } from './api/entities/mongoose-schemas/post.entity';
 import { PostMapping } from './api/public/post/mapper/post.mapping';
 import { PostsQueryRepo } from './api/infrastructure/posts/posts-query-repo';
-import { PostLike, PostLikeSchema } from './api/entities/postLike.entity';
+import {
+  PostLike,
+  PostLikeSchema,
+} from './api/entities/mongoose-schemas/postLike.entity';
 import { BlogRepository } from './api/infrastructure/blogs/blog.repository';
 import { PostsController } from './api/public/post/api/posts.controller';
 import { PostService } from './api/public/post/application/posts.service';
@@ -18,10 +21,13 @@ import { PostRepository } from './api/infrastructure/posts/post.repository';
 import {
   CommentLike,
   CommentLikeSchema,
-} from './api/entities/commentLike.entity';
+} from './api/entities/mongoose-schemas/commentLike.entity';
 import { CommentsQueryRepo } from './api/infrastructure/comments/comments.query.repo';
 import { CommentsMapping } from './api/public/comments/mapper/comments.mapping';
-import { Comment, CommentSchema } from './api/entities/comment.entity';
+import {
+  Comment,
+  CommentSchema,
+} from './api/entities/mongoose-schemas/comment.entity';
 import { UserQueryRepo } from './api/infrastructure/users/users.query.repo';
 import { UsersRepository } from './api/infrastructure/users/users.repository';
 import { DeleteController } from './delete/delete.controller';
@@ -37,7 +43,10 @@ import { CommentsController } from './api/public/comments/api/comments.controlle
 import { IsBlogExistConstraint } from './decorators/IsBlogIdExist';
 import { ScheduleModule } from '@nestjs/schedule';
 import { DeviceRepository } from './api/infrastructure/devices/device.repository';
-import { Device, DeviceSchema } from './api/entities/device.entity';
+import {
+  Device,
+  DeviceSchema,
+} from './api/entities/mongoose-schemas/device.entity';
 import { SuperAdminBlogsController } from './api/superadmin/blogs/sa.blogs.controller';
 import { BlogCreateUseCase } from './api/blogger/application,use-cases/blog-create-use-case';
 import { CqrsModule } from '@nestjs/cqrs';
@@ -63,7 +72,7 @@ import { BloggerUsersController } from './api/blogger/blogger.users.controller';
 import {
   BloggerBanUser,
   UserBanByBloggerSchema,
-} from './api/entities/user-ban-by-blogger.entity';
+} from './api/entities/mongoose-schemas/user-ban-by-blogger.entity';
 import { BanBlogUseCase } from './api/superadmin/blogs/use-cases/ban-blog-use-case';
 import { CheckCredentialsUseCase } from './api/public/auth/application,use-cases/check-credentials-use-case';
 import { CurrentUserUseCase } from './api/public/auth/application,use-cases/current-user-use-case';
@@ -76,11 +85,11 @@ import { CreateUserUseCase } from './api/public/auth/application,use-cases/creat
 import { RegistrationConfirmationUseCase } from './api/public/auth/application,use-cases/registration-confirmation-use-case';
 import { DeviceDeleteByIdUseCase } from './api/public/securityDevices/application,use-cases/device-deleteByDeviceId-use-case';
 import { DeleteDevicesUseCase } from './api/public/securityDevices/application,use-cases/delete-devices-use-case';
-import { UsersBanBySA } from './api/entities/sql/users-ban-by-sa';
-import { EmailConfirmation } from './api/entities/sql/email-confirmation';
-import { User } from './api/entities/sql/user.entity';
-import { UserSchema } from './api/entities/user.entity';
-import { PasswordRecovery } from './api/entities/sql/password-recovery';
+import { UsersBanBySA } from './api/entities/sql/users/users-ban-by-sa';
+import { EmailConfirmation } from './api/entities/sql/users/email-confirmation';
+import { User } from './api/entities/sql/users/user.entity';
+import { UserSchema } from './api/entities/mongoose-schemas/user.entity';
+import { PasswordRecovery } from './api/entities/sql/users/password-recovery';
 
 const mongooseModels = [
   { name: Device.name, schema: DeviceSchema },

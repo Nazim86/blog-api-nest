@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { BloggerBanUserDocument } from '../../entities/user-ban-by-blogger.entity';
+import { BloggerBanUserDocument } from '../../entities/mongoose-schemas/user-ban-by-blogger.entity';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { CreateUserDto } from '../../superadmin/users/dto/createUser.Dto';

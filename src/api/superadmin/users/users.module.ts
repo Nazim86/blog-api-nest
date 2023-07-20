@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
 import { UsersRepository } from '../../infrastructure/users/users.repository';
 import { MongooseModule } from '@nestjs/mongoose';
-import { User, UserSchema } from '../../entities/user.entity';
+import { User, UserSchema } from '../../entities/mongoose-schemas/user.entity';
 import { configModule } from '../../../app.module';
 import { IsUserAlreadyExistConstraint } from '../../../decorators/IsUserAlreadyExist';
 import {
   BloggerBanUser,
   UserBanByBloggerSchema,
-} from '../../entities/user-ban-by-blogger.entity';
+} from '../../entities/mongoose-schemas/user-ban-by-blogger.entity';
 import { BlogRepository } from '../../infrastructure/blogs/blog.repository';
-import { Blog, BlogSchema } from '../../entities/blog.entity';
+import { Blog, BlogSchema } from '../../entities/mongoose-schemas/blog.entity';
 
 @Module({
   imports: [
