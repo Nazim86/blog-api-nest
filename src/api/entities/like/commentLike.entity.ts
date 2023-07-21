@@ -5,8 +5,8 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Comments } from '../comments/comments.entity';
 import { Users } from '../users/user.entity';
+import { Comments } from '../comments/comments.entity';
 
 @Entity({ name: 'comment_like' })
 export class CommentLike {
@@ -28,11 +28,11 @@ export class CommentLike {
   @Column('boolean')
   banStatus: boolean;
 
-  @ManyToOne(() => Comments, (c) => c.commentLike)
+  @ManyToOne(() => Comments, (c) => c.commentLike, { onDelete: 'CASCADE' })
   @JoinColumn()
   comment: Comments;
 
-  @ManyToOne(() => Users, (u) => u.commentLike)
+  @ManyToOne(() => Users, (u) => u.commentLike, { onDelete: 'CASCADE' })
   @JoinColumn()
   user: Users;
 }

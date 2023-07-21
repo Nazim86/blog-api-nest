@@ -46,31 +46,6 @@ export class BloggerBanUserUseCase {
         command.userBanDto,
         blog.id,
       );
-      // const bannedUser = await this.usersRepository.findBloggerBannedUser(
-      //   command.userId,
-      //   command.userBanDto.blogId,
-      // );
-      //
-      // if (!bannedUser) {
-      //   const banUser = await this.UserBanModel.createBannedUser(
-      //     user.login,
-      //     command.userId,
-      //     command.userBanDto,
-      //     this.UserBanModel,
-      //   );
-      //   await this.usersRepository.saveBloggerBanUser(banUser);
-      //   return { code: ResultCode.Success };
-      // }
-      //
-      // if (bannedUser)
-      //   bannedUser.updateBannedUser(
-      //     user.accountData.login,
-      //     command.userId,
-      //     command.userBanDto,
-      //   );
-      // await this.usersRepository.saveBloggerBanUser(bannedUser);
-
-      // await this.commentsRepository.
 
       return { code: bannedUser ? ResultCode.Success : ResultCode.NotFound };
     } catch (e) {

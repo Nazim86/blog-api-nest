@@ -1,5 +1,4 @@
 import { CommandHandler } from '@nestjs/cqrs';
-import { CommentDocument } from '../../../entities/mongoose-schemas/comment.entity';
 import { CommentsRepository } from '../../../infrastructure/comments/comments.repository';
 import { CreateLikeDto } from '../createLikeDto';
 
@@ -20,8 +19,7 @@ export class CommentLikeStatusUpdateUseCase {
     private readonly commentsRepository: CommentsRepository,
   ) {}
   async execute(command: CommentLikeStatusUpdateCommand): Promise<boolean> {
-    const comment: CommentDocument | null =
-      await this.commentsRepository.getComment(command.commentId);
+    const comment = await this.commentsRepository.getComment(command.commentId);
 
     if (!comment) return false;
 

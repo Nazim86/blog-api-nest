@@ -1,12 +1,7 @@
 import { BlogRepository } from '../../infrastructure/blogs/blog.repository';
-import { InjectModel } from '@nestjs/mongoose';
 import { CommandHandler } from '@nestjs/cqrs';
 
 import { CreatePostDto } from '../../public/post/createPostDto';
-import {
-  Post,
-  PostModelType,
-} from '../../entities/mongoose-schemas/post.entity';
 import { PostRepository } from '../../infrastructure/posts/post.repository';
 import { ResultCode } from '../../../exception-handler/result-code-enum';
 import { Result } from '../../../exception-handler/result-type';
@@ -23,7 +18,6 @@ export class PostCreateUseCase {
   constructor(
     private readonly blogRepository: BlogRepository,
     private readonly postRepository: PostRepository,
-    @InjectModel(Post.name) private PostModel: PostModelType,
   ) {}
 
   async execute(command: PostCreateCommand): Promise<Result<ResultCode>> {
@@ -37,13 +31,6 @@ export class PostCreateUseCase {
       command.createPostDto,
       blog,
     );
-    // const newPost: PostDocument = this.PostModel.createPost(
-    //   command.createPostDto,
-    //   this.PostModel,
-    //   blog,
-    // );
-
-    //await this.postRepository.save(newPost);
 
     return { code: ResultCode.Success, data: postId };
   }

@@ -1,6 +1,4 @@
 import { Injectable } from '@nestjs/common';
-
-import { BloggerBanUserDocument } from '../../entities/mongoose-schemas/user-ban-by-blogger.entity';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { CreateUserDto } from '../../superadmin/users/dto/createUser.Dto';
@@ -153,10 +151,6 @@ export class UsersRepository {
     return user[0];
   }
 
-  async saveBloggerBanUser(bannedUser: BloggerBanUserDocument) {
-    return await bannedUser.save();
-  }
-
   async findBloggerBannedUser(userId: string, blogId: string) {
     const bannedUser = await this.dataSource.query(
       `Select * from public.users_ban_by_blogger ubb
@@ -172,7 +166,7 @@ export class UsersRepository {
   }
 
   async bloggerBanUser(userId: string, userBanDto: UserBanDto, blogId: string) {
-    const result1 = await this.dataSource.query(
+    await this.dataSource.query(
       `Insert into public.users_ban_by_blogger("isBanned", "banDate", "banReason", "blogId", "userId")
                 values($1,$2,$3,$4,$5)
       on conflict ("blogId","userId")
@@ -192,12 +186,6 @@ export class UsersRepository {
   }
 
   async banUser(userId, banUserDto: BanUserDto) {
-    // await this.dataSource.query(
-    //   `UPDATE public.users u SET "isBanned"=$1
-    //  WHERE u."id" = $2;`,
-    //   [banUserDto.isBanned, userId],
-    // );
-
     const result = await this.dataSource.query(
       `UPDATE public.users_ban_by_sa ub
     SET "banReason"=$1, "banDate" = $2, "isBanned"=$3

@@ -1,9 +1,4 @@
 import { BlogRepository } from '../../infrastructure/blogs/blog.repository';
-import { InjectModel } from '@nestjs/mongoose';
-import {
-  Blog,
-  BlogModelType,
-} from '../../entities/mongoose-schemas/blog.entity';
 import { CreateBlogDto } from '../inputModel-Dto/createBlog.dto';
 import { CommandHandler } from '@nestjs/cqrs';
 import { UsersRepository } from '../../infrastructure/users/users.repository';
@@ -16,7 +11,6 @@ export class BlogCreateUseCase {
   constructor(
     private readonly blogRepository: BlogRepository,
     private readonly usersRepository: UsersRepository,
-    @InjectModel(Blog.name) private BlogModel: BlogModelType,
   ) {}
 
   async execute(command: BlogCreateCommand): Promise<string> {
@@ -27,15 +21,6 @@ export class BlogCreateUseCase {
       user.login,
       command.createBlogDto,
     );
-
-    // const newBlog: BlogDocument = this.BlogModel.createBlog(
-    //   user.id,
-    //   user.accountData.login,
-    //   command.createBlogDto,
-    //   this.BlogModel,
-    // );
-
-    //await this.blogRepository.save(newBlog);
 
     return blogId;
   }

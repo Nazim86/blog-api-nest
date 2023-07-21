@@ -24,10 +24,6 @@ export class BlogUpdateUseCase {
 
     await this.blogRepository.updateBlog(blog.id, command.updateBlogDto);
 
-    // blog.updateBlog(command.updateBlogDto);
-    //
-    // await this.blogRepository.save(blog);
-
     return { code: ResultCode.Success };
   }
 }

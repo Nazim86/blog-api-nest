@@ -3,31 +3,16 @@ import { ConfigModule } from '@nestjs/config';
 export const configModule = ConfigModule.forRoot({ isGlobal: true });
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { MongooseModule } from '@nestjs/mongoose';
-import { Blog, BlogSchema } from './api/entities/mongoose-schemas/blog.entity';
 import { BloggerBlogsController } from './api/blogger/blogger.blogs.controller';
 import { BlogsQueryRepo } from './api/infrastructure/blogs/blogs-query.repository';
-import { Post, PostSchema } from './api/entities/mongoose-schemas/post.entity';
 import { PostMapping } from './api/public/post/mapper/post.mapping';
 import { PostsQueryRepo } from './api/infrastructure/posts/posts-query-repo';
-import {
-  PostLike,
-  PostLikeSchema,
-} from './api/entities/mongoose-schemas/postLike.entity';
 import { BlogRepository } from './api/infrastructure/blogs/blog.repository';
 import { PostsController } from './api/public/post/api/posts.controller';
-import { PostService } from './api/public/post/application/posts.service';
 import { PostRepository } from './api/infrastructure/posts/post.repository';
-import {
-  CommentLike,
-  CommentLikeSchema,
-} from './api/entities/mongoose-schemas/commentLike.entity';
+
 import { CommentsQueryRepo } from './api/infrastructure/comments/comments.query.repo';
 import { CommentsMapping } from './api/public/comments/mapper/comments.mapping';
-import {
-  Comment,
-  CommentSchema,
-} from './api/entities/mongoose-schemas/comment.entity';
 import { UserQueryRepo } from './api/infrastructure/users/users.query.repo';
 import { UsersRepository } from './api/infrastructure/users/users.repository';
 import { DeleteController } from './delete/delete.controller';
@@ -43,10 +28,6 @@ import { CommentsController } from './api/public/comments/api/comments.controlle
 import { IsBlogExistConstraint } from './decorators/IsBlogIdExist';
 import { ScheduleModule } from '@nestjs/schedule';
 import { DeviceRepository } from './api/infrastructure/devices/device.repository';
-import {
-  Device,
-  DeviceSchema,
-} from './api/entities/mongoose-schemas/device.entity';
 import { SuperAdminBlogsController } from './api/superadmin/blogs/sa.blogs.controller';
 import { BlogCreateUseCase } from './api/blogger/application,use-cases/blog-create-use-case';
 import { CqrsModule } from '@nestjs/cqrs';
@@ -69,10 +50,6 @@ import { CommentLikeStatusUpdateUseCase } from './api/public/like/use-cases/comm
 import { PublicBlogsController } from './api/public/blogs/api/public.blogs.controller';
 import { BloggerBanUserUseCase } from './api/blogger/application,use-cases/blogger-ban-user-use-case';
 import { BloggerUsersController } from './api/blogger/blogger.users.controller';
-import {
-  BloggerBanUser,
-  UserBanByBloggerSchema,
-} from './api/entities/mongoose-schemas/user-ban-by-blogger.entity';
 import { BanBlogUseCase } from './api/superadmin/blogs/use-cases/ban-blog-use-case';
 import { CheckCredentialsUseCase } from './api/public/auth/application,use-cases/check-credentials-use-case';
 import { CurrentUserUseCase } from './api/public/auth/application,use-cases/current-user-use-case';
@@ -85,25 +62,16 @@ import { CreateUserUseCase } from './api/public/auth/application,use-cases/creat
 import { RegistrationConfirmationUseCase } from './api/public/auth/application,use-cases/registration-confirmation-use-case';
 import { DeviceDeleteByIdUseCase } from './api/public/securityDevices/application,use-cases/device-deleteByDeviceId-use-case';
 import { DeleteDevicesUseCase } from './api/public/securityDevices/application,use-cases/delete-devices-use-case';
-import { UsersBanBySA } from './api/entities/sql/users/users-ban-by-sa';
-import { EmailConfirmation } from './api/entities/sql/users/email-confirmation';
-import { Users } from './api/entities/sql/users/user.entity';
-import { UserSchema } from './api/entities/mongoose-schemas/user.entity';
-import { PasswordRecovery } from './api/entities/sql/users/password-recovery';
-import { Posts } from './api/entities/sql/posts/posts.entity';
-import { CommentatorInfo } from './api/entities/sql/comments/commentatorInfo.entity';
-import { PostInfo } from './api/entities/sql/comments/postInfo.entity';
+import { UsersBanBySA } from './api/entities/users/users-ban-by-sa';
+import { EmailConfirmation } from './api/entities/users/email-confirmation';
+import { Users } from './api/entities/users/user.entity';
+import { PasswordRecovery } from './api/entities/users/password-recovery';
+import { Posts } from './api/entities/posts/posts.entity';
+import { CommentatorInfo } from './api/entities/comments/commentatorInfo.entity';
+import { PostInfo } from './api/entities/comments/postInfo.entity';
+import { CommentLike } from './api/entities/like/commentLike.entity';
+import { Comments } from './api/entities/comments/comments.entity';
 
-const mongooseModels = [
-  { name: Device.name, schema: DeviceSchema },
-  { name: Blog.name, schema: BlogSchema },
-  { name: Post.name, schema: PostSchema },
-  { name: PostLike.name, schema: PostLikeSchema },
-  { name: CommentLike.name, schema: CommentLikeSchema },
-  { name: Comment.name, schema: CommentSchema },
-  { name: Users.name, schema: UserSchema },
-  { name: BloggerBanUser.name, schema: UserBanByBloggerSchema },
-];
 const useCases = [
   BlogCreateUseCase,
   BlogUpdateUseCase,
@@ -141,6 +109,7 @@ const entities = [
   EmailConfirmation,
   PasswordRecovery,
   CommentLike,
+  Comments,
   Posts,
   CommentatorInfo,
   PostInfo,
@@ -178,23 +147,9 @@ export const localConfigTypeOrm: TypeOrmModuleOptions = {
     UsersModule,
     TypeOrmModule.forRoot(neonConfigForTypeOrm),
     TypeOrmModule.forFeature(entities),
-    // MongooseModule.forRootAsync({
-    //   useFactory: async () => {
-    //     const mongoMemoryServer = await MongoMemoryServer.create();
-    //     const mongoMemoryServerConnectionString = mongoMemoryServer.getUri();
-    //     const mongoServerConnectionString = process.env.MONGOOSE_URL;
-    //     return {
-    //       uri: mongoMemoryServerConnectionString,
-    //     };
-    //   },
-    // }),
-    MongooseModule.forRoot(process.env.MONGOOSE_URL),
-    MongooseModule.forFeature(mongooseModels),
     MailModule,
     CqrsModule,
   ],
-
-  // process.env.MONGOOSE_URL
 
   controllers: [
     AppController,
@@ -214,7 +169,6 @@ export const localConfigTypeOrm: TypeOrmModuleOptions = {
     BlogRepository,
     PostsQueryRepo,
     PostMapping,
-    PostService,
     PostRepository,
     CommentsQueryRepo,
     CommentsRepository,

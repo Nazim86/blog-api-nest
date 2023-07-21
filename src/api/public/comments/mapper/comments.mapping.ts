@@ -1,29 +1,16 @@
 import { CommentsViewType } from '../../../infrastructure/comments/types/comments-view-type';
-import { InjectModel } from '@nestjs/mongoose';
-import {
-  CommentLike,
-  CommentLikeDocument,
-} from '../../../entities/mongoose-schemas/commentLike.entity';
-import { Model } from 'mongoose';
 import { LikeEnum } from '../../like/like.enum';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
 export class CommentsMapping {
-  constructor(
-    @InjectDataSource() private dataSource: DataSource,
-    @InjectModel(CommentLike.name)
-    private CommentLikeModel: Model<CommentLikeDocument>,
-  ) {}
+  constructor(@InjectDataSource() private dataSource: DataSource) {}
 
-  //TODO: Question Why there is two promises?
-  //TODO: Question Why I cannot change CommentsDbType? When change .map is not recognized
   async commentMapping(
     array,
     userId: string,
   ): Promise<Promise<CommentsViewType>[]> {
     return array.map(async (comment): Promise<CommentsViewType> => {
-      //const commentId = comment._id.toString();
       let myStatus = 'None';
 
       if (userId) {
@@ -33,10 +20,6 @@ export class CommentsMapping {
           [comment.id, userId],
         );
 
-        // const likeInDb = await this.CommentLikeModel.findOne({
-        //   commentId,
-        //   userId: comment.commentatorInfo.userId,
-        // });
         if (likeInDb.length > 0) {
           myStatus = likeInDb[0].status;
         }
@@ -57,15 +40,6 @@ export class CommentsMapping {
       );
 
       dislikesCount = Number(dislikesCount[0].count);
-
-      // const likesCount = await this.CommentLikeModel.countDocuments({
-      //   commentId,
-      //   status: LikeEnum.Like,
-      // });
-      // const dislikesCount = await this.CommentLikeModel.countDocuments({
-      //   commentId,
-      //   status: LikeEnum.Dislike,
-      // });
 
       return {
         id: comment.id,

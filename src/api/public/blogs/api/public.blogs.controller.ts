@@ -11,7 +11,6 @@ import { BlogsViewType } from '../../../infrastructure/blogs/types/blogs-view-ty
 import { BlogsQueryRepo } from '../../../infrastructure/blogs/blogs-query.repository';
 import { PostsViewType } from '../../../infrastructure/posts/types/posts-view-type';
 import { PostsQueryRepo } from '../../../infrastructure/posts/posts-query-repo';
-import { PostService } from '../../post/application/posts.service';
 import { BlogPagination } from '../../../infrastructure/blogs/blog-pagination';
 import { PaginationType } from '../../../../common/pagination';
 import { settings } from '../../../../settings';
@@ -26,7 +25,6 @@ export class PublicBlogsController {
     private commandBus: CommandBus,
     private readonly blogQueryRepo: BlogsQueryRepo,
     private readonly postQueryRepo: PostsQueryRepo,
-    private readonly postService: PostService,
     private readonly jwtService: JwtService, // , // protected postQueryRepo: PostsQueryRepo, // ,
   ) {}
 

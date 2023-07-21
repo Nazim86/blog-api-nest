@@ -1,5 +1,4 @@
 import { CommandHandler } from '@nestjs/cqrs';
-import { PostDocument } from '../../../entities/mongoose-schemas/post.entity';
 import { PostRepository } from '../../../infrastructure/posts/post.repository';
 import { UsersRepository } from '../../../infrastructure/users/users.repository';
 import { CommentsRepository } from '../../../infrastructure/comments/comments.repository';
@@ -19,9 +18,7 @@ export class CommentCreateUseCase {
     private readonly blogsRepository: BlogRepository,
   ) {}
   async execute(command: CommentCreateCommand) {
-    const post: PostDocument | boolean = await this.postsRepository.getPostById(
-      command.postId,
-    );
+    const post = await this.postsRepository.getPostById(command.postId);
 
     if (!post || typeof post === 'boolean')
       return { code: ResultCode.NotFound };
@@ -51,19 +48,7 @@ export class CommentCreateUseCase {
       blogName: post.blogName,
       blogOwnerId: blog.userId,
     });
-    // const newComment: CommentDocument = this.CommentModel.createComment(
-    //   command.createCommentDto,
-    //   command.postId,
-    //   command.userId,
-    //   user.accountData.login,
-    //   this.CommentModel,
-    //   post.title,
-    //   post.blogId,
-    //   post.blogName,
-    //   blog.blogOwnerInfo.userId,
-    // );
 
-    //await this.commentsRepository.save(newComment);
     return { data: commentId, code: ResultCode.Success };
   }
 }

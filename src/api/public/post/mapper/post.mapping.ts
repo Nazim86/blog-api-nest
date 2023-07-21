@@ -1,21 +1,12 @@
 import { NewestLikesType } from '../../../infrastructure/posts/types/posts-db-type';
 import { PostsViewType } from '../../../infrastructure/posts/types/posts-view-type';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import {
-  PostLike,
-  PostLikeDocument,
-} from '../../../entities/mongoose-schemas/postLike.entity';
 import { LikeEnum } from '../../like/like.enum';
 import { newestLikesMapping } from '../../like/post-likes.mapping';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
 export class PostMapping {
-  constructor(
-    @InjectModel(PostLike.name) private PostLikeModel: Model<PostLikeDocument>,
-    @InjectDataSource() private dataSource: DataSource,
-  ) {}
+  constructor(@InjectDataSource() private dataSource: DataSource) {}
 
   async postViewMapping(
     posts,

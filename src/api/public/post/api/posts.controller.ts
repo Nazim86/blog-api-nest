@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
   HttpCode,
   Param,
@@ -13,7 +12,6 @@ import {
 } from '@nestjs/common';
 import { QueryPaginationType } from '../../../../types/query-pagination-type';
 import { PostsQueryRepo } from '../../../infrastructure/posts/posts-query-repo';
-import { PostService } from '../application/posts.service';
 import { PostsViewType } from '../../../infrastructure/posts/types/posts-view-type';
 import { CommentsViewType } from '../../../infrastructure/comments/types/comments-view-type';
 import { CommentsQueryRepo } from '../../../infrastructure/comments/comments.query.repo';
@@ -21,7 +19,6 @@ import { Pagination, PaginationType } from '../../../../common/pagination';
 import { CreateCommentDto } from '../../comments/createComment.Dto';
 import { ResultCode } from '../../../../exception-handler/result-code-enum';
 import { exceptionHandler } from '../../../../exception-handler/exception-handler';
-import { BasicAuthGuard } from '../../auth/guards/basic-auth.guard';
 import { AccessTokenGuard } from '../../auth/guards/access-token.guard';
 import { settings } from '../../../../settings';
 import { JwtService } from '../../../../jwt/jwt.service';
@@ -36,7 +33,6 @@ export class PostsController {
   constructor(
     private readonly postQueryRepo: PostsQueryRepo,
     private readonly commentsQueryRepo: CommentsQueryRepo,
-    private readonly postService: PostService,
     private readonly jwtService: JwtService,
     private commandBus: CommandBus,
   ) {}
@@ -135,9 +131,7 @@ export class PostsController {
       return exceptionHandler(commentId.code);
     }
 
-    const comment = await this.commentsQueryRepo.getComment(commentId.data);
-
-    return comment;
+    return await this.commentsQueryRepo.getComment(commentId.data);
   }
 
   @UseGuards(AccessTokenGuard)
@@ -155,18 +149,6 @@ export class PostsController {
     );
 
     if (!isUpdated) {
-      return exceptionHandler(ResultCode.NotFound);
-    }
-    return;
-  }
-
-  @UseGuards(BasicAuthGuard)
-  @Delete(':id')
-  @HttpCode(204)
-  async deletePost(@Param() postId: string) {
-    const isDeleted: boolean = await this.postService.deletePostById(postId);
-
-    if (!isDeleted) {
       return exceptionHandler(ResultCode.NotFound);
     }
     return;

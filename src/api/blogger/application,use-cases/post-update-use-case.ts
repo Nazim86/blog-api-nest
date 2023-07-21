@@ -36,10 +36,6 @@ export class PostUpdateUseCase {
       post.id,
     );
 
-    //post.updatePost(command.updatePostDto);
-
-    //await this.postsRepository.save(post);
-
     return { code: isUpdated ? ResultCode.Success : ResultCode.NotFound };
   }
 }
