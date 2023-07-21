@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { PostLike } from '../like/postLike.entity';
 
 @Entity({ name: 'posts' })
 export class Posts {
@@ -22,4 +23,7 @@ export class Posts {
 
   @Column({ type: 'varchar' })
   createdAt: string;
+
+  @OneToMany(() => PostLike, (pl) => pl.post)
+  postLike: PostLike;
 }

@@ -9,6 +9,7 @@ import { UsersBanBySA } from './users-ban-by-sa';
 import { EmailConfirmation } from './email-confirmation';
 import { PasswordRecovery } from './password-recovery';
 import { CommentLike } from '../like/commentLike.entity';
+import { PostLike } from '../like/postLike.entity';
 
 @Entity({ name: 'users' })
 export class Users {
@@ -41,4 +42,7 @@ export class Users {
 
   @OneToMany(() => CommentLike, (c) => c.user)
   commentLike: CommentLike;
+
+  @OneToMany(() => PostLike, (pl) => pl.user)
+  postLike: PostLike;
 }

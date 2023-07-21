@@ -71,6 +71,7 @@ import { CommentatorInfo } from './api/entities/comments/commentatorInfo.entity'
 import { PostInfo } from './api/entities/comments/postInfo.entity';
 import { CommentLike } from './api/entities/like/commentLike.entity';
 import { Comments } from './api/entities/comments/comments.entity';
+import { PostLike } from './api/entities/like/postLike.entity';
 
 const useCases = [
   BlogCreateUseCase,
@@ -109,6 +110,7 @@ const entities = [
   EmailConfirmation,
   PasswordRecovery,
   CommentLike,
+  PostLike,
   Comments,
   Posts,
   CommentatorInfo,
