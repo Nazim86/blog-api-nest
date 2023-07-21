@@ -72,6 +72,7 @@ import { PostInfo } from './api/entities/comments/postInfo.entity';
 import { CommentLike } from './api/entities/like/commentLike.entity';
 import { Comments } from './api/entities/comments/comments.entity';
 import { PostLike } from './api/entities/like/postLike.entity';
+import { Devices } from './api/entities/devices/devices.entity';
 
 const useCases = [
   BlogCreateUseCase,
@@ -115,6 +116,7 @@ const entities = [
   Posts,
   CommentatorInfo,
   PostInfo,
+  Devices,
 ];
 
 export const neonConfigForTypeOrm: TypeOrmModuleOptions = {

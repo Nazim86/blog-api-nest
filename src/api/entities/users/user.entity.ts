@@ -10,6 +10,7 @@ import { EmailConfirmation } from './email-confirmation';
 import { PasswordRecovery } from './password-recovery';
 import { CommentLike } from '../like/commentLike.entity';
 import { PostLike } from '../like/postLike.entity';
+import { Devices } from '../devices/devices.entity';
 
 @Entity({ name: 'users' })
 export class Users {
@@ -45,4 +46,7 @@ export class Users {
 
   @OneToMany(() => PostLike, (pl) => pl.user)
   postLike: PostLike;
+
+  @OneToMany(() => Devices, (d) => d.user)
+  device: Devices;
 }
