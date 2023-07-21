@@ -10,13 +10,11 @@ import { PostsQueryRepo } from './api/infrastructure/posts/posts-query-repo';
 import { BlogRepository } from './api/infrastructure/blogs/blog.repository';
 import { PostsController } from './api/public/post/api/posts.controller';
 import { PostRepository } from './api/infrastructure/posts/post.repository';
-
 import { CommentsQueryRepo } from './api/infrastructure/comments/comments.query.repo';
 import { CommentsMapping } from './api/public/comments/mapper/comments.mapping';
 import { UserQueryRepo } from './api/infrastructure/users/users.query.repo';
 import { UsersRepository } from './api/infrastructure/users/users.repository';
 import { DeleteController } from './delete/delete.controller';
-
 import * as process from 'process';
 import { AuthModule } from './api/public/auth/auth.module';
 import { UsersModule } from './api/superadmin/users/users.module';
@@ -73,6 +71,8 @@ import { CommentLike } from './api/entities/like/commentLike.entity';
 import { Comments } from './api/entities/comments/comments.entity';
 import { PostLike } from './api/entities/like/postLike.entity';
 import { Devices } from './api/entities/devices/devices.entity';
+import { BlogOwnerInfo } from './api/entities/blogs/blogOwnerInfo.entity';
+import { Blogs } from './api/entities/blogs/blogs.entity';
 
 const useCases = [
   BlogCreateUseCase,
@@ -117,6 +117,8 @@ const entities = [
   CommentatorInfo,
   PostInfo,
   Devices,
+  BlogOwnerInfo,
+  Blogs,
 ];
 
 export const neonConfigForTypeOrm: TypeOrmModuleOptions = {
@@ -149,7 +151,7 @@ export const localConfigTypeOrm: TypeOrmModuleOptions = {
     ScheduleModule.forRoot(),
     AuthModule,
     UsersModule,
-    TypeOrmModule.forRoot(neonConfigForTypeOrm),
+    TypeOrmModule.forRoot(localConfigTypeOrm),
     TypeOrmModule.forFeature(entities),
     MailModule,
     CqrsModule,

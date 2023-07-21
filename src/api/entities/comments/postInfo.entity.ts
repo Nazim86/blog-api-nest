@@ -1,4 +1,11 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Blogs } from '../blogs/blogs.entity';
 
 @Entity({ name: 'post_info' })
 export class PostInfo {
@@ -8,12 +15,13 @@ export class PostInfo {
   @Column({ type: 'varchar' })
   title: string;
 
-  @Column({ unique: true, type: 'varchar' })
-  blogId: string;
-
   @Column({ type: 'varchar' })
   blogName: string;
 
   @Column({ unique: true, type: 'varchar' })
   blogOwnerId: string;
+
+  @ManyToOne(() => Blogs, (b) => b.postInfo, { onDelete: 'CASCADE' })
+  @JoinColumn()
+  blog: Blogs;
 }

@@ -1,1 +1,1 @@
-const nameField = 'name';
+export const nameField = 'name';

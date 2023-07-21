@@ -11,7 +11,6 @@ export class LikesRepository {
              Where "postId" = $1 and "userId"=$2`,
       [postId, userId],
     );
-    //return this.PostLikeModel.findOne({ postId, userId });
     return postLike[0];
   }
 
@@ -22,7 +21,6 @@ export class LikesRepository {
       [commentId, userId],
     );
     return commentLike[0];
-    //return this.CommentLikeModel.findOne({ commentId, userId });
   }
 
   async createPostLike(
@@ -80,7 +78,6 @@ export class LikesRepository {
         WHERE "userId"=$2;`,
       [banStatus, userId],
     );
-    //updateMany({ userId }, { $set: { banStatus: banStatus } });
   }
 
   async resetLikeRepository() {
@@ -94,9 +91,5 @@ export class LikesRepository {
     WHERE "userId"= $2;`,
       [banStatus, userId],
     );
-    // updateMany(
-    //   { userId },
-    //   { $set: { banStatus: banStatus } },
-    // );
   }
 }

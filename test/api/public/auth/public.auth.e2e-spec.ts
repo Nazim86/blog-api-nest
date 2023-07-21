@@ -68,6 +68,7 @@ describe('Auth controller testing', () => {
       it(`should send email with new code if user exists 
       but not confirmed yet; status 204`, async () => {
         user = await usersRepository.findUserByLoginOrEmail(`leo`);
+
         const confirmationCodeBefore = user.confirmationCode;
 
         const result = await resendRegistrationEmail(httpServer, emailDto);

@@ -1,22 +1,36 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { BlogOwnerInfo } from './blogOwnerInfo.entity';
+import { PostInfo } from '../comments/postInfo.entity';
 
 @Entity({ name: 'blogs' })
-export class Blog {
+export class Blogs {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column({ unique: true, type: 'varchar' })
   name: string;
 
-  @Column({ unique: true, type: 'varchar' })
+  @Column({ type: 'varchar' })
   description: string;
 
-  @Column({ unique: true, type: 'varchar' })
+  @Column({ type: 'varchar' })
   websiteUrl: string;
 
-  @Column({ unique: true, type: 'varchar' })
+  @Column({ type: 'varchar' })
   createdAt: string;
 
-  @Column({ unique: true, type: 'boolean' })
+  @Column({ type: 'boolean' })
   isMembership: boolean;
+
+  @OneToOne(() => BlogOwnerInfo, (boi) => boi.blog)
+  blogOwnerInfo: BlogOwnerInfo;
+
+  @OneToMany(() => PostInfo, (pi) => pi.blog)
+  postInfo: PostInfo;
 }

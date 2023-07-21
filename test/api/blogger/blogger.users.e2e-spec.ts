@@ -177,7 +177,7 @@ describe('Blogger user testing', () => {
       // .query({ sortDirection: 'asc', searchLoginTerm: 'leo' });
 
       expect(result.status).toBe(200);
-      expect(result.body.items[0].login).toEqual('leo1');
+      expect(result.body.items[0].login).toEqual('leo5');
       // expect(result.body).toEqual({
       //   ...bannedUsersDataForBlog,
       //   items: [

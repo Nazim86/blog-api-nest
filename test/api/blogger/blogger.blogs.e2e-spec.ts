@@ -24,6 +24,7 @@ import {
 } from '../../data/comments-data';
 import { AppModule } from '../../../src/app.module';
 import { appSettings } from '../../../src/app.settings';
+import { nameField } from '../../data/400 error-data';
 
 describe('Blogger blog testing', () => {
   let app: INestApplication;
@@ -109,7 +110,7 @@ describe('Blogger blog testing', () => {
         .send({ ...blogCreatingData, name: `Blog User`.repeat(10) });
 
       expect(result.status).toBe(400);
-      expect(result.body).toEqual(nameField);
+      expect(result.body.errorsMessages[0].field).toEqual(nameField);
     });
 
     it(`Not create with empty description and return 400`, async () => {
@@ -119,7 +120,7 @@ describe('Blogger blog testing', () => {
         .send({ ...blogCreatingData, description: null });
 
       expect(result.status).toBe(400);
-      expect(result.body).toEqual(nameField);
+      expect(result.body.errorsMessages[0].field).toEqual('description');
     });
 
     it(`Blogger creates blog`, async () => {
@@ -142,7 +143,6 @@ describe('Blogger blog testing', () => {
           .get('/blogger/blogs')
           .auth(accessToken[i], { type: 'bearer' });
         expect(result.status).toBe(200);
-        console.log('current owner', result.body);
         expect(result.body.items[0].name).toEqual(`Blog User${i}`);
       }
     });

@@ -78,10 +78,6 @@ export class CommentsRepository {
         WHERE "userId"=$2;`,
       [banStatus, userId],
     );
-    // await this.CommentModel.updateMany(
-    //   { 'commentatorInfo.userId': userId },
-    //   { $set: { 'commentatorInfo.isBanned': banStatus } },
-    // );
   }
 
   async deleteComment(commentId: string): Promise<boolean> {
@@ -102,10 +98,6 @@ export class CommentsRepository {
                             WHERE "commentId" =$1;`,
       [commentId],
     );
-
-    // const result = await this.CommentModel.deleteOne({
-    //   _id: new ObjectId(commentId),
-    // });
 
     return result[1] === 1;
   }
