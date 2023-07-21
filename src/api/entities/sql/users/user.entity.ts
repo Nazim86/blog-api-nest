@@ -1,10 +1,17 @@
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { UsersBanBySA } from './users-ban-by-sa';
 import { EmailConfirmation } from './email-confirmation';
 import { PasswordRecovery } from './password-recovery';
+import { CommentLike } from '../like/commentLike.entity';
 
 @Entity({ name: 'users' })
-export class User {
+export class Users {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -31,4 +38,7 @@ export class User {
 
   @OneToOne(() => PasswordRecovery, (pr) => pr.user, {})
   passwordRecovery: PasswordRecovery;
+
+  @OneToMany(() => CommentLike, (c) => c.user)
+  commentLike: CommentLike;
 }

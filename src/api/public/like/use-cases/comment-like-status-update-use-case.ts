@@ -25,36 +25,11 @@ export class CommentLikeStatusUpdateUseCase {
 
     if (!comment) return false;
 
-    const commentLike = await this.likesRepository.createCommentLike(
+    await this.likesRepository.createCommentLike(
       command.commentId,
       command.userId,
       command.createLikeDto,
     );
-
-    // const commentLike: CommentLikeDocument | null =
-    //   await this.likesRepository.findCommentLike(
-    //     command.commentId,
-    //     command.userId,
-    //   );
-    //
-    // if (!commentLike) {
-    //   const newCommentLike = this.CommentLikeModel.createCommentLike(
-    //     command.commentId,
-    //     command.userId,
-    //     command.createLikeDto,
-    //     this.CommentLikeModel,
-    //   );
-    //   await this.likesRepository.save(newCommentLike);
-    //   return true;
-    // }
-    //
-    // commentLike.updateCommentLikeStatus(
-    //   //commentLike._id.toString(),
-    //   //userId,
-    //   command.createLikeDto,
-    // );
-    // await this.likesRepository.save(commentLike);
-
     return true;
   }
 }

@@ -5,7 +5,7 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { User } from './user.entity';
+import { Users } from './user.entity';
 
 @Entity({ name: 'password_recovery' })
 export class PasswordRecovery {
@@ -18,7 +18,7 @@ export class PasswordRecovery {
   @Column({ unique: true, type: 'timestamp without time zone' })
   recoveryCodeExpiration: Date;
 
-  @OneToOne(() => User, (u) => u.passwordRecovery, { onDelete: 'CASCADE' })
+  @OneToOne(() => Users, (u) => u.passwordRecovery, { onDelete: 'CASCADE' })
   @JoinColumn()
-  user: User;
+  user: Users;
 }

@@ -5,7 +5,7 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { User } from './user.entity';
+import { Users } from './user.entity';
 
 @Entity({ name: 'email_confirmation' })
 export class EmailConfirmation {
@@ -18,7 +18,7 @@ export class EmailConfirmation {
   @Column({ unique: true, type: 'timestamp without time zone' })
   emailExpiration: Date;
 
-  @OneToOne(() => User, (u) => u.emailConfirmation, { onDelete: 'CASCADE' })
+  @OneToOne(() => Users, (u) => u.emailConfirmation, { onDelete: 'CASCADE' })
   @JoinColumn()
-  user: User;
+  user: Users;
 }

@@ -5,7 +5,7 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { User } from './user.entity';
+import { Users } from './user.entity';
 
 @Entity({ name: 'users_ban_by_sa' })
 export class UsersBanBySA {
@@ -21,7 +21,7 @@ export class UsersBanBySA {
   @Column({ type: 'varchar', nullable: true })
   banReason: string;
 
-  @OneToOne(() => User, (u) => u.banInfo, { onDelete: 'CASCADE' })
+  @OneToOne(() => Users, (u) => u.banInfo, { onDelete: 'CASCADE' })
   @JoinColumn()
-  user: User;
+  user: Users;
 }

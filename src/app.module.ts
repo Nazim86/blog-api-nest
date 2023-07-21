@@ -87,9 +87,12 @@ import { DeviceDeleteByIdUseCase } from './api/public/securityDevices/applicatio
 import { DeleteDevicesUseCase } from './api/public/securityDevices/application,use-cases/delete-devices-use-case';
 import { UsersBanBySA } from './api/entities/sql/users/users-ban-by-sa';
 import { EmailConfirmation } from './api/entities/sql/users/email-confirmation';
-import { User } from './api/entities/sql/users/user.entity';
+import { Users } from './api/entities/sql/users/user.entity';
 import { UserSchema } from './api/entities/mongoose-schemas/user.entity';
 import { PasswordRecovery } from './api/entities/sql/users/password-recovery';
+import { Posts } from './api/entities/sql/posts/posts.entity';
+import { CommentatorInfo } from './api/entities/sql/comments/commentatorInfo.entity';
+import { PostInfo } from './api/entities/sql/comments/postInfo.entity';
 
 const mongooseModels = [
   { name: Device.name, schema: DeviceSchema },
@@ -98,7 +101,7 @@ const mongooseModels = [
   { name: PostLike.name, schema: PostLikeSchema },
   { name: CommentLike.name, schema: CommentLikeSchema },
   { name: Comment.name, schema: CommentSchema },
-  { name: User.name, schema: UserSchema },
+  { name: Users.name, schema: UserSchema },
   { name: BloggerBanUser.name, schema: UserBanByBloggerSchema },
 ];
 const useCases = [
@@ -132,7 +135,16 @@ const useCases = [
   DeleteDevicesUseCase,
 ];
 
-const entities = [User, UsersBanBySA, EmailConfirmation, PasswordRecovery];
+const entities = [
+  Users,
+  UsersBanBySA,
+  EmailConfirmation,
+  PasswordRecovery,
+  CommentLike,
+  Posts,
+  CommentatorInfo,
+  PostInfo,
+];
 
 export const neonConfigForTypeOrm: TypeOrmModuleOptions = {
   type: 'postgres',
