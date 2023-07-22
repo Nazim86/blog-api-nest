@@ -65,13 +65,13 @@ import { EmailConfirmation } from './api/entities/users/email-confirmation';
 import { Users } from './api/entities/users/user.entity';
 import { PasswordRecovery } from './api/entities/users/password-recovery';
 import { Posts } from './api/entities/posts/posts.entity';
-import { CommentatorInfo } from './api/entities/comments/commentatorInfo.entity';
-import { PostInfo } from './api/entities/comments/postInfo.entity';
 import { CommentLike } from './api/entities/like/commentLike.entity';
 import { Comments } from './api/entities/comments/comments.entity';
 import { PostLike } from './api/entities/like/postLike.entity';
 import { Devices } from './api/entities/devices/devices.entity';
 import { Blogs } from './api/entities/blogs/blogs.entity';
+import { UsersBanByBlogger } from './api/entities/users/usersBanByBlogger';
+import { BlogBanInfo } from './api/entities/blogs/blogBanInfo.entity';
 
 const useCases = [
   BlogCreateUseCase,
@@ -113,10 +113,10 @@ const entities = [
   PostLike,
   Comments,
   Posts,
-  CommentatorInfo,
-  PostInfo,
   Devices,
   Blogs,
+  UsersBanByBlogger,
+  BlogBanInfo,
 ];
 
 export const neonConfigForTypeOrm: TypeOrmModuleOptions = {

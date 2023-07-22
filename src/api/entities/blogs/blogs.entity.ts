@@ -1,12 +1,15 @@
 import {
   Column,
   Entity,
+  JoinColumn,
+  ManyToOne,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { PostInfo } from '../comments/postInfo.entity';
 import { BlogBanInfo } from './blogBanInfo.entity';
+import { Users } from '../users/user.entity';
+import { UsersBanByBlogger } from '../users/usersBanByBlogger';
 
 @Entity({ name: 'blogs' })
 export class Blogs {
@@ -28,9 +31,16 @@ export class Blogs {
   @Column({ type: 'boolean' })
   isMembership: boolean;
 
-  @OneToMany(() => PostInfo, (pi) => pi.blog)
-  postInfo: PostInfo;
+  // @OneToMany(() => PostInfo, (pi) => pi.blog)
+  // postInfo: PostInfo;
 
   @OneToOne(() => BlogBanInfo, (bbi) => bbi.blog)
   blogBanInfo: BlogBanInfo;
+
+  @ManyToOne(() => Users, (u) => u.blog, { onDelete: 'CASCADE' })
+  @JoinColumn()
+  user: Users;
+
+  @OneToMany(() => UsersBanByBlogger, (ubb) => ubb.blog)
+  usersBanByBlogger: UsersBanByBlogger;
 }
