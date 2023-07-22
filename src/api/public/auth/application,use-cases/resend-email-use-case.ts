@@ -18,7 +18,6 @@ export class ResendEmailUseCase {
     const user = await this.usersRepository.findUserByEmail(
       command.emailDto.email,
     );
-
     try {
       if (!user || user.isConfirmed || user.emailExpiration < new Date())
         return false;

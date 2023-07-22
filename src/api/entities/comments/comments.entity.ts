@@ -1,5 +1,14 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { CommentLike } from '../like/commentLike.entity';
+import { Users } from '../users/user.entity';
+import { Posts } from '../posts/posts.entity';
 
 @Entity({ name: 'comments' })
 export class Comments {
@@ -17,4 +26,12 @@ export class Comments {
 
   @OneToMany(() => CommentLike, (cl) => cl.comment)
   commentLike: CommentLike;
+
+  @ManyToOne(() => Users, (u) => u.comment, { onDelete: 'CASCADE' })
+  @JoinColumn()
+  user: Users;
+
+  @ManyToOne(() => Posts, (p) => p.comment, { onDelete: 'CASCADE' })
+  @JoinColumn()
+  post: Posts;
 }

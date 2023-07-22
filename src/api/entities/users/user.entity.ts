@@ -11,7 +11,7 @@ import { PasswordRecovery } from './password-recovery';
 import { CommentLike } from '../like/commentLike.entity';
 import { PostLike } from '../like/postLike.entity';
 import { Devices } from '../devices/devices.entity';
-import { BlogOwnerInfo } from '../blogs/blogOwnerInfo.entity';
+import { Comments } from '../comments/comments.entity';
 
 @Entity({ name: 'users' })
 export class Users {
@@ -51,6 +51,6 @@ export class Users {
   @OneToMany(() => Devices, (d) => d.user)
   device: Devices;
 
-  @OneToOne(() => BlogOwnerInfo, (boi) => boi.user)
-  blogOwnerInfo: BlogOwnerInfo;
+  @OneToMany(() => Comments, (c) => c.user)
+  comment: Comments;
 }

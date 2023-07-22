@@ -5,8 +5,8 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { BlogOwnerInfo } from './blogOwnerInfo.entity';
 import { PostInfo } from '../comments/postInfo.entity';
+import { BlogBanInfo } from './blogBanInfo.entity';
 
 @Entity({ name: 'blogs' })
 export class Blogs {
@@ -28,9 +28,9 @@ export class Blogs {
   @Column({ type: 'boolean' })
   isMembership: boolean;
 
-  @OneToOne(() => BlogOwnerInfo, (boi) => boi.blog)
-  blogOwnerInfo: BlogOwnerInfo;
-
   @OneToMany(() => PostInfo, (pi) => pi.blog)
   postInfo: PostInfo;
+
+  @OneToOne(() => BlogBanInfo, (bbi) => bbi.blog)
+  blogBanInfo: BlogBanInfo;
 }

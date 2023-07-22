@@ -71,7 +71,6 @@ import { CommentLike } from './api/entities/like/commentLike.entity';
 import { Comments } from './api/entities/comments/comments.entity';
 import { PostLike } from './api/entities/like/postLike.entity';
 import { Devices } from './api/entities/devices/devices.entity';
-import { BlogOwnerInfo } from './api/entities/blogs/blogOwnerInfo.entity';
 import { Blogs } from './api/entities/blogs/blogs.entity';
 
 const useCases = [
@@ -117,7 +116,6 @@ const entities = [
   CommentatorInfo,
   PostInfo,
   Devices,
-  BlogOwnerInfo,
   Blogs,
 ];
 
@@ -151,7 +149,7 @@ export const localConfigTypeOrm: TypeOrmModuleOptions = {
     ScheduleModule.forRoot(),
     AuthModule,
     UsersModule,
-    TypeOrmModule.forRoot(localConfigTypeOrm),
+    TypeOrmModule.forRoot(neonConfigForTypeOrm),
     TypeOrmModule.forFeature(entities),
     MailModule,
     CqrsModule,
