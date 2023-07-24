@@ -15,7 +15,7 @@ export class EmailConfirmation {
   @Column({ unique: true, type: 'varchar' })
   confirmationCode: string;
 
-  @Column({ unique: true, type: 'timestamp without time zone' })
+  @Column({ type: 'timestamp without time zone' })
   emailExpiration: Date;
 
   @OneToOne(() => Users, (u) => u.emailConfirmation, { onDelete: 'CASCADE' })

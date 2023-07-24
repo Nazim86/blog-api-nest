@@ -32,8 +32,8 @@ export class Users {
   @Column({ type: 'varchar' })
   createdAt: string;
 
-  @Column({ type: 'varchar' })
-  isConfirmed: string;
+  @Column({ type: 'bool' })
+  isConfirmed: boolean;
 
   @OneToOne(() => UsersBanBySA, (ub) => ub.user, {})
   banInfo: UsersBanBySA;

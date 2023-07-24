@@ -10,7 +10,7 @@ import { Users } from '../users/user.entity';
 @Entity()
 export class Devices {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  deviceId: string;
 
   @Column({ type: 'varchar' })
   lastActiveDate: string;
