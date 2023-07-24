@@ -16,7 +16,7 @@ export class Blogs {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ unique: true, type: 'varchar' })
+  @Column({ type: 'varchar' })
   name: string;
 
   @Column({ type: 'varchar' })
@@ -37,9 +37,9 @@ export class Blogs {
   @OneToOne(() => BlogBanInfo, (bbi) => bbi.blog)
   blogBanInfo: BlogBanInfo;
 
-  @ManyToOne(() => Users, (u) => u.blog, { onDelete: 'CASCADE' })
-  @JoinColumn()
-  user: Users;
+  @ManyToOne(() => Users, (u) => u.blogs, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'ownerId' })
+  ownerId: Users;
 
   @OneToMany(() => UsersBanByBlogger, (ubb) => ubb.blog)
   usersBanByBlogger: UsersBanByBlogger;

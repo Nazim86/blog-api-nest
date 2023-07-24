@@ -15,7 +15,7 @@ export class BlogBanInfo {
   @Column({ type: 'varchar' })
   isBanned: string;
 
-  @Column({ type: 'timestamp without time zone' })
+  @Column({ type: 'timestamp without time zone', nullable: true })
   banDate: Date;
 
   @OneToOne(() => Blogs, (b) => b.blogBanInfo, { onDelete: 'CASCADE' })

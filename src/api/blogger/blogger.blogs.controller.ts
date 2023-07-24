@@ -82,7 +82,7 @@ export class BloggerBlogsController {
     const blogId: string = await this.commandBus.execute(
       new BlogCreateCommand(userId, createBlogDto),
     );
-
+    console.log('blogId', blogId);
     return await this.blogQueryRepo.getBlogById(blogId);
   }
 

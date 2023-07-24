@@ -56,8 +56,8 @@ export class Users {
   @OneToMany(() => Comments, (c) => c.user)
   comment: Comments;
 
-  @OneToMany(() => Blogs, (b) => b.user)
-  blog: Blogs;
+  @OneToMany(() => Blogs, (b) => b.ownerId)
+  blogs: Blogs[];
 
   @OneToOne(() => UsersBanByBlogger, (ubb) => ubb.user)
   usersBanByBlogger: UsersBanByBlogger;

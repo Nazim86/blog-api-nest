@@ -174,8 +174,10 @@ describe('Blogger user testing', () => {
       const result = await request(app.getHttpServer())
         .get(`/blogger/users/blog/${blogs[0].id}`)
         .auth(accessTokens[0], { type: 'bearer' });
-      // .query({ sortDirection: 'asc', searchLoginTerm: 'leo' });
 
+      console.log(result.body);
+      console.log(result.body.items[0]);
+      console.log(result.body.items[0].login);
       expect(result.status).toBe(200);
       expect(result.body.items[0].login).toEqual('leo5');
       // expect(result.body).toEqual({

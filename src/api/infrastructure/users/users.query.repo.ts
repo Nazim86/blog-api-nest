@@ -49,7 +49,7 @@ export class UserQueryRepo {
   private bannedUserMappingForBlog = (bannedUsers) => {
     return bannedUsers.map((bannedUser) => {
       return {
-        id: bannedUser.userId,
+        id: bannedUser.id,
         login: bannedUser.login,
         banInfo: {
           isBanned: bannedUser.isBanned,
@@ -84,7 +84,7 @@ export class UserQueryRepo {
 
     if (!blog) return { code: ResultCode.NotFound };
 
-    if (blog.userId !== userId) return { code: ResultCode.Forbidden };
+    if (blog.ownerId !== userId) return { code: ResultCode.Forbidden };
 
     //filter.$and.push({ 'banInfo.blogId': blogId });
 
@@ -115,13 +115,6 @@ export class UserQueryRepo {
     Limit ${paginatedQuery.pageSize} Offset ${skipSize};`,
       [filter.searchLogin, blogId, filter.banStatus01, filter.banStatus02],
     );
-    // const bannedUsersForBlog = await this.UserBanModel.find(filter)
-    //   .sort({
-    //     [paginatedQuery.sortBy]: sortDirection,
-    //   })
-    //   .skip(skipSize)
-    //   .limit(paginatedQuery.pageSize)
-    //   .lean();
 
     const mappedBannedUsers = this.bannedUserMappingForBlog(bannedUsersForBlog);
 

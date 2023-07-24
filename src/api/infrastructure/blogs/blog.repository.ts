@@ -10,9 +10,10 @@ export class BlogRepository {
   async getBlogById(blogId: string) {
     try {
       let foundBlog = await this.dataSource.query(
-        `SELECT b.*, boi."userId",boi."userLogin", bbi."banDate" 
-        FROM public.blogs b Left join public.blog_owner_info boi on b."id" = boi."blogId" 
-        Left join public.blog_ban_info bbi on b."id" = bbi."blogId" where b."id" = $1 ;`,
+        `SELECT b.*, u."id", u."login"
+         FROM public.blogs b 
+         left join public.users u on b."ownerId" = u."id"
+         where b."id" = $1;`,
         [blogId],
       );
 
@@ -23,6 +24,7 @@ export class BlogRepository {
       }
       return foundBlog;
     } catch (e) {
+      console.log('error', e);
       return null;
     }
   }
@@ -34,23 +36,16 @@ export class BlogRepository {
   ) {
     const newBlog = await this.dataSource.query(
       `INSERT INTO public.blogs(
-         name, description, "websiteUrl", "createdAt", "isMembership", "isBanned")
-         VALUES ( $1, $2, $3, $4, $5, $6) returning id;`,
+         name, description, "websiteUrl", "createdAt", "isMembership","ownerId")
+         VALUES ( $1, $2, $3, $4, $5,$6) returning id;`,
       [
         createBlogDto.name,
         createBlogDto.description,
         createBlogDto.websiteUrl,
         new Date().toISOString(),
         false,
-        false,
+        userId,
       ],
-    );
-
-    await this.dataSource.query(
-      `INSERT INTO public.blog_owner_info(
-            "blogId", "userId", "userLogin")
-            VALUES ($1, $2, $3);`,
-      [newBlog[0].id, userId, login],
     );
 
     await this.dataSource.query(

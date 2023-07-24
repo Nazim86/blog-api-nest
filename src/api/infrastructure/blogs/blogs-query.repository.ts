@@ -48,9 +48,11 @@ export class BlogsQueryRepo {
   async getBlogById(id: string): Promise<BlogsViewType | boolean> {
     try {
       let foundBlog = await this.dataSource.query(
-        `SELECT b.*, boi."userId",boi."userLogin", bbi."banDate" 
-        FROM public.blogs b Left join public.blog_owner_info boi on b."id" = boi."blogId" 
-        Left join public.blog_ban_info bbi on b."id" = bbi."blogId" where b."id" = $1 ;`,
+        `SELECT b.*, u."login", bbi."banDate" 
+        FROM public.blogs b 
+        Left join public.users u on b."ownerId" = u."id"
+        Left join public.blog_ban_info bbi on b."id" = bbi."blogId" 
+        where b."id" = $1 ;`,
         [id],
       );
 
