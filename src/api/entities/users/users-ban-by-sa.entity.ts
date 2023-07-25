@@ -13,7 +13,7 @@ export class UsersBanBySa {
   id: string;
 
   @Column({ type: 'boolean' })
-  isBanned: string;
+  isBanned: boolean;
 
   @Column({ type: 'varchar', nullable: true })
   banDate: string;

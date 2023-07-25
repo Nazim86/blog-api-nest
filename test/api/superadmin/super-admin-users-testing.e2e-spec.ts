@@ -71,6 +71,9 @@ describe('Super Admin blogs testing', () => {
       expect(result.body.items[0].banInfo.isBanned).toBe(false);
       expect(result.body.items[0].banInfo.banReason).toBe(null);
       expect(result.body.items[0].banInfo.banDate).toBe(null);
+      expect(result.body.items[1].banInfo.isBanned).toBe(false);
+      expect(result.body.items[1].banInfo.banReason).toBe(null);
+      expect(result.body.items[1].banInfo.banDate).toBe(null);
     });
 
     it(`Ban user`, async () => {
