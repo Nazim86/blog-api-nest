@@ -4,11 +4,13 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  Unique,
 } from 'typeorm';
 import { Users } from '../users/user.entity';
 import { Comments } from '../comments/comments.entity';
 
 @Entity({ name: 'comment_like' })
+@Unique(['comment', 'user'])
 export class CommentLike {
   @PrimaryGeneratedColumn('uuid')
   id: string;

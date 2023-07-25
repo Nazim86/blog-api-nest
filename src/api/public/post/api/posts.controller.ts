@@ -127,8 +127,6 @@ export class PostsController {
       new CommentCreateCommand(createCommentDto, postId, userId),
     );
 
-    console.log('commentId in createCommentByPostId', commentId);
-
     if (commentId.code !== ResultCode.Success) {
       return exceptionHandler(commentId.code);
     }

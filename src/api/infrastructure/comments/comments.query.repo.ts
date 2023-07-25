@@ -143,7 +143,6 @@ export class CommentsQueryRepo {
 
   async getComment(commentId: string, userId?: string) {
     try {
-      console.log('commentId in getComment in comments query repo ', commentId);
       let comment = await this.dataSource.query(
         `Select c.*,  u."login"
               from public.comments c
@@ -153,7 +152,6 @@ export class CommentsQueryRepo {
         [commentId],
       );
 
-      console.log('comment in getComment in comments query repo', comment);
       // pi."title",
       //   pi."blogId",pi."blogName", pi."blogOwnerId"
 
