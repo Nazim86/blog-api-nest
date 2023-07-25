@@ -31,11 +31,6 @@ export class CommentsQueryRepo {
           [comment.id],
         );
 
-        // const commentLike: CommentLikeDocument =
-        //   await this.CommentLikeModel.findOne({
-        //     commentId: comment.id,
-        //   });
-
         if (commentLike.length > 0) {
           myStatus = commentLike.status;
         }
@@ -51,17 +46,6 @@ export class CommentsQueryRepo {
                   Where "commentId"=$1 and "status"=$2 and "banStatus" = $3;`,
           [comment.id, LikeEnum.Dislike, false],
         );
-
-        // const likesCount = await this.CommentLikeModel.countDocuments({
-        //   commentId: comment.id,
-        //   status: LikeEnum.Like,
-        //   banStatus: false,
-        // });
-        // const dislikesCount = await this.CommentLikeModel.countDocuments({
-        //   commentId: comment.id,
-        //   status: LikeEnum.Dislike,
-        //   banStatus: false,
-        // });
 
         return {
           id: comment.id,
@@ -109,10 +93,8 @@ export class CommentsQueryRepo {
 
     let totalCount = await this.dataSource.query(
       `Select count(*) from public.comments c
-              Left join public.commentator_info ci on
-              c."id"= ci."commentId"
-              Left join public.post_info pi on
-              c."id"= pi."commentId"
+            Left join public.users u on
+              c."userId"= u."id"
               Where c."postId" = $1`,
       [postId],
     );
@@ -127,26 +109,21 @@ export class CommentsQueryRepo {
     // const pagesCount = Math.ceil(totalCount / query.pageSize);
 
     const getCommentsForPost = await this.dataSource.query(
-      `Select c.*, ci."userId", ci."userLogin", pi."title",
-              pi."blogId",pi."blogName", pi."blogOwnerId" 
+      `Select c.*,  u."login", 
               from public.comments c
-              Left join public.commentator_info ci on
-              c."id"= ci."commentId"
-              Left join public.post_info pi on
-              c."id"= pi."commentId"
+              Left join public.users u on
+              c."userId"= u."id"
               Where c."postId" = $1
               Order by "${paginatedQuery.sortBy}" ${paginatedQuery.sortDirection}
               Limit ${paginatedQuery.pageSize} Offset ${skipSize}`,
       [postId],
     );
 
-    // const getCommentsForPost: CommentDocument[] = await this.CommentModel.find({
-    //   postId: postId,
-    // })
-    //   .sort({ [query.sortBy]: query.sortDirection === 'asc' ? 1 : -1 })
-    //   .skip(skipSize)
-    //   .limit(query.pageSize)
-    //   .lean();
+    // pi."title",
+    //   pi."blogId",pi."blogName", pi."blogOwnerId"
+
+    // Left join public.post_info pi on
+    // c."id"= pi."commentId"
 
     const mappedComment: Promise<CommentsViewType>[] =
       await this.commentMapping.commentMapping(getCommentsForPost, userId);
@@ -166,26 +143,30 @@ export class CommentsQueryRepo {
 
   async getComment(commentId: string, userId?: string) {
     try {
+      console.log('commentId in getComment in comments query repo ', commentId);
       let comment = await this.dataSource.query(
-        `Select c.*, ci."userId", ci."userLogin", pi."title",
-              pi."blogId",pi."blogName", pi."blogOwnerId" 
+        `Select c.*,  u."login"
               from public.comments c
-              Left join public.commentator_info ci on
-              c."id"= ci."commentId"
-              Left join public.post_info pi on
-              c."id"= pi."commentId"
+              Left join public.users u on
+              c."userId"= u."id"
               Where c."id" = $1`,
         [commentId],
       );
-      // const comment = await this.CommentModel.findOne({
-      //   _id: new ObjectId(commentId),
-      // });
+
+      console.log('comment in getComment in comments query repo', comment);
+      // pi."title",
+      //   pi."blogId",pi."blogName", pi."blogOwnerId"
+
+      // Left join public.post_info pi on
+      // c."id"= pi."commentId"
 
       comment = comment[0];
 
       if (!comment) return null;
 
       const user = await this.usersRepository.findUserById(comment.userId);
+
+      //console.log('user in getComment in coment query repository', user);
 
       if (user.isBanned) {
         return null;
@@ -199,14 +180,6 @@ export class CommentsQueryRepo {
                  Where "commentId"=$1 and "userId" = $2;`,
           [commentId, userId],
         );
-
-        console.log('likeInDb in getComment', likeInDb);
-        console.log('user id', user.id);
-
-        // const likeInDb = await this.CommentLikeModel.findOne({
-        //   commentId,
-        //   userId,
-        // });
 
         if (likeInDb.length > 0) {
           myStatus = likeInDb[0].status;
@@ -229,17 +202,6 @@ export class CommentsQueryRepo {
 
       dislikesCount = Number(dislikesCount[0].count);
 
-      // const likesCount = await this.CommentLikeModel.countDocuments({
-      //   commentId,
-      //   status: LikeEnum.Like,
-      //   banStatus: false,
-      // });
-      // const dislikesCount = await this.CommentLikeModel.countDocuments({
-      //   commentId,
-      //   status: LikeEnum.Dislike,
-      //   banStatus: false,
-      // });
-
       return {
         id: comment.id,
         content: comment.content,
@@ -255,6 +217,7 @@ export class CommentsQueryRepo {
         },
       };
     } catch (e) {
+      console.log('error in getComment in commentsQueryRepo', e);
       return null;
     }
   }
@@ -267,20 +230,19 @@ export class CommentsQueryRepo {
       query.sortDirection,
     );
 
-    // const filter = {
-    //   'commentatorInfo.isBanned': false,
-    //   'postInfo.blogOwnerId': userId,
-    // };
-
     const skipSize = paginatedQuery.skipSize;
 
     let totalCount = await this.dataSource.query(
       `Select count(*) from public.comments c
-              Left join public.commentator_info ci on
-              c."id"= ci."commentId"
-              Left join public.post_info pi on
-              c."id"= pi."commentId"
-              Where ci."isBanned" = $1 and pi."blogOwnerId"=$2`,
+              Left join public.users u on
+              c."userId"= u."id"
+              Left join public.users_ban_by_sa ubb on
+              u."id" = ubb."userId"
+              Left join public.posts p on
+              c."postId"= p."id"
+              left join public.blogs b on
+              b."id" = p."blogId"
+              Where ubb."isBanned" = $1 and b."ownerId"=$2`,
       [false, userId],
     );
 
@@ -290,26 +252,34 @@ export class CommentsQueryRepo {
     const pagesCount = paginatedQuery.totalPages(totalCount);
 
     const comments = await this.dataSource.query(
-      `Select c.*, ci."userId", ci."userLogin", pi."title",
-              pi."blogId",pi."blogName", pi."blogOwnerId" 
+      `Select c.*, u."login", p."title",
+              p."blogId",p."blogName", b."ownerId" 
               from public.comments c
-              Left join public.commentator_info ci on
-              c."id"= ci."commentId"
-              Left join public.post_info pi on
-              c."id"= pi."commentId"
-              Where ci."isBanned" = $1 and pi."blogOwnerId"=$2
+              Left join public.users u on
+              c."userId"= u."id"
+              Left join public.users_ban_by_sa ubb on
+              u."id" = ubb."userId"
+              Left join public.posts p on
+              c."postId"= p."id"
+              left join public.blogs b on
+              b."id" = p."blogId"
+              Where ubb."isBanned" = $1 and b."ownerId"=$2
               Order by "${paginatedQuery.sortBy}" ${paginatedQuery.sortDirection}
               Limit ${paginatedQuery.pageSize} Offset ${skipSize}`,
       [false, userId],
     );
-    // const comments: CommentDocument[] = await this.CommentModel.find(filter)
-    //   .sort({
-    //     [paginatedQuery.sortBy]:
-    //       paginatedQuery.sortDirection === 'asc' ? 1 : -1,
-    //   })
-    //   .skip(skipSize)
-    //   .limit(paginatedQuery.pageSize);
-    // //.lean();
+
+    //in total we see b."ownerId"=$2 , but in comments as if there was missing check for ownerId so I added it
+    // `Select c.*, ci."userId", ci."userLogin", pi."title",
+    //           pi."blogId",pi."blogName", pi."blogOwnerId"
+    //           from public.comments c
+    //           Left join public.commentator_info ci on
+    //           c."id"= ci."commentId"
+    //           Left join public.post_info pi on
+    //           c."id"= pi."commentId"
+    //           Where ci."isBanned" = $1 and
+    //
+
     const myStatus = 'None';
     const mappedCommentsForBlog = await this.commentMappingForBlogger(
       comments,

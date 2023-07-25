@@ -11,35 +11,17 @@ export class CommentsRepository {
     let commentId = await this.dataSource.query(
       `
             INSERT INTO public.comments(
-             "postId", content, "createdAt")
-            VALUES ( $1, $2, $3) returning id;`,
+             "postId", content, "createdAt", "userId")
+            VALUES ( $1, $2, $3,$4) returning id;`,
       [
         commentData.postId,
         commentData.createCommentDto.content,
         new Date().toISOString(),
+        commentData.userId,
       ],
     );
 
     commentId = commentId[0].id;
-
-    await this.dataSource.query(
-      `INSERT INTO public.post_info(
-        title, "blogId", "blogName", "blogOwnerId", "commentId")
-        VALUES ( $1, $2, $3, $4, $5);`,
-      [
-        commentData.title,
-        commentData.blogId,
-        commentData.blogOwnerId,
-        commentData.blogOwnerId,
-        commentId,
-      ],
-    );
-    await this.dataSource.query(
-      `INSERT INTO public.commentator_info(
-             "userId", "userLogin", "isBanned", "commentId")
-            VALUES ( $1, $2, $3, $4);`,
-      [commentData.userId, commentData.login, false, commentId],
-    );
 
     return commentId;
   }

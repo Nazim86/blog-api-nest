@@ -134,6 +134,7 @@ describe('Public comments testing', () => {
     });
 
     it(`Should get myStatus "None" after like comment and get with unauthorized user return 204 `, async () => {
+      console.log('comments in test', comments);
       const result = await request(httpServer)
         .put(`/comments/${comments[5].id}/like-status`)
         .auth(accessTokens[5], { type: 'bearer' })

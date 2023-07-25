@@ -155,8 +155,6 @@ export class UsersRepository {
     const bannedUser = await this.dataSource.query(
       `Select * from public.users_ban_by_blogger ubb
               Left join public.users u on
-              u."id"= ubb."userId"
-              Left join public.users u on
               ubb."userId" = u."id"
               Where ubb."userId"=$1 and ubb."blogId"=$2 and ubb."isBanned" = $3`,
       [userId, blogId, true],
@@ -247,21 +245,20 @@ export class UsersRepository {
   }
 
   async findUserById(userId: string) {
-    try {
-      const user = await this.dataSource.query(
-        `SELECT u.*,ub."banDate",ub."banReason",ec."confirmationCode", ec."emailExpiration"
+    const user = await this.dataSource.query(
+      `SELECT u.*,ub."banDate",ub."banReason",ub."isBanned",ec."confirmationCode", ec."emailExpiration"
                 FROM public.users u
                 left join public.users_ban_by_sa ub on
                 u."id" = ub."userId"
                 left join public.email_confirmation ec on
                 u."id" = ec."userId"
                 where u."id" = $1`,
-        [userId],
-      );
-      if (!user) return null;
-      return user[0];
-    } catch (e) {
-      return null;
-    }
+      [userId],
+    );
+    if (!user) return null;
+
+    //console.log('user in findUserById in user repository', user);
+
+    return user[0];
   }
 }

@@ -19,7 +19,6 @@ export class CommentCreateUseCase {
   ) {}
   async execute(command: CommentCreateCommand) {
     const post = await this.postsRepository.getPostById(command.postId);
-
     if (!post || typeof post === 'boolean')
       return { code: ResultCode.NotFound };
 
@@ -46,7 +45,7 @@ export class CommentCreateUseCase {
       title: post.title,
       blogId: post.blogId,
       blogName: post.blogName,
-      blogOwnerId: blog.userId,
+      blogOwnerId: blog.ownerId,
     });
 
     return { data: commentId, code: ResultCode.Success };
