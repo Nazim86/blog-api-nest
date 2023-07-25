@@ -166,7 +166,7 @@ export class UsersRepository {
   }
 
   async bloggerBanUser(userId: string, userBanDto: UserBanDto, blogId: string) {
-    const result = await this.dataSource.query(
+    await this.dataSource.query(
       `Insert into public.users_ban_by_blogger("isBanned", "banDate", "banReason", "blogId", "userId")
                 values($1,$2,$3,$4,$5)
       on conflict ("blogId","userId")
@@ -182,9 +182,7 @@ export class UsersRepository {
       ],
     );
 
-    console.log(result);
-
-    return true; //result1[1] === 1;
+    return true;
   }
 
   async banUser(userId, banUserDto: BanUserDto) {

@@ -179,23 +179,10 @@ describe('Blogger user testing', () => {
         accessTokens[0],
       );
       expect(result.status).toBe(200);
-      expect(result.body.items[0].length).toBe(5);
+      expect(result.body.items.length).toBe(5);
       expect(result.body.items[0].login).toEqual('leo5');
       expect(result.body.items[1].login).toEqual('leo4');
       expect(result.body.items[2].login).toEqual('leo3');
-      // expect(result.body).toEqual({
-      //   ...bannedUsersDataForBlog,
-      //   items: [
-      //     {
-      //       ...bannedUsersDataForBlog.items[0],
-      //       login: 'leo1',
-      //       banInfo: {
-      //         ...bannedUsersDataForBlog.items[0].banInfo,
-      //         isBanned: true,
-      //       },
-      //     },
-      //   ],
-      // });
     });
 
     it(`Unban user by Blogger`, async () => {

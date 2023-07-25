@@ -92,10 +92,6 @@ export class BlogsQueryRepo {
       query.searchNameTerm,
     );
 
-    // if (requestRole !== RoleEnum.SA) {
-    //   isBanned01 = false;
-    // }
-
     if (paginatedQuery.searchNameTerm) {
       searchName = `%${paginatedQuery.searchNameTerm}%`;
     }
@@ -117,22 +113,22 @@ export class BlogsQueryRepo {
       totalCount = await this.dataSource.query(
         `SELECT count(*)
        FROM public.blogs b
-       LEFT JOIN public.blog_owner_info boi ON b."id" = boi."blogId"
+         left join public.users u on b."ownerId" = u."id"
        LEFT JOIN public.blog_ban_info bbi ON b."id" = bbi."blogId"
-       WHERE (b."isBanned" = $1 or b."isBanned" = $2)
+       WHERE (bbi."isBanned" = $1 or bbi."isBanned" = $2)
        AND b."name" ILIKE $3 
-       AND boi."userId" = $4;`,
+       AND b."ownerId" = $4;`,
         [isBanned01, isBanned02, searchName, blogOwnerUserId],
       );
 
       blog = await this.dataSource.query(
-        `SELECT b.*, boi."userId", boi."userLogin", bbi."banDate"
+        `SELECT b.*, b."ownerId", u."login", bbi."banDate"
        FROM public.blogs b
-       LEFT JOIN public.blog_owner_info boi ON b."id" = boi."blogId"
+         left join public.users u on b."ownerId" = u."id"
        LEFT JOIN public.blog_ban_info bbi ON b."id" = bbi."blogId"
-       WHERE (b."isBanned" = $1 or b."isBanned" = $2)
+       WHERE (bbi."isBanned" = $1 or bbi."isBanned" = $2)
        AND b."name" ILIKE $3
-       AND boi."userId" = $4
+        AND b."ownerId" = $4
        ORDER BY "${paginatedQuery.sortBy}" ${paginatedQuery.sortDirection}
        LIMIT ${paginatedQuery.pageSize} OFFSET ${skipSize};`,
         [isBanned01, isBanned02, searchName, blogOwnerUserId],
@@ -141,19 +137,19 @@ export class BlogsQueryRepo {
       totalCount = await this.dataSource.query(
         `SELECT count(*)
        FROM public.blogs b
-       LEFT JOIN public.blog_owner_info boi ON b.id = boi."blogId"
+         left join public.users u on b."ownerId" = u."id"
        LEFT JOIN public.blog_ban_info bbi ON b.id = bbi."blogId"
-       WHERE (b."isBanned" = $1 or b."isBanned" = $2)
+       WHERE (bbi."isBanned" = $1 or bbi."isBanned" = $2)
        AND b."name" ILIKE $3;`,
         [isBanned01, isBanned02, searchName],
       );
 
       blog = await this.dataSource.query(
-        `SELECT b.*, boi."userId", boi."userLogin", bbi."banDate"
+        `SELECT b.*, b."ownerId", u."login", bbi."banDate"
        FROM public.blogs b
-       LEFT JOIN public.blog_owner_info boi ON b.id = boi."blogId"
+         left join public.users u on b."ownerId" = u."id"
        LEFT JOIN public.blog_ban_info bbi ON b.id = bbi."blogId"
-       WHERE (b."isBanned" = $1 or b."isBanned" = $2)
+       WHERE (bbi."isBanned" = $1 or bbi."isBanned" = $2)
        AND b."name" ILIKE $3
        ORDER BY "${paginatedQuery.sortBy}" ${paginatedQuery.sortDirection}
        LIMIT ${paginatedQuery.pageSize} OFFSET ${skipSize};`,
@@ -176,14 +172,4 @@ export class BlogsQueryRepo {
       items: mappedBlog,
     };
   }
-
-  // async getBlogForSA(query: BlogPagination<PaginationType>) {
-  //   const paginatedQuery = new BlogPagination<PaginationType>(
-  //     query.pageNumber,
-  //     query.pageSize,
-  //     query.sortBy,
-  //     query.sortDirection,
-  //     query.searchNameTerm,
-  //   );
-  // }
 }
