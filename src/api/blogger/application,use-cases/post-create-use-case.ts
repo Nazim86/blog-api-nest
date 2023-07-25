@@ -25,7 +25,7 @@ export class PostCreateUseCase {
 
     if (!blog) return { code: ResultCode.NotFound };
 
-    if (blog.userId !== command.userId) return { code: ResultCode.Forbidden };
+    if (blog.ownerId !== command.userId) return { code: ResultCode.Forbidden };
 
     const postId = await this.postRepository.createPost(
       command.createPostDto,

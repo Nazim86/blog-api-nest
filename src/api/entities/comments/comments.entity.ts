@@ -15,8 +15,8 @@ export class Comments {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ unique: true, type: 'varchar' })
-  postId: string;
+  // @Column({ unique: true, type: 'varchar' })
+  // postId: string;
 
   @Column({ type: 'varchar' })
   content: string;
@@ -33,5 +33,5 @@ export class Comments {
 
   @ManyToOne(() => Posts, (p) => p.comment, { onDelete: 'CASCADE' })
   @JoinColumn()
-  post: Posts;
+  post: Posts[];
 }

@@ -15,8 +15,6 @@ export class PostRepository {
 
       post = post[0];
 
-      //return this.PostModel.findOne({ _id: new ObjectId(postId) });
-
       return post;
     } catch (e) {
       return null;
@@ -54,10 +52,6 @@ export class PostRepository {
     );
     return newPost[0].id;
   }
-
-  // async save(post: PostDocument) {
-  //   return post.save();
-  // }
 
   async deletePostById(id: string): Promise<boolean> {
     try {

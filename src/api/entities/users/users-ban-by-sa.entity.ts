@@ -8,7 +8,7 @@ import {
 import { Users } from './user.entity';
 
 @Entity({ name: 'users_ban_by_sa' })
-export class UsersBanBySA {
+export class UsersBanBySa {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 

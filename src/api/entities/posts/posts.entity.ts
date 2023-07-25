@@ -28,6 +28,6 @@ export class Posts {
   @OneToMany(() => PostLike, (pl) => pl.post)
   postLike: PostLike;
 
-  @OneToMany(() => Comments, (c) => c.user)
+  @OneToMany(() => Comments, (c) => c.post)
   comment: Comments;
 }

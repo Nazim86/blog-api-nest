@@ -60,7 +60,7 @@ import { CreateUserUseCase } from './api/public/auth/application,use-cases/creat
 import { RegistrationConfirmationUseCase } from './api/public/auth/application,use-cases/registration-confirmation-use-case';
 import { DeviceDeleteByIdUseCase } from './api/public/securityDevices/application,use-cases/device-deleteByDeviceId-use-case';
 import { DeleteDevicesUseCase } from './api/public/securityDevices/application,use-cases/delete-devices-use-case';
-import { UsersBanBySA } from './api/entities/users/users-ban-by-sa';
+import { UsersBanBySa } from './api/entities/users/users-ban-by-sa.entity';
 import { EmailConfirmation } from './api/entities/users/email-confirmation';
 import { Users } from './api/entities/users/user.entity';
 import { PasswordRecovery } from './api/entities/users/password-recovery';
@@ -106,7 +106,7 @@ const useCases = [
 
 const entities = [
   Users,
-  UsersBanBySA,
+  UsersBanBySa,
   EmailConfirmation,
   PasswordRecovery,
   CommentLike,

@@ -98,12 +98,11 @@ export class CommentsController {
   @Put(':id/like-status')
   @HttpCode(204)
   async updateCommentLikeStatus(
+    @UserId() userId: string,
     @Param('id') commentId: string,
     @Body() createLikeDto: CreateLikeDto,
-    @Request() req,
   ) {
-    const userId = req.user.userId;
-
+    console.log('userId and commentId in controller', userId, commentId);
     const updateComment: boolean = await this.commandBus.execute(
       new CommentLikeStatusUpdateCommand(commentId, userId, createLikeDto),
     );

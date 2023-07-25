@@ -55,18 +55,20 @@ export class CommentsRepository {
   }
 
   async getComment(commentId) {
+    console.log('CommentId in get comment', commentId);
     const comment = await this.dataSource.query(
-      `select c.*, ci."userId", ci."userLogin", ci."commentId", ci."isBanned",
-               pi.title, pi."blogId", pi."blogName", pi."blogOwnerId", pi."commentId"
+      `select c.*, u."id" as "userId", u."login",
+               p.title, p."blogId", p."blogName"
                 from public.comments c
-              Left join public.commentator_info ci on 
-              c."id" = ci."commentId"
-              Left join public.post_info pi on
-              c."id" = pi."commentId"
+              Left join public.users u on 
+              c."userId" = u."id"
+              Left join public.posts p on
+              c."postId" = p."id"
               Where c."id"= $1`,
       [commentId],
     );
-
+    // pi."blogOwnerId"
+    console.log('comment', comment[0]);
     return comment[0];
     //return this.CommentModel.findOne({ _id: new ObjectId(commentId) });
   }

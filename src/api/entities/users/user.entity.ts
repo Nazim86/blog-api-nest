@@ -5,7 +5,7 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { UsersBanBySA } from './users-ban-by-sa';
+import { UsersBanBySa } from './users-ban-by-sa.entity';
 import { EmailConfirmation } from './email-confirmation';
 import { PasswordRecovery } from './password-recovery';
 import { CommentLike } from '../like/commentLike.entity';
@@ -35,8 +35,8 @@ export class Users {
   @Column({ type: 'bool' })
   isConfirmed: boolean;
 
-  @OneToOne(() => UsersBanBySA, (ub) => ub.user, {})
-  banInfo: UsersBanBySA;
+  @OneToOne(() => UsersBanBySa, (ub) => ub.user, {})
+  banInfo: UsersBanBySa;
 
   @OneToOne(() => EmailConfirmation, (ec) => ec.user, {})
   emailConfirmation: EmailConfirmation;
