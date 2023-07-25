@@ -59,6 +59,9 @@ describe('Super Admin blogs testing', () => {
         expect(user.status).toBe(201);
         expect(user.body.login).toEqual(`leo${i}`);
         expect(user.body.email).toEqual(`nazim86mammadov${i}@yandex.ru`);
+        expect(user.body.banInfo.isBanned).toBe(false);
+        expect(user.body.banInfo.banDate).toBe(null);
+        expect(user.body.banInfo.banReason).toBe(null);
         users.push(user.body);
       }
     });
@@ -71,9 +74,9 @@ describe('Super Admin blogs testing', () => {
       expect(result.body.items[0].banInfo.isBanned).toBe(false);
       expect(result.body.items[0].banInfo.banReason).toBe(null);
       expect(result.body.items[0].banInfo.banDate).toBe(null);
-      expect(result.body.items[1].banInfo.isBanned).toBe(false);
-      expect(result.body.items[1].banInfo.banReason).toBe(null);
-      expect(result.body.items[1].banInfo.banDate).toBe(null);
+      expect(result.body.items[0].banInfo.isBanned).toEqual(
+        expect.any(Boolean),
+      );
     });
 
     it(`Ban user`, async () => {

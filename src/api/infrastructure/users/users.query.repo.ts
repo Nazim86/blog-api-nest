@@ -198,7 +198,7 @@ export class UserQueryRepo {
 
   async getUserById(id: string): Promise<UserViewType> {
     const user = await this.dataSource.query(
-      `SELECT u.*, ub."banDate", ub."banReason" FROM public.users u left join public.users_ban_by_sa ub on u."id" = ub."userId" where u."id"=$1;`,
+      `SELECT u.*, ub."isBanned",ub."banDate", ub."banReason" FROM public.users u left join public.users_ban_by_sa ub on u."id" = ub."userId" where u."id"=$1;`,
       [id],
     );
     return {
