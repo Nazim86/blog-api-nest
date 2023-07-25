@@ -61,8 +61,6 @@ export class PostsQueryRepo {
 
       likesCount = Number(likesCount[0].count);
 
-      console.log('likesCount', likesCount);
-
       let dislikesCount = await this.dataSource.query(
         `SELECT count(*) 
         FROM public.post_like pl Where pl."postId"=$1 and pl."status"=$2 and pl."banStatus"=$3;`,
@@ -71,15 +69,15 @@ export class PostsQueryRepo {
 
       dislikesCount = Number(dislikesCount[0].count);
 
-      console.log('dislikesCount', dislikesCount);
-
       const sortBy = 'addedAt';
 
       const getLast3Likes = await this.dataSource.query(
-        `SELECT pl.*
+        `SELECT pl.*, u."login"
         FROM public.post_like pl 
+        left join public.users u on
+        u."id" = pl."userId"
         Where pl."postId"=$1 and pl."status"=$2 and pl."banStatus"=$3
-        Group by pl.id, pl."addedAt"
+        Group by pl.id, pl."addedAt", u."login"
         Order by "${sortBy}" desc
         Limit 3;`,
         [post.id, LikeEnum.Like, false],
@@ -180,17 +178,6 @@ export class PostsQueryRepo {
               Limit ${paginatedQuery.pageSize} Offset ${skipSize}`,
       [blogId],
     );
-
-    // const getPostsByBlogId: PostsDbType[] = await this.PostModel.find({
-    //   blogId: blogId,
-    // })
-    //   .sort({
-    //     [paginatedQuery.sortBy]:
-    //       paginatedQuery.sortDirection === 'asc' ? 1 : -1,
-    //   })
-    //   .skip(skipSize)
-    //   .limit(paginatedQuery.pageSize)
-    //   .lean();
 
     if (getPostsByBlogId.length === 0) return false;
 

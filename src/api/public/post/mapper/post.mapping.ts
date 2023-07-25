@@ -47,10 +47,12 @@ export class PostMapping {
       const sortBy = 'addedAt';
 
       const getLast3Likes = await this.dataSource.query(
-        `SELECT pl.*
+        `SELECT pl.*, u."login"
         FROM public.post_like pl 
+        left join public.users u on
+        u."id" = pl."userId"
         Where pl."postId"=$1 and pl."status"=$2 and pl."banStatus"=$3
-        Group by pl.id, pl."addedAt"
+        Group by pl.id, pl."addedAt", u."login"
         Order by "${sortBy}" desc
         Limit 3;`,
         [post.id, LikeEnum.Like, false],

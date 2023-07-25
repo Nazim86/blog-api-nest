@@ -344,7 +344,6 @@ describe('Public posts testing', () => {
 
       const allPosts = await getPosts(httpServer);
 
-      //newestLikes test
       expect(
         allPosts.body.items[2].extendedLikesInfo.newestLikes[0].login,
       ).toEqual('leo3');
