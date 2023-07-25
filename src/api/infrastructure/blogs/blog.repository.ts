@@ -10,7 +10,7 @@ export class BlogRepository {
   async getBlogById(blogId: string) {
     try {
       let foundBlog = await this.dataSource.query(
-        `SELECT b.*, u."id", u."login"
+        `SELECT b.*, u."login"
          FROM public.blogs b 
          left join public.users u on b."ownerId" = u."id"
          where b."id" = $1;`,

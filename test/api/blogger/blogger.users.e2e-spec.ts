@@ -8,7 +8,10 @@ import { AppModule } from '../../../src/app.module';
 import request from 'supertest';
 import { blogCreatingData } from '../../data/blogs-data';
 import { appSettings } from '../../../src/app.settings';
-import { creatingUser } from '../../functions/user_functions';
+import {
+  creatingUser,
+  getAllBannedUsersForBlog,
+} from '../../functions/user_functions';
 
 describe('Blogger user testing', () => {
   let app: INestApplication;
@@ -170,16 +173,16 @@ describe('Blogger user testing', () => {
     });
 
     it(`Blogger gets all banned users for blog`, async () => {
-      const searchLogin = 'leo';
-      const result = await request(app.getHttpServer())
-        .get(`/blogger/users/blog/${blogs[0].id}`)
-        .auth(accessTokens[0], { type: 'bearer' });
-
-      console.log(result.body);
-      console.log(result.body.items[0]);
-      console.log(result.body.items[0].login);
+      const result = await getAllBannedUsersForBlog(
+        httpServer,
+        blogs[0].id,
+        accessTokens[0],
+      );
       expect(result.status).toBe(200);
+      expect(result.body.items[0].length).toBe(5);
       expect(result.body.items[0].login).toEqual('leo5');
+      expect(result.body.items[1].login).toEqual('leo4');
+      expect(result.body.items[2].login).toEqual('leo3');
       // expect(result.body).toEqual({
       //   ...bannedUsersDataForBlog,
       //   items: [

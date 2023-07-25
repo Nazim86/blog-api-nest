@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 import { BlogBanInfo } from './blogBanInfo.entity';
 import { Users } from '../users/user.entity';
-import { UsersBanByBlogger } from '../users/usersBanByBlogger';
+import { UsersBanByBloggerEntity } from '../users/usersBanByBlogger.entity';
 
 @Entity({ name: 'blogs' })
 export class Blogs {
@@ -41,6 +41,6 @@ export class Blogs {
   @JoinColumn({ name: 'ownerId' })
   ownerId: Users;
 
-  @OneToMany(() => UsersBanByBlogger, (ubb) => ubb.blog)
-  usersBanByBlogger: UsersBanByBlogger;
+  @OneToMany(() => UsersBanByBloggerEntity, (ubb) => ubb.blog)
+  usersBanByBlogger: UsersBanByBloggerEntity;
 }

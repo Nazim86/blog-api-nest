@@ -79,3 +79,13 @@ export const logout = async (httpServer, refreshToken) => {
     .set('Cookie', `${refreshToken}`)
     .send();
 };
+
+export const getAllBannedUsersForBlog = async (
+  httpServer,
+  blogId,
+  accessToken,
+) => {
+  return request(httpServer)
+    .get(`/blogger/users/blog/${blogId}`)
+    .auth(accessToken, { type: 'bearer' });
+};

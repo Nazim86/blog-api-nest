@@ -13,7 +13,7 @@ import { PostLike } from '../like/postLike.entity';
 import { Devices } from '../devices/devices.entity';
 import { Comments } from '../comments/comments.entity';
 import { Blogs } from '../blogs/blogs.entity';
-import { UsersBanByBlogger } from './usersBanByBlogger';
+import { UsersBanByBloggerEntity } from './usersBanByBlogger.entity';
 
 @Entity({ name: 'users' })
 export class Users {
@@ -59,6 +59,6 @@ export class Users {
   @OneToMany(() => Blogs, (b) => b.ownerId)
   blogs: Blogs[];
 
-  @OneToOne(() => UsersBanByBlogger, (ubb) => ubb.user)
-  usersBanByBlogger: UsersBanByBlogger;
+  @OneToOne(() => UsersBanByBloggerEntity, (ubb) => ubb.user)
+  usersBanByBlogger: UsersBanByBloggerEntity;
 }

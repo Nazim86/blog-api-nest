@@ -70,7 +70,7 @@ import { Comments } from './api/entities/comments/comments.entity';
 import { PostLike } from './api/entities/like/postLike.entity';
 import { Devices } from './api/entities/devices/devices.entity';
 import { Blogs } from './api/entities/blogs/blogs.entity';
-import { UsersBanByBlogger } from './api/entities/users/usersBanByBlogger';
+import { UsersBanByBloggerEntity } from './api/entities/users/usersBanByBlogger.entity';
 import { BlogBanInfo } from './api/entities/blogs/blogBanInfo.entity';
 
 const useCases = [
@@ -115,7 +115,7 @@ const entities = [
   Posts,
   Devices,
   Blogs,
-  UsersBanByBlogger,
+  UsersBanByBloggerEntity,
   BlogBanInfo,
 ];
 
