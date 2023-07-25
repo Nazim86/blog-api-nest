@@ -109,7 +109,7 @@ export class CommentsQueryRepo {
     // const pagesCount = Math.ceil(totalCount / query.pageSize);
 
     const getCommentsForPost = await this.dataSource.query(
-      `Select c.*,  u."login", 
+      `Select c.*,  u."login" as "userLogin"
               from public.comments c
               Left join public.users u on
               c."userId"= u."id"
@@ -144,7 +144,7 @@ export class CommentsQueryRepo {
   async getComment(commentId: string, userId?: string) {
     try {
       let comment = await this.dataSource.query(
-        `Select c.*,  u."login"
+        `Select c.*,  u."login" as "userLogin"
               from public.comments c
               Left join public.users u on
               c."userId"= u."id"
@@ -250,7 +250,7 @@ export class CommentsQueryRepo {
     const pagesCount = paginatedQuery.totalPages(totalCount);
 
     const comments = await this.dataSource.query(
-      `Select c.*, u."login", p."title",
+      `Select c.*, u."login" as "userLogin" , p."title",
               p."blogId",p."blogName", b."ownerId" 
               from public.comments c
               Left join public.users u on

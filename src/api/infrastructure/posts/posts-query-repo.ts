@@ -41,7 +41,7 @@ export class PostsQueryRepo {
 
       if (userId) {
         let likeInDb = await this.dataSource.query(
-          `SELECT id, "postId", "userId", "addedAt", status, login, "banStatus"
+          `SELECT id, "postId", "userId", "addedAt", status, "banStatus"
             FROM public.post_like pl Where pl."postId"=$1 and pl."userId"=$2;`,
           [postId, userId],
         );
@@ -61,6 +61,8 @@ export class PostsQueryRepo {
 
       likesCount = Number(likesCount[0].count);
 
+      console.log('likesCount', likesCount);
+
       let dislikesCount = await this.dataSource.query(
         `SELECT count(*) 
         FROM public.post_like pl Where pl."postId"=$1 and pl."status"=$2 and pl."banStatus"=$3;`,
@@ -68,6 +70,8 @@ export class PostsQueryRepo {
       );
 
       dislikesCount = Number(dislikesCount[0].count);
+
+      console.log('dislikesCount', dislikesCount);
 
       const sortBy = 'addedAt';
 

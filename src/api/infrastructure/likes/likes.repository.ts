@@ -27,12 +27,11 @@ export class LikesRepository {
     postId: string,
     userId: string,
     createPostLikeDto: CreateLikeDto,
-    login: string,
   ) {
     const postLike = await this.dataSource.query(
       `INSERT INTO public.post_like(
-             "postId", "userId", "addedAt", status, login, "banStatus")
-              VALUES ( $1, $2, $3, $4, $5, $6)
+             "postId", "userId", "addedAt", status , "banStatus")
+              VALUES ( $1, $2, $3, $4, $5)
               on conflict ("postId","userId")
               Do Update set status = Excluded.status, "addedAt"=Excluded."addedAt";`,
       [
@@ -40,7 +39,6 @@ export class LikesRepository {
         userId,
         new Date().toISOString(),
         createPostLikeDto.likeStatus,
-        login,
         false,
       ],
     );
