@@ -104,18 +104,12 @@ export class BlogRepository {
 
   async deleteBlogOwnerInfo(userId: string) {
     const result = await this.dataSource.query(
-      `UPDATE public.blog_owner_info bo
-    SET  "userId"=null, "userLogin"=null
-    WHERE bo."userId" = $1;`,
+      `UPDATE public.blogs 
+    SET  "ownerId"=null
+    WHERE "ownerId" = $1;`,
       [userId],
     );
 
-    //   await this.BlogModel.updateMany(
-    //   { 'blogOwnerInfo.userId': userId },
-    //   {
-    //     $set: { 'blogOwnerInfo.userId': null, 'blogOwnerInfo.userLogin': null },
-    //   },
-    // );
     return result[1] === 1;
   }
 
@@ -126,7 +120,7 @@ export class BlogRepository {
                WHERE "id" = $1;`,
         [id],
       );
-      //const result = await this.BlogModel.deleteOne({ _id: new ObjectId(id) });
+
       return result[1] === 1;
     } catch (e) {
       return false;

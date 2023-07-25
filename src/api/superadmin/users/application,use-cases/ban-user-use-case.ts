@@ -49,10 +49,10 @@ export class BanUserUseCase {
 
       await this.likesRepository.setBanStatusForPostLike(command.userId, true);
 
-      await this.commentsRepository.setBanStatusForComment(
-        command.userId,
-        true,
-      );
+      // await this.commentsRepository.setBanStatusForComment(
+      //   command.userId,
+      //   true,
+      // );
 
       await this.deviceRepository.deleteDeviceByUserId(command.userId);
     }
@@ -70,10 +70,10 @@ export class BanUserUseCase {
       );
 
       await this.likesRepository.setBanStatusForPostLike(command.userId, false);
-      await this.commentsRepository.setBanStatusForComment(
-        command.userId,
-        false,
-      );
+      // await this.commentsRepository.setBanStatusForComment(
+      //   command.userId,
+      //   false,
+      // );
     }
 
     // await this.usersRepository.save(user);
