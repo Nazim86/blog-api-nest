@@ -21,6 +21,7 @@ export class PostCreateUseCase {
   ) {}
 
   async execute(command: PostCreateCommand): Promise<Result<ResultCode>> {
+    console.log('blogId', command.blogId);
     const blog = await this.blogRepository.getBlogById(command.blogId);
 
     if (!blog) return { code: ResultCode.NotFound };

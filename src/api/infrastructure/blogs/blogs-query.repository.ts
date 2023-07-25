@@ -48,7 +48,7 @@ export class BlogsQueryRepo {
   async getBlogById(id: string): Promise<BlogsViewType | boolean> {
     try {
       let foundBlog = await this.dataSource.query(
-        `SELECT b.*, u."login", bbi."banDate" 
+        `SELECT b.*, u."login", bbi."banDate", bbi."isBanned" 
         FROM public.blogs b 
         Left join public.users u on b."ownerId" = u."id"
         Left join public.blog_ban_info bbi on b."id" = bbi."blogId" 
@@ -57,6 +57,8 @@ export class BlogsQueryRepo {
       );
 
       foundBlog = foundBlog[0];
+
+      console.log('foundblog ingetBlogById ', foundBlog);
 
       if (!foundBlog || foundBlog.isBanned) {
         return false;

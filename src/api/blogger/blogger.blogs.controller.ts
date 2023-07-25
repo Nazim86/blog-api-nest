@@ -82,6 +82,8 @@ export class BloggerBlogsController {
     const blogId: string = await this.commandBus.execute(
       new BlogCreateCommand(userId, createBlogDto),
     );
+
+    console.log('blogId in createblog', blogId);
     return await this.blogQueryRepo.getBlogById(blogId);
   }
 

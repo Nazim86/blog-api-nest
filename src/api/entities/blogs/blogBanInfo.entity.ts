@@ -12,8 +12,8 @@ export class BlogBanInfo {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'varchar' })
-  isBanned: string;
+  @Column({ type: 'boolean' })
+  isBanned: boolean;
 
   @Column({ type: 'timestamp without time zone', nullable: true })
   banDate: Date;
