@@ -124,7 +124,7 @@ export class BlogsQueryRepo {
       );
 
       blog = await this.dataSource.query(
-        `SELECT b.*, b."ownerId", u."login" as "userLogin", bbi."banDate"
+        `SELECT b.*, b."ownerId", u."login" as "userLogin", bbi."banDate",bbi."isBanned"
        FROM public.blogs b
          left join public.users u on b."ownerId" = u."id"
        LEFT JOIN public.blog_ban_info bbi ON b."id" = bbi."blogId"
