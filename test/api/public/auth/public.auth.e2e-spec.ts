@@ -4,6 +4,8 @@ import { INestApplication } from '@nestjs/common';
 import { appSettings } from '../../../../src/app.settings';
 import { AppModule } from '../../../../src/app.module';
 import {
+  banUserBySA,
+  creatingUser,
   getCurrentUser,
   loginUser,
   logout,
@@ -14,7 +16,12 @@ import {
   setNewPassword,
   userRegistration,
 } from '../../../functions/user_functions';
-import { createUserDto, emailDto, loginDto } from '../../../data/user-data';
+import {
+  createUserDto,
+  emailDto,
+  loginDto,
+  userBanDto,
+} from '../../../data/user-data';
 import { UsersRepository } from '../../../../src/api/infrastructure/users/users.repository';
 import { JwtService } from '../../../../src/jwt/jwt.service';
 
@@ -103,7 +110,7 @@ describe('Auth controller testing', () => {
         expect(result.status).toBe(400);
       });
 
-      it(`should sign in user; status 200; content: JWT token;;`, async () => {
+      it(`should login user; status 200; content: JWT token;;`, async () => {
         userSignIn = await loginUser(httpServer, loginDto);
         refreshToken = userSignIn.headers['set-cookie'][0];
         accessToken = userSignIn.body.accessToken;
@@ -163,6 +170,17 @@ describe('Auth controller testing', () => {
         expect(userSignIn.body.accessToken).not.toBeDefined();
       });
 
+      it(`should not login banned user;`, async () => {
+        await banUserBySA(httpServer, user.id, userBanDto);
+
+        const userSignIn = await loginUser(httpServer, {
+          ...loginDto,
+          password: '1234567',
+        });
+        expect(userSignIn.status).toBe(401);
+        expect(userSignIn.body.accessToken).not.toBeDefined();
+      });
+
       it(`should get current user and return 200 ;`, async () => {
         const currentUser = await getCurrentUser(httpServer, accessToken);
         expect(currentUser.status).toBe(200);
@@ -171,6 +189,19 @@ describe('Auth controller testing', () => {
       });
 
       it(`should logout and return 200 ;`, async () => {
+        await creatingUser(httpServer, {
+          ...createUserDto,
+          login: 'leonid',
+          email: 'nazim86mammadovsdfsd@yandex.ru',
+        });
+
+        userSignIn = await loginUser(httpServer, {
+          ...loginDto,
+          loginOrEmail: 'leonid',
+        });
+
+        refreshToken = userSignIn.headers['set-cookie'][0];
+
         const result = await logout(httpServer, refreshToken);
         const isTokenValid = await jwtService.getTokenMetaData(refreshToken);
         expect(result.status).toBe(204);

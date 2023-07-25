@@ -87,6 +87,17 @@ describe('Super Admin blogs testing', () => {
       expect(result.body.items[4].banInfo.isBanned).toBe(true);
     });
 
+    it(`Unban user`, async () => {
+      await banUserBySA(httpServer, users[0].id, {
+        ...userBanDto,
+        isBanned: false,
+      });
+
+      const result = await getUsers(httpServer);
+
+      expect(result.body.items[4].banInfo.isBanned).toBe(false);
+    });
+
     it(`Deleting user`, async () => {
       let result = await getUsers(httpServer);
       expect(result.body.items.length).toBe(5);

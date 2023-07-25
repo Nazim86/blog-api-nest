@@ -200,20 +200,20 @@ export class UsersRepository {
   }
 
   async unBanUser(userId) {
-    await this.dataSource.query(
-      `UPDATE public.users u SET "isBanned"=false
-     WHERE u."id" = $1;`,
-      [userId],
-    );
+    // await this.dataSource.query(
+    //   `UPDATE public.users u SET "isBanned"=false
+    //  WHERE u."id" = $1;`,
+    //   [userId],
+    // );
 
-    await this.dataSource.query(
+    const result = await this.dataSource.query(
       `UPDATE public.users_ban_by_sa ub
-    SET "banReason"=null, "banDate" = null
+    SET "isBanned"=false, "banReason"=null, "banDate" = null
     WHERE ub."userId" = $1;`,
       [userId],
     );
 
-    return; //userResult[1] === 1 && userBanResult[1] === 1;
+    return result[1] === 1;
   }
 
   async deleteUser(id: string): Promise<boolean> {
@@ -231,12 +231,14 @@ export class UsersRepository {
   async findUserByLoginOrEmail(loginOrEmail: string) {
     const user = await this.dataSource.query(
       `SELECT u.*, ec."confirmationCode",ec."emailExpiration", 
-    pr."recoveryCode", pr."recoveryCodeExpiration"
+    pr."recoveryCode", pr."recoveryCodeExpiration", ubb."isBanned"
     FROM public.users u
     Left join public.email_confirmation ec on 
     ec."userId" = u."id"
     Left Join public.password_recovery pr on
     pr."userId"=u."id"
+    Left join public.users_ban_by_sa ubb on
+    u."id" = ubb."userId"
     where u."login"= $1 OR u."email" = $1;`,
       [loginOrEmail],
     );
