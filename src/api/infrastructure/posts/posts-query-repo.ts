@@ -32,7 +32,7 @@ export class PostsQueryRepo {
       }
 
       const blog = await this.blogsRepository.getBlogById(post.blogId);
-
+      console.log(blog.isBanned);
       if (blog.isBanned) {
         return false;
       }

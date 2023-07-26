@@ -83,7 +83,6 @@ export class BloggerBlogsController {
       new BlogCreateCommand(userId, createBlogDto),
     );
 
-    console.log('blogId in createblog', blogId);
     return await this.blogQueryRepo.getBlogById(blogId);
   }
 

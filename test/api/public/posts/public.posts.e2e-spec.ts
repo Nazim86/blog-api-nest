@@ -20,6 +20,7 @@ import {
   setNonePost,
 } from '../../../functions/post_functions';
 import { LikeEnum } from '../../../../src/api/public/like/like.enum';
+import { banBlog } from '../../../functions/blog_functions';
 
 describe('Public posts testing', () => {
   let app: INestApplication;
@@ -397,6 +398,18 @@ describe('Public posts testing', () => {
           expect(post.extendedLikesInfo.myStatus).toBe(LikeEnum.None);
         }
       }
+    });
+
+    it(`Shouldn't return banned blog post and return 404 `, async () => {
+      await banBlog(httpServer, blogs[0].id);
+
+      const postId = posts[0].id;
+
+      const post = await getPostById(httpServer, postId, accessTokens[0]);
+
+      expect(post.body).toBe(1);
+      // expect(post.body.extendedLikesInfo.dislikesCount).toBe(0);
+      // expect(post.body.extendedLikesInfo.myStatus).toBe(LikeEnum.Like);
     });
   });
 });

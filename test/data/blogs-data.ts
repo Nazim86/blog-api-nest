@@ -11,6 +11,8 @@ export const updateBlogData = {
   websiteUrl: 'https://blog.io/',
 };
 
+export const banBlogDto = { isBanned: true };
+
 export const createdBlogWithoutPagination = {
   id: expect.any(String),
   name: 'Blog',

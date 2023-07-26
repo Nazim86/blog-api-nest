@@ -10,11 +10,11 @@ export class BlogRepository {
   async getBlogById(blogId: string) {
     try {
       let foundBlog = await this.dataSource.query(
-        `SELECT b.*, u."login",ubb."isBanned"
+        `SELECT b.*, u."login", bbi."isBanned"
          FROM public.blogs b 
          left join public.users u on b."ownerId" = u."id"
-         left join public.users_ban_by_sa ubb on
-         u."id" = ubb."userId"
+         left join public.blog_ban_info bbi on
+         b."id" = bbi."blogId"
          where b."id" = $1;`,
         [blogId],
       );
