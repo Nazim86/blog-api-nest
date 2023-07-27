@@ -25,7 +25,7 @@ export class PostUpdateUseCase {
 
     if (!blog) return { code: ResultCode.NotFound };
 
-    if (blog.userId !== command.userId) return { code: ResultCode.Forbidden };
+    if (blog.ownerId !== command.userId) return { code: ResultCode.Forbidden };
 
     const post = await this.postsRepository.getPostById(command.params.postId);
 

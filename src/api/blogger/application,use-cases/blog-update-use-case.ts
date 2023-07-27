@@ -20,7 +20,7 @@ export class BlogUpdateUseCase {
     const blog = await this.blogRepository.getBlogById(command.blogId);
     if (!blog) return { code: ResultCode.NotFound };
 
-    if (blog.userId !== command.userId) return { code: ResultCode.Forbidden };
+    if (blog.ownerId !== command.userId) return { code: ResultCode.Forbidden };
 
     await this.blogRepository.updateBlog(blog.id, command.updateBlogDto);
 
