@@ -35,17 +35,21 @@ export class CommentsQueryRepo {
           myStatus = commentLike.status;
         }
 
-        const likesCount = await this.dataSource.query(
+        let likesCount = await this.dataSource.query(
           `Select count(*) from public.comment_like
                   Where "commentId"=$1 and "status"=$2 and "banStatus" = $3;`,
           [comment.id, LikeEnum.Like, false],
         );
 
-        const dislikesCount = await this.dataSource.query(
+        likesCount = likesCount[0];
+
+        let dislikesCount = await this.dataSource.query(
           `Select count(*) from public.comment_like
                   Where "commentId"=$1 and "status"=$2 and "banStatus" = $3;`,
           [comment.id, LikeEnum.Dislike, false],
         );
+
+        dislikesCount = dislikesCount[0];
 
         return {
           id: comment.id,
@@ -228,8 +232,6 @@ export class CommentsQueryRepo {
       query.sortDirection,
     );
 
-    console.log(userId, typeof userId);
-
     const skipSize = paginatedQuery.skipSize;
 
     let totalCount = await this.dataSource.query(
@@ -251,7 +253,7 @@ export class CommentsQueryRepo {
     //const totalCount = await this.CommentModel.countDocuments(filter);
     const pagesCount = paginatedQuery.totalPages(totalCount);
 
-    const comments = await this.dataSource.query(
+    let comments = await this.dataSource.query(
       `Select c.*, u."login" as "userLogin" , p."title",
               p."blogId",p."blogName", b."ownerId" 
               from public.comments c
@@ -269,16 +271,7 @@ export class CommentsQueryRepo {
       [false, userId],
     );
 
-    //in total we see b."ownerId"=$2 , but in comments as if there was missing check for ownerId so I added it
-    // `Select c.*, ci."userId", ci."userLogin", pi."title",
-    //           pi."blogId",pi."blogName", pi."blogOwnerId"
-    //           from public.comments c
-    //           Left join public.commentator_info ci on
-    //           c."id"= ci."commentId"
-    //           Left join public.post_info pi on
-    //           c."id"= pi."commentId"
-    //           Where ci."isBanned" = $1 and
-    //
+    comments = comments[0];
 
     const myStatus = 'None';
     const mappedCommentsForBlog = await this.commentMappingForBlogger(
