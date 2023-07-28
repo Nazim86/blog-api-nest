@@ -253,7 +253,7 @@ export class CommentsQueryRepo {
     //const totalCount = await this.CommentModel.countDocuments(filter);
     const pagesCount = paginatedQuery.totalPages(totalCount);
 
-    let comments = await this.dataSource.query(
+    const comments = await this.dataSource.query(
       `Select c.*, u."login" as "userLogin" , p."title",
               p."blogId",p."blogName", b."ownerId" 
               from public.comments c
@@ -271,13 +271,17 @@ export class CommentsQueryRepo {
       [false, userId],
     );
 
-    comments = comments[0];
+    // comments = comments[0];
+
+    console.log(comments);
 
     const myStatus = 'None';
     const mappedCommentsForBlog = await this.commentMappingForBlogger(
       comments,
       myStatus,
     );
+
+    console.log(mappedCommentsForBlog);
 
     return {
       pagesCount: pagesCount,

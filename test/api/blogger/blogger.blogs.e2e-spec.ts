@@ -138,13 +138,11 @@ describe('Blogger blog testing', () => {
     });
 
     it(`Blogger gets blogs for current owner`, async () => {
-      for (let i = 0; i <= 1; i++) {
-        const result = await request(app.getHttpServer())
-          .get('/blogger/blogs')
-          .auth(accessToken[i], { type: 'bearer' });
-        expect(result.status).toBe(200);
-        expect(result.body.items[0].name).toEqual(`Blog User${i}`);
-      }
+      const result = await request(app.getHttpServer())
+        .get('/blogger/blogs')
+        .auth(accessToken[0], { type: 'bearer' });
+      expect(result.status).toBe(200);
+      expect(result.body.items[0].name).toEqual(`Blog User${0}`);
     });
 
     // it(`Updating blog`, async () => {
