@@ -107,7 +107,7 @@ export class UserQueryRepo {
     //const sortDirection = paginatedQuery.sortDirection === 'asc' ? 1 : -1;
 
     const bannedUsersForBlog = await this.dataSource.query(
-      `SELECT  u.login,u.email,ubb."isBanned",ubb."banDate", ubb."banReason"
+      `SELECT  u."id",u.login,u.email,ubb."isBanned",ubb."banDate", ubb."banReason"
     FROM public.users u
     Left join public.users_ban_by_blogger ubb on u."id" = ubb."userId"
     WHERE u."login" ilike $1 and ubb."blogId" = $2  And (ubb."isBanned"=$3 or ubb."isBanned"=$4)
