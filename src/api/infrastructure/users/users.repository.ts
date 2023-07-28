@@ -259,8 +259,6 @@ export class UsersRepository {
     );
     if (!user) return null;
 
-    //console.log('user in findUserById in user repository', user);
-
     return user[0];
   }
 }
