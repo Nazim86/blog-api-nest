@@ -19,12 +19,6 @@ export class CommentLikeStatusUpdateUseCase {
     private readonly commentsRepository: CommentsRepository,
   ) {}
   async execute(command: CommentLikeStatusUpdateCommand): Promise<boolean> {
-    console.log(
-      'userId and commentId in CommentLikeStatusUpdateUseCase',
-      command.userId,
-      command.commentId,
-    );
-
     const comment = await this.commentsRepository.getComment(command.commentId);
 
     if (!comment) return false;

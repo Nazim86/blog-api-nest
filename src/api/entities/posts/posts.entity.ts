@@ -16,7 +16,7 @@ export class Posts {
   @Column({ type: 'varchar' })
   content: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'uuid' })
   blogId: string;
 
   @Column({ type: 'varchar' })

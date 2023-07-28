@@ -31,9 +31,6 @@ export class Blogs {
   @Column({ type: 'boolean' })
   isMembership: boolean;
 
-  // @OneToMany(() => PostInfo, (pi) => pi.blog)
-  // postInfo: PostInfo;
-
   @OneToOne(() => BlogBanInfo, (bbi) => bbi.blog)
   blogBanInfo: BlogBanInfo;
 

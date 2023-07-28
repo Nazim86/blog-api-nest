@@ -228,6 +228,8 @@ export class CommentsQueryRepo {
       query.sortDirection,
     );
 
+    console.log(userId, typeof userId);
+
     const skipSize = paginatedQuery.skipSize;
 
     let totalCount = await this.dataSource.query(

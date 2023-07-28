@@ -37,7 +37,6 @@ export class CommentsRepository {
   }
 
   async getComment(commentId) {
-    console.log('CommentId in get comment', commentId);
     const comment = await this.dataSource.query(
       `select c.*, u."id" as "userId", u."login",
                p.title, p."blogId", p."blogName"
@@ -50,7 +49,6 @@ export class CommentsRepository {
       [commentId],
     );
     // pi."blogOwnerId"
-    console.log('comment', comment[0]);
     return comment[0];
     //return this.CommentModel.findOne({ _id: new ObjectId(commentId) });
   }

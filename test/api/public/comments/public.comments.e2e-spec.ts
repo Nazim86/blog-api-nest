@@ -214,7 +214,6 @@ describe('Public comments testing', () => {
           .send();
 
         expect(result.status).toBe(204);
-        console.log('looking change of like in 2 rounds', getComment.body);
         expect(getComment.body.likesInfo.myStatus).toEqual('Like');
         expect(getComment.body.likesInfo.likesCount).toBe(1);
       }
@@ -230,7 +229,6 @@ describe('Public comments testing', () => {
         .get(`/comments/${comments[2].id}`)
         .auth(accessTokens[1], { type: 'bearer' })
         .send();
-      console.log('get comment befprr for loop', getComment.body);
 
       expect(result.status).toBe(204);
       expect(getComment.body.likesInfo.myStatus).toEqual('Like');
@@ -346,6 +344,16 @@ describe('Public comments testing', () => {
       expect(getComment2.body.likesInfo.myStatus).toEqual('None');
       expect(getComment2.body.likesInfo.likesCount).toBe(1);
       expect(getComment2.body.likesInfo.dislikesCount).toBe(1);
+    });
+
+    it(`should return status 200; content: all comments for all posts inside all current user blogs with pagination; 
+    used additional methods `, async () => {
+      const result = await request(httpServer)
+        .get(`/blogger/blogs/comments`)
+        .auth(accessTokens[0], { type: 'bearer' })
+        .send();
+
+      console.log(result.body);
     });
   });
 });

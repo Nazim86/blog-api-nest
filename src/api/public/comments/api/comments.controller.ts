@@ -102,7 +102,6 @@ export class CommentsController {
     @Param('id') commentId: string,
     @Body() createLikeDto: CreateLikeDto,
   ) {
-    console.log('userId and commentId in controller', userId, commentId);
     const updateComment: boolean = await this.commandBus.execute(
       new CommentLikeStatusUpdateCommand(commentId, userId, createLikeDto),
     );
