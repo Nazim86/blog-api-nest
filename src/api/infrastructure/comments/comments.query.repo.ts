@@ -41,7 +41,7 @@ export class CommentsQueryRepo {
           [comment.id, LikeEnum.Like, false],
         );
 
-        likesCount = likesCount[0];
+        likesCount = Number(likesCount[0].count);
 
         let dislikesCount = await this.dataSource.query(
           `Select count(*) from public.comment_like
@@ -49,7 +49,9 @@ export class CommentsQueryRepo {
           [comment.id, LikeEnum.Dislike, false],
         );
 
-        dislikesCount = dislikesCount[0];
+        dislikesCount = Number(dislikesCount[0].count);
+
+        console.log('likes and dislikes', likesCount, dislikesCount);
 
         return {
           id: comment.id,
