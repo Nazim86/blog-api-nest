@@ -36,7 +36,7 @@ export class CommentsQueryRepo {
           likesInfo: {
             likesCount: Number(comment.likesCount),
             dislikesCount: Number(comment.dislikesCount),
-            myStatus: comment.myStatus,
+            myStatus: myStatus,
           },
           postInfo: {
             id: comment.postId,
@@ -232,7 +232,11 @@ export class CommentsQueryRepo {
 
     console.log(comments);
 
-    const myStatus = 'None';
+    let myStatus = 'None';
+
+    if (comments.myStatus) {
+      myStatus = comments.myStatus;
+    }
     const mappedCommentsForBlog = await this.commentMappingForBlogger(
       comments,
       myStatus,
