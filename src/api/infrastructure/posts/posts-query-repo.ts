@@ -3,8 +3,6 @@ import { PostsViewType } from './types/posts-view-type';
 import { NewestLikesType } from './types/posts-db-type';
 import { LikeEnum } from '../../public/like/like.enum';
 import { QueryPaginationType } from '../../../types/query-pagination-type';
-import { newestLikesMapping } from '../../public/like/post-likes.mapping';
-import { PostMapping } from '../../public/post/mapper/post.mapping';
 import { Pagination, PaginationType } from '../../../common/pagination';
 import { BlogRepository } from '../blogs/blog.repository';
 import { InjectDataSource } from '@nestjs/typeorm';
@@ -14,39 +12,24 @@ import { DataSource } from 'typeorm';
 export class PostsQueryRepo {
   constructor(
     @InjectDataSource() private dataSource: DataSource,
-    private readonly postMapping: PostMapping,
     private readonly blogsRepository: BlogRepository,
   ) {}
 
-  async getPostById(postId: string, userId?: string | undefined) {
-    try {
-      let post = await this.dataSource.query(
-        `SELECT * FROM public.posts  where "id"=$1`,
-        [postId],
-      );
-
-      post = post[0];
-
-      if (!post) {
-        return false;
-      }
-
-      const blog = await this.blogsRepository.getBlogById(post.blogId);
-      if (blog.isBanned) {
-        return false;
-      }
-
+  private async postViewMapping(
+    posts,
+    userId: string | undefined,
+  ): Promise<Promise<PostsViewType>[]> {
+    return posts.map(async (post): Promise<PostsViewType> => {
       let myStatus = 'None';
 
       if (userId) {
         let likeInDb = await this.dataSource.query(
-          `SELECT id, "postId", "userId", "addedAt", status, "banStatus"
+          `SELECT id, "postId", "userId", "addedAt", status, login, "banStatus"
             FROM public.post_like pl Where pl."postId"=$1 and pl."userId"=$2;`,
-          [postId, userId],
+          [post.id, userId],
         );
 
         likeInDb = likeInDb[0];
-
         if (likeInDb) {
           myStatus = likeInDb.status;
         }
@@ -82,8 +65,9 @@ export class PostsQueryRepo {
         [post.id, LikeEnum.Like, false],
       );
 
-      const newestLikes: NewestLikesType[] = newestLikesMapping(getLast3Likes);
-
+      const newestLikes: NewestLikesType[] = await this.newestLikesMapping(
+        getLast3Likes,
+      );
       return {
         id: post.id,
         title: post.title,
@@ -95,6 +79,87 @@ export class PostsQueryRepo {
         extendedLikesInfo: {
           likesCount,
           dislikesCount,
+          myStatus: myStatus,
+          newestLikes: newestLikes,
+        },
+      };
+    });
+  }
+  private async newestLikesMapping(postLikes) {
+    return postLikes.map((like) => {
+      return {
+        addedAt: like.addedAt,
+        userId: like.userId,
+        login: like.login,
+      };
+    });
+  }
+
+  async getPostById(postId: string, userId?: string | undefined) {
+    try {
+      let post = await this.dataSource.query(
+        `SELECT *,
+               (SELECT status
+            FROM public.post_like pl Where pl."postId"=p."id" and pl."userId"=$2) as "myStatus",
+        (SELECT count(*) 
+        FROM public.post_like pl 
+        Where pl."postId"=p."id" and pl."status"='Like' and pl."banStatus"=false) as "likesCount",
+        (SELECT count(*) 
+        FROM public.post_like pl 
+        Where pl."postId"=p."id" and pl."status"='Dislike' and pl."banStatus"=false) as "dislikesCount"
+        FROM public.posts p  
+        where "id"=$1`,
+        [postId, userId],
+      );
+
+      post = post[0];
+
+      console.log('posts in getPostById ', post);
+
+      if (!post) {
+        return false;
+      }
+
+      const blog = await this.blogsRepository.getBlogById(post.blogId);
+      if (blog.isBanned) {
+        return false;
+      }
+
+      let myStatus = 'None';
+
+      if (userId && post.myStatus) {
+        myStatus = post.myStatus;
+      }
+
+      const sortBy = 'addedAt';
+
+      const getLast3Likes = await this.dataSource.query(
+        `SELECT pl.*, u."login"
+        FROM public.post_like pl 
+        left join public.users u on
+        u."id" = pl."userId"
+        Where pl."postId"=$1 and pl."status"=$2 and pl."banStatus"=$3
+        Group by pl.id, pl."addedAt", u."login"
+        Order by "${sortBy}" desc
+        Limit 3;`,
+        [post.id, LikeEnum.Like, false],
+      );
+
+      const newestLikes: NewestLikesType[] = await this.newestLikesMapping(
+        getLast3Likes,
+      );
+
+      return {
+        id: post.id,
+        title: post.title,
+        shortDescription: post.shortDescription,
+        content: post.content,
+        blogId: post.blogId,
+        blogName: post.blogName,
+        createdAt: post.createdAt,
+        extendedLikesInfo: {
+          likesCount: Number(post.likesCount),
+          dislikesCount: Number(post.dislikesCount),
           myStatus: myStatus,
           newestLikes: newestLikes,
         },
@@ -133,8 +198,10 @@ export class PostsQueryRepo {
               Limit ${paginatedQuery.pageSize} Offset ${skipSize} ;`,
     );
 
-    const mappedPost: Promise<PostsViewType>[] =
-      await this.postMapping.postViewMapping(getPosts, userId);
+    const mappedPost: Promise<PostsViewType>[] = await this.postViewMapping(
+      getPosts,
+      userId,
+    );
 
     const resolvedMappedPosts: PostsViewType[] = await Promise.all(mappedPost);
 
@@ -167,7 +234,6 @@ export class PostsQueryRepo {
 
     totalCount = Number(totalCount[0].count);
 
-    //const totalCount = await this.PostModel.countDocuments({ blogId: blogId });
     const pagesCount = paginatedQuery.totalPages(totalCount);
 
     const getPostsByBlogId = await this.dataSource.query(
@@ -180,8 +246,10 @@ export class PostsQueryRepo {
 
     if (getPostsByBlogId.length === 0) return false;
 
-    const mappedPost: Promise<PostsViewType>[] =
-      await this.postMapping.postViewMapping(getPostsByBlogId, userId);
+    const mappedPost: Promise<PostsViewType>[] = await this.postViewMapping(
+      getPostsByBlogId,
+      userId,
+    );
 
     const resolvedMappedPosts: PostsViewType[] = await Promise.all(mappedPost);
 

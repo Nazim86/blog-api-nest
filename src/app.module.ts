@@ -5,7 +5,6 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { BloggerBlogsController } from './api/blogger/blogger.blogs.controller';
 import { BlogsQueryRepo } from './api/infrastructure/blogs/blogs-query.repository';
-import { PostMapping } from './api/public/post/mapper/post.mapping';
 import { PostsQueryRepo } from './api/infrastructure/posts/posts-query-repo';
 import { BlogRepository } from './api/infrastructure/blogs/blog.repository';
 import { PostsController } from './api/public/post/api/posts.controller';
@@ -172,7 +171,6 @@ export const localConfigTypeOrm: TypeOrmModuleOptions = {
     BlogsQueryRepo,
     BlogRepository,
     PostsQueryRepo,
-    PostMapping,
     PostRepository,
     CommentsQueryRepo,
     CommentsRepository,
