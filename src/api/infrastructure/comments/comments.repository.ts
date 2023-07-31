@@ -38,7 +38,7 @@ export class CommentsRepository {
 
   async getComment(commentId) {
     const comment = await this.dataSource.query(
-      `select c.*, u."id" as "userId", u."login",
+      `select c.*, u."login",
                p.title, p."blogId", p."blogName"
                 from public.comments c
               Left join public.users u on 
@@ -48,36 +48,13 @@ export class CommentsRepository {
               Where c."id"= $1`,
       [commentId],
     );
-    // pi."blogOwnerId"
     return comment[0];
-    //return this.CommentModel.findOne({ _id: new ObjectId(commentId) });
   }
-
-  // async setBanStatusForComment(userId: string, banStatus: boolean) {
-  //   await this.dataSource.query(
-  //     `UPDATE public.commentator_info
-  //       SET  "isBanned"=$1
-  //       WHERE "userId"=$2;`,
-  //     [banStatus, userId],
-  //   );
-  // }
 
   async deleteComment(commentId: string): Promise<boolean> {
     const result = await this.dataSource.query(
       `DELETE FROM public.comments
                             WHERE "id" =$1;`,
-      [commentId],
-    );
-
-    await this.dataSource.query(
-      `DELETE FROM public.commentator_info
-                            WHERE "commentId" =$1;`,
-      [commentId],
-    );
-
-    await this.dataSource.query(
-      `DELETE FROM public.post_info
-                            WHERE "commentId" =$1;`,
       [commentId],
     );
 

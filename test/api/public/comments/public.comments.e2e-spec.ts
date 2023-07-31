@@ -346,6 +346,17 @@ describe('Public comments testing', () => {
       expect(getComment2.body.likesInfo.dislikesCount).toBe(1);
     });
 
+    it(`should delete comment by id; status 204 `, async () => {
+      expect(comments.length).toBe(6);
+
+      const result = await request(httpServer)
+        .delete(`/comments/${comments[5].id}`)
+        .auth(accessTokens[5], { type: 'bearer' })
+        .send();
+      expect(result.status).toBe(204);
+      expect(comments.length).toBe(5);
+    });
+
     it(`should return status 200; content: all comments for all posts inside all current user blogs with pagination; 
     used additional methods `, async () => {
       const result = await request(httpServer)

@@ -56,10 +56,10 @@ export class CommentsController {
   @HttpCode(204)
   async deleteCommentByCommentId(
     @Param('id') commentId: string,
-    @Request() req,
+    @UserId() userId,
   ) {
     const isDeleted: Result<ResultCode> = await this.commandBus.execute(
-      new CommentDeleteCommand(commentId, req.user.userId),
+      new CommentDeleteCommand(commentId, userId),
     );
 
     if (isDeleted.code !== ResultCode.Success) {

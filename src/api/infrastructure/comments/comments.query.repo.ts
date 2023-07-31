@@ -25,6 +25,7 @@ export class CommentsQueryRepo {
   private async commentMappingForBlogger(comments, myStatus: string) {
     return Promise.all(
       comments.map(async (comment) => {
+        console.log('dislikeCount', comment.dislikesCount);
         return {
           id: comment.id,
           content: comment.content,
@@ -214,7 +215,7 @@ export class CommentsQueryRepo {
                   (Select count(*) from public.comment_like
                   Where "commentId"=c."id" and "status"='Like' and "banStatus" = false) as "likesCount",
                   (Select count(*) from public.comment_like
-                  Where "commentId"=c."id" and "status"='Dislike' and "banStatus" = false) as "dislikeCount"
+                  Where "commentId" = c."id" and "status"='Dislike' and "banStatus" = false) as "dislikesCount"
               from public.comments c
               Left join public.users u on
               c."userId"= u."id"
@@ -230,13 +231,12 @@ export class CommentsQueryRepo {
       [false, userId],
     );
 
-    console.log(comments);
-
     let myStatus = 'None';
 
     if (comments.myStatus) {
       myStatus = comments.myStatus;
     }
+
     const mappedCommentsForBlog = await this.commentMappingForBlogger(
       comments,
       myStatus,
