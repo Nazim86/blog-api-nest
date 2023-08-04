@@ -25,7 +25,6 @@ export class CommentsQueryRepo {
   private async commentMappingForBlogger(comments, myStatus: string) {
     return Promise.all(
       comments.map(async (comment) => {
-        console.log('dislikeCount', comment.dislikesCount);
         return {
           id: comment.id,
           content: comment.content,

@@ -174,7 +174,7 @@ export class PostsQueryRepo {
 
     //const sortBy = 'addedAt';
 
-    let myStatus = LikeEnum.None;
+    let myStatus = 'None';
 
     const posts = await this.dataSource.query(
       `SELECT p.*,
@@ -197,15 +197,12 @@ export class PostsQueryRepo {
       myStatus = posts.myStatus;
     }
 
-    //console.log(newestLikes);
-
     const mappedPost: Promise<PostsViewType>[] = await this.postViewMapping(
       posts,
       myStatus,
     );
 
     const resolvedMappedPosts: PostsViewType[] = await Promise.all(mappedPost);
-    console.log('mapped posts', resolvedMappedPosts);
 
     return {
       pagesCount: pagesCount,
@@ -240,7 +237,7 @@ export class PostsQueryRepo {
 
     const sortBy = 'addedAt';
 
-    let myStatus = LikeEnum.None;
+    let myStatus = 'None';
 
     const posts = await this.dataSource.query(
       `SELECT p.* 
