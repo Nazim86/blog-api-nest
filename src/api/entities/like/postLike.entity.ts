@@ -15,12 +15,6 @@ export class PostLike {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  // @Column({ unique: true, type: 'varchar' })
-  // commentId: string;
-
-  // @Column({ unique: true, type: 'varchar' })
-  // userId: string;
-
   @Column({ type: 'timestamp without time zone' })
   addedAt: Date;
 
