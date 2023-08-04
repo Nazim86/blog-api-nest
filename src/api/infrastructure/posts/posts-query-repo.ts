@@ -36,9 +36,9 @@ export class PostsQueryRepo {
     return posts.map(async (post) => {
       let myStatus = LikeEnum.None;
 
-      if (userId && posts.myStatus) {
+      if (userId && post.myStatus) {
         console.log('inside defining my status', posts.myStatus);
-        myStatus = posts.myStatus;
+        myStatus = post.myStatus;
       }
       const getLast3Likes = await this.dataSource.query(
         `SELECT pl.*, u."login"
