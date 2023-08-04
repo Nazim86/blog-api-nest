@@ -29,10 +29,17 @@ export class PostsQueryRepo {
 
   private async postViewMapping(
     posts,
-    myStatus: string,
+    userId: string,
+    //myStatus: string,
     //newestLikes,
   ): Promise<Promise<PostsViewType>[]> {
     return posts.map(async (post) => {
+      let myStatus = LikeEnum.None;
+
+      if (userId && posts.myStatus) {
+        console.log('inside defining my status', posts.myStatus);
+        myStatus = posts.myStatus;
+      }
       const getLast3Likes = await this.dataSource.query(
         `SELECT pl.*, u."login"
           FROM public.post_like pl
@@ -174,8 +181,6 @@ export class PostsQueryRepo {
 
     //const sortBy = 'addedAt';
 
-    let myStatus = 'None';
-
     const posts = await this.dataSource.query(
       `SELECT p.*,
        (SELECT status
@@ -193,13 +198,9 @@ export class PostsQueryRepo {
       [userId],
     );
 
-    if (userId && posts.myStatus) {
-      myStatus = posts.myStatus;
-    }
-
     const mappedPost: Promise<PostsViewType>[] = await this.postViewMapping(
       posts,
-      myStatus,
+      userId,
     );
 
     const resolvedMappedPosts: PostsViewType[] = await Promise.all(mappedPost);
@@ -237,8 +238,6 @@ export class PostsQueryRepo {
 
     const sortBy = 'addedAt';
 
-    let myStatus = 'None';
-
     const posts = await this.dataSource.query(
       `SELECT p.* 
              (SELECT status
@@ -268,13 +267,9 @@ export class PostsQueryRepo {
 
     if (posts.length === 0) return false;
 
-    if (userId && posts.myStatus) {
-      myStatus = posts.myStatus;
-    }
-
     const mappedPost: Promise<PostsViewType>[] = await this.postViewMapping(
       posts,
-      myStatus,
+      userId,
       //newestLikes,
     );
 

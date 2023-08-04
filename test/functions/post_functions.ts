@@ -38,8 +38,13 @@ export const getPostById = async (httpServer, postId, accessToken) => {
     .send();
 };
 
-export const getPosts = async (httpServer, query?) => {
-  return request(httpServer).get(`/posts`).query(query).send(query);
+export const getPosts = async (httpServer, query?, accessToken?) => {
+  console.log('accessTOken', accessToken);
+  return request(httpServer)
+    .get(`/posts`)
+    .query(query)
+    .auth(accessToken, { type: 'bearer' })
+    .send(query);
 
   //   expect(result.body.items[4].extendedLikesInfo.likesCount).toBe(i + 1);
   // expect(result.body.items[4].extendedLikesInfo.newestLikes[0].login).toEqual(

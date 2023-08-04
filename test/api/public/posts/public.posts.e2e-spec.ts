@@ -343,7 +343,7 @@ describe('Public posts testing', () => {
         }
       }
 
-      const allPosts = await getPosts(httpServer);
+      const allPosts = await getPosts(httpServer, accessTokens[0]);
 
       expect(
         allPosts.body.items[2].extendedLikesInfo.newestLikes[0].login,
@@ -365,7 +365,7 @@ describe('Public posts testing', () => {
         if (i === 5) {
           expect(post.extendedLikesInfo.likesCount).toBe(2);
           expect(post.extendedLikesInfo.dislikesCount).toBe(0);
-          expect(post.extendedLikesInfo.myStatus).toBe(LikeEnum.None);
+          expect(post.extendedLikesInfo.myStatus).toBe(LikeEnum.Like);
         }
 
         if (i === 4) {
@@ -377,7 +377,7 @@ describe('Public posts testing', () => {
         if (i === 3) {
           expect(post.extendedLikesInfo.likesCount).toBe(0);
           expect(post.extendedLikesInfo.dislikesCount).toBe(1);
-          expect(post.extendedLikesInfo.myStatus).toBe(LikeEnum.None);
+          expect(post.extendedLikesInfo.myStatus).toBe(LikeEnum.Like);
         }
 
         if (i === 2) {
@@ -395,7 +395,7 @@ describe('Public posts testing', () => {
         if (i === 0) {
           expect(post.extendedLikesInfo.likesCount).toBe(1);
           expect(post.extendedLikesInfo.dislikesCount).toBe(1);
-          expect(post.extendedLikesInfo.myStatus).toBe(LikeEnum.None);
+          expect(post.extendedLikesInfo.myStatus).toBe(LikeEnum.Like);
         }
       }
     });
