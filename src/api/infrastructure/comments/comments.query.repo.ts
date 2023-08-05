@@ -3,7 +3,6 @@ import { PostsQueryRepo } from '../posts/posts-query-repo';
 import { QueryPaginationType } from '../../../types/query-pagination-type';
 import { CommentsViewType } from './types/comments-view-type';
 import { CommentsMapping } from '../../public/comments/mapper/comments.mapping';
-import { LikeEnum } from '../../public/like/like.enum';
 import { UsersRepository } from '../users/users.repository';
 import { Pagination, PaginationType } from '../../../common/pagination';
 import { BlogRepository } from '../blogs/blog.repository';
@@ -109,8 +108,14 @@ export class CommentsQueryRepo {
   async getComment(commentId: string, userId?: string) {
     try {
       let comment = await this.dataSource.query(
-        `Select c.*,  u."login" as "userLogin"
-              from public.comments c
+        `Select c.*,  u."login" as "userLogin",
+            (Select "status" from public.comment_like
+                  Where "commentId"= c."id") as "myStatus",
+                  (Select count(*) from public.comment_like
+                  Where "commentId"=c."id" and "status"='Like' and "banStatus" = false) as "likesCount",
+                  (Select count(*) from public.comment_like
+                  Where "commentId" = c."id" and "status"='Dislike' and "banStatus" = false) as "dislikesCount"
+                  from public.comments c
               Left join public.users u on
               c."userId"= u."id"
               Where c."id" = $1`,
@@ -129,33 +134,37 @@ export class CommentsQueryRepo {
 
       let myStatus = 'None';
 
-      if (userId) {
-        const likeInDb = await this.dataSource.query(
-          `SELECT * FROM public.comment_like
-                 Where "commentId"=$1 and "userId" = $2;`,
-          [commentId, userId],
-        );
-
-        if (likeInDb.length > 0) {
-          myStatus = likeInDb[0].status;
-        }
+      if (userId && comment.myStatus) {
+        myStatus = comment.myStatus;
       }
 
-      let likesCount = await this.dataSource.query(
-        `SELECT count(*) 
-        FROM public.comment_like cl Where cl."commentId"=$1 and cl."status"=$2 and cl."banStatus"=$3;`,
-        [comment.id, LikeEnum.Like, false],
-      );
+      // if (userId) {
+      //   const likeInDb = await this.dataSource.query(
+      //     `SELECT * FROM public.comment_like
+      //            Where "commentId"=$1 and "userId" = $2;`,
+      //     [commentId, userId],
+      //   );
+      //
+      //   if (likeInDb.length > 0) {
+      //     myStatus = likeInDb[0].status;
+      //   }
+      // }
 
-      likesCount = Number(likesCount[0].count);
-
-      let dislikesCount = await this.dataSource.query(
-        `SELECT count(*) 
-        FROM public.comment_like cl Where cl."commentId"=$1 and cl."status"=$2 and cl."banStatus"=$3;`,
-        [comment.id, LikeEnum.Dislike, false],
-      );
-
-      dislikesCount = Number(dislikesCount[0].count);
+      // let likesCount = await this.dataSource.query(
+      //   `SELECT count(*)
+      //   FROM public.comment_like cl Where cl."commentId"=$1 and cl."status"=$2 and cl."banStatus"=$3;`,
+      //   [comment.id, LikeEnum.Like, false],
+      // );
+      //
+      // likesCount = Number(likesCount[0].count);
+      //
+      // let dislikesCount = await this.dataSource.query(
+      //   `SELECT count(*)
+      //   FROM public.comment_like cl Where cl."commentId"=$1 and cl."status"=$2 and cl."banStatus"=$3;`,
+      //   [comment.id, LikeEnum.Dislike, false],
+      // );
+      //
+      // dislikesCount = Number(dislikesCount[0].count);
 
       return {
         id: comment.id,
@@ -166,8 +175,8 @@ export class CommentsQueryRepo {
         },
         createdAt: comment.createdAt,
         likesInfo: {
-          likesCount,
-          dislikesCount,
+          likesCount: comment.likesCount,
+          dislikesCount: comment.dislikesCount,
           myStatus: myStatus,
         },
       };

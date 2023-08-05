@@ -383,7 +383,7 @@ describe('Public posts testing', () => {
         if (i === 2) {
           expect(post.extendedLikesInfo.likesCount).toBe(4);
           expect(post.extendedLikesInfo.dislikesCount).toBe(0);
-          expect(post.extendedLikesInfo.myStatus).toBe(LikeEnum.None);
+          expect(post.extendedLikesInfo.myStatus).toBe(LikeEnum.Dislike);
         }
 
         if (i === 1) {

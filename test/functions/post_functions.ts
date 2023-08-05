@@ -38,7 +38,7 @@ export const getPostById = async (httpServer, postId, accessToken) => {
     .send();
 };
 
-export const getPosts = async (httpServer, query?, accessToken?) => {
+export const getPosts = async (httpServer, accessToken, query?) => {
   console.log('accessTOken', accessToken);
   return request(httpServer)
     .get(`/posts`)
