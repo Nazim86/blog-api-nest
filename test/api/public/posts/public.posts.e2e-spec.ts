@@ -326,10 +326,10 @@ describe('Public posts testing', () => {
 
         if (i === 3) {
           await likePost(httpServer, postId, [
-            accessTokens[1],
-            accessTokens[4],
-            accessTokens[2],
+            accessTokens[0],
             accessTokens[3],
+            accessTokens[1],
+            accessTokens[2],
           ]);
         }
 
@@ -346,20 +346,34 @@ describe('Public posts testing', () => {
 
       const allPosts = await getPosts(httpServer, accessTokens[0]);
 
-      expect(
-        allPosts.body.items[2].extendedLikesInfo.newestLikes[0].login,
-      ).toEqual('leo3');
+      // console.log(
+      //   'allpost in tests 3',
+      //   allPosts.body.items[2].extendedLikesInfo.newestLikes,
+      // );
+      // console.log(
+      //   'allpost in tests 1',
+      //   allPosts.body.items[0].extendedLikesInfo.newestLikes,
+      // );
+      // console.log(
+      //   'allpost in tests 4',
+      //   allPosts.body.items[3].extendedLikesInfo.newestLikes,
+      // );
 
       expect(
-        allPosts.body.items[2].extendedLikesInfo.newestLikes[1].login,
+        allPosts.body.items[2].extendedLikesInfo.newestLikes[0].login,
       ).toEqual('leo2');
 
       expect(
+        allPosts.body.items[2].extendedLikesInfo.newestLikes[1].login,
+      ).toEqual('leo1');
+
+      expect(
         allPosts.body.items[2].extendedLikesInfo.newestLikes[2].login,
-      ).toEqual('leo4');
+      ).toEqual('leo3');
 
       //checking the same like and dislikes with getPostByBlogId
-      for (let i = 0; i <= blogs.length; i++) {
+      for (let i = 0; i < blogs.length; i++) {
+        console.log('i in first loop', i);
         const blogId = blogs[i].id;
         const postsByBlogId = await getPostsByBlogId(
           httpServer,
@@ -367,8 +381,10 @@ describe('Public posts testing', () => {
           accessTokens[0],
         );
 
-        for (let i = 0; i <= postsByBlogId.body.items.length; i++) {
-          const postId = postsByBlogId.body.items[i].id;
+        for (let y = 0; y < postsByBlogId.body.items.length; y++) {
+          console.log('i in second loop', i);
+
+          const postId = postsByBlogId.body.items[y].id;
 
           const post = postsByBlogId.body.items.find((p) => p.id === postId);
           console.log('post in tests', post);
@@ -389,13 +405,13 @@ describe('Public posts testing', () => {
           if (i === 2) {
             expect(post.extendedLikesInfo.likesCount).toBe(0);
             expect(post.extendedLikesInfo.dislikesCount).toBe(1);
-            expect(post.extendedLikesInfo.myStatus).toBe(LikeEnum.Like);
+            expect(post.extendedLikesInfo.myStatus).toBe(LikeEnum.Dislike);
           }
 
           if (i === 3) {
             expect(post.extendedLikesInfo.likesCount).toBe(4);
             expect(post.extendedLikesInfo.dislikesCount).toBe(0);
-            expect(post.extendedLikesInfo.myStatus).toBe(LikeEnum.Dislike);
+            expect(post.extendedLikesInfo.myStatus).toBe(LikeEnum.Like);
           }
 
           if (i === 4) {
@@ -431,13 +447,13 @@ describe('Public posts testing', () => {
         if (i === 3) {
           expect(post.extendedLikesInfo.likesCount).toBe(0);
           expect(post.extendedLikesInfo.dislikesCount).toBe(1);
-          expect(post.extendedLikesInfo.myStatus).toBe(LikeEnum.Like);
+          expect(post.extendedLikesInfo.myStatus).toBe(LikeEnum.Dislike);
         }
 
         if (i === 2) {
           expect(post.extendedLikesInfo.likesCount).toBe(4);
           expect(post.extendedLikesInfo.dislikesCount).toBe(0);
-          expect(post.extendedLikesInfo.myStatus).toBe(LikeEnum.Dislike);
+          expect(post.extendedLikesInfo.myStatus).toBe(LikeEnum.Like);
         }
 
         if (i === 1) {

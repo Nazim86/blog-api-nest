@@ -266,8 +266,6 @@ export class PostsQueryRepo {
 
     const resolvedMappedPosts: PostsViewType[] = await Promise.all(mappedPost);
 
-    console.log('resolvedMappedPosts in getPostsByBlogId', resolvedMappedPosts);
-
     return {
       pagesCount: pagesCount,
       page: Number(paginatedQuery.pageNumber),
