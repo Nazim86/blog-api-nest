@@ -418,37 +418,37 @@ describe('Public comments testing', () => {
 
         const comment = allComments.body.items.find((c) => c.id === commentId);
 
-        if (i === 0) {
+        if (i === 5) {
           expect(comment.likesInfo.myStatus).toBe(LikeEnum.Like);
           expect(comment.likesInfo.likesCount).toBe(2);
+          expect(comment.likesInfo.dislikesCount).toBe(0);
+        }
+
+        if (i === 4) {
+          expect(comment.likesInfo.myStatus).toBe(LikeEnum.None);
+          expect(comment.likesInfo.likesCount).toBe(2);
+          expect(comment.likesInfo.dislikesCount).toBe(0);
+        }
+
+        if (i === 3) {
+          expect(comment.likesInfo.myStatus).toBe(LikeEnum.Dislike);
+          expect(comment.likesInfo.likesCount).toBe(0);
+          expect(comment.likesInfo.dislikesCount).toBe(1);
+        }
+
+        if (i === 2) {
+          expect(comment.likesInfo.myStatus).toBe(LikeEnum.Like);
+          expect(comment.likesInfo.likesCount).toBe(4);
           expect(comment.likesInfo.dislikesCount).toBe(0);
         }
 
         if (i === 1) {
           expect(comment.likesInfo.myStatus).toBe(LikeEnum.None);
           expect(comment.likesInfo.likesCount).toBe(1);
-          expect(comment.likesInfo.dislikesCount).toBe(0);
-        }
-
-        if (i === 2) {
-          expect(comment.likesInfo.myStatus).toBe(LikeEnum.Dislike);
-          expect(comment.likesInfo.likesCount).toBe(0);
           expect(comment.likesInfo.dislikesCount).toBe(1);
         }
 
-        if (i === 3) {
-          expect(comment.likesInfo.myStatus).toBe(LikeEnum.Like);
-          expect(comment.likesInfo.likesCount).toBe(4);
-          expect(comment.likesInfo.dislikesCount).toBe(0);
-        }
-
-        if (i === 4) {
-          expect(comment.likesInfo.myStatus).toBe(LikeEnum.None);
-          expect(comment.likesInfo.likesCount).toBe(1);
-          expect(comment.likesInfo.dislikesCount).toBe(1);
-        }
-
-        if (i === 5) {
+        if (i === 0) {
           expect(comment.likesInfo.myStatus).toBe(LikeEnum.Like);
           expect(comment.likesInfo.likesCount).toBe(1);
           expect(comment.likesInfo.dislikesCount).toBe(1);
