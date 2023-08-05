@@ -251,34 +251,35 @@ describe('Public comments testing', () => {
     it(`like comment 1 by user 1, user 2; like comment 2 by user 2, user 3;
        status 204; content: `, async () => {
       for (let i = 0; i <= 1; i++) {
-        await request(httpServer)
-          .put(`/comments/${comments[0].id}/like-status`)
-          .auth(accessTokens[i], { type: 'bearer' })
-          .send(likeCommentDto)
-          .expect(204);
+        await likeComment(httpServer, comments[0].id, [
+          accessTokens[0],
+          accessTokens[1],
+        ]);
 
-        const getComment = await request(httpServer)
-          .get(`/comments/${comments[0].id}`)
-          .auth(accessTokens[0], { type: 'bearer' })
-          .send();
+        await likeComment(httpServer, comments[1].id, [
+          accessTokens[1],
+          accessTokens[2],
+        ]);
 
-        expect(getComment.body.likesInfo.myStatus).toEqual('Like');
-        expect(getComment.body.likesInfo.likesCount).toBe(i + 1);
-        expect(getComment.body.likesInfo.dislikesCount).toBe(5 - i);
+        const comment1 = await getCommentById(
+          httpServer,
+          comments[0].id,
+          accessTokens[0],
+        );
 
-        await request(httpServer)
-          .put(`/comments/${comments[1].id}/like-status`)
-          .auth(accessTokens[i + 1], { type: 'bearer' })
-          .send(likeCommentDto)
-          .expect(204);
+        const comment2 = await getCommentById(
+          httpServer,
+          comments[1].id,
+          accessTokens[0],
+        );
 
-        const getComment2 = await request(httpServer)
-          .get(`/comments/${comments[1].id}`)
-          .auth(accessTokens[0], { type: 'bearer' })
-          .send();
+        expect(comment1.body.likesInfo.myStatus).toBe(LikeEnum.Like);
+        expect(comment1.body.likesInfo.likesCount).toBe(2);
+        expect(comment1.body.likesInfo.dislikesCount).toBe(0);
 
-        expect(getComment2.body.likesInfo.myStatus).toEqual('None');
-        expect(getComment2.body.likesInfo.likesCount).toBe(i + 1);
+        expect(comment2.body.likesInfo.myStatus).toBe(LikeEnum.None);
+        expect(comment2.body.likesInfo.likesCount).toBe(2);
+        expect(comment2.body.likesInfo.dislikesCount).toBe(0);
       }
     });
 

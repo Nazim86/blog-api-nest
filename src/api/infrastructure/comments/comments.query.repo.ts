@@ -20,9 +20,15 @@ export class CommentsQueryRepo {
   ) {}
   private async commentMapping(
     array,
-    myStatus: string,
+    userId: string,
   ): Promise<Promise<CommentsViewType>[]> {
     return array.map(async (comment): Promise<CommentsViewType> => {
+      let myStatus = 'None';
+
+      if (userId && comment.myStatus) {
+        myStatus = comment.myStatus;
+      }
+
       return {
         id: comment.id,
         content: comment.content,
@@ -113,14 +119,14 @@ export class CommentsQueryRepo {
       [userId, postId],
     );
 
-    let myStatus = 'None';
-    console.log('myStatus in getCommentsForPost', commentsForPosts.myStatus);
-    if (userId && commentsForPosts.myStatus) {
-      myStatus = commentsForPosts.myStatus;
-    }
+    // let myStatus = 'None';
+    //
+    // if (userId && commentsForPosts.myStatus) {
+    //   myStatus = commentsForPosts.myStatus;
+    // }
 
     const mappedComment: Promise<CommentsViewType>[] =
-      await this.commentMapping(commentsForPosts, myStatus);
+      await this.commentMapping(commentsForPosts, userId);
 
     const resolvedComments: CommentsViewType[] = await Promise.all(
       mappedComment,
