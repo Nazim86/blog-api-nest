@@ -471,14 +471,5 @@ describe('Public comments testing', () => {
 
       expect(allComments.body.items.length).toBe(5);
     });
-
-    // it(`should return status 200; content: all comments for all posts inside all current user blogs with pagination;
-    // used additional methods `, async () => {
-    //   const result = await request(httpServer)
-    //     .get(`/blogger/blogs/comments`)
-    //     .auth(accessTokens[0], { type: 'bearer' })
-    //     .send();
-    //
-    // });
   });
 });
