@@ -110,7 +110,7 @@ export class CommentsQueryRepo {
       let comment = await this.dataSource.query(
         `Select c.*,  u."login" as "userLogin",
             (Select "status" from public.comment_like
-                  Where "commentId"= c."id") as "myStatus",
+                  Where "commentId"= c."id" and "userId" = $1) as "myStatus",
                   (Select count(*) from public.comment_like
                   Where "commentId"=c."id" and "status"='Like' and "banStatus" = false) as "likesCount",
                   (Select count(*) from public.comment_like
@@ -118,9 +118,11 @@ export class CommentsQueryRepo {
                   from public.comments c
               Left join public.users u on
               c."userId"= u."id"
-              Where c."id" = $1`,
-        [commentId],
+              Where c."id" = $2`,
+        [userId, commentId],
       );
+
+      console.log('comment in comment query repo', comment);
 
       comment = comment[0];
 
@@ -175,8 +177,8 @@ export class CommentsQueryRepo {
         },
         createdAt: comment.createdAt,
         likesInfo: {
-          likesCount: comment.likesCount,
-          dislikesCount: comment.dislikesCount,
+          likesCount: Number(comment.likesCount),
+          dislikesCount: Number(comment.dislikesCount),
           myStatus: myStatus,
         },
       };

@@ -88,6 +88,8 @@ export class CommentsController {
     const getComment: CommentsViewType | null =
       await this.commentsQueryRepo.getComment(commentId, userId);
 
+    console.log('getComment in controller', getComment);
+
     if (!getComment) {
       return exceptionHandler(ResultCode.NotFound);
     }

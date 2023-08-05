@@ -231,7 +231,7 @@ describe('Public comments testing', () => {
         .send();
 
       expect(result.status).toBe(204);
-      expect(getComment.body.likesInfo.myStatus).toEqual('Like');
+      expect(getComment.body.likesInfo.myStatus).toEqual('None');
       expect(getComment.body.likesInfo.likesCount).toBe(1);
 
       //TODO rest of test
