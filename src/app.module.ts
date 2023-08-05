@@ -10,7 +10,6 @@ import { BlogRepository } from './api/infrastructure/blogs/blog.repository';
 import { PostsController } from './api/public/post/api/posts.controller';
 import { PostRepository } from './api/infrastructure/posts/post.repository';
 import { CommentsQueryRepo } from './api/infrastructure/comments/comments.query.repo';
-import { CommentsMapping } from './api/public/comments/mapper/comments.mapping';
 import { UserQueryRepo } from './api/infrastructure/users/users.query.repo';
 import { UsersRepository } from './api/infrastructure/users/users.repository';
 import { DeleteController } from './delete/delete.controller';
@@ -174,7 +173,6 @@ export const localConfigTypeOrm: TypeOrmModuleOptions = {
     PostRepository,
     CommentsQueryRepo,
     CommentsRepository,
-    CommentsMapping,
     UserQueryRepo,
     UsersRepository,
     LikesRepository,
