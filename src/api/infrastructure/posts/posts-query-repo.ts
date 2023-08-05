@@ -248,16 +248,7 @@ export class PostsQueryRepo {
         Where pl."postId"=p."id" and pl."status"='Like' and pl."banStatus"=false) as "likesCount",
         (SELECT count(*) 
         FROM public.post_like pl 
-        Where pl."postId"=p."id" and pl."status"='Dislike' and pl."banStatus"=false) as "dislikesCount",
-        (SELECT pl.*, u."login"
-        FROM public.post_like pl 
-        left join public.users u on
-        u."id" = pl."userId"
-        Where pl."postId"=p."id" and pl."status"='Like' and pl."banStatus"=false
-        Group by pl.id, pl."addedAt", u."login"
-        Order by "${sortBy}" desc
-        Limit 3) as "getLast3Likes"
-
+        Where pl."postId"=p."id" and pl."status"='Dislike' and pl."banStatus"=false) as "dislikesCount"
         FROM public.posts p 
               Where p."blogId"=$1 
               Order by "${paginatedQuery.sortBy}" ${paginatedQuery.sortDirection}
