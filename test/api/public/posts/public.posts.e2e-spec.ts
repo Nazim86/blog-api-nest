@@ -16,6 +16,7 @@ import {
   dislikePost,
   getPostById,
   getPosts,
+  getPostsByBlogId,
   likePost,
   setNonePost,
 } from '../../../functions/post_functions';
@@ -357,6 +358,59 @@ describe('Public posts testing', () => {
         allPosts.body.items[2].extendedLikesInfo.newestLikes[2].login,
       ).toEqual('leo4');
 
+      //checking the same like and dislikes with getPostByBlogId
+      for (let i = 0; i <= blogs.length; i++) {
+        const blogId = blogs[i].id;
+        const postsByBlogId = await getPostsByBlogId(
+          httpServer,
+          blogId,
+          accessTokens[0],
+        );
+
+        for (let i = 0; i <= postsByBlogId.body.items.length; i++) {
+          const postId = postsByBlogId.body.items[i].id;
+
+          const post = postsByBlogId.body.items.find((p) => p.id === postId);
+          console.log('post in tests', post);
+          console.log('post in tests', post.extendedLikesInfo);
+
+          if (i === 0) {
+            expect(post.extendedLikesInfo.likesCount).toBe(2);
+            expect(post.extendedLikesInfo.dislikesCount).toBe(0);
+            expect(post.extendedLikesInfo.myStatus).toBe(LikeEnum.Like);
+          }
+
+          if (i === 1) {
+            expect(post.extendedLikesInfo.likesCount).toBe(2);
+            expect(post.extendedLikesInfo.dislikesCount).toBe(0);
+            expect(post.extendedLikesInfo.myStatus).toBe(LikeEnum.None);
+          }
+
+          if (i === 2) {
+            expect(post.extendedLikesInfo.likesCount).toBe(0);
+            expect(post.extendedLikesInfo.dislikesCount).toBe(1);
+            expect(post.extendedLikesInfo.myStatus).toBe(LikeEnum.Like);
+          }
+
+          if (i === 3) {
+            expect(post.extendedLikesInfo.likesCount).toBe(4);
+            expect(post.extendedLikesInfo.dislikesCount).toBe(0);
+            expect(post.extendedLikesInfo.myStatus).toBe(LikeEnum.Dislike);
+          }
+
+          if (i === 4) {
+            expect(post.extendedLikesInfo.likesCount).toBe(1);
+            expect(post.extendedLikesInfo.dislikesCount).toBe(1);
+            expect(post.extendedLikesInfo.myStatus).toBe(LikeEnum.None);
+          }
+
+          if (i === 5) {
+            expect(post.extendedLikesInfo.likesCount).toBe(1);
+            expect(post.extendedLikesInfo.dislikesCount).toBe(1);
+            expect(post.extendedLikesInfo.myStatus).toBe(LikeEnum.Like);
+          }
+        }
+      }
       //getting all comments after likes, checking likesCount and status
       for (let i = 0; i < allPosts.body.items.length; i++) {
         const postId = allPosts.body.items[i].id;

@@ -43,7 +43,6 @@ export class PostsController {
     const accessToken: string | undefined =
       req.headers.authorization?.split(' ')[1];
 
-    console.log('accessToken in controller', accessToken);
     let userId = undefined;
 
     if (accessToken) {

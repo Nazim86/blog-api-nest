@@ -37,9 +37,11 @@ export class PostsQueryRepo {
       let myStatus = LikeEnum.None;
 
       if (userId && post.myStatus) {
-        console.log('inside defining my status', posts.myStatus);
         myStatus = post.myStatus;
       }
+
+      const sortBy = 'addedAt';
+
       const getLast3Likes = await this.dataSource.query(
         `SELECT pl.*, u."login"
           FROM public.post_like pl
@@ -47,7 +49,7 @@ export class PostsQueryRepo {
           u."id" = pl."userId"
           Where pl."postId"=$1 and pl."status"=$2 and pl."banStatus"=$3
           Group by pl.id, pl."addedAt", u."login"
-          Order by "addedAt" desc
+          Order by "${sortBy}" desc
           Limit 3;`,
         [post.id, LikeEnum.Like, false],
       );
@@ -236,10 +238,8 @@ export class PostsQueryRepo {
 
     const pagesCount = paginatedQuery.totalPages(totalCount);
 
-    const sortBy = 'addedAt';
-
     const posts = await this.dataSource.query(
-      `SELECT p.* 
+      `SELECT p.*, 
              (SELECT status
             FROM public.post_like pl 
             Where pl."postId"=p."id" and pl."userId"=$1) as "myStatus",
@@ -255,7 +255,7 @@ export class PostsQueryRepo {
               Limit ${paginatedQuery.pageSize} Offset ${skipSize}`,
       [blogId],
     );
-
+    console.log('posts in getPostsByBlogId', posts);
     if (posts.length === 0) return false;
 
     const mappedPost: Promise<PostsViewType>[] = await this.postViewMapping(
@@ -265,6 +265,8 @@ export class PostsQueryRepo {
     );
 
     const resolvedMappedPosts: PostsViewType[] = await Promise.all(mappedPost);
+
+    console.log('resolvedMappedPosts in getPostsByBlogId', resolvedMappedPosts);
 
     return {
       pagesCount: pagesCount,

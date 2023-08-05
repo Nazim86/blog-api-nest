@@ -122,8 +122,6 @@ export class CommentsQueryRepo {
         [userId, commentId],
       );
 
-      console.log('comment in comment query repo', comment);
-
       comment = comment[0];
 
       if (!comment) return null;

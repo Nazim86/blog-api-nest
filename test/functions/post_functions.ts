@@ -38,8 +38,19 @@ export const getPostById = async (httpServer, postId, accessToken) => {
     .send();
 };
 
+export const getPostsByBlogId = async (
+  httpServer,
+  blogId,
+  accessToken,
+  query?,
+) => {
+  return request(httpServer)
+    .get(`/blogs/${blogId}/posts`)
+    .auth(accessToken, { type: 'bearer' })
+    .send(query);
+};
+
 export const getPosts = async (httpServer, accessToken, query?) => {
-  console.log('accessTOken', accessToken);
   return request(httpServer)
     .get(`/posts`)
     .query(query)
