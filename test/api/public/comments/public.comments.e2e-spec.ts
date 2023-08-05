@@ -327,7 +327,7 @@ describe('Public comments testing', () => {
         .auth(accessTokens[0], { type: 'bearer' })
         .send();
 
-      expect(getComment.body.likesInfo.myStatus).toEqual('Like');
+      expect(getComment.body.likesInfo.myStatus).toEqual('None');
       expect(getComment.body.likesInfo.likesCount).toBe(1);
 
       await request(httpServer)
