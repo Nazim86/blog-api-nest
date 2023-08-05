@@ -57,7 +57,6 @@ export class CommentsRepository {
                             WHERE "id" =$1;`,
       [commentId],
     );
-    console.log(result);
     return result[1] === 1;
   }
 }

@@ -96,7 +96,7 @@ export class CommentsQueryRepo {
 
     const pagesCount = paginatedQuery.totalPages(totalCount);
 
-    const commentsForPost = await this.dataSource.query(
+    const commentsForPosts = await this.dataSource.query(
       `Select c.*,  u."login" as "userLogin",
                 (Select "status" from public.comment_like
                   Where "commentId"= c."id" and "userId" = $1) as "myStatus",
@@ -114,13 +114,13 @@ export class CommentsQueryRepo {
     );
 
     let myStatus = 'None';
-
-    if (userId && commentsForPost.myStatus) {
-      myStatus = commentsForPost.myStatus;
+    console.log('myStatus in getCommentsForPost', commentsForPosts.myStatus);
+    if (userId && commentsForPosts.myStatus) {
+      myStatus = commentsForPosts.myStatus;
     }
 
     const mappedComment: Promise<CommentsViewType>[] =
-      await this.commentMapping(commentsForPost, myStatus);
+      await this.commentMapping(commentsForPosts, myStatus);
 
     const resolvedComments: CommentsViewType[] = await Promise.all(
       mappedComment,
@@ -221,7 +221,7 @@ export class CommentsQueryRepo {
       `Select c.*, u."login" as "userLogin" , p."title",
               p."blogId",p."blogName", b."ownerId",
               (Select "status" from public.comment_like
-                  Where "commentId"= c."id") as "myStatus",
+                  Where "commentId"= c."id" and "userId"=$2) as "myStatus",
                   (Select count(*) from public.comment_like
                   Where "commentId"=c."id" and "status"='Like' and "banStatus" = false) as "likesCount",
                   (Select count(*) from public.comment_like

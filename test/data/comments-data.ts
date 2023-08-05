@@ -99,5 +99,5 @@ export const commentUpdatingData = {
   content: 'Already done homework 7 and going on',
 };
 
-export const likeComment = { likeStatus: 'Like' };
-export const dislikeComment = { likeStatus: 'Dislike' };
+export const likeCommentDto = { likeStatus: 'Like' };
+export const dislikeCommentDto = { likeStatus: 'Dislike' };
