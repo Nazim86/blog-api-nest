@@ -250,12 +250,12 @@ export class PostsQueryRepo {
         FROM public.post_like pl 
         Where pl."postId"=p."id" and pl."status"='Dislike' and pl."banStatus"=false) as "dislikesCount"
         FROM public.posts p 
-              Where p."blogId"=$1 
+              Where p."blogId"=$2 
               Order by "${paginatedQuery.sortBy}" ${paginatedQuery.sortDirection}
               Limit ${paginatedQuery.pageSize} Offset ${skipSize}`,
-      [blogId],
+      [userId, blogId],
     );
-    console.log('posts in getPostsByBlogId', posts);
+
     if (posts.length === 0) return false;
 
     const mappedPost: Promise<PostsViewType>[] = await this.postViewMapping(
