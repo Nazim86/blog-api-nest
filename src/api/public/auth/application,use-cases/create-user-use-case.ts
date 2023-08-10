@@ -8,6 +8,7 @@ import { Users } from '../../../entities/users/user.entity';
 import { EmailConfirmation } from '../../../entities/users/email-confirmation';
 import { v4 as uuid } from 'uuid';
 import { add } from 'date-fns';
+import { UsersBanBySa } from '../../../entities/users/users-ban-by-sa.entity';
 
 export class CreateUserCommand {
   constructor(public createUserDto: CreateUserDto) {}
@@ -25,12 +26,6 @@ export class CreateUserUseCase {
       Number(process.env.SALT_ROUND),
     );
 
-    // const userId = await this.userRepository.createUser(
-    //   command.createUserDto,
-    //   passwordHash,
-    //   false,
-    // );
-
     const newUser = new Users();
 
     newUser.login = command.createUserDto.login;
@@ -40,7 +35,13 @@ export class CreateUserUseCase {
     newUser.isConfirmed = true;
 
     const user = await this.usersRepository.createUser(newUser);
-    console.log(user);
+
+    const usersBanBySA = new UsersBanBySa();
+
+    usersBanBySA.user = user;
+    usersBanBySA.isBanned = false;
+
+    await this.usersRepository.createUsersBanBySA(usersBanBySA);
 
     const confirmationCode = uuid();
 
@@ -65,6 +66,6 @@ export class CreateUserUseCase {
     } catch (e) {
       return null;
     }
-    return;
+    return user.id;
   }
 }

@@ -19,11 +19,6 @@ export class CreateUsersUseCase {
       Number(process.env.SALT_ROUND),
     );
 
-    // const userId = await this.usersRepository.createUser(
-    //   command.createUserDto,
-    //   passwordHash,
-    //   true,
-    // );
     const newUser = new Users();
     newUser.login = command.createUserDto.login;
     newUser.passwordHash = passwordHash;

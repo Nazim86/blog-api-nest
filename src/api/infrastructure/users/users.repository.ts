@@ -26,7 +26,6 @@ export class UsersRepository {
   }
 
   async createUsersBanBySA(usersBanBySA: UsersBanBySa) {
-    console.log(usersBanBySA);
     return this.usersBanBySaRepository.save(usersBanBySA);
   }
 

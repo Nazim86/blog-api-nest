@@ -45,8 +45,7 @@ export class SuperAdminUsersController {
 
   @Get()
   async getUsers(@Query() query: UserPagination<PaginationType>) {
-    const users = await this.usersQueryRepo.getUsers(query, 'SA');
-    return users;
+    return await this.usersQueryRepo.getUsers(query, 'SA');
   }
 
   @Post()
@@ -54,7 +53,6 @@ export class SuperAdminUsersController {
     const userId = await this.commandBus.execute(
       new CreateUsersCommand(createUserDto),
     );
-    console.log(userId);
     if (userId) {
       return await this.usersQueryRepo.getUserById(userId);
     }
