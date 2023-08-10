@@ -9,14 +9,17 @@ import { filterForUserQuery } from '../../../common/filterForUserQuery';
 import { RoleEnum } from '../../../enums/role-enum';
 import { BlogRepository } from '../blogs/blog.repository';
 import { ResultCode } from '../../../exception-handler/result-code-enum';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
+import { Users } from '../../entities/users/user.entity';
 
 @Injectable()
 export class UserQueryRepo {
   constructor(
     private readonly blogsRepository: BlogRepository,
     @InjectDataSource() protected dataSource: DataSource,
+    @InjectRepository(Users)
+    private readonly usersRepository: Repository<Users>,
   ) {}
 
   private userMapping = (newUser): UserViewType[] => {
@@ -197,20 +200,21 @@ export class UserQueryRepo {
   }
 
   async getUserById(id: string): Promise<UserViewType> {
-    const user = await this.dataSource.query(
-      `SELECT u.*, ub."isBanned",ub."banDate", ub."banReason" FROM public.users u left join public.users_ban_by_sa ub on u."id" = ub."userId" where u."id"=$1;`,
-      [id],
-    );
+    const user = await this.usersRepository
+      .createQueryBuilder('u')
+      .leftJoinAndSelect('u.banInfo', 'ubbs')
+      .where('u.id=:id', { id })
+      .getOne();
 
     return {
-      id: user[0].id,
-      login: user[0].login,
-      email: user[0].email,
-      createdAt: user[0].createdAt,
+      id: user.id,
+      login: user.login,
+      email: user.email,
+      createdAt: user.createdAt,
       banInfo: {
-        isBanned: user[0].isBanned,
-        banDate: user[0].banDate,
-        banReason: user[0].banReason,
+        isBanned: user.banInfo.isBanned,
+        banDate: user.banInfo.banDate,
+        banReason: user.banInfo.banReason,
       },
     };
   }

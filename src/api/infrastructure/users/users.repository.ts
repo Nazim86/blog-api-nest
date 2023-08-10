@@ -29,41 +29,6 @@ export class UsersRepository {
     return this.usersBanBySaRepository.save(usersBanBySA);
   }
 
-  // query(
-  //   `INSERT INTO public."users"(
-  //   "login", "passwordHash", "email", "createdAt","isConfirmed")
-  // VALUES ($1, $2, $3, $4, $5) returning id`,
-  //   [
-  //     createUserDto.login,
-  //     passwordHash,
-  //     createUserDto.email,
-  //     new Date().toISOString(),
-  //     isConfirmed,
-  //   ],
-  // );
-
-  // await this.dataSource.query(
-  //   `INSERT INTO public.users_ban_by_sa("userId","isBanned") VALUES ($1,$2);`,
-  //   [newUser[0].id, false],
-  // );
-  //
-  // const confirmationCode = uuid();
-  //
-  // await this.dataSource.query(
-  //   `INSERT INTO public.email_confirmation(
-  //     "userId", "confirmationCode", "emailExpiration")
-  //     VALUES ($1, $2, $3);`,
-  //   [
-  //     newUser[0].id,
-  //     confirmationCode,
-  //     add(new Date(), {
-  //       hours: 1,
-  //       minutes: 3,
-  //     }),
-  //   ],
-  // );
-  // return newUser[0].id;
-
   async updateConfirmationCode(userId: string, newCode: string) {
     const result = await this.dataSource.query(
       `UPDATE public.email_confirmation ec
