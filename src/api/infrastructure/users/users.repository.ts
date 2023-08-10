@@ -1,56 +1,69 @@
 import { Injectable } from '@nestjs/common';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
-import { CreateUserDto } from '../../superadmin/users/dto/createUser.Dto';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { BanUserDto } from '../../superadmin/users/dto/banUserDto';
-import { v4 as uuid } from 'uuid';
 import { add } from 'date-fns';
 import { UserBanDto } from '../../blogger/inputModel-Dto/userBan.dto';
+import { Users } from '../../entities/users/user.entity';
+import { EmailConfirmation } from '../../entities/users/email-confirmation';
+import { UsersBanBySa } from '../../entities/users/users-ban-by-sa.entity';
 
 @Injectable()
 export class UsersRepository {
-  constructor(@InjectDataSource() private dataSource: DataSource) {}
+  constructor(
+    @InjectDataSource() private dataSource: DataSource,
+    @InjectRepository(Users) private readonly usersRepo: Repository<Users>,
+    @InjectRepository(UsersBanBySa)
+    private readonly usersBanBySaRepository: Repository<UsersBanBySa>,
+  ) {}
 
-  async createUser(
-    createUserDto: CreateUserDto,
-    passwordHash: string,
-    isConfirmed: boolean,
-  ) {
-    const newUser = await this.dataSource.query(
-      `INSERT INTO public."users"(
-      "login", "passwordHash", "email", "createdAt","isConfirmed")
-    VALUES ($1, $2, $3, $4, $5) returning id`,
-      [
-        createUserDto.login,
-        passwordHash,
-        createUserDto.email,
-        new Date().toISOString(),
-        isConfirmed,
-      ],
-    );
-
-    await this.dataSource.query(
-      `INSERT INTO public.users_ban_by_sa("userId","isBanned") VALUES ($1,$2);`,
-      [newUser[0].id, false],
-    );
-
-    const confirmationCode = uuid();
-
-    await this.dataSource.query(
-      `INSERT INTO public.email_confirmation(
-        "userId", "confirmationCode", "emailExpiration")
-        VALUES ($1, $2, $3);`,
-      [
-        newUser[0].id,
-        confirmationCode,
-        add(new Date(), {
-          hours: 1,
-          minutes: 3,
-        }),
-      ],
-    );
-    return newUser[0].id;
+  async createUser(newUser: Users) {
+    return this.usersRepo.save(newUser);
   }
+
+  async createEmailConfirmation(emailConfirmation: EmailConfirmation) {
+    return await this.usersRepo.save(emailConfirmation);
+  }
+
+  async createUsersBanBySA(usersBanBySA: UsersBanBySa) {
+    console.log(usersBanBySA);
+    return this.usersBanBySaRepository.save(usersBanBySA);
+  }
+
+  // query(
+  //   `INSERT INTO public."users"(
+  //   "login", "passwordHash", "email", "createdAt","isConfirmed")
+  // VALUES ($1, $2, $3, $4, $5) returning id`,
+  //   [
+  //     createUserDto.login,
+  //     passwordHash,
+  //     createUserDto.email,
+  //     new Date().toISOString(),
+  //     isConfirmed,
+  //   ],
+  // );
+
+  // await this.dataSource.query(
+  //   `INSERT INTO public.users_ban_by_sa("userId","isBanned") VALUES ($1,$2);`,
+  //   [newUser[0].id, false],
+  // );
+  //
+  // const confirmationCode = uuid();
+  //
+  // await this.dataSource.query(
+  //   `INSERT INTO public.email_confirmation(
+  //     "userId", "confirmationCode", "emailExpiration")
+  //     VALUES ($1, $2, $3);`,
+  //   [
+  //     newUser[0].id,
+  //     confirmationCode,
+  //     add(new Date(), {
+  //       hours: 1,
+  //       minutes: 3,
+  //     }),
+  //   ],
+  // );
+  // return newUser[0].id;
 
   async updateConfirmationCode(userId: string, newCode: string) {
     const result = await this.dataSource.query(

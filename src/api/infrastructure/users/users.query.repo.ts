@@ -201,6 +201,10 @@ export class UserQueryRepo {
       `SELECT u.*, ub."isBanned",ub."banDate", ub."banReason" FROM public.users u left join public.users_ban_by_sa ub on u."id" = ub."userId" where u."id"=$1;`,
       [id],
     );
+    console.log('user in user query repo', user);
+    console.log('user in user query repo', user[0].login);
+    console.log('user in user query repo', user[0].login);
+
     return {
       id: user[0].id,
       login: user[0].login,

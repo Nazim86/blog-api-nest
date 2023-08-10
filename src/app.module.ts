@@ -181,5 +181,6 @@ export const localConfigTypeOrm: TypeOrmModuleOptions = {
     DeviceRepository,
     ...useCases,
   ],
+  exports: [TypeOrmModule],
 })
 export class AppModule {}

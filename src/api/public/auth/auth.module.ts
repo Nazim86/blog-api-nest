@@ -21,6 +21,9 @@ import { SuperAdminUsersController } from '../../superadmin/users/sa.users.contr
 import { CqrsModule } from '@nestjs/cqrs';
 import { DeviceCreateUseCase } from '../securityDevices/application,use-cases/device-create-use-case';
 import { DeviceUpdateUseCase } from '../securityDevices/application,use-cases/device-update-use-case';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Users } from '../../entities/users/user.entity';
+import { UsersBanBySa } from '../../entities/users/users-ban-by-sa.entity';
 
 const useCases = [DeviceCreateUseCase, DeviceUpdateUseCase];
 @Module({
@@ -35,6 +38,7 @@ const useCases = [DeviceCreateUseCase, DeviceUpdateUseCase];
     ConfigModule,
     MailModule,
     CqrsModule,
+    TypeOrmModule.forFeature([Users, UsersBanBySa]),
   ],
   providers: [
     LocalStrategy,
@@ -47,6 +51,7 @@ const useCases = [DeviceCreateUseCase, DeviceUpdateUseCase];
     UserQueryRepo,
     RefreshTokenStrategy,
     DeviceQueryRepo,
+    UsersRepository,
     // {
     //   provide: APP_GUARD,
     //   useClass: ThrottlerGuard,
