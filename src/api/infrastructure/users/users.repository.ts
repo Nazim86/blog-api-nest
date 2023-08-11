@@ -14,6 +14,8 @@ export class UsersRepository {
     @InjectRepository(Users) private readonly usersRepo: Repository<Users>,
     @InjectRepository(UsersBanBySa)
     private readonly usersBanBySaRepository: Repository<UsersBanBySa>,
+    @InjectRepository(EmailConfirmation)
+    private readonly emailConfirmationRepo: Repository<EmailConfirmation>,
   ) {}
 
   async saveUser(newUser: Users) {
@@ -21,7 +23,7 @@ export class UsersRepository {
   }
 
   async saveEmailConfirmation(emailConfirmation: EmailConfirmation) {
-    return await this.usersRepo.save(emailConfirmation);
+    return await this.emailConfirmationRepo.save(emailConfirmation);
   }
 
   async saveUsersBanBySA(usersBanBySA: UsersBanBySa) {
