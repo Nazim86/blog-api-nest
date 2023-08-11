@@ -150,22 +150,38 @@ export class UserQueryRepo {
       paginatedQuery.banStatus,
     );
 
-    const skipSize = paginatedQuery.skipSize; //(paginatedQuery.pageNumber - 1) * paginatedQuery.pageSize;
+    const skipSize = paginatedQuery.skipSize;
 
-    const totalCount = await this.dataSource.query(
-      `SELECT count(*)
-    FROM public.users u
-    Left join public.users_ban_by_sa ub on u."id" = ub."userId"
-    WHERE (u."login" ilike $1 OR u."email" ilike $2) And (ub."isBanned"=$3 or ub."isBanned"=$4);`,
-      [
-        filter.searchLogin,
-        filter.searchEmail,
-        filter.banStatus01,
-        filter.banStatus02,
-      ],
-    );
+    const totalCount = await this.usersRepository
+      .createQueryBuilder('u')
+      .leftJoinAndSelect('u.banInfo', 'ubbs')
+      .where(
+        '(u.login ilike :login or u.email ilike :email) and ' +
+          '(ubbs.isBanned = :banStatus01 or ubbs.isBanned = :banStatus02 )',
+        {
+          login: filter.searchLogin,
+          email: filter.searchEmail,
+          banStatus01: filter.banStatus01,
+          banStatus02: filter.banStatus02,
+        },
+      )
+      .getCount();
 
-    const pagesCount = paginatedQuery.totalPages(totalCount[0].count); //Math.ceil(totalCount / paginatedQuery.pageSize);
+    //   .query(
+    //   `SELECT count(*)
+    // FROM public.users u
+    // Left join public.users_ban_by_sa ub on u."id" = ub."userId"
+    // WHERE (u."login" ilike $1 OR u."email" ilike $2) And (ub."isBanned"=$3 or ub."isBanned"=$4);`,
+    //   [
+    //     filter.searchLogin,
+    //     filter.searchEmail,
+    //     filter.banStatus01,
+    //     filter.banStatus02,
+    //   ],
+    // );
+    console.log(totalCount);
+
+    const pagesCount = paginatedQuery.totalPages(totalCount); //Math.ceil(totalCount / paginatedQuery.pageSize);
 
     const getUsers = await this.dataSource.query(
       `SELECT u."id", u.login,u.email,ub."isBanned", u."createdAt", ub."banDate",ub."banReason" 
@@ -194,7 +210,7 @@ export class UserQueryRepo {
       pagesCount: pagesCount,
       page: Number(paginatedQuery.pageNumber),
       pageSize: Number(paginatedQuery.pageSize),
-      totalCount: Number(totalCount[0].count),
+      totalCount: Number(totalCount),
       items: mappedUsers,
     };
   }
