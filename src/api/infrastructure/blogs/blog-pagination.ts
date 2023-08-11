@@ -1,4 +1,5 @@
 import { Pagination, PaginationType } from '../../../common/pagination';
+import { SortDirection } from '../../../enums/sort-direction.enum';
 
 export class BlogPagination<T> extends Pagination<PaginationType> {
   public readonly searchNameTerm: string;
@@ -7,7 +8,7 @@ export class BlogPagination<T> extends Pagination<PaginationType> {
     pageNumber = 1,
     pageSize = 10,
     sortBy = 'createdAt',
-    sortDirection: 'asc' | 'desc' = 'desc',
+    sortDirection: SortDirection = SortDirection.DESC,
     searchNameTerm: string,
   ) {
     super(pageNumber, pageSize, sortBy, sortDirection);

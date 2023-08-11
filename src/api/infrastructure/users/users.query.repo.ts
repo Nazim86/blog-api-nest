@@ -41,9 +41,9 @@ export class UserQueryRepo {
         email: user.email,
         createdAt: user.createdAt,
         banInfo: {
-          isBanned: user.isBanned,
-          banDate: user.banDate,
-          banReason: user.banReason,
+          isBanned: user.banInfo.isBanned,
+          banDate: user.banInfo.banDate,
+          banReason: user.banInfo.banReason,
         },
       };
     });
@@ -154,10 +154,10 @@ export class UserQueryRepo {
 
     const totalCount = await this.usersRepository
       .createQueryBuilder('u')
-      .leftJoinAndSelect('u.banInfo', 'ubbs')
+      .leftJoin('u.banInfo', 'ub', 'u.id=ub.userId')
       .where(
         '(u.login ilike :login or u.email ilike :email) and ' +
-          '(ubbs.isBanned = :banStatus01 or ubbs.isBanned = :banStatus02 )',
+          '(ub.isBanned = :banStatus01 or ub.isBanned = :banStatus02 )',
         {
           login: filter.searchLogin,
           email: filter.searchEmail,
@@ -167,41 +167,32 @@ export class UserQueryRepo {
       )
       .getCount();
 
-    //   .query(
-    //   `SELECT count(*)
-    // FROM public.users u
-    // Left join public.users_ban_by_sa ub on u."id" = ub."userId"
-    // WHERE (u."login" ilike $1 OR u."email" ilike $2) And (ub."isBanned"=$3 or ub."isBanned"=$4);`,
-    //   [
-    //     filter.searchLogin,
-    //     filter.searchEmail,
-    //     filter.banStatus01,
-    //     filter.banStatus02,
-    //   ],
-    // );
-    console.log(totalCount);
-
     const pagesCount = paginatedQuery.totalPages(totalCount); //Math.ceil(totalCount / paginatedQuery.pageSize);
 
-    const getUsers = await this.dataSource.query(
-      `SELECT u."id", u.login,u.email,ub."isBanned", u."createdAt", ub."banDate",ub."banReason" 
-    FROM public.users u
-    Left join public.users_ban_by_sa ub on u."id" = ub."userId"
-    WHERE (u."login" ilike $1 OR u."email" ilike $2) And (ub."isBanned"=$3 or ub."isBanned"=$4)
-    Order by "${paginatedQuery.sortBy}" ${paginatedQuery.sortDirection}
-    Limit ${paginatedQuery.pageSize} Offset ${skipSize};`,
-      [
-        filter.searchLogin,
-        filter.searchEmail,
-        filter.banStatus01,
-        filter.banStatus02,
-      ],
-    );
+    const getUsers = await this.usersRepository
+      .createQueryBuilder('u')
+      .leftJoinAndSelect('u.banInfo', 'ub', 'u.id=ub.userId')
+
+      .where(
+        '(u.login ilike :login or u.email ilike :email) and ' +
+          '(ub.isBanned = :banStatus01 or ub.isBanned = :banStatus02 )',
+        {
+          login: filter.searchLogin,
+          email: filter.searchEmail,
+          banStatus01: filter.banStatus01,
+          banStatus02: filter.banStatus02,
+        },
+      )
+      .orderBy(`u.${paginatedQuery.sortBy}`, paginatedQuery.sortDirection)
+      .skip(skipSize)
+      .take(paginatedQuery.pageSize)
+      .getMany();
 
     let mappedUsers: any[];
 
-    if (requestType === 'SA') {
+    if (requestType === RoleEnum.SA) {
       mappedUsers = this.userMappingForSA(getUsers);
+      //console.log('mapped Users', mappedUsers);
     } else {
       mappedUsers = this.userMapping(getUsers);
     }

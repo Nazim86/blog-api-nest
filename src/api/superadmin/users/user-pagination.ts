@@ -1,4 +1,5 @@
 import { Pagination, PaginationType } from '../../../common/pagination';
+import { SortDirection } from '../../../enums/sort-direction.enum';
 
 export enum BanStatusEnum {
   all = 'all',
@@ -15,7 +16,7 @@ export class UserPagination<T> extends Pagination<PaginationType> {
     pageNumber = 1,
     pageSize = 10,
     sortBy = 'createdAt',
-    sortDirection: 'asc' | 'desc' = 'desc',
+    sortDirection: SortDirection = SortDirection.DESC,
     searchLoginTerm: string,
     searchEmailTerm?: string,
     banStatus: BanStatusEnum = BanStatusEnum.all,

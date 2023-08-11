@@ -22,6 +22,7 @@ import { BasicAuthGuard } from '../../public/auth/guards/basic-auth.guard';
 import { CreateUserDto } from './dto/createUser.Dto';
 import { CreateUsersCommand } from './application,use-cases/create-user-use-case';
 import { DeleteUserCommand } from './application,use-cases/delete-user-use-case';
+import { RoleEnum } from '../../../enums/role-enum';
 
 @UseGuards(BasicAuthGuard)
 @Controller('sa/users')
@@ -45,7 +46,7 @@ export class SuperAdminUsersController {
 
   @Get()
   async getUsers(@Query() query: UserPagination<PaginationType>) {
-    return await this.usersQueryRepo.getUsers(query, 'SA');
+    return await this.usersQueryRepo.getUsers(query, RoleEnum.SA);
   }
 
   @Post()

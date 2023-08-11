@@ -1,15 +1,17 @@
+import { SortDirection } from '../enums/sort-direction.enum';
+
 export class Pagination<T> {
   public readonly data: T[];
   public readonly pageSize: number;
   public readonly pageNumber: number;
   public readonly sortBy: string;
-  public readonly sortDirection: 'asc' | 'desc';
+  public readonly sortDirection: SortDirection;
 
   constructor(
     pageNumber = 1,
     pageSize = 10,
     sortBy = 'createdAt',
-    sortDirection: 'asc' | 'desc' = 'desc',
+    sortDirection: SortDirection = SortDirection.DESC,
   ) {
     this.pageNumber = pageNumber;
     this.pageSize = pageSize;
@@ -28,7 +30,7 @@ export class Pagination<T> {
 
 export interface PaginationType {
   sortBy: string;
-  sortDirection: 'asc' | 'desc';
+  sortDirection: SortDirection;
   pageNumber: number;
   pageSize: number;
 }
