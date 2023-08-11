@@ -83,7 +83,6 @@ describe('Auth controller testing', () => {
 
         user = await usersRepository.findUserByLoginOrEmail(`leo`);
         confirmationCode = user.emailConfirmation.confirmationCode;
-        console.log(confirmationCodeBefore, confirmationCode);
         expect(confirmationCodeBefore).not.toEqual(confirmationCode);
       });
 

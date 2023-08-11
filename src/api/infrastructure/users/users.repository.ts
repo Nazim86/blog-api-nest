@@ -58,15 +58,11 @@ export class UsersRepository {
   }
 
   async findUserByConfirmationCode(code: string) {
-    const user = await this.dataSource.query(
-      `SELECT  u.*,ec."confirmationCode", ec."emailExpiration"
-            FROM public.email_confirmation ec
-            left join public.users u 
-            on ec."userId"= u."id"
-            where ec."confirmationCode" = $1`,
-      [code],
-    );
-    return user[0];
+    return await this.usersRepo
+      .createQueryBuilder('u')
+      .leftJoinAndSelect('u.emailConfirmation', 'ec')
+      .where('ec.confirmationCode = :code', { code: code })
+      .getOne();
   }
 
   async findUserByRecoveryCode(recoveryCode: string) {
@@ -115,25 +111,12 @@ export class UsersRepository {
   }
 
   async findUserByEmail(email: string) {
-    const user = await this.usersRepo
+    return await this.usersRepo
       .createQueryBuilder('u')
       .leftJoinAndSelect('u.banInfo', 'ub')
       .leftJoinAndSelect('u.emailConfirmation', 'ec')
       .where('u.email = :email', { email: email })
       .getOne();
-
-    //   .query(
-    //   `SELECT u.*,ub."banDate",ub."banReason",ec."confirmationCode", ec."emailExpiration"
-    //             FROM public.users u
-    //             left join public.users_ban_by_sa ub on
-    //             u."id" = ub."userId"
-    //             left join public.email_confirmation ec on
-    //             u."id" = ec."userId"
-    //             where u."email" = $1`,
-    //   [email],
-    // );
-
-    return user;
   }
 
   async findBloggerBannedUser(userId: string, blogId: string) {

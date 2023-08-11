@@ -14,14 +14,23 @@ export class RegistrationConfirmationUseCase {
     const user = await this.userRepository.findUserByConfirmationCode(
       command.confirmationCodeDto.code,
     );
-    if (!user || user.isConfirmed || user.emailExpiration < new Date())
+
+    if (
+      !user ||
+      user.isConfirmed ||
+      user.emailConfirmation.emailExpiration < new Date()
+    )
       return false;
 
-    const isUserConfirmed = await this.userRepository.confirmRegistration(
-      user.id,
-    );
+    user.isConfirmed = true;
+
+    await this.userRepository.saveUser(user);
+
+    // const isUserConfirmed = await this.userRepository.confirmRegistration(
+    //   user.id,
+    // );
     //user.confirmRegistration();
     //await this.userRepository.save(user);
-    return isUserConfirmed;
+    return true;
   }
 }
