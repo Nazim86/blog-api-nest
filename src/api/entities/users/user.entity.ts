@@ -41,10 +41,16 @@ export class Users {
   })
   banInfo: UsersBanBySa;
 
-  @OneToOne(() => EmailConfirmation, (ec) => ec.user, {})
+  @OneToOne(() => EmailConfirmation, (ec) => ec.user, {
+    cascade: true,
+    onUpdate: 'CASCADE',
+  })
   emailConfirmation: EmailConfirmation;
 
-  @OneToOne(() => PasswordRecovery, (pr) => pr.user, {})
+  @OneToOne(() => PasswordRecovery, (pr) => pr.user, {
+    cascade: true,
+    onUpdate: 'CASCADE',
+  })
   passwordRecovery: PasswordRecovery;
 
   @OneToMany(() => CommentLike, (c) => c.user)

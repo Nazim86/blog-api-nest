@@ -76,14 +76,14 @@ describe('Auth controller testing', () => {
       but not confirmed yet; status 204`, async () => {
         user = await usersRepository.findUserByLoginOrEmail(`leo`);
 
-        const confirmationCodeBefore = user.confirmationCode;
+        const confirmationCodeBefore = user.emailConfirmation.confirmationCode;
 
         const result = await resendRegistrationEmail(httpServer, emailDto);
         expect(result.status).toBe(204);
 
         user = await usersRepository.findUserByLoginOrEmail(`leo`);
-        confirmationCode = user.confirmationCode;
-
+        confirmationCode = user.emailConfirmation.confirmationCode;
+        console.log(confirmationCodeBefore, confirmationCode);
         expect(confirmationCodeBefore).not.toEqual(confirmationCode);
       });
 

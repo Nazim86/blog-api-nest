@@ -32,7 +32,7 @@ export class CreateUserUseCase {
     newUser.passwordHash = passwordHash;
     newUser.email = command.createUserDto.email;
     newUser.createdAt = new Date().toISOString();
-    newUser.isConfirmed = true;
+    newUser.isConfirmed = false;
 
     const user = await this.usersRepository.saveUser(newUser);
 
@@ -45,13 +45,15 @@ export class CreateUserUseCase {
 
     const confirmationCode = uuid();
 
-    const emailConfirmation = new EmailConfirmation();
-    emailConfirmation.user = user;
-    emailConfirmation.confirmationCode = confirmationCode;
-    emailConfirmation.emailExpiration = add(new Date(), {
+    const expirationDate = add(new Date(), {
       hours: 1,
       minutes: 3,
     });
+
+    const emailConfirmation = new EmailConfirmation();
+    emailConfirmation.user = user;
+    emailConfirmation.confirmationCode = confirmationCode;
+    emailConfirmation.emailExpiration = expirationDate;
 
     await this.usersRepository.saveEmailConfirmation(emailConfirmation);
 

@@ -3,6 +3,7 @@ import { CommandHandler } from '@nestjs/cqrs';
 import { v4 as uuid } from 'uuid';
 import { UsersRepository } from '../../../infrastructure/users/users.repository';
 import { MailService } from '../../../../mail/mail.service';
+import { add } from 'date-fns';
 
 export class ResendEmailCommand {
   constructor(public emailDto: EmailDto) {}
@@ -18,18 +19,33 @@ export class ResendEmailUseCase {
     const user = await this.usersRepository.findUserByEmail(
       command.emailDto.email,
     );
+
     try {
-      if (!user || user.isConfirmed || user.emailExpiration < new Date())
+      if (
+        !user ||
+        user.isConfirmed ||
+        user.emailConfirmation.emailExpiration < new Date()
+      )
         return false;
 
       const newCode = uuid();
 
-      const isUpdated = await this.usersRepository.updateConfirmationCode(
-        user.id,
-        newCode,
-      );
+      const newExpirationDate = add(new Date(), {
+        hours: 1,
+        minutes: 3,
+      });
 
-      if (!isUpdated) return false;
+      user.emailConfirmation.confirmationCode = newCode;
+      user.emailConfirmation.emailExpiration = newExpirationDate;
+
+      await this.usersRepository.saveUser(user);
+
+      // const isUpdated = await this.usersRepository.updateConfirmationCode(
+      //   user.id,
+      //   newCode,
+      // );
+
+      // if (!isUpdated) return false;
 
       await this.mailService.sendUserConfirmationEmail(
         newCode,
@@ -37,6 +53,7 @@ export class ResendEmailUseCase {
         user.login,
       );
     } catch (e) {
+      console.log('error in ResendEmailUseCase', e);
       return false;
     }
 

@@ -67,6 +67,9 @@ export class AuthController {
     const isEmailSent: boolean = await this.commandBus.execute(
       new ResendEmailCommand(emailDto),
     );
+
+    console.log('isEmailSent', isEmailSent);
+
     if (!isEmailSent) {
       const errorMessage = {
         message: [{ message: 'wrong email', field: 'email' }],

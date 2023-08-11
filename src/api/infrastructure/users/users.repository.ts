@@ -30,22 +30,22 @@ export class UsersRepository {
     return this.usersBanBySaRepository.save(usersBanBySA);
   }
 
-  async updateConfirmationCode(userId: string, newCode: string) {
-    const result = await this.dataSource.query(
-      `UPDATE public.email_confirmation ec
-        SET "confirmationCode"=$1, "emailExpiration"=$2
-        WHERE ec."userId" = $3;`,
-      [
-        newCode,
-        add(new Date(), {
-          hours: 1,
-          minutes: 3,
-        }),
-        userId,
-      ],
-    );
-    return result[1] === 1;
-  }
+  // async updateConfirmationCode(userId: string, newCode: string) {
+  //   const result = await this.dataSource.query(
+  //     `UPDATE public.email_confirmation ec
+  //       SET "confirmationCode"=$1, "emailExpiration"=$2
+  //       WHERE ec."userId" = $3;`,
+  //     [
+  //       newCode,
+  //       add(new Date(), {
+  //         hours: 1,
+  //         minutes: 3,
+  //       }),
+  //       userId,
+  //     ],
+  //   );
+  //   return result[1] === 1;
+  // }
 
   async confirmRegistration(userId: string) {
     const result = await this.dataSource.query(
@@ -115,18 +115,25 @@ export class UsersRepository {
   }
 
   async findUserByEmail(email: string) {
-    const user = await this.dataSource.query(
-      `SELECT u.*,ub."banDate",ub."banReason",ec."confirmationCode", ec."emailExpiration"
-                FROM public.users u
-                left join public.users_ban_by_sa ub on
-                u."id" = ub."userId"
-                left join public.email_confirmation ec on
-                u."id" = ec."userId"
-                where u."email" = $1`,
-      [email],
-    );
+    const user = await this.usersRepo
+      .createQueryBuilder('u')
+      .leftJoinAndSelect('u.banInfo', 'ub')
+      .leftJoinAndSelect('u.emailConfirmation', 'ec')
+      .where('u.email = :email', { email: email })
+      .getOne();
 
-    return user[0];
+    //   .query(
+    //   `SELECT u.*,ub."banDate",ub."banReason",ec."confirmationCode", ec."emailExpiration"
+    //             FROM public.users u
+    //             left join public.users_ban_by_sa ub on
+    //             u."id" = ub."userId"
+    //             left join public.email_confirmation ec on
+    //             u."id" = ec."userId"
+    //             where u."email" = $1`,
+    //   [email],
+    // );
+
+    return user;
   }
 
   async findBloggerBannedUser(userId: string, blogId: string) {
