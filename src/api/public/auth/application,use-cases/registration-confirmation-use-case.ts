@@ -25,12 +25,6 @@ export class RegistrationConfirmationUseCase {
     user.isConfirmed = true;
 
     await this.userRepository.saveUser(user);
-
-    // const isUserConfirmed = await this.userRepository.confirmRegistration(
-    //   user.id,
-    // );
-    //user.confirmRegistration();
-    //await this.userRepository.save(user);
     return true;
   }
 }

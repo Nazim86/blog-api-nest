@@ -47,15 +47,15 @@ export class UsersRepository {
   //   return result[1] === 1;
   // }
 
-  async confirmRegistration(userId: string) {
-    const result = await this.dataSource.query(
-      `UPDATE public.users 
-            SET "isConfirmed"=true
-            WHERE "id" = $1;`,
-      [userId],
-    );
-    return result[1] === 1;
-  }
+  // async confirmRegistration(userId: string) {
+  //   const result = await this.dataSource.query(
+  //     `UPDATE public.users
+  //           SET "isConfirmed"=true
+  //           WHERE "id" = $1;`,
+  //     [userId],
+  //   );
+  //   return result[1] === 1;
+  // }
 
   async findUserByConfirmationCode(code: string) {
     return await this.usersRepo
@@ -209,24 +209,6 @@ export class UsersRepository {
   }
 
   async findUserByLoginOrEmail(loginOrEmail: string) {
-    // .where('u.id = ec.userId')
-    //     .andWhere('u.id = pr.userId')
-    //     .andWhere('u.id = ub.userId')
-
-    //   .query(
-    //   `SELECT u.*, ec."confirmationCode",ec."emailExpiration",
-    // pr."recoveryCode", pr."recoveryCodeExpiration", ubb."isBanned"
-    // FROM public.users u
-    // Left join public.email_confirmation ec on
-    // ec."userId" = u."id"
-    // Left Join public.password_recovery pr on
-    // pr."userId"=u."id"
-    // Left join public.users_ban_by_sa ubb on
-    // u."id" = ubb."userId"
-    // where u."login"= $1 OR u."email" = $1;`,
-    //   [loginOrEmail],
-    // );
-
     return await this.usersRepo
       .createQueryBuilder('u')
       .leftJoinAndSelect('u.emailConfirmation', 'ec')

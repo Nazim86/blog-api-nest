@@ -10,6 +10,9 @@ export class DeviceRepository {
     @InjectRepository(Devices) private readonly deviceRepo: Repository<Devices>,
   ) {}
 
+  async saveDevice(device: Devices) {
+    return this.deviceRepo.save(device);
+  }
   async getDevicesByDeviceId(deviceId: string) {
     const device = await this.dataSource.query(
       `SELECT d.*
@@ -20,21 +23,21 @@ export class DeviceRepository {
     return device[0];
   }
 
-  async createDevice(
-    lastActiveDate: string,
-    deviceId: string,
-    ip: string,
-    deviceName: string,
-    userId: string,
-    expiration: string,
-  ) {
-    return await this.dataSource.query(
-      `INSERT INTO public.devices(
-            "lastActiveDate", "deviceId", ip, title, "userId", expiration)
-            VALUES ($1, $2, $3, $4, $5, $6);`,
-      [lastActiveDate, deviceId, ip, deviceName, userId, expiration],
-    );
-  }
+  // async createDevice(
+  //   lastActiveDate: string,
+  //   deviceId: string,
+  //   ip: string,
+  //   deviceName: string,
+  //   userId: string,
+  //   expiration: string,
+  // ) {
+  //   return await this.dataSource.query(
+  //     `INSERT INTO public.devices(
+  //           "lastActiveDate", "deviceId", ip, title, "userId", expiration)
+  //           VALUES ($1, $2, $3, $4, $5, $6);`,
+  //     [lastActiveDate, deviceId, ip, deviceName, userId, expiration],
+  //   );
+  // }
 
   async updateDevice(deviceId: string, lastActiveDate: string) {
     const result = await this.dataSource.query(
