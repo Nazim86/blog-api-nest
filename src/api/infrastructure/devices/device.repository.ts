@@ -59,8 +59,7 @@ export class DeviceRepository {
     //     WHERE d."userId"= $1;`,
     //   [userId],
     // );
-    console.log(result.affected);
-    return result[1] === 1;
+    return result.affected === 1;
   }
 
   async deleteDevices(deviceId: string): Promise<boolean> {
