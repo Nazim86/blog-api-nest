@@ -193,15 +193,27 @@ export class UsersRepository {
   // }
 
   async deleteUser(id: string): Promise<boolean> {
-    try {
-      const result = await this.dataSource.query(
-        `DELETE FROM public."users" u WHERE u."id" = $1;`,
-        [id],
-      );
-      return result[1] === 1;
-    } catch (e) {
-      return false;
-    }
+    const result = await this.usersRepo
+      .createQueryBuilder()
+      .delete()
+      .from(Users)
+      .where('id = :id', { id: id })
+      .execute();
+
+    return result.affected === 1;
+
+    // try {
+    // try {
+    //   const result = await this.dataSource
+    //
+    //     .query(
+    //     `DELETE FROM public."users" u WHERE u."id" = $1;`,
+    //     [id],
+    //   );
+    //   return result[1] === 1;
+    // } catch (e) {
+    //   return false;
+    // }
   }
 
   async findUserByLoginOrEmail(loginOrEmail: string) {

@@ -1,11 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { CreateBlogDto } from '../../blogger/inputModel-Dto/createBlog.dto';
+import { Blogs } from '../../entities/blogs/blogs.entity';
 
 @Injectable()
 export class BlogRepository {
-  constructor(@InjectDataSource() private dataSource: DataSource) {}
+  constructor(
+    @InjectDataSource() private dataSource: DataSource,
+    @InjectRepository(Blogs) private readonly blogsRepo: Repository<Blogs>,
+  ) {}
 
   async getBlogById(blogId: string) {
     try {
@@ -97,16 +101,21 @@ export class BlogRepository {
     return isBound[1] === 1;
   }
 
-  async deleteBlogOwnerInfo(userId: string) {
-    const result = await this.dataSource.query(
-      `UPDATE public.blogs 
-    SET  "ownerId"=null
-    WHERE "ownerId" = $1;`,
-      [userId],
-    );
-
-    return result[1] === 1;
-  }
+  // async deleteBlogOwnerInfo(userId: string) {
+  //   const result = await this.blogsRepo
+  //     .createQueryBuilder()
+  //     .delete()
+  //     .from(Blogs);
+  //
+  //   //   .query(
+  //   //   `UPDATE public.blogs
+  //   // SET  "ownerId"=null
+  //   // WHERE "ownerId" = $1;`,
+  //   //   [userId],
+  //   // );
+  //
+  //   return result[1] === 1;
+  // }
 
   async deleteBlogById(id: string): Promise<boolean> {
     try {
