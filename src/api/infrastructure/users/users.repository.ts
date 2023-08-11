@@ -175,22 +175,22 @@ export class UsersRepository {
   //   return result[1] === 1;
   // }
 
-  async unBanUser(userId) {
-    // await this.dataSource.query(
-    //   `UPDATE public.users u SET "isBanned"=false
-    //  WHERE u."id" = $1;`,
-    //   [userId],
-    // );
-
-    const result = await this.dataSource.query(
-      `UPDATE public.users_ban_by_sa ub
-    SET "isBanned"=false, "banReason"=null, "banDate" = null
-    WHERE ub."userId" = $1;`,
-      [userId],
-    );
-
-    return result[1] === 1;
-  }
+  // async unBanUser(userId) {
+  //   // await this.dataSource.query(
+  //   //   `UPDATE public.users u SET "isBanned"=false
+  //   //  WHERE u."id" = $1;`,
+  //   //   [userId],
+  //   // );
+  //
+  //   const result = await this.dataSource.query(
+  //     `UPDATE public.users_ban_by_sa ub
+  //   SET "isBanned"=false, "banReason"=null, "banDate" = null
+  //   WHERE ub."userId" = $1;`,
+  //     [userId],
+  //   );
+  //
+  //   return result[1] === 1;
+  // }
 
   async deleteUser(id: string): Promise<boolean> {
     try {

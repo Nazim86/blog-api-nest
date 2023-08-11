@@ -67,7 +67,13 @@ export class BanUserUseCase {
       user.banInfo.isBanned !== command.banUserDto.isBanned &&
       !command.banUserDto.isBanned
     ) {
-      await this.usersRepository.unBanUser(command.userId);
+      user.banInfo.banReason = null;
+      user.banInfo.banDate = null;
+      user.banInfo.isBanned = false;
+
+      await this.usersRepository.saveUser(user);
+
+      //await this.usersRepository.unBanUser(command.userId);
       // user.unBanUser();
 
       // await this.likesRepository.setBanStatusForCommentLike(
