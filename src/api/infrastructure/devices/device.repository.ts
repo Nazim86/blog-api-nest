@@ -14,13 +14,13 @@ export class DeviceRepository {
     return this.deviceRepo.save(device);
   }
   async getDevicesByDeviceId(deviceId: string) {
-    const device = await this.dataSource.query(
-      `SELECT d.*
-    FROM public.devices d Where d."deviceId" = $1;`,
-      [deviceId],
-    );
-
-    return device[0];
+    return await this.deviceRepo
+      .createQueryBuilder('d')
+      .leftJoinAndSelect('d.user', 'u')
+      .where('d.deviceId = :deviceId', { deviceId: deviceId })
+      .select(['d', 'u.id']) // Select both device and user's id
+      .addSelect('u.id', 'userId') // Alias the user's id as userId
+      .getOne();
   }
 
   // async createDevice(
@@ -39,15 +39,15 @@ export class DeviceRepository {
   //   );
   // }
 
-  async updateDevice(deviceId: string, lastActiveDate: string) {
-    const result = await this.dataSource.query(
-      `UPDATE public.devices
-            SET "lastActiveDate"=$1, "deviceId"=$2
-            WHERE "deviceId" =$2 ;`,
-      [lastActiveDate, deviceId],
-    );
-    return result[1] === 1;
-  }
+  // async updateDevice(deviceId: string, lastActiveDate: string) {
+  //   const result = await this.dataSource.query(
+  //     `UPDATE public.devices
+  //           SET "lastActiveDate"=$1, "deviceId"=$2
+  //           WHERE "deviceId" =$2 ;`,
+  //     [lastActiveDate, deviceId],
+  //   );
+  //   return result[1] === 1;
+  // }
 
   async deleteDeviceByUserId(userId: string) {
     const result = await this.deviceRepo
@@ -75,26 +75,37 @@ export class DeviceRepository {
   }
 
   async deleteDeviceById(deviceId: string, userId: string) {
-    const result = await this.dataSource.query(
-      `DELETE FROM public.devices d
-                    WHERE d."deviceId"=$1 and d."userId" =$2;`,
-      [deviceId, userId],
-    );
-    return result[1] === 1;
+    const result = await this.deviceRepo
+      .createQueryBuilder()
+      .delete()
+      .from(Devices)
+      .where('deviceId = :deviceId and d.user.id = :userId', {
+        deviceId: deviceId,
+        userId: userId,
+      })
+      .execute();
+
+    //   .query(
+    //   `DELETE FROM public.devices d
+    //                 WHERE d."deviceId"=$1 and d."userId" =$2;`,
+    //   [deviceId, userId],
+    // );
+    return result.affected === 1;
   }
 
   async checkTokenVersion(
     deviceId: string,
     lastActiveDate: string,
   ): Promise<boolean> {
-    const isTokenValid = await this.dataSource.query(
-      `SELECT d.*
-            FROM public.devices d
-            Where d."deviceId" = $1 and d."lastActiveDate" =$2;`,
-      [deviceId, lastActiveDate],
-    );
+    const isTokenValid = await this.deviceRepo
+      .createQueryBuilder('d')
+      .where('d.deviceId = :deviceId and d.lastActiveDate = :lastActiveDate', {
+        deviceId: deviceId,
+        lastActiveDate: lastActiveDate,
+      })
+      .getOne();
 
-    if (!isTokenValid[0]) return false;
+    if (!isTokenValid) return false;
     return true;
   }
 

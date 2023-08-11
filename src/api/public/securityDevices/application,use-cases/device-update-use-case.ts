@@ -23,11 +23,16 @@ export class DeviceUpdateUseCase {
 
     if (!device) return false;
 
-    const isDeviceUpdated = await this.deviceRepository.updateDevice(
-      deviceId,
-      lastActiveDate,
-    );
+    device.lastActiveDate = lastActiveDate;
+    device.deviceId = deviceId;
 
-    return isDeviceUpdated;
+    await this.deviceRepository.saveDevice(device);
+
+    // const isDeviceUpdated = await this.deviceRepository.updateDevice(
+    //   deviceId,
+    //   lastActiveDate,
+    // );
+
+    return;
   }
 }
