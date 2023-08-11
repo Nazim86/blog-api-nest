@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
-import { BanUserDto } from '../../superadmin/users/dto/banUserDto';
 import { add } from 'date-fns';
 import { UserBanDto } from '../../blogger/inputModel-Dto/userBan.dto';
 import { Users } from '../../entities/users/user.entity';
@@ -17,15 +16,15 @@ export class UsersRepository {
     private readonly usersBanBySaRepository: Repository<UsersBanBySa>,
   ) {}
 
-  async createUser(newUser: Users) {
+  async saveUser(newUser: Users) {
     return this.usersRepo.save(newUser);
   }
 
-  async createEmailConfirmation(emailConfirmation: EmailConfirmation) {
+  async saveEmailConfirmation(emailConfirmation: EmailConfirmation) {
     return await this.usersRepo.save(emailConfirmation);
   }
 
-  async createUsersBanBySA(usersBanBySA: UsersBanBySa) {
+  async saveUsersBanBySA(usersBanBySA: UsersBanBySa) {
     return this.usersBanBySaRepository.save(usersBanBySA);
   }
 
@@ -160,21 +159,21 @@ export class UsersRepository {
     return true;
   }
 
-  async banUser(userId, banUserDto: BanUserDto) {
-    const result = await this.dataSource.query(
-      `UPDATE public.users_ban_by_sa ub
-    SET "banReason"=$1, "banDate" = $2, "isBanned"=$3
-    WHERE ub."userId" = $4;`,
-      [
-        banUserDto.banReason,
-        new Date().toISOString(),
-        banUserDto.isBanned,
-        userId,
-      ],
-    );
-
-    return result[1] === 1;
-  }
+  // async banUser(userId, banUserDto: BanUserDto) {
+  //   const result = await this.dataSource.query(
+  //     `UPDATE public.users_ban_by_sa ub
+  //   SET "banReason"=$1, "banDate" = $2, "isBanned"=$3
+  //   WHERE ub."userId" = $4;`,
+  //     [
+  //       banUserDto.banReason,
+  //       new Date().toISOString(),
+  //       banUserDto.isBanned,
+  //       userId,
+  //     ],
+  //   );
+  //
+  //   return result[1] === 1;
+  // }
 
   async unBanUser(userId) {
     // await this.dataSource.query(
@@ -206,36 +205,56 @@ export class UsersRepository {
   }
 
   async findUserByLoginOrEmail(loginOrEmail: string) {
-    const user = await this.dataSource.query(
-      `SELECT u.*, ec."confirmationCode",ec."emailExpiration", 
-    pr."recoveryCode", pr."recoveryCodeExpiration", ubb."isBanned"
-    FROM public.users u
-    Left join public.email_confirmation ec on 
-    ec."userId" = u."id"
-    Left Join public.password_recovery pr on
-    pr."userId"=u."id"
-    Left join public.users_ban_by_sa ubb on
-    u."id" = ubb."userId"
-    where u."login"= $1 OR u."email" = $1;`,
-      [loginOrEmail],
-    );
+    // .where('u.id = ec.userId')
+    //     .andWhere('u.id = pr.userId')
+    //     .andWhere('u.id = ub.userId')
 
-    return user[0];
+    //   .query(
+    //   `SELECT u.*, ec."confirmationCode",ec."emailExpiration",
+    // pr."recoveryCode", pr."recoveryCodeExpiration", ubb."isBanned"
+    // FROM public.users u
+    // Left join public.email_confirmation ec on
+    // ec."userId" = u."id"
+    // Left Join public.password_recovery pr on
+    // pr."userId"=u."id"
+    // Left join public.users_ban_by_sa ubb on
+    // u."id" = ubb."userId"
+    // where u."login"= $1 OR u."email" = $1;`,
+    //   [loginOrEmail],
+    // );
+
+    return await this.usersRepo
+      .createQueryBuilder('u')
+      .leftJoinAndSelect('u.emailConfirmation', 'ec')
+      .leftJoinAndSelect('u.passwordRecovery', 'pr')
+      .leftJoinAndSelect('u.banInfo', 'ub')
+      .where('u.login = :login or u.email = :email', {
+        login: loginOrEmail,
+        email: loginOrEmail,
+      })
+      .getOne();
   }
 
   async findUserById(userId: string) {
-    const user = await this.dataSource.query(
-      `SELECT u.*,ub."banDate",ub."banReason",ub."isBanned",ec."confirmationCode", ec."emailExpiration"
-                FROM public.users u
-                left join public.users_ban_by_sa ub on
-                u."id" = ub."userId"
-                left join public.email_confirmation ec on
-                u."id" = ec."userId"
-                where u."id" = $1`,
-      [userId],
-    );
+    const user = await this.usersRepo
+      .createQueryBuilder('u')
+      .leftJoinAndSelect('u.banInfo', 'bi')
+      .leftJoinAndSelect('u.emailConfirmation', 'ec')
+      .where('u.id = :userId', { userId: userId })
+      .getOne();
+
+    //   .query(
+    //   `SELECT u.*,ub."banDate",ub."banReason",ub."isBanned",ec."confirmationCode", ec."emailExpiration"
+    //             FROM public.users u
+    //             left join public.users_ban_by_sa ub on
+    //             u."id" = ub."userId"
+    //             left join public.email_confirmation ec on
+    //             u."id" = ec."userId"
+    //             where u."id" = $1`,
+    //   [userId],
+    // );
     if (!user) return null;
 
-    return user[0];
+    return user;
   }
 }

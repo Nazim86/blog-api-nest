@@ -34,14 +34,14 @@ export class CreateUserUseCase {
     newUser.createdAt = new Date().toISOString();
     newUser.isConfirmed = true;
 
-    const user = await this.usersRepository.createUser(newUser);
+    const user = await this.usersRepository.saveUser(newUser);
 
     const usersBanBySA = new UsersBanBySa();
 
     usersBanBySA.user = user;
     usersBanBySA.isBanned = false;
 
-    await this.usersRepository.createUsersBanBySA(usersBanBySA);
+    await this.usersRepository.saveUsersBanBySA(usersBanBySA);
 
     const confirmationCode = uuid();
 
@@ -53,7 +53,7 @@ export class CreateUserUseCase {
       minutes: 3,
     });
 
-    await this.usersRepository.createEmailConfirmation(emailConfirmation);
+    await this.usersRepository.saveEmailConfirmation(emailConfirmation);
 
     // const user = await this.usersRepository.findUserById(userId);
 

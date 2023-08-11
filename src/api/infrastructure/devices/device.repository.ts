@@ -1,10 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
+import { Devices } from '../../entities/devices/devices.entity';
 
 @Injectable()
 export class DeviceRepository {
-  constructor(@InjectDataSource() private dataSource: DataSource) {}
+  constructor(
+    @InjectDataSource() private dataSource: DataSource,
+    @InjectRepository(Devices) private readonly deviceRepo: Repository<Devices>,
+  ) {}
 
   async getDevicesByDeviceId(deviceId: string) {
     const device = await this.dataSource.query(
@@ -43,11 +47,19 @@ export class DeviceRepository {
   }
 
   async deleteDeviceByUserId(userId: string) {
-    const result = await this.dataSource.query(
-      `DELETE FROM public.devices d
-        WHERE d."userId"= $1;`,
-      [userId],
-    );
+    const result = await this.deviceRepo
+      .createQueryBuilder()
+      .delete()
+      .from(Devices)
+      .where('userId = :userId', { userId: userId })
+      .execute();
+
+    //   .query(
+    //   `DELETE FROM public.devices d
+    //     WHERE d."userId"= $1;`,
+    //   [userId],
+    // );
+    console.log(result.affected);
     return result[1] === 1;
   }
 

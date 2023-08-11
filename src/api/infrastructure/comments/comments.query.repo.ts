@@ -164,7 +164,7 @@ export class CommentsQueryRepo {
 
       const user = await this.usersRepository.findUserById(comment.userId);
 
-      if (user.isBanned) {
+      if (user.banInfo.isBanned) {
         return null;
       }
 

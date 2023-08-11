@@ -69,25 +69,25 @@ export class LikesRepository {
     return true;
   }
 
-  async setBanStatusForCommentLike(userId: string, banStatus: boolean) {
-    return this.dataSource.query(
-      `UPDATE public.comment_like
-        SET "banStatus"=$1
-        WHERE "userId"=$2;`,
-      [banStatus, userId],
-    );
-  }
+  // async setBanStatusForCommentLike(userId: string, banStatus: boolean) {
+  //   return this.dataSource.query(
+  //     `UPDATE public.comment_like
+  //       SET "banStatus"=$1
+  //       WHERE "userId"=$2;`,
+  //     [banStatus, userId],
+  //   );
+  // }
 
   async resetLikeRepository() {
     return this.dataSource.query(`Truncate public.comment_like`);
   }
 
-  async setBanStatusForPostLike(userId: string, banStatus: boolean) {
-    return this.dataSource.query(
-      `UPDATE public.post_like
-    SET "banStatus"=$1
-    WHERE "userId"= $2;`,
-      [banStatus, userId],
-    );
-  }
+  // async setBanStatusForPostLike(userId: string, banStatus: boolean) {
+  //   return this.dataSource.query(
+  //     `UPDATE public.post_like
+  //   SET "banStatus"=$1
+  //   WHERE "userId"= $2;`,
+  //     [banStatus, userId],
+  //   );
+  // }
 }

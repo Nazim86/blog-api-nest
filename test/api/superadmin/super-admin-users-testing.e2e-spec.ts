@@ -80,11 +80,15 @@ describe('Super Admin blogs testing', () => {
     });
 
     it(`Ban user`, async () => {
+      const usersBeforeBan = await getUsers(httpServer);
+
+      expect(usersBeforeBan.body.items[4].banInfo.isBanned).toBe(false);
+
       await banUserBySA(httpServer, users[0].id, userBanDto);
 
-      const result = await getUsers(httpServer);
+      const usersAfterBan = await getUsers(httpServer);
 
-      expect(result.body.items[4].banInfo.isBanned).toBe(true);
+      expect(usersAfterBan.body.items[4].banInfo.isBanned).toBe(true);
     });
 
     it(`Unban user`, async () => {

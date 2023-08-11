@@ -35,19 +35,25 @@ export class BanUserUseCase {
     }
 
     if (
-      user.isBanned !== command.banUserDto.isBanned &&
+      user.banInfo.isBanned !== command.banUserDto.isBanned &&
       command.banUserDto.isBanned
     ) {
-      await this.usersRepository.banUser(command.userId, command.banUserDto);
+      user.banInfo.banReason = command.banUserDto.banReason;
+      user.banInfo.banDate = new Date().toISOString();
+      user.banInfo.isBanned = command.banUserDto.isBanned;
+
+      await this.usersRepository.saveUser(user);
+
+      //console.log('user in banuser command', userAfterBan);
 
       //user.banUser(command.banUserDto);
 
-      await this.likesRepository.setBanStatusForCommentLike(
-        command.userId,
-        true,
-      );
-
-      await this.likesRepository.setBanStatusForPostLike(command.userId, true);
+      // await this.likesRepository.setBanStatusForCommentLike(
+      //   command.userId,
+      //   true,
+      // );
+      //
+      // await this.likesRepository.setBanStatusForPostLike(command.userId, true);
 
       // await this.commentsRepository.setBanStatusForComment(
       //   command.userId,
@@ -58,18 +64,18 @@ export class BanUserUseCase {
     }
 
     if (
-      user.isBanned !== command.banUserDto.isBanned &&
+      user.banInfo.isBanned !== command.banUserDto.isBanned &&
       !command.banUserDto.isBanned
     ) {
       await this.usersRepository.unBanUser(command.userId);
       // user.unBanUser();
 
-      await this.likesRepository.setBanStatusForCommentLike(
-        command.userId,
-        false,
-      );
-
-      await this.likesRepository.setBanStatusForPostLike(command.userId, false);
+      // await this.likesRepository.setBanStatusForCommentLike(
+      //   command.userId,
+      //   false,
+      // );
+      //
+      // await this.likesRepository.setBanStatusForPostLike(command.userId, false);
       // await this.commentsRepository.setBanStatusForComment(
       //   command.userId,
       //   false,

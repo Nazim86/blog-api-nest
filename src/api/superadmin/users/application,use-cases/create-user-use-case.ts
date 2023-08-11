@@ -26,14 +26,14 @@ export class CreateUsersUseCase {
     newUser.createdAt = new Date().toISOString();
     newUser.isConfirmed = true;
 
-    const user = await this.usersRepository.createUser(newUser);
+    const user = await this.usersRepository.saveUser(newUser);
 
     const usersBanBySA = new UsersBanBySa();
 
     usersBanBySA.user = user;
     usersBanBySA.isBanned = false;
 
-    await this.usersRepository.createUsersBanBySA(usersBanBySA);
+    await this.usersRepository.saveUsersBanBySA(usersBanBySA);
 
     return user.id;
   }

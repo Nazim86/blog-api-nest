@@ -24,6 +24,7 @@ import { DeviceUpdateUseCase } from '../securityDevices/application,use-cases/de
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Users } from '../../entities/users/user.entity';
 import { UsersBanBySa } from '../../entities/users/users-ban-by-sa.entity';
+import { Devices } from '../../entities/devices/devices.entity';
 
 const useCases = [DeviceCreateUseCase, DeviceUpdateUseCase];
 @Module({
@@ -38,7 +39,7 @@ const useCases = [DeviceCreateUseCase, DeviceUpdateUseCase];
     ConfigModule,
     MailModule,
     CqrsModule,
-    TypeOrmModule.forFeature([Users, UsersBanBySa]),
+    TypeOrmModule.forFeature([Users, UsersBanBySa, Devices]),
   ],
   providers: [
     LocalStrategy,

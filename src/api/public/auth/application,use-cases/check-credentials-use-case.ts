@@ -14,8 +14,8 @@ export class CheckCredentialsUseCase {
     const user = await this.usersRepository.findUserByLoginOrEmail(
       command.loginDto.loginOrEmail,
     );
-
-    if (!user || !user.isConfirmed || user.isBanned) return null;
+    console.log('user in CheckCredentialsCommand', user);
+    if (!user || !user.isConfirmed || user.banInfo.isBanned) return null;
 
     const result = await bcrypt.compare(
       command.loginDto.password,

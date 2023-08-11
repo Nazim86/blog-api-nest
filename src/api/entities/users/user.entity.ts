@@ -35,7 +35,10 @@ export class Users {
   @Column({ type: 'bool' })
   isConfirmed: boolean;
 
-  @OneToOne(() => UsersBanBySa, (ub) => ub.user, {})
+  @OneToOne(() => UsersBanBySa, (ub) => ub.user, {
+    cascade: true,
+    onUpdate: 'CASCADE',
+  })
   banInfo: UsersBanBySa;
 
   @OneToOne(() => EmailConfirmation, (ec) => ec.user, {})
