@@ -5,6 +5,8 @@ import { UsersRepository } from '../../../infrastructure/users/users.repository'
 import { MailService } from '../../../../mail/mail.service';
 import { ResultCode } from '../../../../exception-handler/result-code-enum';
 import { Result } from '../../../../exception-handler/result-type';
+import { add } from 'date-fns';
+import { PasswordRecovery } from '../../../entities/users/password-recovery';
 
 export class SendRecoveryCodeCommand {
   constructor(public emailDto: EmailDto) {}
@@ -32,8 +34,17 @@ export class SendRecoveryCodeUseCase {
 
     try {
       const recoveryCode = uuid();
+      const expirationDate = add(new Date(), {
+        hours: 1,
+        minutes: 3,
+      });
 
-      await this.usersRepository.createRecoveryCode(user.id, recoveryCode);
+      const passwordRecovery = new PasswordRecovery();
+
+      passwordRecovery.recoveryCodeExpiration = expirationDate;
+      passwordRecovery.recoveryCode = recoveryCode;
+      passwordRecovery.user = user;
+      await this.usersRepository.savePasswordRecovery(passwordRecovery);
 
       await this.mailService.passwordRecoveryEmail(
         recoveryCode,

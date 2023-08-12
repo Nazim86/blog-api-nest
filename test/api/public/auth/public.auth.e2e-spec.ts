@@ -139,12 +139,13 @@ describe('Auth controller testing', () => {
 
       it(`should set new password and return 204;`, async () => {
         user = await usersRepository.findUserByLoginOrEmail(`leo`);
-        const recoveryCode = user.recoveryCode;
+        const recoveryCode = user.passwordRecovery.recoveryCode;
 
         const result = await setNewPassword(httpServer, {
           newPassword: '1234567',
           recoveryCode: recoveryCode,
         });
+
         expect(result.status).toBe(204);
 
         userSignIn = await loginUser(httpServer, {

@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
-import { add } from 'date-fns';
 import { UserBanDto } from '../../blogger/inputModel-Dto/userBan.dto';
 import { Users } from '../../entities/users/user.entity';
 import { EmailConfirmation } from '../../entities/users/email-confirmation';
 import { UsersBanBySa } from '../../entities/users/users-ban-by-sa.entity';
+import { PasswordRecovery } from '../../entities/users/password-recovery';
 
 @Injectable()
 export class UsersRepository {
@@ -16,6 +16,8 @@ export class UsersRepository {
     private readonly usersBanBySaRepository: Repository<UsersBanBySa>,
     @InjectRepository(EmailConfirmation)
     private readonly emailConfirmationRepo: Repository<EmailConfirmation>,
+    @InjectRepository(PasswordRecovery)
+    private readonly passwordRecoveryRepo: Repository<PasswordRecovery>,
   ) {}
 
   async saveUser(newUser: Users) {
@@ -28,6 +30,10 @@ export class UsersRepository {
 
   async saveUsersBanBySA(usersBanBySA: UsersBanBySa) {
     return this.usersBanBySaRepository.save(usersBanBySA);
+  }
+
+  async savePasswordRecovery(passwordRecovery: PasswordRecovery) {
+    return this.passwordRecoveryRepo.save(passwordRecovery);
   }
 
   // async updateConfirmationCode(userId: string, newCode: string) {
@@ -66,49 +72,45 @@ export class UsersRepository {
   }
 
   async findUserByRecoveryCode(recoveryCode: string) {
-    const user = await this.dataSource.query(
-      `SELECT pr.*, u.*
-                FROM public.password_recovery pr
-                Left join public.users u on
-                u."id" = pr."userId"
-                Where pr."recoveryCode"=$1`,
-      [recoveryCode],
-    );
-    return user[0];
+    return await this.usersRepo
+      .createQueryBuilder('u')
+      .leftJoinAndSelect('u.passwordRecovery', 'pr')
+      .where('pr.recoveryCode = :code', { code: recoveryCode })
+      .getOne();
   }
 
-  async createRecoveryCode(userId: string, recoveryCode: string) {
-    return await this.dataSource.query(
-      `INSERT INTO public.password_recovery(
-            "userId", "recoveryCode", "recoveryCodeExpiration")
-            VALUES ($1, $2, $3);`,
-      [
-        userId,
-        recoveryCode,
-        add(new Date(), {
-          hours: 1,
-          minutes: 3,
-        }),
-      ],
-    );
-  }
+  // async createRecoveryCode(userId: string, recoveryCode: string) {
+  //   return await this.dataSource.query(
+  //     `INSERT INTO public.password_recovery(
+  //           "userId", "recoveryCode", "recoveryCodeExpiration")
+  //           VALUES ($1, $2, $3);`,
+  //     [
+  //       userId,
+  //       recoveryCode,
+  //       add(new Date(), {
+  //         hours: 1,
+  //         minutes: 3,
+  //       }),
+  //     ],
+  //   );
+  // }
 
-  async setNewPassword(userId: string, passwordHash: string) {
-    const isUserUpdated = await this.dataSource.query(
-      `UPDATE public.users u
-                SET  "passwordHash"=$1
-                WHERE u."id" = $2;`,
-      [passwordHash, userId],
-    );
-    const isPasswordRecoveryUpdated = await this.dataSource.query(
-      `UPDATE public.password_recovery pr
-                        SET "userId"=null, "recoveryCode"=null, "recoveryCodeExpiration"=null
-                        WHERE pr."userId"= $1;`,
-      [userId],
-    );
-
-    return isUserUpdated[1] === 1 && isPasswordRecoveryUpdated[1] === 1;
-  }
+  // async setNewPassword(userId: string, passwordHash: string) {
+  //   const isUserUpdated = await this.dataSource.query(
+  //     `UPDATE public.users u
+  //               SET  "passwordHash"=$1
+  //               WHERE u."id" = $2;`,
+  //     [passwordHash, userId],
+  //   );
+  //   const isPasswordRecoveryUpdated = await this.dataSource.query(
+  //     `UPDATE public.password_recovery pr
+  //                       SET "userId"=null, "recoveryCode"=null, "recoveryCodeExpiration"=null
+  //                       WHERE pr."userId"= $1;`,
+  //     [userId],
+  //   );
+  //
+  //   return isUserUpdated[1] === 1 && isPasswordRecoveryUpdated[1] === 1;
+  // }
 
   async findUserByEmail(email: string) {
     return await this.usersRepo

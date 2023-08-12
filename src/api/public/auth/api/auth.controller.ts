@@ -202,6 +202,7 @@ export class AuthController {
         isRecoveryEmailSent.data,
       );
     }
+
     return;
   }
 
@@ -213,6 +214,7 @@ export class AuthController {
       new SetNewPasswordCommand(newPasswordDto),
     );
 
+    console.log('isNewPasswordSet', isNewPasswordSet);
     if (isNewPasswordSet.code !== ResultCode.Success) {
       return exceptionHandler(isNewPasswordSet.code, isNewPasswordSet.data);
     }

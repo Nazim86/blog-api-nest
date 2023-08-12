@@ -17,12 +17,11 @@ export class SetNewPasswordUseCase {
     const user = await this.usersRepository.findUserByRecoveryCode(
       command.newPasswordDto.recoveryCode,
     );
-
     const errorMessage = {
       message: [{ message: 'wrong recovery code', field: 'recoveryCode' }],
     };
 
-    if (!user || user.recoveryCodeExpiration < new Date())
+    if (!user || user.passwordRecovery.recoveryCodeExpiration < new Date())
       return { code: ResultCode.BadRequest, data: errorMessage };
 
     const passwordHash = await bcrypt.hash(
@@ -30,11 +29,17 @@ export class SetNewPasswordUseCase {
       Number(process.env.SALT_ROUND),
     );
 
-    const isUserUpdated = await this.usersRepository.setNewPassword(
-      user.id,
-      passwordHash,
-    );
+    user.passwordHash = passwordHash;
+    user.passwordRecovery.recoveryCode = null;
+    user.passwordRecovery.user = null;
+    user.passwordRecovery.recoveryCodeExpiration = null;
 
-    return { code: isUserUpdated ? ResultCode.Success : ResultCode.BadRequest };
+    const result = await this.usersRepository.saveUser(user);
+    // const isUserUpdated = await this.usersRepository.setNewPassword(
+    //   user.id,
+    //   passwordHash,
+    // );
+
+    return { code: result ? ResultCode.Success : ResultCode.BadRequest };
   }
 }

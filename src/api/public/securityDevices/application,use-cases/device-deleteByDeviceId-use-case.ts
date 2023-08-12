@@ -17,8 +17,6 @@ export class DeviceDeleteByIdUseCase {
 
     if (!device) return { code: ResultCode.NotFound };
 
-    console.log(device);
-
     if (device && device.user.id !== command.userId) {
       return {
         code: ResultCode.Forbidden,

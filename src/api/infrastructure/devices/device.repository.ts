@@ -79,7 +79,7 @@ export class DeviceRepository {
       .createQueryBuilder()
       .delete()
       .from(Devices)
-      .where('deviceId = :deviceId and d.user.id = :userId', {
+      .where('deviceId = :deviceId and userId = :userId', {
         deviceId: deviceId,
         userId: userId,
       })
