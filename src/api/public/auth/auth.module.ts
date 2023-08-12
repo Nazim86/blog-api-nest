@@ -28,6 +28,7 @@ import { Devices } from '../../entities/devices/devices.entity';
 import { Blogs } from '../../entities/blogs/blogs.entity';
 import { EmailConfirmation } from '../../entities/users/email-confirmation';
 import { PasswordRecovery } from '../../entities/users/password-recovery';
+import { UsersBanByBlogger } from '../../entities/users/usersBanByBlogger.entity';
 
 const useCases = [DeviceCreateUseCase, DeviceUpdateUseCase];
 @Module({
@@ -49,6 +50,7 @@ const useCases = [DeviceCreateUseCase, DeviceUpdateUseCase];
       Blogs,
       EmailConfirmation,
       PasswordRecovery,
+      UsersBanByBlogger,
     ]),
   ],
   providers: [

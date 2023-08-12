@@ -10,6 +10,7 @@ import { Devices } from '../../entities/devices/devices.entity';
 import { Blogs } from '../../entities/blogs/blogs.entity';
 import { EmailConfirmation } from '../../entities/users/email-confirmation';
 import { PasswordRecovery } from '../../entities/users/password-recovery';
+import { UsersBanByBlogger } from '../../entities/users/usersBanByBlogger.entity';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { PasswordRecovery } from '../../entities/users/password-recovery';
       Blogs,
       EmailConfirmation,
       PasswordRecovery,
+      UsersBanByBlogger,
     ]),
   ],
   providers: [UsersRepository, IsUserAlreadyExistConstraint, BlogRepository],

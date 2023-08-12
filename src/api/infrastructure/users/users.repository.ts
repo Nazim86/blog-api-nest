@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
-import { UserBanDto } from '../../blogger/inputModel-Dto/userBan.dto';
 import { Users } from '../../entities/users/user.entity';
 import { EmailConfirmation } from '../../entities/users/email-confirmation';
 import { UsersBanBySa } from '../../entities/users/users-ban-by-sa.entity';
 import { PasswordRecovery } from '../../entities/users/password-recovery';
+import { UsersBanByBlogger } from '../../entities/users/usersBanByBlogger.entity';
 
 @Injectable()
 export class UsersRepository {
@@ -18,6 +18,8 @@ export class UsersRepository {
     private readonly emailConfirmationRepo: Repository<EmailConfirmation>,
     @InjectRepository(PasswordRecovery)
     private readonly passwordRecoveryRepo: Repository<PasswordRecovery>,
+    @InjectRepository(UsersBanByBlogger)
+    private readonly usersBanByBloggerRepo: Repository<UsersBanByBlogger>,
   ) {}
 
   async saveUser(newUser: Users) {
@@ -36,6 +38,9 @@ export class UsersRepository {
     return this.passwordRecoveryRepo.save(passwordRecovery);
   }
 
+  async saveUsersBanByBlogger(usersBanByBlogger: UsersBanByBlogger) {
+    return this.usersBanByBloggerRepo.save(usersBanByBlogger);
+  }
   // async updateConfirmationCode(userId: string, newCode: string) {
   //   const result = await this.dataSource.query(
   //     `UPDATE public.email_confirmation ec
@@ -133,25 +138,25 @@ export class UsersRepository {
     return bannedUser[0];
   }
 
-  async bloggerBanUser(userId: string, userBanDto: UserBanDto, blogId: string) {
-    await this.dataSource.query(
-      `Insert into public.users_ban_by_blogger("isBanned", "banDate", "banReason", "blogId", "userId")
-                values($1,$2,$3,$4,$5)
-      on conflict ("blogId","userId")
-      do Update set "isBanned"=Excluded."isBanned", "banDate"=$2,
-      "banReason"=Excluded."banReason", "blogId"=Excluded."blogId",
-      "userId"=Excluded."userId"`,
-      [
-        userBanDto.isBanned,
-        new Date().toISOString(),
-        userBanDto.banReason,
-        blogId,
-        userId,
-      ],
-    );
-
-    return true;
-  }
+  // async bloggerBanUser(userId: string, userBanDto: UserBanDto, blogId: string) {
+  //   await this.dataSource.query(
+  //     `Insert into public.users_ban_by_blogger("isBanned", "banDate", "banReason", "blogId", "userId")
+  //               values($1,$2,$3,$4,$5)
+  //     on conflict ("blogId","userId")
+  //     do Update set "isBanned"=Excluded."isBanned", "banDate"=$2,
+  //     "banReason"=Excluded."banReason", "blogId"=Excluded."blogId",
+  //     "userId"=Excluded."userId"`,
+  //     [
+  //       userBanDto.isBanned,
+  //       new Date().toISOString(),
+  //       userBanDto.banReason,
+  //       blogId,
+  //       userId,
+  //     ],
+  //   );
+  //
+  //   return true;
+  // }
 
   // async banUser(userId, banUserDto: BanUserDto) {
   //   const result = await this.dataSource.query(
@@ -228,19 +233,10 @@ export class UsersRepository {
       .createQueryBuilder('u')
       .leftJoinAndSelect('u.banInfo', 'bi')
       .leftJoinAndSelect('u.emailConfirmation', 'ec')
+      .leftJoinAndSelect('u.usersBanByBlogger', 'ubb')
       .where('u.id = :userId', { userId: userId })
       .getOne();
 
-    //   .query(
-    //   `SELECT u.*,ub."banDate",ub."banReason",ub."isBanned",ec."confirmationCode", ec."emailExpiration"
-    //             FROM public.users u
-    //             left join public.users_ban_by_sa ub on
-    //             u."id" = ub."userId"
-    //             left join public.email_confirmation ec on
-    //             u."id" = ec."userId"
-    //             where u."id" = $1`,
-    //   [userId],
-    // );
     if (!user) return null;
 
     return user;

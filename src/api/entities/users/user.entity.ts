@@ -68,6 +68,9 @@ export class Users {
   @OneToMany(() => Blogs, (b) => b.ownerId)
   blogs: Blogs[];
 
-  @OneToOne(() => UsersBanByBlogger, (ubb) => ubb.user)
+  @OneToOne(() => UsersBanByBlogger, (ubb) => ubb.user, {
+    cascade: true,
+    onUpdate: 'CASCADE',
+  })
   usersBanByBlogger: UsersBanByBlogger;
 }

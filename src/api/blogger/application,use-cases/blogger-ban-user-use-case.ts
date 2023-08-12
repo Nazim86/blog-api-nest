@@ -3,6 +3,7 @@ import { CommandHandler } from '@nestjs/cqrs';
 import { UsersRepository } from '../../infrastructure/users/users.repository';
 import { ResultCode } from '../../../exception-handler/result-code-enum';
 import { BlogRepository } from '../../infrastructure/blogs/blog.repository';
+import { UsersBanByBlogger } from '../../entities/users/usersBanByBlogger.entity';
 
 export class BloggerBanUserCommand {
   constructor(
@@ -41,13 +42,26 @@ export class BloggerBanUserUseCase {
         return { code: ResultCode.Forbidden };
       }
 
-      const bannedUser = await this.usersRepository.bloggerBanUser(
-        command.userId,
-        command.userBanDto,
-        blog.id,
-      );
+      if (!user.usersBanByBlogger) {
+        const usersBanByBlogger = new UsersBanByBlogger();
+        usersBanByBlogger.isBanned = command.userBanDto.isBanned;
+        usersBanByBlogger.banDate = new Date().toISOString();
+        usersBanByBlogger.banReason = command.userBanDto.banReason;
+        usersBanByBlogger.blog = blog;
+        usersBanByBlogger.user = user;
 
-      return { code: bannedUser ? ResultCode.Success : ResultCode.NotFound };
+        await this.usersRepository.saveUsersBanByBlogger(usersBanByBlogger);
+      } else {
+        user.usersBanByBlogger.isBanned = command.userBanDto.isBanned;
+        user.usersBanByBlogger.banDate = new Date().toISOString();
+        user.usersBanByBlogger.banReason = command.userBanDto.banReason;
+        user.usersBanByBlogger.blog = blog;
+        user.usersBanByBlogger.user = user;
+
+        await this.usersRepository.saveUser(user);
+      }
+
+      return { code: user ? ResultCode.Success : ResultCode.NotFound };
     } catch (e) {
       return { code: ResultCode.Success };
     }

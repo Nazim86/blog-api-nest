@@ -20,16 +20,6 @@ export class BlogRepository {
         .where('b.id = :id', { id: blogId })
         .getOne();
 
-      //   .query(
-      //   `SELECT b.*, u."login", bbi."isBanned"
-      //    FROM public.blogs b
-      //    left join public.users u on b."ownerId" = u."id"
-      //    left join public.blog_ban_info bbi on
-      //    b."id" = bbi."blogId"
-      //    where b."id" = $1;`,
-      //   [blogId],
-      // );
-
       if (!foundBlog) {
         return null;
       }
