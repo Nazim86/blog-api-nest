@@ -148,22 +148,20 @@ export class UserQueryRepo {
 
     const skipSize = paginatedQuery.skipSize;
 
-    const totalCount = await this.usersRepository
-      .createQueryBuilder('u')
-      .leftJoin('u.banInfo', 'ub', 'u.id=ub.userId')
-      .where(
-        '(u.login ilike :login or u.email ilike :email) and ' +
-          '(ub.isBanned = :banStatus01 or ub.isBanned = :banStatus02 )',
-        {
-          login: filter.searchLogin,
-          email: filter.searchEmail,
-          banStatus01: filter.banStatus01,
-          banStatus02: filter.banStatus02,
-        },
-      )
-      .getCount();
-
-    const pagesCount = paginatedQuery.totalPages(totalCount); //Math.ceil(totalCount / paginatedQuery.pageSize);
+    // const totalCount = await this.usersRepository
+    //   .createQueryBuilder('u')
+    //   .leftJoin('u.banInfo', 'ub', 'u.id=ub.userId')
+    //   .where(
+    //     '(u.login ilike :login or u.email ilike :email) and ' +
+    //       '(ub.isBanned = :banStatus01 or ub.isBanned = :banStatus02 )',
+    //     {
+    //       login: filter.searchLogin,
+    //       email: filter.searchEmail,
+    //       banStatus01: filter.banStatus01,
+    //       banStatus02: filter.banStatus02,
+    //     },
+    //   )
+    //   .getCount();
 
     const getUsers = await this.usersRepository
       .createQueryBuilder('u')
@@ -181,15 +179,19 @@ export class UserQueryRepo {
       .orderBy(`u.${paginatedQuery.sortBy}`, paginatedQuery.sortDirection)
       .skip(skipSize)
       .take(paginatedQuery.pageSize)
-      .getMany();
+      .getManyAndCount();
+
+    const totalCount = Number(getUsers[1]);
+
+    const pagesCount = paginatedQuery.totalPages(totalCount);
 
     let mappedUsers: any[];
 
     if (requestType === RoleEnum.SA) {
-      mappedUsers = this.userMappingForSA(getUsers);
+      mappedUsers = this.userMappingForSA(getUsers[0]);
       //console.log('mapped Users', mappedUsers);
     } else {
-      mappedUsers = this.userMapping(getUsers);
+      mappedUsers = this.userMapping(getUsers[0]);
     }
 
     return {
