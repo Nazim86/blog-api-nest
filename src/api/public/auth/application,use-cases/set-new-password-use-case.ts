@@ -35,10 +35,6 @@ export class SetNewPasswordUseCase {
     user.passwordRecovery.recoveryCodeExpiration = null;
 
     const result = await this.usersRepository.saveUser(user);
-    // const isUserUpdated = await this.usersRepository.setNewPassword(
-    //   user.id,
-    //   passwordHash,
-    // );
 
     return { code: result ? ResultCode.Success : ResultCode.BadRequest };
   }

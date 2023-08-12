@@ -87,39 +87,35 @@ export class UserQueryRepo {
 
     if (!blog) return { code: ResultCode.NotFound };
 
-    if (blog.ownerId !== userId) return { code: ResultCode.Forbidden };
-
-    //filter.$and.push({ 'banInfo.blogId': blogId });
+    if (blog.ownerId.id !== userId) return { code: ResultCode.Forbidden };
 
     const skipSize = paginatedQuery.skipSize;
 
-    let totalCount = await this.dataSource.query(
-      `SELECT COUNT(*)
-    FROM public.users_ban_by_blogger ubb
-    Left join public.users u on
-    u."id" = ubb."userId"
-    WHERE u."login" ilike $1 and ubb."blogId" = $2  And (ubb."isBanned"=$3 or ubb."isBanned"=$4);`,
-      [filter.searchLogin, blogId, filter.banStatus01, filter.banStatus02],
-    );
+    const bannedUsersForBlog = await this.usersRepository
+      .createQueryBuilder('u')
+      .leftJoinAndSelect('u.usersBanByBlogger', 'ubb', 'u.id = ubb.userId')
+      .where(
+        'u.login ilike :login and ubb.blogId = :blogId and ' +
+          '(ubb.isBanned = :banStatus01 or ubb.isBanned = :banStatus02)',
+        {
+          login: filter.searchLogin,
+          blogId: blogId,
+          banStatus01: filter.banStatus01,
+          banStatus02: filter.banStatus02,
+        },
+      )
+      .orderBy(`u.${paginatedQuery.sortBy}`, paginatedQuery.sortDirection)
+      .skip(skipSize)
+      .take(paginatedQuery.pageSize)
+      .getManyAndCount();
 
-    totalCount = Number(totalCount[0].count);
-    //const totalCount = await this.UserBanModel.countDocuments(filter);
+    const totalCount = Number(bannedUsersForBlog[1]);
 
     const pagesCount = paginatedQuery.totalPages(totalCount); //Math.ceil(totalCount / paginatedQuery.pageSize);
 
-    //const sortDirection = paginatedQuery.sortDirection === 'asc' ? 1 : -1;
-
-    const bannedUsersForBlog = await this.dataSource.query(
-      `SELECT  u."id",u.login,u.email,ubb."isBanned",ubb."banDate", ubb."banReason"
-    FROM public.users u
-    Left join public.users_ban_by_blogger ubb on u."id" = ubb."userId"
-    WHERE u."login" ilike $1 and ubb."blogId" = $2  And (ubb."isBanned"=$3 or ubb."isBanned"=$4)
-    Order by "${paginatedQuery.sortBy}" ${paginatedQuery.sortDirection}
-    Limit ${paginatedQuery.pageSize} Offset ${skipSize};`,
-      [filter.searchLogin, blogId, filter.banStatus01, filter.banStatus02],
+    const mappedBannedUsers = this.bannedUserMappingForBlog(
+      bannedUsersForBlog[0],
     );
-
-    const mappedBannedUsers = this.bannedUserMappingForBlog(bannedUsersForBlog);
 
     return {
       data: {
@@ -172,7 +168,6 @@ export class UserQueryRepo {
     const getUsers = await this.usersRepository
       .createQueryBuilder('u')
       .leftJoinAndSelect('u.banInfo', 'ub', 'u.id=ub.userId')
-
       .where(
         '(u.login ilike :login or u.email ilike :email) and ' +
           '(ub.isBanned = :banStatus01 or ub.isBanned = :banStatus02 )',

@@ -42,7 +42,7 @@ export class BindBlogUseCase {
       };
     }
 
-    if (blog.userId === user.id) {
+    if (blog.ownerId.id === user.id) {
       const errorMessage = {
         message: [{ message: 'Already bound', field: 'blogOwner' }],
       };

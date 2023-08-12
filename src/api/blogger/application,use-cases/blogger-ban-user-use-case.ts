@@ -37,7 +37,7 @@ export class BloggerBanUserUseCase {
         return { data: errorsMessages, code: ResultCode.BadRequest };
       }
 
-      if (command.blogOwnerId !== blog.ownerId) {
+      if (command.blogOwnerId !== blog.ownerId.id) {
         return { code: ResultCode.Forbidden };
       }
 

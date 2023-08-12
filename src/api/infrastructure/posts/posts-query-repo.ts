@@ -110,7 +110,7 @@ export class PostsQueryRepo {
       }
 
       const blog = await this.blogsRepository.getBlogById(post.blogId);
-      if (blog.isBanned) {
+      if (blog.blogBanInfo.isBanned) {
         return false;
       }
 

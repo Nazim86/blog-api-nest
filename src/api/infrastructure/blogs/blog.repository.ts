@@ -13,17 +13,22 @@ export class BlogRepository {
 
   async getBlogById(blogId: string) {
     try {
-      let foundBlog = await this.dataSource.query(
-        `SELECT b.*, u."login", bbi."isBanned"
-         FROM public.blogs b 
-         left join public.users u on b."ownerId" = u."id"
-         left join public.blog_ban_info bbi on
-         b."id" = bbi."blogId"
-         where b."id" = $1;`,
-        [blogId],
-      );
+      const foundBlog = await this.blogsRepo
+        .createQueryBuilder('b')
+        .leftJoinAndSelect('b.ownerId', 'u')
+        .leftJoinAndSelect('b.blogBanInfo', 'bbi')
+        .where('b.id = :id', { id: blogId })
+        .getOne();
 
-      foundBlog = foundBlog[0];
+      //   .query(
+      //   `SELECT b.*, u."login", bbi."isBanned"
+      //    FROM public.blogs b
+      //    left join public.users u on b."ownerId" = u."id"
+      //    left join public.blog_ban_info bbi on
+      //    b."id" = bbi."blogId"
+      //    where b."id" = $1;`,
+      //   [blogId],
+      // );
 
       if (!foundBlog) {
         return null;
