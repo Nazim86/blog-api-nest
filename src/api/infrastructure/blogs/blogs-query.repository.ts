@@ -4,12 +4,16 @@ import { QueryPaginationType } from '../../../types/query-pagination-type';
 import { PaginationType } from '../../../common/pagination';
 import { BlogPagination } from './blog-pagination';
 import { RoleEnum } from '../../../enums/role-enum';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
+import { Blogs } from '../../entities/blogs/blogs.entity';
 
 @Injectable()
 export class BlogsQueryRepo {
-  constructor(@InjectDataSource() private dataSource: DataSource) {}
+  constructor(
+    @InjectDataSource() private dataSource: DataSource,
+    @InjectRepository(Blogs) private readonly blogsRepo: Repository<Blogs>,
+  ) {}
 
   private blogsMapping = (array): BlogsViewType[] => {
     return array.map((blog): BlogsViewType => {
@@ -110,54 +114,54 @@ export class BlogsQueryRepo {
     let blog;
 
     if (requestRole === RoleEnum.Blogger) {
-      totalCount = await this.dataSource.query(
-        `SELECT count(*)
-       FROM public.blogs b
-         left join public.users u on b."ownerId" = u."id"
-       LEFT JOIN public.blog_ban_info bbi ON b."id" = bbi."blogId"
-       WHERE (bbi."isBanned" = $1 or bbi."isBanned" = $2)
-       AND b."name" ILIKE $3 
-       AND b."ownerId" = $4;`,
-        [isBanned01, isBanned02, searchName, blogOwnerUserId],
-      );
+      blog = await this.blogsRepo
+        .createQueryBuilder('b')
+        .leftJoinAndSelect('b.ownerId', 'u')
+        .leftJoinAndSelect('b.blogBanInfo', 'bbi')
+        .where(
+          '(bbi.isBanned = :isBanned01 or bbi.isBanned = :isBanned02)' +
+            'and b.name ILIKE :name  and b.ownerId = :ownerId',
+          {
+            isBanned01: isBanned01,
+            isBanned02: isBanned02,
+            name: searchName,
+            ownerId: blogOwnerUserId,
+          },
+        )
+        .orderBy(`u.${paginatedQuery.sortBy}`, paginatedQuery.sortDirection)
+        .skip(skipSize)
+        .take(paginatedQuery.pageSize)
+        .getManyAndCount();
 
-      blog = await this.dataSource.query(
-        `SELECT b.*, b."ownerId", u."login" as "userLogin", bbi."banDate"
-       FROM public.blogs b
-         left join public.users u on b."ownerId" = u."id"
-       LEFT JOIN public.blog_ban_info bbi ON b."id" = bbi."blogId"
-       WHERE (bbi."isBanned" = $1 or bbi."isBanned" = $2)
-       AND b."name" ILIKE $3
-        AND b."ownerId" = $4
-       ORDER BY "${paginatedQuery.sortBy}" ${paginatedQuery.sortDirection}
-       LIMIT ${paginatedQuery.pageSize} OFFSET ${skipSize};`,
-        [isBanned01, isBanned02, searchName, blogOwnerUserId],
-      );
+      totalCount = Number(blog[1]);
+
+      blog = blog[0];
     } else {
-      totalCount = await this.dataSource.query(
-        `SELECT count(*)
-       FROM public.blogs b
-         left join public.users u on b."ownerId" = u."id"
-       LEFT JOIN public.blog_ban_info bbi ON b.id = bbi."blogId"
-       WHERE (bbi."isBanned" = $1 or bbi."isBanned" = $2)
-       AND b."name" ILIKE $3;`,
-        [isBanned01, isBanned02, searchName],
-      );
+      blog = await this.blogsRepo
+        .createQueryBuilder('b')
+        .leftJoinAndSelect('b.ownerId', 'u')
+        .leftJoinAndSelect('b.blogBanInfo', 'bbi')
+        .where(
+          '(bbi.isBanned = :isBanned01 or bbi.isBanned = :isBanned02)' +
+            'and b.name ILIKE :name',
+          {
+            isBanned01: isBanned01,
+            isBanned02: isBanned02,
+            name: searchName,
+          },
+        )
+        .orderBy(`u.${paginatedQuery.sortBy}`, paginatedQuery.sortDirection)
+        .skip(skipSize)
+        .take(paginatedQuery.pageSize)
+        .getManyAndCount();
 
-      blog = await this.dataSource.query(
-        `SELECT b.*, b."ownerId", u."login" as "userLogin", bbi."banDate", bbi."isBanned"
-       FROM public.blogs b
-         left join public.users u on b."ownerId" = u."id"
-       LEFT JOIN public.blog_ban_info bbi ON b.id = bbi."blogId"
-       WHERE (bbi."isBanned" = $1 or bbi."isBanned" = $2)
-       AND b."name" ILIKE $3
-       ORDER BY "${paginatedQuery.sortBy}" ${paginatedQuery.sortDirection}
-       LIMIT ${paginatedQuery.pageSize} OFFSET ${skipSize};`,
-        [isBanned01, isBanned02, searchName],
-      );
+      totalCount = Number(blog[1]);
+
+      blog = blog[0];
     }
 
     let mappedBlog: BlogsViewType[];
+
     if (requestRole === RoleEnum.SA) {
       mappedBlog = this.blogsMappingForSA(blog);
     } else {
@@ -165,10 +169,10 @@ export class BlogsQueryRepo {
     }
 
     return {
-      pagesCount: paginatedQuery.totalPages(totalCount[0].count),
+      pagesCount: paginatedQuery.totalPages(totalCount),
       page: Number(paginatedQuery.pageNumber),
       pageSize: Number(paginatedQuery.pageSize),
-      totalCount: Number(totalCount[0].count),
+      totalCount: Number(totalCount),
       items: mappedBlog,
     };
   }
