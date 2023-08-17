@@ -54,7 +54,7 @@ export class BlogsQueryRepo {
       let foundBlog = await this.dataSource.query(
         `SELECT b.*, u."login", bbi."banDate", bbi."isBanned" 
         FROM public.blogs b 
-        Left join public.users u on b."ownerId" = u."id"
+        Left join public.users u on b."owner" = u."id"
         Left join public.blog_ban_info bbi on b."id" = bbi."blogId" 
         where b."id" = $1 ;`,
         [id],
@@ -116,19 +116,19 @@ export class BlogsQueryRepo {
     if (requestRole === RoleEnum.Blogger) {
       blog = await this.blogsRepo
         .createQueryBuilder('b')
-        .leftJoinAndSelect('b.ownerId', 'u')
+        .leftJoinAndSelect('b.owner', 'o')
         .leftJoinAndSelect('b.blogBanInfo', 'bbi')
         .where(
           '(bbi.isBanned = :isBanned01 or bbi.isBanned = :isBanned02)' +
-            'and b.name ILIKE :name  and b.ownerId = :ownerId',
+            'and b.name ILIKE :name  and b.owner = :ownerId',
           {
             isBanned01: isBanned01,
             isBanned02: isBanned02,
             name: searchName,
-            ownerId: blogOwnerUserId,
+            owner: blogOwnerUserId,
           },
         )
-        .orderBy(`u.${paginatedQuery.sortBy}`, paginatedQuery.sortDirection)
+        .orderBy(`o.${paginatedQuery.sortBy}`, paginatedQuery.sortDirection)
         .skip(skipSize)
         .take(paginatedQuery.pageSize)
         .getManyAndCount();
@@ -139,7 +139,7 @@ export class BlogsQueryRepo {
     } else {
       blog = await this.blogsRepo
         .createQueryBuilder('b')
-        .leftJoinAndSelect('b.ownerId', 'u')
+        .leftJoinAndSelect('b.owner', 'o')
         .leftJoinAndSelect('b.blogBanInfo', 'bbi')
         .where(
           '(bbi.isBanned = :isBanned01 or bbi.isBanned = :isBanned02)' +
@@ -150,7 +150,7 @@ export class BlogsQueryRepo {
             name: searchName,
           },
         )
-        .orderBy(`u.${paginatedQuery.sortBy}`, paginatedQuery.sortDirection)
+        .orderBy(`o.${paginatedQuery.sortBy}`, paginatedQuery.sortDirection)
         .skip(skipSize)
         .take(paginatedQuery.pageSize)
         .getManyAndCount();

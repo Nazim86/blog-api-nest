@@ -45,7 +45,7 @@ export class CommentCreateUseCase {
       title: post.title,
       blogId: post.blogId,
       blogName: post.blogName,
-      blogOwnerId: blog.ownerId,
+      blogOwnerId: blog.owner,
     });
 
     return { data: commentId, code: ResultCode.Success };

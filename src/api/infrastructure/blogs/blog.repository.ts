@@ -3,19 +3,30 @@ import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { CreateBlogDto } from '../../blogger/inputModel-Dto/createBlog.dto';
 import { Blogs } from '../../entities/blogs/blogs.entity';
+import { BlogBanInfo } from '../../entities/blogs/blogBanInfo.entity';
 
 @Injectable()
 export class BlogRepository {
   constructor(
     @InjectDataSource() private dataSource: DataSource,
     @InjectRepository(Blogs) private readonly blogsRepo: Repository<Blogs>,
+    @InjectRepository(BlogBanInfo)
+    private readonly blogBanInfoRepo: Repository<BlogBanInfo>,
   ) {}
+
+  async saveBlog(blog: Blogs) {
+    return this.blogsRepo.save(blog);
+  }
+
+  async saveBlogBanInfo(blogBanInfo: BlogBanInfo) {
+    return this.blogBanInfoRepo.save(blogBanInfo);
+  }
 
   async getBlogById(blogId: string) {
     try {
       const foundBlog = await this.blogsRepo
         .createQueryBuilder('b')
-        .leftJoinAndSelect('b.ownerId', 'u')
+        .leftJoinAndSelect('b.owner', 'o')
         .leftJoinAndSelect('b.blogBanInfo', 'bbi')
         .where('b.id = :id', { id: blogId })
         .getOne();
@@ -30,34 +41,34 @@ export class BlogRepository {
     }
   }
 
-  async createBlog(
-    userId: string,
-    login: string,
-    createBlogDto: CreateBlogDto,
-  ) {
-    const newBlog = await this.dataSource.query(
-      `INSERT INTO public.blogs(
-         name, description, "websiteUrl", "createdAt", "isMembership","ownerId")
-         VALUES ( $1, $2, $3, $4, $5,$6) returning id;`,
-      [
-        createBlogDto.name,
-        createBlogDto.description,
-        createBlogDto.websiteUrl,
-        new Date().toISOString(),
-        false,
-        userId,
-      ],
-    );
-
-    await this.dataSource.query(
-      `INSERT INTO public.blog_ban_info(
-         "isBanned", "banDate", "blogId")
-          VALUES ( $1,$2,$3);`,
-      [false, null, newBlog[0].id],
-    );
-
-    return newBlog[0].id;
-  }
+  // async createBlog(
+  //   userId: string,
+  //   login: string,
+  //   createBlogDto: CreateBlogDto,
+  // ) {
+  //   const newBlog = await this.dataSource.query(
+  //     `INSERT INTO public.blogs(
+  //        name, description, "websiteUrl", "createdAt", "isMembership","owner.id")
+  //        VALUES ( $1, $2, $3, $4, $5,$6) returning id;`,
+  //     [
+  //       createBlogDto.name,
+  //       createBlogDto.description,
+  //       createBlogDto.websiteUrl,
+  //       new Date().toISOString(),
+  //       false,
+  //       userId,
+  //     ],
+  //   );
+  //
+  //   await this.dataSource.query(
+  //     `INSERT INTO public.blog_ban_info(
+  //        "isBanned", "banDate", "blogId")
+  //         VALUES ( $1,$2,$3);`,
+  //     [false, null, newBlog[0].id],
+  //   );
+  //
+  //   return newBlog[0].id;
+  // }
 
   async updateBlog(blogId: string, updateBlogDto: CreateBlogDto) {
     const result = await this.dataSource.query(

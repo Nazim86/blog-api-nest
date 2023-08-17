@@ -11,6 +11,7 @@ import { Blogs } from '../../entities/blogs/blogs.entity';
 import { EmailConfirmation } from '../../entities/users/email-confirmation';
 import { PasswordRecovery } from '../../entities/users/password-recovery';
 import { UsersBanByBlogger } from '../../entities/users/usersBanByBlogger.entity';
+import { BlogBanInfo } from '../../entities/blogs/blogBanInfo.entity';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { UsersBanByBlogger } from '../../entities/users/usersBanByBlogger.entity
       EmailConfirmation,
       PasswordRecovery,
       UsersBanByBlogger,
+      BlogBanInfo,
     ]),
   ],
   providers: [UsersRepository, IsUserAlreadyExistConstraint, BlogRepository],

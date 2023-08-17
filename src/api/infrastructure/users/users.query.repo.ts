@@ -87,7 +87,7 @@ export class UserQueryRepo {
 
     if (!blog) return { code: ResultCode.NotFound };
 
-    if (blog.ownerId.id !== userId) return { code: ResultCode.Forbidden };
+    if (blog.owner.id !== userId) return { code: ResultCode.Forbidden };
 
     const skipSize = paginatedQuery.skipSize;
 
