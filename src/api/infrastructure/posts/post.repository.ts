@@ -16,12 +16,18 @@ export class PostRepository {
   }
   async getPostById(postId: string) {
     try {
-      let post = await this.dataSource.query(
-        `SELECT * FROM public.posts where "id"=$1`,
-        [postId],
-      );
+      const post = await this.postsRepo
+        .createQueryBuilder('p')
+        .leftJoinAndSelect('p.blog', 'b')
+        .where('p.id = :postId', { postId: postId })
+        .getOne();
 
-      post = post[0];
+      //   await this.dataSource.query(
+      //   `SELECT * FROM public.posts where "id"=$1`,
+      //   [postId],
+      // );
+
+      // post = post[0];
 
       return post;
     } catch (e) {

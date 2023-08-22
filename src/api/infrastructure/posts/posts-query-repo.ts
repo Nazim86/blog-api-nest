@@ -288,7 +288,7 @@ export class PostsQueryRepo {
       .take(paginatedQuery.pageSize)
       .getRawMany();
 
-    console.log(posts);
+    //console.log(posts);
     // const posts = await this.dataSource.query(
     //   `SELECT p.*,
     //    (SELECT status
@@ -324,7 +324,7 @@ export class PostsQueryRepo {
 
     const resolvedMappedPosts: PostsViewType[] = await Promise.all(mappedPost);
 
-    console.log(resolvedMappedPosts);
+    //console.log(resolvedMappedPosts);
 
     return {
       pagesCount: pagesCount,

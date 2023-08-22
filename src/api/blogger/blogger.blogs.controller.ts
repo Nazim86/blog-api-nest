@@ -101,7 +101,7 @@ export class BloggerBlogsController {
       return exceptionHandler(postId.code);
     }
     const result = await this.postQueryRepo.getPostById(postId.data);
-    console.log(result);
+    //console.log(result);
     return result;
   }
 

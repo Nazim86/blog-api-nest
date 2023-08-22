@@ -19,6 +19,7 @@ export class CommentCreateUseCase {
   ) {}
   async execute(command: CommentCreateCommand) {
     const post = await this.postsRepository.getPostById(command.postId);
+
     if (!post || typeof post === 'boolean')
       return { code: ResultCode.NotFound };
 
@@ -26,11 +27,11 @@ export class CommentCreateUseCase {
 
     if (!user) return { code: ResultCode.NotFound };
 
-    const blog = await this.blogsRepository.getBlogById(post.blogId);
+    const blog = await this.blogsRepository.getBlogById(post.blog.id);
 
     const bannedUser = await this.usersRepository.findBloggerBannedUser(
       command.userId,
-      post.blogId,
+      post.blog.id,
     );
 
     if (bannedUser) {
@@ -43,8 +44,8 @@ export class CommentCreateUseCase {
       userId: command.userId,
       login: user.login,
       title: post.title,
-      blogId: post.blogId,
-      blogName: post.blogName,
+      blogId: post.blog.id,
+      blogName: post.blog.name,
       blogOwnerId: blog.owner,
     });
 
