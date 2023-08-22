@@ -1,9 +1,21 @@
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { CreateLikeDto } from '../../public/like/createLikeDto';
+import { PostLike } from '../../entities/like/postLike.entity';
+import { CommentLike } from '../../entities/like/commentLike.entity';
 
 export class LikesRepository {
-  constructor(@InjectDataSource() protected dataSource: DataSource) {}
+  constructor(
+    @InjectDataSource() protected dataSource: DataSource,
+    @InjectRepository(PostLike)
+    private readonly postLikeRepo: Repository<PostLike>,
+    @InjectRepository(CommentLike)
+    private readonly commentLikeRepo: Repository<CommentLike>,
+  ) {}
+
+  async savePostLike(postlike: PostLike) {
+    return this.postLikeRepo.save(postlike);
+  }
 
   async findPostLike(postId: string, userId: string) {
     const postLike = await this.dataSource.query(
@@ -23,28 +35,30 @@ export class LikesRepository {
     return commentLike[0];
   }
 
-  async createPostLike(
-    postId: string,
-    userId: string,
-    createPostLikeDto: CreateLikeDto,
-  ) {
-    const postLike = await this.dataSource.query(
-      `INSERT INTO public.post_like(
-             "postId", "userId", "addedAt", status , "banStatus")
-              VALUES ( $1, $2, $3, $4, $5)
-              on conflict ("postId","userId")
-              Do Update set status = Excluded.status, "addedAt"=Excluded."addedAt";`,
-      [
-        postId,
-        userId,
-        new Date().toISOString(),
-        createPostLikeDto.likeStatus,
-        false,
-      ],
-    );
-
-    return postLike[0];
-  }
+  // async createPostLike(
+  //   postId: string,
+  //   userId: string,
+  //   createPostLikeDto: CreateLikeDto,
+  // ) {
+  //   const postLike = await this.dataSource.
+  //
+  //   // query(
+  //   //   `INSERT INTO public.post_like(
+  //   //          "postId", "userId", "addedAt", status , "user")
+  //   //           VALUES ( $1, $2, $3, $4, $5)
+  //   //           on conflict ("postId","userId")
+  //   //           Do Update set status = Excluded.status, "addedAt"=Excluded."addedAt";`,
+  //   //   [
+  //   //     postId,
+  //   //     userId,
+  //   //     new Date().toISOString(),
+  //   //     createPostLikeDto.likeStatus,
+  //   //     false,
+  //   //   ],
+  //   // );
+  //
+  //   return postLike[0];
+  // }
 
   async createCommentLike(
     commentId: string,

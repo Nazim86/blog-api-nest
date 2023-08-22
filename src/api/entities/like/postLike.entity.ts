@@ -21,8 +21,8 @@ export class PostLike {
   @Column({ type: 'varchar' })
   status: string;
 
-  @Column({ type: 'boolean' })
-  banStatus: boolean;
+  // @Column({ type: 'boolean' })
+  // banStatus: boolean;
 
   @ManyToOne(() => Posts, (p) => p.postLike, { onDelete: 'CASCADE' })
   @JoinColumn()

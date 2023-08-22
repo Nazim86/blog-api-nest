@@ -1,11 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { CreatePostDto } from '../../public/post/createPostDto';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
+import { Posts } from '../../entities/posts/posts.entity';
 
 @Injectable()
 export class PostRepository {
-  constructor(@InjectDataSource() private dataSource: DataSource) {}
+  constructor(
+    @InjectDataSource() private dataSource: DataSource,
+    @InjectRepository(Posts) private readonly postsRepo: Repository<Posts>,
+  ) {}
+
+  async savePost(post: Posts) {
+    return this.postsRepo.save(post);
+  }
   async getPostById(postId: string) {
     try {
       let post = await this.dataSource.query(
@@ -36,22 +44,24 @@ export class PostRepository {
     return result[1] === 1;
   }
 
-  async createPost(createPostDto: CreatePostDto, blog) {
-    const newPost = await this.dataSource.query(
-      `INSERT INTO public.posts(
-         title, "shortDescription", content, "blogId", "blogName", "createdAt")
-        VALUES ( $1, $2, $3, $4, $5, $6) returning id;`,
-      [
-        createPostDto.title,
-        createPostDto.shortDescription,
-        createPostDto.content,
-        blog.id,
-        blog.name,
-        new Date().toISOString(),
-      ],
-    );
-    return newPost[0].id;
-  }
+  // async createPost(createPostDto: CreatePostDto, blog) {
+  //   const newPost = await this.postsRepo.createQueryBuilder('p').
+  //
+  //   //   .query(
+  //   //   `INSERT INTO public.posts(
+  //   //      title, "shortDescription", content, "blogId", "blogName", "createdAt")
+  //   //     VALUES ( $1, $2, $3, $4, $5, $6) returning id;`,
+  //   //   [
+  //   //     createPostDto.title,
+  //   //     createPostDto.shortDescription,
+  //   //     createPostDto.content,
+  //   //     blog.id,
+  //   //     blog.name,
+  //   //     new Date().toISOString(),
+  //   //   ],
+  //   // );
+  //   return newPost[0].id;
+  // }
 
   async deletePostById(id: string): Promise<boolean> {
     try {

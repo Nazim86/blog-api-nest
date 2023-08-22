@@ -3,6 +3,7 @@ import { CreateLikeDto } from '../createLikeDto';
 import { PostRepository } from '../../../infrastructure/posts/post.repository';
 import { UsersRepository } from '../../../infrastructure/users/users.repository';
 import { LikesRepository } from '../../../infrastructure/likes/likes.repository';
+import { PostLike } from '../../../entities/like/postLike.entity';
 
 export class PostLikeUpdateCommand {
   constructor(
@@ -24,7 +25,7 @@ export class PostLikeUpdateUseCase {
 
     if (!post) return false;
 
-    await this.userRepository.findUserById(command.userId);
+    const user = await this.userRepository.findUserById(command.userId);
 
     // let login = 'undefined';
     //
@@ -32,12 +33,20 @@ export class PostLikeUpdateUseCase {
     //   login = user.login;
     // }
 
-    await this.likesRepository.createPostLike(
-      command.postId,
-      command.userId,
-      command.createPostLikeDto,
-    );
+    const newPostLike = new PostLike();
+    newPostLike.post = post;
+    newPostLike.user = user;
+    newPostLike.addedAt = new Date();
+    newPostLike.status = command.createPostLikeDto.likeStatus;
 
+    // await this.likesRepository.createPostLike(
+    //   command.postId,
+    //   command.userId,
+    //   command.createPostLikeDto,
+    // );
+
+    const result = await this.likesRepository.savePostLike(newPostLike);
+    // console.log(result);
     return true;
   }
 }

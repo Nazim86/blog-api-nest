@@ -77,8 +77,8 @@ export class PostsController {
       }
     }
 
-    const getPost: PostsViewType | boolean =
-      await this.postQueryRepo.getPostById(postId, userId);
+    // PostsViewType | boolean
+    const getPost = await this.postQueryRepo.getPostById(postId, userId);
 
     if (!getPost) {
       return exceptionHandler(ResultCode.NotFound);

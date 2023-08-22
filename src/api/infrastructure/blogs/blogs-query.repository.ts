@@ -120,12 +120,12 @@ export class BlogsQueryRepo {
         .leftJoinAndSelect('b.blogBanInfo', 'bbi')
         .where(
           '(bbi.isBanned = :isBanned01 or bbi.isBanned = :isBanned02)' +
-            'and b.name ILIKE :name  and b.owner = :ownerId',
+            'and b.name ILIKE :name  and o.id = :ownerId',
           {
             isBanned01: isBanned01,
             isBanned02: isBanned02,
             name: searchName,
-            owner: blogOwnerUserId,
+            ownerId: blogOwnerUserId,
           },
         )
         .orderBy(`o.${paginatedQuery.sortBy}`, paginatedQuery.sortDirection)
@@ -133,6 +133,7 @@ export class BlogsQueryRepo {
         .take(paginatedQuery.pageSize)
         .getManyAndCount();
 
+      // writeSql(blog);
       totalCount = Number(blog[1]);
 
       blog = blog[0];

@@ -5,6 +5,7 @@ import { CreatePostDto } from '../../public/post/createPostDto';
 import { PostRepository } from '../../infrastructure/posts/post.repository';
 import { ResultCode } from '../../../exception-handler/result-code-enum';
 import { Result } from '../../../exception-handler/result-type';
+import { Posts } from '../../entities/posts/posts.entity';
 
 export class PostCreateCommand {
   constructor(
@@ -20,18 +21,26 @@ export class PostCreateUseCase {
     private readonly postRepository: PostRepository,
   ) {}
 
-  async execute(command: PostCreateCommand): Promise<Result<ResultCode>> {
+  async execute(command: PostCreateCommand): Promise<Result<string>> {
     const blog = await this.blogRepository.getBlogById(command.blogId);
 
     if (!blog) return { code: ResultCode.NotFound };
 
     if (blog.owner.id !== command.userId) return { code: ResultCode.Forbidden };
 
-    const postId = await this.postRepository.createPost(
-      command.createPostDto,
-      blog,
-    );
+    const newPost = new Posts();
+    newPost.title = command.createPostDto.title;
+    newPost.shortDescription = command.createPostDto.shortDescription;
+    newPost.content = command.createPostDto.content;
+    newPost.blog = blog;
+    newPost.createdAt = new Date().toISOString();
 
-    return { code: ResultCode.Success, data: postId };
+    const post = await this.postRepository.savePost(newPost);
+    // const postId = await this.postRepository.createPost(
+    //   command.createPostDto,
+    //   blog,
+    // );
+
+    return { code: ResultCode.Success, data: post.id };
   }
 }

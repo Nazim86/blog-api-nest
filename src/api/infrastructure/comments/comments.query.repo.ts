@@ -227,7 +227,7 @@ export class CommentsQueryRepo {
       .addSelect(
         (qb) =>
           qb
-            .select('count(*)')
+            .select('status')
             .from(CommentLike, 'cl')
             .where('c.id = cl.commentId')
             .andWhere('cl.userId = :userId', { userId: userId }),
@@ -253,6 +253,7 @@ export class CommentsQueryRepo {
             .andWhere('cl.banStatus = false'),
         'dislikesCount',
       )
+
       // .addSelect(
       //   (qb) => qb.select('ownerId').from(Blogs, 'b').where('b.id = p.blogId'),
       //   'ownerId',

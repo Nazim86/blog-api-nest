@@ -10,6 +10,7 @@ import {
 import { BlogBanInfo } from './blogBanInfo.entity';
 import { Users } from '../users/user.entity';
 import { UsersBanByBlogger } from '../users/usersBanByBlogger.entity';
+import { Posts } from '../posts/posts.entity';
 
 @Entity({ name: 'blogs' })
 export class Blogs {
@@ -37,6 +38,9 @@ export class Blogs {
   @ManyToOne(() => Users, (u) => u.blogs, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'owner' })
   owner: Users;
+
+  @OneToMany(() => Posts, (p) => p.blog)
+  post: Posts;
 
   @OneToMany(() => UsersBanByBlogger, (ubb) => ubb.blog)
   usersBanByBlogger: UsersBanByBlogger;

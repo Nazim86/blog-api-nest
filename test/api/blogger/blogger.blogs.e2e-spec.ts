@@ -19,12 +19,13 @@ import {
 import { AppModule } from '../../../src/app.module';
 import { appSettings } from '../../../src/app.settings';
 import { nameField } from '../../data/400 error-data';
+import { likePost } from '../../functions/post_functions';
 
 describe('Blogger blog testing', () => {
   let app: INestApplication;
   let httpServer;
 
-  //jest.setTimeout(60 * 1000);
+  jest.setTimeout(60 * 1000);
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -160,10 +161,17 @@ describe('Blogger blog testing', () => {
         .post(`/blogger/blogs/${blog[0].id}/posts`)
         .auth(accessToken[0], { type: 'bearer' })
         .send(newPostCreatingData);
-
+      //console.log(blog[0].id);
       post = result.body;
       expect(result.status).toBe(201);
       //expect(result.body).toEqual(returnedCreatedPost);
+    });
+
+    //TODO Like post
+    it(`like post`, async () => {
+      //console.log(post);
+      const result = await likePost(httpServer, post.id, [accessToken[0]]);
+      //expect(result).toBe(201);
     });
 
     it(`Get posts by blogId`, async () => {

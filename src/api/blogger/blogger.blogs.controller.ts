@@ -100,7 +100,9 @@ export class BloggerBlogsController {
     if (postId.code !== ResultCode.Success) {
       return exceptionHandler(postId.code);
     }
-    return await this.postQueryRepo.getPostById(postId.data);
+    const result = await this.postQueryRepo.getPostById(postId.data);
+    console.log(result);
+    return result;
   }
 
   @HttpCode(204)
