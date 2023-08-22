@@ -66,13 +66,13 @@ export class PostsQueryRepo {
         shortDescription: post.p_shortDescription,
         content: post.p_content,
         blogId: post.p_blog,
-        blogName: post.p_blog.name,
+        blogName: post.b_name,
         createdAt: post.p_createdAt,
         extendedLikesInfo: {
           likesCount: Number(post.likesCount),
           dislikesCount: Number(post.dislikesCount),
           myStatus: myStatus,
-          newestLikes: post.newestLikes,
+          newestLikes: post.newestLikes ?? [],
         },
       };
     });
@@ -220,33 +220,102 @@ export class PostsQueryRepo {
 
     const skipSize = paginatedQuery.skipSize;
 
-    let totalCount = await this.dataSource.query(
-      `SELECT count(*) FROM public.posts;`,
-    );
+    //const sortBy = 'addedAt';
 
-    totalCount = Number(totalCount[0].count);
+    const posts = await this.postsRepo
+      .createQueryBuilder('p')
+      .addSelect((qb) => qb.select('count(*)', 'totalCount').from(Posts, 'p'))
+      .addSelect((qb) =>
+        qb
+          .select('pl.status', 'myStatus')
+          .from(PostLike, 'pl')
+          .where('pl.postId = p.id')
+          .andWhere('pl.userId = :userId', { userId: userId }),
+      )
+      .addSelect(
+        (qb) =>
+          qb
+            .select('count(*)')
+            .from(PostLike, 'pl')
+            .leftJoin('pl.user', 'u')
+            .leftJoin('u.banInfo', 'ub')
+            .where('pl.postId = p.id')
+            .andWhere('pl.status = :status', { status: 'Like' })
+            .andWhere('ub.isBanned = false'),
+        'likesCount',
+      )
+      .addSelect(
+        (qb) =>
+          qb
+            .select('count(*)')
+
+            .from(PostLike, 'pl')
+            .leftJoin('pl.user', 'u')
+            .leftJoin('u.banInfo', 'ub')
+            .where('pl.postId = p.id')
+            .andWhere('pl.status = :status', { status: 'Dislike' })
+            .andWhere('ub.isBanned = false'),
+        'dislikesCount',
+      )
+      .addSelect(
+        (qb) =>
+          qb
+            .select(
+              `jsonb_agg(json_build_object('addedAt', to_char(
+            agg."addedAt"::timestamp at time zone 'UTC',
+            'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"'),'userId', cast(agg.id as varchar), 'login', agg.login)
+                 )`,
+            )
+            .from((qb) => {
+              return qb
+                .select(`pl.addedAt, u.id, u.login`)
+                .from(PostLike, 'pl')
+                .leftJoin('pl.user', 'u')
+                .leftJoin('u.banInfo', 'ub')
+                .where('pl.postId = p.id')
+                .andWhere(`pl.status = 'Like'`)
+                .andWhere('ub.isBanned = false')
+                .orderBy('pl."addedAt"', 'DESC')
+                .limit(3);
+            }, 'agg'),
+
+        'newestLikes',
+      )
+      .leftJoinAndSelect('p.blog', 'b')
+      .leftJoinAndSelect('b.owner', 'u')
+      .orderBy(`p.${paginatedQuery.sortBy}`, paginatedQuery.sortDirection)
+      .skip(skipSize)
+      .take(paginatedQuery.pageSize)
+      .getRawMany();
+
+    console.log(posts);
+    // const posts = await this.dataSource.query(
+    //   `SELECT p.*,
+    //    (SELECT status
+    //     FROM public.post_like pl
+    //     WHERE pl."postId" = p."id" AND pl."userId" = $1) as "myStatus",
+    //     (SELECT count(*)
+    //      FROM public.post_like pl
+    //      WHERE pl."postId" = p."id" AND pl."status" = 'Like' AND pl."banStatus" = false) as "likesCount",
+    //     (SELECT count(*)
+    //      FROM public.post_like pl
+    //      WHERE pl."postId" = p."id" AND pl."status" = 'Dislike' AND pl."banStatus" = false) as "dislikesCount"
+    //         FROM public.posts p
+    //         ORDER BY "${paginatedQuery.sortBy}" ${paginatedQuery.sortDirection}
+    //         LIMIT ${paginatedQuery.pageSize} OFFSET ${skipSize};`,
+    //   [userId],
+    // );
+
+    // let totalCount = await this.dataSource.query(
+    //   `SELECT count(*) FROM public.posts;`,
+    // );
+    //
+    // totalCount = Number(totalCount[0].count);
+
+    const totalCount = Number(posts[0].totalCount);
 
     //const totalCount = await this.PostModel.countDocuments({});
     const pagesCount = paginatedQuery.totalPages(totalCount);
-
-    //const sortBy = 'addedAt';
-
-    const posts = await this.dataSource.query(
-      `SELECT p.*,
-       (SELECT status
-        FROM public.post_like pl 
-        WHERE pl."postId" = p."id" AND pl."userId" = $1) as "myStatus",
-        (SELECT count(*) 
-         FROM public.post_like pl 
-         WHERE pl."postId" = p."id" AND pl."status" = 'Like' AND pl."banStatus" = false) as "likesCount",
-        (SELECT count(*) 
-         FROM public.post_like pl 
-         WHERE pl."postId" = p."id" AND pl."status" = 'Dislike' AND pl."banStatus" = false) as "dislikesCount"
-            FROM public.posts p
-            ORDER BY "${paginatedQuery.sortBy}" ${paginatedQuery.sortDirection}
-            LIMIT ${paginatedQuery.pageSize} OFFSET ${skipSize};`,
-      [userId],
-    );
 
     const mappedPost: Promise<PostsViewType>[] = await this.postViewMapping(
       posts,
@@ -254,6 +323,8 @@ export class PostsQueryRepo {
     );
 
     const resolvedMappedPosts: PostsViewType[] = await Promise.all(mappedPost);
+
+    console.log(resolvedMappedPosts);
 
     return {
       pagesCount: pagesCount,
@@ -359,7 +430,7 @@ export class PostsQueryRepo {
     //     .leftJoinAndSelect('b.owner', 'u')
     //     .leftJoinAndSelect('u.banInfo', 'ub')
     //     .where('p.id = :postId', { postId: postId })
-    console.log(posts);
+    //console.log(posts);
 
     // console.log(posts[0][0]);
 
@@ -401,7 +472,7 @@ export class PostsQueryRepo {
 
     const resolvedMappedPosts: PostsViewType[] = await Promise.all(mappedPost);
 
-    console.log(resolvedMappedPosts);
+    //console.log(resolvedMappedPosts);
 
     return {
       pagesCount: pagesCount,

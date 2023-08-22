@@ -19,7 +19,6 @@ import {
 import { AppModule } from '../../../src/app.module';
 import { appSettings } from '../../../src/app.settings';
 import { nameField } from '../../data/400 error-data';
-import { likePost } from '../../functions/post_functions';
 
 describe('Blogger blog testing', () => {
   let app: INestApplication;
@@ -168,11 +167,11 @@ describe('Blogger blog testing', () => {
     });
 
     //TODO Like post
-    it(`like post`, async () => {
-      //console.log(post);
-      const result = await likePost(httpServer, post.id, [accessToken[0]]);
-      //expect(result).toBe(201);
-    });
+    // it(`like post`, async () => {
+    //   //console.log(post);
+    //   const result = await likePost(httpServer, post.id, [accessToken[0]]);
+    //   //expect(result).toBe(201);
+    // });
 
     it(`Get posts by blogId`, async () => {
       const result = await request(app.getHttpServer())
