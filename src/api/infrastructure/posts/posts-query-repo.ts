@@ -78,15 +78,15 @@ export class PostsQueryRepo {
     });
   }
 
-  private async newestLikesMapping(postLikes) {
-    return postLikes.map((like) => {
-      return {
-        addedAt: like.addedAt,
-        userId: like.userId,
-        login: like.login,
-      };
-    });
-  }
+  // private async newestLikesMapping(postLikes) {
+  //   return postLikes.map((like) => {
+  //     return {
+  //       addedAt: like.addedAt,
+  //       userId: like.userId,
+  //       login: like.login,
+  //     };
+  //   });
+  // }
 
   async getPostById(postId: string, userId?: string | undefined) {
     try {
@@ -123,7 +123,9 @@ export class PostsQueryRepo {
           (qb) =>
             qb
               .select(
-                `jsonb_agg(json_build_object( 'userId', cast(agg.id as varchar), 'login', agg.login)
+                `jsonb_agg(json_build_object('addedAt', to_char(
+            agg."addedAt"::timestamp at time zone 'UTC',
+            'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"'), 'userId', cast(agg.id as varchar), 'login', agg.login)
                  )`,
               )
               .from((qb) => {
@@ -301,12 +303,12 @@ export class PostsQueryRepo {
           qb
             .select('count(*)')
             .from(PostLike, 'pl')
-            .leftJoinAndSelect('pl.user', 'u')
-            .leftJoinAndSelect('u.banInfo', 'ub')
+            .leftJoin('pl.user', 'u')
+            .leftJoin('u.banInfo', 'ub')
             .where('pl.postId = p.id')
             .andWhere('pl.status = :status', { status: 'Like' })
             .andWhere('ub.isBanned = false'),
-        'dislikesCount',
+        'likesCount',
       )
       .addSelect(
         (qb) =>
@@ -314,8 +316,8 @@ export class PostsQueryRepo {
             .select('count(*)')
 
             .from(PostLike, 'pl')
-            .leftJoinAndSelect('pl.user', 'u')
-            .leftJoinAndSelect('u.banInfo', 'ub')
+            .leftJoin('pl.user', 'u')
+            .leftJoin('u.banInfo', 'ub')
             .where('pl.postId = p.id')
             .andWhere('pl.status = :status', { status: 'Dislike' })
             .andWhere('ub.isBanned = false'),
@@ -325,7 +327,9 @@ export class PostsQueryRepo {
         (qb) =>
           qb
             .select(
-              `jsonb_agg(json_build_object( 'userId', cast(agg.id as varchar), 'login', agg.login)
+              `jsonb_agg(json_build_object('addedAt', to_char(
+            agg."addedAt"::timestamp at time zone 'UTC',
+            'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"'),'userId', cast(agg.id as varchar), 'login', agg.login)
                  )`,
             )
             .from((qb) => {
@@ -379,23 +383,25 @@ export class PostsQueryRepo {
 
     //writeSql(posts);
 
-    const totalCount = Number(posts[1]);
+    const totalCount = Number(posts[0].totalCount);
 
     const pagesCount = paginatedQuery.totalPages(totalCount);
 
-    console.log('post with count in getPostsByBlogId', posts);
+    // console.log('post with count in getPostsByBlogId', posts);
+    //
+    // console.log('post in getPostsByBlogId', posts[0]);
 
-    console.log('post in getPostsByBlogId', posts[0]);
-
-    if (posts[0].length === 0) return false;
+    if (posts.length === 0) return false;
 
     const mappedPost: Promise<PostsViewType>[] = await this.postViewMapping(
-      posts[0],
+      posts,
       userId,
       //newestLikes,
     );
 
     const resolvedMappedPosts: PostsViewType[] = await Promise.all(mappedPost);
+
+    console.log(resolvedMappedPosts);
 
     return {
       pagesCount: pagesCount,
