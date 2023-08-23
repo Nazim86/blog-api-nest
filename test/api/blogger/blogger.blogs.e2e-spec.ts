@@ -213,8 +213,8 @@ describe('Blogger blog testing', () => {
         .auth(accessToken[0], { type: 'bearer' })
         .send({
           isBanned: true,
-          banReason: 'bad words',
-          blogId: blog[1].id,
+          banReason: 'bad words that not acceptable',
+          blogId: blog[0].id,
         });
       expect(result.status).toBe(204);
     });

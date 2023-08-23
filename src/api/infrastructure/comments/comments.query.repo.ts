@@ -198,7 +198,7 @@ export class CommentsQueryRepo {
       //         Where c."id" = $2`,
       //   [userId, commentId],
       // );
-      console.log(comment);
+      // console.log(comment);
 
       // comment = comment[0];
 
@@ -206,7 +206,7 @@ export class CommentsQueryRepo {
 
       const user = await this.usersRepository.findUserById(comment.c_userId);
 
-      console.log(user);
+      //console.log(user);
 
       if (user.banInfo.isBanned) {
         return null;
