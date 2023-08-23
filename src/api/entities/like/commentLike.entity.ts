@@ -27,8 +27,8 @@ export class CommentLike {
   @Column({ type: 'varchar' })
   status: string;
 
-  @Column('boolean')
-  banStatus: boolean;
+  // @Column('boolean')
+  // banStatus: boolean;
 
   @ManyToOne(() => Comments, (c) => c.commentLike, { onDelete: 'CASCADE' })
   @JoinColumn()

@@ -50,7 +50,11 @@ export const commentForBloggerWithPagination = {
         userLogin: expect.any(String),
       },
       createdAt: expect.any(String),
-
+      likesInfo: {
+        likesCount: expect.any(Number),
+        dislikesCount: expect.any(Number),
+        myStatus: expect.any(String),
+      },
       postInfo: {
         id: expect.any(String),
         title: expect.any(String),
