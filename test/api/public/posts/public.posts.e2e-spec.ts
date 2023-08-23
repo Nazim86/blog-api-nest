@@ -373,7 +373,6 @@ describe('Public posts testing', () => {
 
       //checking the same like and dislikes with getPostByBlogId
       for (let i = 0; i < blogs.length; i++) {
-        console.log('i in first loop', i);
         const blogId = blogs[i].id;
         const postsByBlogId = await getPostsByBlogId(
           httpServer,
@@ -382,13 +381,9 @@ describe('Public posts testing', () => {
         );
 
         for (let y = 0; y < postsByBlogId.body.items.length; y++) {
-          console.log('i in second loop', i);
-
           const postId = postsByBlogId.body.items[y].id;
 
           const post = postsByBlogId.body.items.find((p) => p.id === postId);
-          console.log('post in tests', post);
-          console.log('post in tests', post.extendedLikesInfo);
 
           if (i === 0) {
             expect(post.extendedLikesInfo.likesCount).toBe(2);
