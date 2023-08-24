@@ -346,19 +346,6 @@ describe('Public posts testing', () => {
 
       const allPosts = await getPosts(httpServer, accessTokens[0]);
 
-      // console.log(
-      //   'allpost in tests 3',
-      //   allPosts.body.items[2].extendedLikesInfo.newestLikes,
-      // );
-      // console.log(
-      //   'allpost in tests 1',
-      //   allPosts.body.items[0].extendedLikesInfo.newestLikes,
-      // );
-      // console.log(
-      //   'allpost in tests 4',
-      //   allPosts.body.items[3].extendedLikesInfo.newestLikes,
-      // );
-
       expect(
         allPosts.body.items[2].extendedLikesInfo.newestLikes[0].login,
       ).toEqual('leo2');
@@ -446,6 +433,7 @@ describe('Public posts testing', () => {
         }
 
         if (i === 2) {
+          console.log(postId);
           expect(post.extendedLikesInfo.likesCount).toBe(4);
           expect(post.extendedLikesInfo.dislikesCount).toBe(0);
           expect(post.extendedLikesInfo.myStatus).toBe(LikeEnum.Like);

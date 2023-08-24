@@ -35,12 +35,12 @@ export class PostLikeUpdateUseCase {
 
     const postLike = await this.likesRepository.findPostLike(post.id, user.id);
 
+    console.log(postLike);
+
     if (!user) return false;
 
-    let newPostLike: PostLike;
-
     if (!postLike) {
-      newPostLike = new PostLike();
+      const newPostLike = new PostLike();
       newPostLike.post = post;
       newPostLike.user = user;
       newPostLike.addedAt = new Date();
@@ -53,6 +53,8 @@ export class PostLikeUpdateUseCase {
       await this.likesRepository.savePostLike(postLike);
     }
 
+    // console.log('new Like', result1);
+    // console.log('updating like', result2);
     // await this.likesRepository.createPostLike(
     //   command.postId,
     //   command.userId,
