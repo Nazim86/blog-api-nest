@@ -13,17 +13,23 @@ export class LikesRepository {
     private readonly commentLikeRepo: Repository<CommentLike>,
   ) {}
 
-  async savePostLike(postlike: PostLike) {
-    return this.postLikeRepo.save(postlike);
+  async savePostLike(postLike: PostLike) {
+    return this.postLikeRepo.save(postLike);
   }
 
   async findPostLike(postId: string, userId: string) {
-    const postLike = await this.dataSource.query(
-      `Select * from public.post_like
-             Where "postId" = $1 and "userId"=$2`,
-      [postId, userId],
-    );
-    return postLike[0];
+    //   await this.dataSource.query(
+    //   `Select * from public.post_like
+    //          Where "postId" = $1 and "userId"=$2`,
+    //   [postId, userId],
+    // );
+    return await this.postLikeRepo
+      .createQueryBuilder('pl')
+      .leftJoin('pl.post', 'p')
+      .leftJoin('pl.user', 'u')
+      .where('p.id = :postId', { postId: postId })
+      .andWhere('u.id = :userId', { userId: userId })
+      .getOne();
   }
 
   async findCommentLike(commentId: string, userId: string) {

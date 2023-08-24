@@ -33,11 +33,25 @@ export class PostLikeUpdateUseCase {
     //   login = user.login;
     // }
 
-    const newPostLike = new PostLike();
-    newPostLike.post = post;
-    newPostLike.user = user;
-    newPostLike.addedAt = new Date();
-    newPostLike.status = command.createPostLikeDto.likeStatus;
+    const postLike = await this.likesRepository.findPostLike(post.id, user.id);
+
+    if (!user) return false;
+
+    let newPostLike: PostLike;
+
+    if (!postLike) {
+      newPostLike = new PostLike();
+      newPostLike.post = post;
+      newPostLike.user = user;
+      newPostLike.addedAt = new Date();
+      newPostLike.status = command.createPostLikeDto.likeStatus;
+      await this.likesRepository.savePostLike(newPostLike);
+    } else {
+      postLike.post = post;
+      postLike.user = user;
+      postLike.status = command.createPostLikeDto.likeStatus;
+      await this.likesRepository.savePostLike(postLike);
+    }
 
     // await this.likesRepository.createPostLike(
     //   command.postId,
@@ -45,8 +59,8 @@ export class PostLikeUpdateUseCase {
     //   command.createPostLikeDto,
     // );
 
-    const result = await this.likesRepository.savePostLike(newPostLike);
-    // console.log(result);
+    // console.log(newPostLike);
+
     return true;
   }
 }

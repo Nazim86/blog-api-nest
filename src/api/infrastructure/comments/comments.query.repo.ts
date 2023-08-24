@@ -172,8 +172,6 @@ export class CommentsQueryRepo {
     //   myStatus = commentsForPosts.myStatus;
     // }
 
-    console.log(comments);
-
     const totalCount = Number(comments[0].totalCount);
 
     const pagesCount = paginatedQuery.totalPages(totalCount);
