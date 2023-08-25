@@ -26,23 +26,27 @@ export class CommentUpdateUseCase {
 
     if (!comment) return { code: ResultCode.NotFound };
 
-    if (comment && comment.userId !== command.userId) {
+    if (comment && comment.user.id !== command.userId) {
       return {
         code: ResultCode.Forbidden,
       };
     }
 
-    const isCommentUpdated = await this.commentsRepository.updateComment(
-      comment.id,
-      command.createCommentDto,
-    );
+    comment.content = command.createCommentDto.content;
+
+    await this.commentsRepository.saveComment(comment);
+
+    // const isCommentUpdated = await this.commentsRepository.updateComment(
+    //   comment.id,
+    //   command.createCommentDto,
+    // );
 
     // comment.updateComment(command.createCommentDto);
     //
     // await this.commentsRepository.save(comment);
 
     return {
-      code: isCommentUpdated ? ResultCode.Success : ResultCode.NotFound,
+      code: comment ? ResultCode.Success : ResultCode.NotFound,
     };
   }
 }

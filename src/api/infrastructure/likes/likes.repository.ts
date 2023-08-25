@@ -16,6 +16,9 @@ export class LikesRepository {
   async savePostLike(postLike: PostLike) {
     return this.postLikeRepo.save(postLike);
   }
+  async saveCommentLike(commentLike: CommentLike) {
+    return this.commentLikeRepo.save(commentLike);
+  }
 
   async findPostLike(postId: string, userId: string) {
     //   await this.dataSource.query(
@@ -33,12 +36,18 @@ export class LikesRepository {
   }
 
   async findCommentLike(commentId: string, userId: string) {
-    const commentLike = await this.dataSource.query(
-      `Select * from public.comment_like
-             Where "commentId" = $1 and "userId"=$2`,
-      [commentId, userId],
-    );
-    return commentLike[0];
+    //   this.dataSource.query(
+    //   `Select * from public.comment_like
+    //          Where "commentId" = $1 and "userId"=$2`,
+    //   [commentId, userId],
+    // );
+    return await this.commentLikeRepo
+      .createQueryBuilder('cl')
+      .leftJoin('cl.comment', 'c')
+      .leftJoin('cl.user', 'u')
+      .where('c.id = :commentId', { commentId: commentId })
+      .andWhere('u.id = :userId', { userId: userId })
+      .getOne();
   }
 
   // async createPostLike(

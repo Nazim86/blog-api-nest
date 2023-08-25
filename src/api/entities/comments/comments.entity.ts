@@ -33,5 +33,5 @@ export class Comments {
 
   @ManyToOne(() => Posts, (p) => p.comment, { onDelete: 'CASCADE' })
   @JoinColumn()
-  post: Posts[];
+  post: Posts;
 }

@@ -127,16 +127,7 @@ export class UsersRepository {
   }
 
   async findBloggerBannedUser(userId: string, blogId: string) {
-    const bannedUser = await this.usersBanByBloggerRepo
-      .createQueryBuilder('ubb')
-      .leftJoinAndSelect('ubb.user', 'u')
-      .leftJoinAndSelect('u.banInfo', 'ub')
-      .where('ubb.userId = :userId', { userId: userId })
-      .andWhere('ubb.blogId = :blogId', { blogId: blogId })
-      .andWhere('ub.isBanned = true')
-      .getOne();
-
-    console.log(bannedUser);
+    //console.log(bannedUser);
     //   await this.dataSource.query(
     //   `Select * from public.users_ban_by_blogger ubb
     //           Left join public.users u on
@@ -145,7 +136,14 @@ export class UsersRepository {
     //   [userId, blogId, true],
     // );
 
-    return bannedUser;
+    return await this.usersBanByBloggerRepo
+      .createQueryBuilder('ubb')
+      .leftJoinAndSelect('ubb.user', 'u')
+      .leftJoinAndSelect('u.banInfo', 'ub')
+      .where('ubb.userId = :userId', { userId: userId })
+      .andWhere('ubb.blogId = :blogId', { blogId: blogId })
+      .andWhere('ub.isBanned = true')
+      .getOne();
   }
 
   // async bloggerBanUser(userId: string, userBanDto: UserBanDto, blogId: string) {

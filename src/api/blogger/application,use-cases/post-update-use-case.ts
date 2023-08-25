@@ -31,10 +31,15 @@ export class PostUpdateUseCase {
 
     if (!post) return { code: ResultCode.NotFound };
 
-    const isUpdated = await this.postsRepository.updatePost(
-      command.updatePostDto,
-      post.id,
-    );
+    post.title = command.updatePostDto.title;
+    post.shortDescription = command.updatePostDto.shortDescription;
+    post.content = command.updatePostDto.content;
+
+    const isUpdated = await this.postsRepository.savePost(post);
+    // const isUpdated = await this.postsRepository.updatePost(
+    //   command.updatePostDto,
+    //   post.id,
+    // );
 
     return { code: isUpdated ? ResultCode.Success : ResultCode.NotFound };
   }

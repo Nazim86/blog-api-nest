@@ -13,7 +13,7 @@ export class CommentDeleteUseCase {
   async execute(command: CommentDeleteCommand): Promise<Result<ResultCode>> {
     const comment = await this.commentsRepository.getComment(command.commentId);
 
-    if (comment && comment.userId !== command.userId) {
+    if (comment && comment.user.id !== command.userId) {
       return {
         code: ResultCode.Forbidden,
       };

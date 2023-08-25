@@ -47,8 +47,8 @@ export class PostLikeUpdateUseCase {
       newPostLike.status = command.createPostLikeDto.likeStatus;
       await this.likesRepository.savePostLike(newPostLike);
     } else {
-      postLike.post = post;
-      postLike.user = user;
+      // postLike.post = post;
+      // postLike.user = user;
       postLike.status = command.createPostLikeDto.likeStatus;
       await this.likesRepository.savePostLike(postLike);
     }

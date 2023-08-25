@@ -1,12 +1,20 @@
 import { Injectable } from '@nestjs/common';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { CreateCommentDto } from '../../public/comments/createComment.Dto';
+import { Comments } from '../../entities/comments/comments.entity';
 
 @Injectable()
 export class CommentsRepository {
-  constructor(@InjectDataSource() private dataSource: DataSource) {}
+  constructor(
+    @InjectDataSource() private dataSource: DataSource,
+    @InjectRepository(Comments)
+    private readonly commentsRepo: Repository<Comments>,
+  ) {}
 
+  async saveComment(comment: Comments) {
+    return this.commentsRepo.save(comment);
+  }
   async createComment(commentData) {
     let commentId = await this.dataSource.query(
       `
@@ -37,18 +45,24 @@ export class CommentsRepository {
   }
 
   async getComment(commentId) {
-    const comment = await this.dataSource.query(
-      `select c.*, u."login",
-               p.title, p."blogId", p."blogName"
-                from public.comments c
-              Left join public.users u on 
-              c."userId" = u."id"
-              Left join public.posts p on
-              c."postId" = p."id"
-              Where c."id"= $1`,
-      [commentId],
-    );
-    return comment[0];
+    //   this.dataSource.query(
+    //   `select c.*, u."login",
+    //            p.title, p."blogId", p."blogName"
+    //             from public.comments c
+    //           Left join public.users u on
+    //           c."userId" = u."id"
+    //           Left join public.posts p on
+    //           c."postId" = p."id"
+    //           Where c."id"= $1`,
+    //   [commentId],
+    // );
+    return await this.commentsRepo
+      .createQueryBuilder('c')
+      .leftJoinAndSelect('c.user', 'u')
+      .leftJoinAndSelect('c.post', 'p')
+      .where('c.postId = p.id')
+      .andWhere('c.id = :commentId', { commentId: commentId })
+      .getOne();
   }
 
   async deleteComment(commentId: string): Promise<boolean> {
