@@ -35,20 +35,20 @@ export class PostRepository {
     }
   }
 
-  async updatePost(updatePostDto: CreatePostDto, postId: string) {
-    const result = await this.dataSource.query(
-      `UPDATE public.posts 
-        SET  title=$1, "shortDescription"=$2, content=$3
-        WHERE "id"=$4;`,
-      [
-        updatePostDto.title,
-        updatePostDto.shortDescription,
-        updatePostDto.content,
-        postId,
-      ],
-    );
-    return result[1] === 1;
-  }
+  // async updatePost(updatePostDto: CreatePostDto, postId: string) {
+  //   const result = await this.dataSource.query(
+  //     `UPDATE public.posts
+  //       SET  title=$1, "shortDescription"=$2, content=$3
+  //       WHERE "id"=$4;`,
+  //     [
+  //       updatePostDto.title,
+  //       updatePostDto.shortDescription,
+  //       updatePostDto.content,
+  //       postId,
+  //     ],
+  //   );
+  //   return result[1] === 1;
+  // }
 
   // async createPost(createPostDto: CreatePostDto, blog) {
   //   const newPost = await this.postsRepo.createQueryBuilder('p').
