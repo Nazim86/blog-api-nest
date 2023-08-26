@@ -18,8 +18,6 @@ export class DeviceRepository {
       .createQueryBuilder('d')
       .leftJoinAndSelect('d.user', 'u')
       .where('d.deviceId = :deviceId', { deviceId: deviceId })
-      .select(['d', 'u.id']) // Select both device and user's id
-      .addSelect('u.id', 'userId') // Alias the user's id as userId
       .getOne();
   }
 

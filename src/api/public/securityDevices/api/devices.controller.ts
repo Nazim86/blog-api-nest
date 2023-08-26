@@ -34,6 +34,7 @@ export class DevicesController {
       ip,
       req.user.userId,
     );
+    console.log(devices);
     return devices;
   }
 
