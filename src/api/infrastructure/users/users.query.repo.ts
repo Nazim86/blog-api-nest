@@ -94,16 +94,24 @@ export class UserQueryRepo {
     const bannedUsersForBlog = await this.usersRepository
       .createQueryBuilder('u')
       .leftJoinAndSelect('u.usersBanByBlogger', 'ubb', 'u.id = ubb.userId')
-      .where(
-        'u.login ilike :login and ubb.blogId = :blogId and ' +
-          '(ubb.isBanned = :banStatus01 or ubb.isBanned = :banStatus02)',
-        {
-          login: filter.searchLogin,
-          blogId: blogId,
-          banStatus01: filter.banStatus01,
-          banStatus02: filter.banStatus02,
-        },
-      )
+      .where(`ubb.isBanned = :banStatus01 or ubb.isBanned = :banStatus02`, {
+        banStatus01: filter.banStatus01,
+        banStatus02: filter.banStatus02,
+      })
+      .andWhere(`u.login ilike :login and ubb.blogId = :blogId`, {
+        login: filter.searchLogin,
+        blogId: blogId,
+      })
+      // .where(
+      //   'u.login ilike :login and ubb.blogId = :blogId and ' +
+      //     '(ubb.isBanned = :banStatus01 or ubb.isBanned = :banStatus02)',
+      //   {
+      //     login: filter.searchLogin,
+      //     blogId: blogId,
+      //     banStatus01: filter.banStatus01,
+      //     banStatus02: filter.banStatus02,
+      //   },
+      // )
       .orderBy(`u.${paginatedQuery.sortBy}`, paginatedQuery.sortDirection)
       .skip(skipSize)
       .take(paginatedQuery.pageSize)
@@ -166,7 +174,7 @@ export class UserQueryRepo {
     const getUsers = await this.usersRepository
       .createQueryBuilder('u')
       .leftJoinAndSelect('u.banInfo', 'ub', 'u.id=ub.userId')
-      .where(`ub.isBanned = :banStatus01 or ub.isBanned = :banStatus02 `, {
+      .where(`ub.isBanned = :banStatus01 or ub.isBanned = :banStatus02`, {
         banStatus01: filter.banStatus01,
         banStatus02: filter.banStatus02,
       })
