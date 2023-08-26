@@ -66,12 +66,19 @@ export class DeviceRepository {
   }
 
   async deleteDevices(deviceId: string): Promise<boolean> {
-    const result = await this.dataSource.query(
-      'DELETE FROM public.devices d WHERE d."deviceId"!=$1;',
-      [deviceId],
-    );
+    const result = await this.deviceRepo
+      .createQueryBuilder()
+      .delete()
+      .from(Devices)
+      .where('id = :id', { id: deviceId })
+      .execute();
 
-    return result[1] >= 1;
+    // const result = await this.dataSource.query(
+    //   'DELETE FROM public.devices d WHERE d."deviceId"!=$1;',
+    //   [deviceId],
+    // );
+
+    return result.affected === 1;
   }
 
   async deleteDeviceById(deviceId: string, userId: string) {

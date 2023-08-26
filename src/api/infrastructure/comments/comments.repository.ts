@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { Comments } from '../../entities/comments/comments.entity';
+import { CommentLike } from '../../entities/like/commentLike.entity';
 
 @Injectable()
 export class CommentsRepository {
@@ -26,11 +27,18 @@ export class CommentsRepository {
   }
 
   async deleteComment(commentId: string): Promise<boolean> {
-    const result = await this.dataSource.query(
-      `DELETE FROM public.comments
-                            WHERE "id" =$1;`,
-      [commentId],
-    );
-    return result[1] === 1;
+    const result = await this.commentsRepo
+      .createQueryBuilder()
+      .delete()
+      .from(Comments)
+      .where('id=:id', { id: commentId })
+      .execute();
+
+    //   this.dataSource.query(
+    //   `DELETE FROM public.comments
+    //                         WHERE "id" =$1;`,
+    //   [commentId],
+    // );
+    return result.affected === 1;
   }
 }
