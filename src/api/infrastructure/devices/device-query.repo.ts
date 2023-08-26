@@ -25,8 +25,7 @@ export class DeviceQueryRepo {
   async getDevices(ip: string, userId: string): Promise<DeviceViewType[]> {
     const device = await this.devicesRepo
       .createQueryBuilder('d')
-      .leftJoin('d.user', 'u')
-      .where('u.id = :userId', { userId: userId })
+      .where('d.userId = :userId', { userId: userId })
       .getMany();
 
     // const device = await this.dataSource.query(
