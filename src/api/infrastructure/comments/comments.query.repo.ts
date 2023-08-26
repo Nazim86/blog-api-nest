@@ -94,21 +94,15 @@ export class CommentsQueryRepo {
 
     const skipSize = paginatedQuery.skipSize;
 
-    // let totalCount = await this.dataSource.query(
-    //   `Select count(*) from public.comments c
-    //         Left join public.users u on
-    //           c."userId"= u."id"
-    //           Where c."postId" = $1`,
-    //   [postId],
-    // );
-
     const comments = await this.comentsRepo
       .createQueryBuilder('c')
-      .addSelect((qb) =>
-        qb
-          .select('count(*)', 'totalCount')
-          .from(Comments, 'c')
-          .where('c.postId = :postId', { postId: postId }),
+      .addSelect(
+        (qb) =>
+          qb
+            .select(`count(*)`)
+            .from(Comments, 'c')
+            .where('c.postId = :postId', { postId: postId }),
+        'totalCount',
       )
 
       .addSelect(
@@ -162,10 +156,6 @@ export class CommentsQueryRepo {
       userId,
     );
 
-    // const resolvedComments: CommentsViewType[] = await Promise.all(
-    //   mappedComment,
-    // );
-
     return {
       pagesCount: pagesCount,
       page: Number(query.pageNumber),
@@ -214,24 +204,6 @@ export class CommentsQueryRepo {
         .where('c.id = :commentId', { commentId: commentId })
         .getRawOne();
 
-      //   await this.dataSource.query(
-      //   `Select c.*,  u."login" as "userLogin",
-      //       (Select "status" from public.comment_like
-      //             Where "commentId"= c."id" and "userId" = $1) as "myStatus",
-      //             (Select count(*) from public.comment_like
-      //             Where "commentId"=c."id" and "status"='Like' and "banStatus" = false) as "likesCount",
-      //             (Select count(*) from public.comment_like
-      //             Where "commentId" = c."id" and "status"='Dislike' and "banStatus" = false) as "dislikesCount"
-      //             from public.comments c
-      //         Left join public.users u on
-      //         c."userId"= u."id"
-      //         Where c."id" = $2`,
-      //   [userId, commentId],
-      // );
-      // console.log(comment);
-
-      // comment = comment[0];
-
       if (!comment) return null;
 
       const user = await this.usersRepository.findUserById(comment.c_userId);
@@ -278,32 +250,20 @@ export class CommentsQueryRepo {
 
     const skipSize = paginatedQuery.skipSize;
 
-    // let totalCount = await this.dataSource.query(
-    //   `Select count(*) from public.comments c
-    //           Left join public.users u on
-    //           c."userId"= u."id"
-    //           Left join public.users_ban_by_sa ubb on
-    //           u."id" = ubb."userId"
-    //           Left join public.posts p on
-    //           c."postId"= p."id"
-    //           left join public.blogs b on
-    //           b."id" = p."blogId"
-    //           Where ubb."isBanned" = $1 and b."ownerId"=$2`,
-    //   [false, userId],
-    // );
-
     const comments = await this.comentsRepo
       .createQueryBuilder('c')
-      .addSelect((qb) =>
-        qb
-          .select('count(*)', 'totalCount')
-          .from(Comments, 'c')
-          .leftJoin('c.post', 'p')
-          .leftJoin('p.blog', 'b')
-          .leftJoin('b.owner', 'u')
-          .leftJoin('u.banInfo', 'ub')
-          .where('ub.isBanned = false')
-          .andWhere('u.id = :userId', { userId: userId }),
+      .addSelect(
+        (qb) =>
+          qb
+            .select(`count(*)`)
+            .from(Comments, 'c')
+            .leftJoin('c.post', 'p')
+            .leftJoin('p.blog', 'b')
+            .leftJoin('b.owner', 'u')
+            .leftJoin('u.banInfo', 'ub')
+            .where('ub.isBanned = false')
+            .andWhere('u.id = :userId', { userId: userId }),
+        'totalCount',
       )
       .addSelect(
         (qb) =>
@@ -314,25 +274,27 @@ export class CommentsQueryRepo {
             .andWhere('cl.userId = :userId', { userId: userId }),
         'myStatus',
       )
-      .addSelect((qb) =>
-        qb
-          .select('count(*)', 'likesCount')
-          .from(CommentLike, 'cl')
-          .leftJoin('cl.user', 'u')
-          .leftJoin('u.banInfo', 'ub')
-          .where('cl.commentId = c.id')
-          .andWhere('cl.status = :status', { status: 'Like' })
-          .andWhere('ub.isBanned = false'),
-      )
       .addSelect(
         (qb) =>
           qb
-            .select('count(*)')
+            .select(`count(*)`)
             .from(CommentLike, 'cl')
             .leftJoin('cl.user', 'u')
             .leftJoin('u.banInfo', 'ub')
             .where('cl.commentId = c.id')
-            .andWhere('cl.status = :status', { status: 'Dislike' })
+            .andWhere(`cl.status = 'Like'`)
+            .andWhere('ub.isBanned = false'),
+        'likesCount',
+      )
+      .addSelect(
+        (qb) =>
+          qb
+            .select(`count(*)`)
+            .from(CommentLike, 'cl')
+            .leftJoin('cl.user', 'u')
+            .leftJoin('u.banInfo', 'ub')
+            .where('cl.commentId = c.id')
+            .andWhere(`cl.status = 'Dislike'`)
             .andWhere('ub.isBanned = false'),
         'dislikesCount',
       )
@@ -353,54 +315,7 @@ export class CommentsQueryRepo {
 
     const pagesCount = paginatedQuery.totalPages(totalCount);
 
-    // const posts = await dataSource
-    //   .getRepository(Post)
-    //   .createQueryBuilder("post")
-    //   .where((qb) => {
-    //     const subQuery = qb
-    //       .subQuery()
-    //       .select("user.name")
-    //       .from(User, "user")
-    //       .where("user.registered = :registered")
-    //       .getQuery()
-    //     return "post.title IN " + subQuery
-    //   })
-    //   .setParameter("registered", true)
-    //   .getMany()
-
-    //   .query(
-    //   `Select c.*, u."login" as "userLogin" , p."title",
-    //           p."blogId",p."blogName", b."ownerId",
-    //           (Select "status" from public.comment_like
-    //               Where "commentId"= c."id" and "userId"=$2) as "myStatus",
-    //               (Select count(*) from public.comment_like
-    //               Where "commentId"=c."id" and "status"='Like' and "banStatus" = false) as "likesCount",
-    //               (Select count(*) from public.comment_like
-    //               Where "commentId" = c."id" and "status"='Dislike' and "banStatus" = false) as "dislikesCount"
-    //           from public.comments c
-    //           Left join public.users u on
-    //           c."userId"= u."id"
-    //           Left join public.users_ban_by_sa ubb on
-    //           u."id" = ubb."userId"
-    //           Left join public.posts p on
-    //           c."postId"= p."id"
-    //           left join public.blogs b on
-    //           b."id" = p."blogId"
-    //           Where ubb."isBanned" = $1 and b."ownerId"=$2
-    //           Order by "${paginatedQuery.sortBy}" ${paginatedQuery.sortDirection}
-    //           Limit ${paginatedQuery.pageSize} Offset ${skipSize}`,
-    //   [false, userId],
-    // );
-
-    // console.log(comments[0]);
-
-    // await writeSql(comments);
-
     const myStatus = 'None';
-
-    // if (comments.myStatus) {
-    //   myStatus = comments.myStatus;
-    // }
 
     const mappedCommentsForBlog = await this.commentMappingForBlogger(
       comments,
