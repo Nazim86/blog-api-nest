@@ -42,7 +42,7 @@ export class Blogs {
   )
   blogBanInfo: BlogBanInfo;
 
-  @ManyToOne(() => Users, (u) => u.blogs)
+  @ManyToOne(() => Users, (u) => u.blogs, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'owner' })
   owner: Users;
 
