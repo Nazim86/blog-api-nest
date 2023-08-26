@@ -35,8 +35,6 @@ export class PostLikeUpdateUseCase {
 
     const postLike = await this.likesRepository.findPostLike(post.id, user.id);
 
-    console.log(postLike);
-
     if (!user) return false;
 
     if (!postLike) {
