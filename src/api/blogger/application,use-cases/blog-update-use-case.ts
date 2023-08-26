@@ -22,8 +22,14 @@ export class BlogUpdateUseCase {
 
     if (blog.owner.id !== command.userId) return { code: ResultCode.Forbidden };
 
-    await this.blogRepository.updateBlog(blog.id, command.updateBlogDto);
+    blog.name = command.updateBlogDto.name;
+    blog.description = command.updateBlogDto.description;
+    blog.websiteUrl = command.updateBlogDto.websiteUrl;
 
-    return { code: ResultCode.Success };
+    const isBlogUpdated = await this.blogRepository.saveBlog(blog);
+
+    //await this.blogRepository.updateBlog(blog.id, command.updateBlogDto);
+
+    return { code: isBlogUpdated ? ResultCode.Success : ResultCode.NotFound };
   }
 }

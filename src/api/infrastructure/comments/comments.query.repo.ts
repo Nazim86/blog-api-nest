@@ -145,7 +145,7 @@ export class CommentsQueryRepo {
       .take(paginatedQuery.pageSize)
       .getRawMany();
 
-    console.log(comments);
+    //console.log(comments);
 
     const totalCount = Number(comments[0].totalCount);
 

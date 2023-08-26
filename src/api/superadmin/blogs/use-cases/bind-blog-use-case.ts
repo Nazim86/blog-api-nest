@@ -52,11 +52,14 @@ export class BindBlogUseCase {
       };
     }
 
-    const isBound = await this.blogRepository.bindBlogWithUser(
-      user.id,
-      user.login,
-      blog.id,
-    );
+    blog.owner = user;
+    const isBound = await this.blogRepository.saveBlog(blog);
+
+    // const isBound = await this.blogRepository.bindBlogWithUser(
+    //   user.id,
+    //   user.login,
+    //   blog.id,
+    // );
 
     return { code: isBound ? ResultCode.Success : ResultCode.NotFound };
   }

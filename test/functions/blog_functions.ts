@@ -1,11 +1,12 @@
 import request from 'supertest';
 import { banBlogDto } from '../data/blogs-data';
 
-export const banBlog = async (httpServer, blodId) => {
+export const banBlog = async (httpServer, blogId) => {
   return request(httpServer)
-    .post(`/sa/blogs/${blodId}`)
+    .put(`/sa/blogs/${blogId}/ban`)
     .auth('admin', 'qwerty')
     .send(banBlogDto);
 };
-
-// export const;
+export const getBlogById = async (httpServer, blogId) => {
+  return request(httpServer).get(`/blogs/${blogId}`).send();
+};

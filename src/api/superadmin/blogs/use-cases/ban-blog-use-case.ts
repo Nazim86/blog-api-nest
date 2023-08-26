@@ -24,10 +24,17 @@ export class BanBlogUseCase {
       };
     }
 
-    const isBanned = await this.blogsRepository.banBlog(
-      command.banStatus.isBanned,
-      blog.id,
+    blog.blogBanInfo.isBanned = command.banStatus.isBanned;
+    blog.blogBanInfo.banDate = new Date();
+
+    const isBanned = await this.blogsRepository.saveBlogBanInfo(
+      blog.blogBanInfo,
     );
+
+    // const isBanned = await this.blogsRepository.banBlog(
+    //   command.banStatus.isBanned,
+    //   blog.id,
+    // );
     //blog.banBlog(command.banStatus.isBanned);
 
     return { code: isBanned ? ResultCode.Success : ResultCode.NotFound };

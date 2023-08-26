@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
-import { CreateBlogDto } from '../../blogger/inputModel-Dto/createBlog.dto';
 import { Blogs } from '../../entities/blogs/blogs.entity';
 import { BlogBanInfo } from '../../entities/blogs/blogBanInfo.entity';
 
@@ -70,31 +69,31 @@ export class BlogRepository {
   //   return newBlog[0].id;
   // }
 
-  async updateBlog(blogId: string, updateBlogDto: CreateBlogDto) {
-    const result = await this.dataSource.query(
-      `UPDATE public.blogs b
-    SET  name=$1, description=$2, "websiteUrl"=$3
-    WHERE b."id" = $4;`,
-      [
-        updateBlogDto.name,
-        updateBlogDto.description,
-        updateBlogDto.websiteUrl,
-        blogId,
-      ],
-    );
-    return result[1] === 1;
-  }
+  // async updateBlog(blogId: string, updateBlogDto: CreateBlogDto) {
+  //   const result = await this.dataSource.query(
+  //     `UPDATE public.blogs b
+  //   SET  name=$1, description=$2, "websiteUrl"=$3
+  //   WHERE b."id" = $4;`,
+  //     [
+  //       updateBlogDto.name,
+  //       updateBlogDto.description,
+  //       updateBlogDto.websiteUrl,
+  //       blogId,
+  //     ],
+  //   );
+  //   return result[1] === 1;
+  // }
 
-  async banBlog(isBanned: boolean, blogId: string) {
-    const result = await this.dataSource.query(
-      `UPDATE public.blog_ban_info
-            SET "isBanned"=$1, "banDate"=$2
-            WHERE "blogId"=$3;`,
-      [isBanned, new Date().toISOString(), blogId],
-    );
-
-    return result[1] === 1;
-  }
+  // async banBlog(isBanned: boolean, blogId: string) {
+  //   const result = await this.dataSource.query(
+  //     `UPDATE public.blog_ban_info
+  //           SET "isBanned"=$1, "banDate"=$2
+  //           WHERE "blogId"=$3;`,
+  //     [isBanned, new Date().toISOString(), blogId],
+  //   );
+  //
+  //   return result[1] === 1;
+  // }
 
   async bindBlogWithUser(userId: string, login: string, blogId: string) {
     const isBound = await this.dataSource.query(
@@ -125,12 +124,19 @@ export class BlogRepository {
 
   async deleteBlogById(id: string): Promise<boolean> {
     try {
-      const result = await this.dataSource.query(
-        `DELETE FROM public.blogs
-               WHERE "id" = $1;`,
-        [id],
-      );
+      const result = await this.blogsRepo
+        .createQueryBuilder('b')
+        .delete()
+        .from(Blogs)
+        .where('b.id = :blogId', { blogId: id })
+        .execute();
 
+      //   await this.dataSource.query(
+      //   `DELETE FROM public.blogs
+      //          WHERE "id" = $1;`,
+      //   [id],
+      // );
+      console.log(result);
       return result[1] === 1;
     } catch (e) {
       return false;
