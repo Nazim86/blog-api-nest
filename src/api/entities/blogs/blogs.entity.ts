@@ -32,10 +32,14 @@ export class Blogs {
   @Column({ type: 'boolean' })
   isMembership: boolean;
 
-  @OneToOne(() => BlogBanInfo, (bbi) => bbi.blog, {
-    cascade: true,
-    onUpdate: 'CASCADE',
-  })
+  @OneToOne(
+    () => BlogBanInfo,
+    (bbi) => bbi.blog,
+    //   {
+    //   cascade: true,
+    //   onUpdate: 'CASCADE',
+    // }
+  )
   blogBanInfo: BlogBanInfo;
 
   @ManyToOne(() => Users, (u) => u.blogs)

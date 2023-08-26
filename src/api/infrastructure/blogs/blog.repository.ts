@@ -40,16 +40,16 @@ export class BlogRepository {
     }
   }
 
-  async bindBlogWithUser(userId: string, login: string, blogId: string) {
-    const isBound = await this.dataSource.query(
-      `UPDATE public.blog_owner_info
-        SET "userId"=$1, "userLogin"=$2
-        WHERE "blogId"=$3`,
-      [userId, login, blogId],
-    );
-
-    return isBound[1] === 1;
-  }
+  // async bindBlogWithUser(userId: string, login: string, blogId: string) {
+  //   const isBound = await this.dataSource.query(
+  //     `UPDATE public.blog_owner_info
+  //       SET "userId"=$1, "userLogin"=$2
+  //       WHERE "blogId"=$3`,
+  //     [userId, login, blogId],
+  //   );
+  //
+  //   return isBound[1] === 1;
+  // }
 
   async deleteBlogById(id: string): Promise<boolean> {
     try {
@@ -60,13 +60,7 @@ export class BlogRepository {
         .where('b.id = :blogId', { blogId: id })
         .execute();
 
-      //   await this.dataSource.query(
-      //   `DELETE FROM public.blogs
-      //          WHERE "id" = $1;`,
-      //   [id],
-      // );
-      console.log(result);
-      return result[1] === 1;
+      return result.affected === 1;
     } catch (e) {
       return false;
     }

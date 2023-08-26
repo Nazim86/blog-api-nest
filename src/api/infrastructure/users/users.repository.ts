@@ -209,6 +209,13 @@ export class UsersRepository {
 
     return result.affected === 1;
 
+    // const result = await this.usersRepository
+    //   .createQueryBuilder('u')
+    //   .delete()
+    //   .from(User)
+    //   .where('id = :userId', { userId: userId })
+    //   .execute();
+
     // try {
     // try {
     //   const result = await this.dataSource

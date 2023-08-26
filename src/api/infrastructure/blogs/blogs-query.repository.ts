@@ -51,18 +51,23 @@ export class BlogsQueryRepo {
 
   async getBlogById(id: string): Promise<BlogsViewType | boolean> {
     try {
-      let foundBlog = await this.dataSource.query(
-        `SELECT b.*, u."login", bbi."banDate", bbi."isBanned" 
-        FROM public.blogs b 
-        Left join public.users u on b."owner" = u."id"
-        Left join public.blog_ban_info bbi on b."id" = bbi."blogId" 
-        where b."id" = $1 ;`,
-        [id],
-      );
+      const foundBlog = await this.blogsRepo
+        .createQueryBuilder('b')
+        .leftJoinAndSelect('b.owner', 'u')
+        .leftJoinAndSelect('b.blogBanInfo', 'bbi')
+        .where('b.id = :blogId', { blogId: id })
+        .getOne();
 
-      foundBlog = foundBlog[0];
+      // await this.dataSource.query(
+      //   `SELECT b.*, u."login", bbi."banDate", bbi."isBanned"
+      //   FROM public.blogs b
+      //   Left join public.users u on b."owner" = u."id"
+      //   Left join public.blog_ban_info bbi on b."id" = bbi."blogId"
+      //   where b."id" = $1 ;`,
+      //   [id],
+      // );
 
-      if (!foundBlog || foundBlog.isBanned) {
+      if (!foundBlog || foundBlog.blogBanInfo.isBanned) {
         return false;
       }
       return {

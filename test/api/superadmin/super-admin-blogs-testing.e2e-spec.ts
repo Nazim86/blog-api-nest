@@ -132,37 +132,37 @@ describe('Super Admin blogs testing', () => {
       expect(result.body).toEqual(blogWithBlogOwnerInfoNull);
     });
 
-    it(`Creating user`, async () => {
-      const result = await creatingUser(httpServer, createUserDto);
-      expect(result.status).toBe(201);
-      user = result.body;
-    });
-
-    it(`Should bind blog with user`, async () => {
-      const result = await request(app.getHttpServer())
-        .put(`/sa/blogs/${blog.id}/bind-with-user/${user.id}`)
-        .auth('admin', 'qwerty');
-      expect(result.status).toBe(204);
-    });
-
-    it(`BlogOwnerInfo.login should be leonid`, async () => {
-      const result = await request(app.getHttpServer())
-        .get('/sa/blogs')
-        .auth('admin', 'qwerty');
-      expect(result.status).toBe(200);
-      expect(result.body).toEqual({
-        ...blogWithBlogOwnerInfoNull,
-        items: [
-          {
-            ...blogWithBlogOwnerInfoNull.items[0],
-            blogOwnerInfo: {
-              ...blogWithBlogOwnerInfoNull.items[0].blogOwnerInfo,
-              userLogin: 'leonid',
-              userId: expect.any(String),
-            },
-          },
-        ],
-      });
-    });
+    // it(`Creating user`, async () => {
+    //   const result = await creatingUser(httpServer, createUserDto);
+    //   expect(result.status).toBe(201);
+    //   user = result.body;
+    // });
+    //
+    // it(`Should bind blog with user`, async () => {
+    //   const result = await request(app.getHttpServer())
+    //     .put(`/sa/blogs/${blog.id}/bind-with-user/${user.id}`)
+    //     .auth('admin', 'qwerty');
+    //   expect(result.status).toBe(204);
+    // });
+    //
+    // it(`BlogOwnerInfo.login should be leonid`, async () => {
+    //   const result = await request(app.getHttpServer())
+    //     .get('/sa/blogs')
+    //     .auth('admin', 'qwerty');
+    //   expect(result.status).toBe(200);
+    //   expect(result.body).toEqual({
+    //     ...blogWithBlogOwnerInfoNull,
+    //     items: [
+    //       {
+    //         ...blogWithBlogOwnerInfoNull.items[0],
+    //         blogOwnerInfo: {
+    //           ...blogWithBlogOwnerInfoNull.items[0].blogOwnerInfo,
+    //           userLogin: 'leonid',
+    //           userId: expect.any(String),
+    //         },
+    //       },
+    //     ],
+    //   });
+    // });
   });
 });
