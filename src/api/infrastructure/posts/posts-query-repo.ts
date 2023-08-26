@@ -20,8 +20,6 @@ export class PostsQueryRepo {
   private async postViewMapping(
     posts,
     userId: string,
-    //myStatus: string,
-    //newestLikes,
   ): Promise<PostsViewType[]> {
     return posts.map((post) => {
       let myStatus = LikeEnum.None;
@@ -52,17 +50,19 @@ export class PostsQueryRepo {
     try {
       const post = await this.postsRepo
         .createQueryBuilder('p')
-        .addSelect((qb) =>
-          qb
-            .select('pl.status', 'myStatus')
-            .from(PostLike, 'pl')
-            .where('pl.postId = p.id')
-            .andWhere('pl.userId = :userId', { userId: userId }),
+        .addSelect(
+          (qb) =>
+            qb
+              .select('status')
+              .from(PostLike, 'pl')
+              .where('pl.postId = p.id')
+              .andWhere('pl.userId = :userId', { userId: userId }),
+          'myStatus',
         )
         .addSelect(
           (qb) =>
             qb
-              .select('count(*)')
+              .select(`count(*)`)
               .from(PostLike, 'pl')
               .leftJoin('pl.user', 'u')
               .leftJoin('u.banInfo', 'ub')
@@ -70,18 +70,6 @@ export class PostsQueryRepo {
               .andWhere(`pl.status = 'Like'`)
               .andWhere('ub.isBanned = false'),
           'likesCount',
-        )
-        .addSelect(
-          (qb) =>
-            qb
-              .select('count(*)')
-              .from(PostLike, 'pl')
-              .leftJoin('pl.user', 'u')
-              .leftJoin('u.banInfo', 'ubsa')
-              .where('pl.postId = p.id')
-              .andWhere('ubsa.isBanned = false')
-              .andWhere(`pl.status = :status`, { status: 'Like' }),
-          'likes_count',
         )
         .addSelect(
           (qb) =>
@@ -353,8 +341,6 @@ export class PostsQueryRepo {
       .skip(skipSize)
       .take(paginatedQuery.pageSize)
       .getRawMany();
-
-    //console.log('posts in typeorm', posts);
 
     const totalCount = Number(posts[0].totalCount);
 
