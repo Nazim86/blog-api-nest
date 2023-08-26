@@ -120,25 +120,27 @@ export class CommentsQueryRepo {
             .andWhere('cl.userId = :userId', { userId: userId }),
         'myStatus',
       )
-      .addSelect((qb) =>
-        qb
-          .select('count(*)', 'likesCount')
-          .from(CommentLike, 'cl')
-          .leftJoin('cl.user', 'u')
-          .leftJoin('u.banInfo', 'ub')
-          .where('cl.commentId = c.id')
-          .andWhere('cl.status = :status', { status: 'Like' })
-          .andWhere('ub.isBanned = false'),
-      )
       .addSelect(
         (qb) =>
           qb
-            .select('count(*)')
+            .select(`count(*)`)
             .from(CommentLike, 'cl')
             .leftJoin('cl.user', 'u')
             .leftJoin('u.banInfo', 'ub')
             .where('cl.commentId = c.id')
-            .andWhere('cl.status = :status', { status: 'Dislike' })
+            .andWhere(`cl.status = 'Like'`)
+            .andWhere('ub.isBanned = false'),
+        'likesCount',
+      )
+      .addSelect(
+        (qb) =>
+          qb
+            .select(`count(*)`)
+            .from(CommentLike, 'cl')
+            .leftJoin('cl.user', 'u')
+            .leftJoin('u.banInfo', 'ub')
+            .where('cl.commentId = c.id')
+            .andWhere(`cl.status = 'Dislike'`)
             .andWhere('ub.isBanned = false'),
         'dislikesCount',
       )
@@ -149,28 +151,7 @@ export class CommentsQueryRepo {
       .take(paginatedQuery.pageSize)
       .getRawMany();
 
-    // const commentsForPosts = await this.dataSource.query(
-    //   `Select c.*,  u."login" as "userLogin",
-    //             (Select "status" from public.comment_like
-    //               Where "commentId"= c."id" and "userId" = $1) as "myStatus",
-    //               (Select count(*) from public.comment_like
-    //               Where "commentId"=c."id" and "status"='Like' and "banStatus" = false) as "likesCount",
-    //               (Select count(*) from public.comment_like
-    //               Where "commentId" = c."id" and "status"='Dislike' and "banStatus" = false) as "dislikesCount"
-    //           from public.comments c
-    //           Left join public.users u on
-    //           c."userId"= u."id"
-    //           Where c."postId" = $2
-    //           Order by "${paginatedQuery.sortBy}" ${paginatedQuery.sortDirection}
-    //           Limit ${paginatedQuery.pageSize} Offset ${skipSize}`,
-    //   [userId, postId],
-    // );
-
-    // let myStatus = 'None';
-    //
-    // if (userId && commentsForPosts.myStatus) {
-    //   myStatus = commentsForPosts.myStatus;
-    // }
+    console.log(comments);
 
     const totalCount = Number(comments[0].totalCount);
 
@@ -209,23 +190,23 @@ export class CommentsQueryRepo {
         )
         .addSelect((qb) =>
           qb
-            .select('count(*)', 'likesCount')
+            .select(`count(*)`, 'likesCount')
             .from(CommentLike, 'cl')
             .leftJoin('cl.user', 'u')
             .leftJoin('u.banInfo', 'ub')
             .where('cl.commentId = c.id')
-            .andWhere('cl.status = :status', { status: 'Like' })
+            .andWhere(`cl.status = 'Like'`)
             .andWhere('ub.isBanned = false'),
         )
         .addSelect(
           (qb) =>
             qb
-              .select('count(*)')
+              .select(`count(*)`)
               .from(CommentLike, 'cl')
               .leftJoin('cl.user', 'u')
               .leftJoin('u.banInfo', 'ub')
               .where('cl.commentId = c.id')
-              .andWhere('cl.status = :status', { status: 'Dislike' })
+              .andWhere(`cl.status = 'Dislike'`)
               .andWhere('ub.isBanned = false'),
           'dislikesCount',
         )
