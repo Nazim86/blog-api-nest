@@ -36,11 +36,6 @@ export class LikesRepository {
   }
 
   async findCommentLike(commentId: string, userId: string) {
-    //   this.dataSource.query(
-    //   `Select * from public.comment_like
-    //          Where "commentId" = $1 and "userId"=$2`,
-    //   [commentId, userId],
-    // );
     return await this.commentLikeRepo
       .createQueryBuilder('cl')
       .leftJoin('cl.comment', 'c')
@@ -75,28 +70,28 @@ export class LikesRepository {
   //   return postLike[0];
   // }
 
-  async createCommentLike(
-    commentId: string,
-    userId: string,
-    createLikeDto: CreateLikeDto,
-  ) {
-    await this.dataSource.query(
-      `INSERT INTO public.comment_like(
-            "commentId", "userId", "addedAt","status", "banStatus")
-              VALUES ( $1, $2, $3, $4, $5)
-              on conflict("commentId","userId")
-              Do Update Set "status" = Excluded."status", "addedAt" = Excluded."addedAt";`,
-      [
-        commentId,
-        userId,
-        new Date().toISOString(),
-        createLikeDto.likeStatus,
-        false,
-      ],
-    );
-
-    return true;
-  }
+  // async createCommentLike(
+  //   commentId: string,
+  //   userId: string,
+  //   createLikeDto: CreateLikeDto,
+  // ) {
+  //   await this.dataSource.query(
+  //     `INSERT INTO public.comment_like(
+  //           "commentId", "userId", "addedAt","status", "banStatus")
+  //             VALUES ( $1, $2, $3, $4, $5)
+  //             on conflict("commentId","userId")
+  //             Do Update Set "status" = Excluded."status", "addedAt" = Excluded."addedAt";`,
+  //     [
+  //       commentId,
+  //       userId,
+  //       new Date().toISOString(),
+  //       createLikeDto.likeStatus,
+  //       false,
+  //     ],
+  //   );
+  //
+  //   return true;
+  // }
 
   // async setBanStatusForCommentLike(userId: string, banStatus: boolean) {
   //   return this.dataSource.query(
@@ -107,9 +102,9 @@ export class LikesRepository {
   //   );
   // }
 
-  async resetLikeRepository() {
-    return this.dataSource.query(`Truncate public.comment_like`);
-  }
+  // async resetLikeRepository() {
+  //   return this.dataSource.query(`Truncate public.comment_like`);
+  // }
 
   // async setBanStatusForPostLike(userId: string, banStatus: boolean) {
   //   return this.dataSource.query(

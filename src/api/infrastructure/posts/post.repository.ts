@@ -71,12 +71,19 @@ export class PostRepository {
 
   async deletePostById(id: string): Promise<boolean> {
     try {
-      const result = await this.dataSource.query(
-        `DELETE FROM public.posts WHERE "id"=$1;`,
-        [id],
-      );
+      const result = await this.postsRepo
+        .createQueryBuilder()
+        .delete()
+        .from(Posts)
+        .where('id = :id', { id: id })
+        .execute();
+
+      //   this.dataSource.query(
+      //   `DELETE FROM public.posts WHERE "id"=$1;`,
+      //   [id],
+      // );
       //const result = await this.PostModel.deleteOne({ _id: new ObjectId(id) });
-      return result[1] === 1;
+      return result.affected === 1;
     } catch (e) {
       return false;
     }
