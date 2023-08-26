@@ -38,12 +38,12 @@ export class BlogsQueryRepo {
         createdAt: blog.createdAt,
         isMembership: blog.isMembership,
         blogOwnerInfo: {
-          userId: blog.ownerId,
-          userLogin: blog.userLogin,
+          userId: blog.owner.id,
+          userLogin: blog.owner.login,
         },
         banInfo: {
-          isBanned: blog.isBanned,
-          banDate: blog.banDate,
+          isBanned: blog.blogBanInfo.isBanned,
+          banDate: blog.blogBanInfo.banDate,
         },
       };
     });
@@ -118,16 +118,20 @@ export class BlogsQueryRepo {
         .createQueryBuilder('b')
         .leftJoinAndSelect('b.owner', 'o')
         .leftJoinAndSelect('b.blogBanInfo', 'bbi')
-        .where(
-          '(bbi.isBanned = :isBanned01 or bbi.isBanned = :isBanned02)' +
-            'and b.name ILIKE :name  and o.id = :ownerId',
-          {
-            isBanned01: isBanned01,
-            isBanned02: isBanned02,
-            name: searchName,
-            ownerId: blogOwnerUserId,
-          },
-        )
+        .orWhere('bbi.isBanned = :isBanned01', { isBanned01: isBanned01 })
+        .orWhere('bbi.isBanned = :isBanned02', { isBanned02: isBanned02 })
+        .andWhere('b.name ILIKE :name ', { name: searchName })
+        .andWhere('o.id = :ownerId', { ownerId: blogOwnerUserId })
+
+        //   '(bbi.isBanned = :isBanned01 or bbi.isBanned = :isBanned02)' +
+        //     'and b.name ILIKE :name  and o.id = :ownerId',
+        //   {
+        //     isBanned01: isBanned01,
+        //     isBanned02: isBanned02,
+        //     name: searchName,
+        //     ownerId: blogOwnerUserId,
+        //   },
+        // )
         .orderBy(`o.${paginatedQuery.sortBy}`, paginatedQuery.sortDirection)
         .skip(skipSize)
         .take(paginatedQuery.pageSize)
@@ -142,15 +146,18 @@ export class BlogsQueryRepo {
         .createQueryBuilder('b')
         .leftJoinAndSelect('b.owner', 'o')
         .leftJoinAndSelect('b.blogBanInfo', 'bbi')
-        .where(
-          '(bbi.isBanned = :isBanned01 or bbi.isBanned = :isBanned02)' +
-            'and b.name ILIKE :name',
-          {
-            isBanned01: isBanned01,
-            isBanned02: isBanned02,
-            name: searchName,
-          },
-        )
+        .orWhere('bbi.isBanned = :isBanned01', { isBanned01: isBanned01 })
+        .orWhere('bbi.isBanned = :isBanned02', { isBanned02: isBanned02 })
+        .andWhere('b.name ILIKE :name ', { name: searchName })
+        // .where(
+        //   '(bbi.isBanned = :isBanned01 or bbi.isBanned = :isBanned02)' +
+        //     'and b.name ILIKE :name',
+        //   {
+        //     isBanned01: isBanned01,
+        //     isBanned02: isBanned02,
+        //     name: searchName,
+        //   },
+        // )
         .orderBy(`o.${paginatedQuery.sortBy}`, paginatedQuery.sortDirection)
         .skip(skipSize)
         .take(paginatedQuery.pageSize)
@@ -161,6 +168,9 @@ export class BlogsQueryRepo {
       blog = blog[0];
     }
 
+    console.log(isBanned01, isBanned02);
+    console.log('blog before map', blog);
+
     let mappedBlog: BlogsViewType[];
 
     if (requestRole === RoleEnum.SA) {
@@ -168,6 +178,8 @@ export class BlogsQueryRepo {
     } else {
       mappedBlog = this.blogsMapping(blog);
     }
+
+    console.log('blog after map', mappedBlog);
 
     return {
       pagesCount: paginatedQuery.totalPages(totalCount),

@@ -100,6 +100,8 @@ describe('Super Admin blogs testing', () => {
       const result = await request(app.getHttpServer())
         .get('/sa/blogs')
         .auth('admin', 'qwerty');
+
+      console.log('blog in test', result.body);
       expect(result.status).toBe(200);
       expect(result.body).toEqual(createdBlogWithPaginationForSa);
     });
