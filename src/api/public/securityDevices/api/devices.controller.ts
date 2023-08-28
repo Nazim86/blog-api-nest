@@ -17,6 +17,7 @@ import { DeviceQueryRepo } from '../../../infrastructure/devices/device-query.re
 import { DeviceDeleteByIdCommand } from '../application,use-cases/device-deleteByDeviceId-use-case';
 import { CommandBus } from '@nestjs/cqrs';
 import { DeleteDevicesCommand } from '../application,use-cases/delete-devices-use-case';
+import { UserId } from '../../../../decorators/UserId';
 
 @Controller('security/devices')
 export class DevicesController {
@@ -29,10 +30,10 @@ export class DevicesController {
   @UseGuards(RefreshTokenGuard)
   @Get()
   @HttpCode(200)
-  async getDevices(@Request() req, @Ip() ip) {
+  async getDevices(@UserId() userId, @Ip() ip) {
     const devices: DeviceViewType[] = await this.deviceQueryRepo.getDevices(
       ip,
-      req.user.userId,
+      userId,
     );
     console.log(devices);
     return devices;
