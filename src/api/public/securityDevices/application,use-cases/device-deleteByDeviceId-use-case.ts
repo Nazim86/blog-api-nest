@@ -15,7 +15,7 @@ export class DeviceDeleteByIdUseCase {
       command.deviceId,
     );
 
-    console.log('device in DeviceDeleteByIdUseCase', device);
+    //console.log('device in DeviceDeleteByIdUseCase', device);
 
     if (!device) return { code: ResultCode.NotFound };
 
@@ -29,7 +29,6 @@ export class DeviceDeleteByIdUseCase {
       command.deviceId,
       command.userId,
     );
-    console.log('isDeleted', isDeleted);
     return {
       data: isDeleted,
       code: isDeleted ? ResultCode.Success : ResultCode.NotFound,

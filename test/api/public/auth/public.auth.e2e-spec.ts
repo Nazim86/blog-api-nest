@@ -25,6 +25,9 @@ import {
 import { UsersRepository } from '../../../../src/api/infrastructure/users/users.repository';
 import { JwtService } from '../../../../src/jwt/jwt.service';
 
+async function delay(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 describe('Auth controller testing', () => {
   let app: INestApplication;
   let httpServer;
@@ -154,11 +157,24 @@ describe('Auth controller testing', () => {
         });
 
         refreshToken = userSignIn.headers['set-cookie'][0];
-        const accessToken = userSignIn.body;
+        accessToken = userSignIn.body.accessToken;
 
         expect(userSignIn.status).toBe(200);
         expect(accessToken).toBeDefined();
         expect(refreshToken).toContain('refreshToken=');
+      });
+
+      it(`should get current user and return 200 ;`, async () => {
+        const currentUser = await getCurrentUser(httpServer, accessToken);
+        expect(currentUser.status).toBe(200);
+        expect(currentUser.body.login).toEqual('leo');
+        expect(currentUser.body.email).toEqual('nazim86mammadov@yandex.ru');
+      });
+
+      it(`should NOT get current user with expired token and return 401 ;`, async () => {
+        await delay(10000);
+        const currentUser = await getCurrentUser(httpServer, accessToken);
+        expect(currentUser.status).toBe(401);
       });
 
       it(`should not login with old password and return 400;`, async () => {
@@ -179,13 +195,6 @@ describe('Auth controller testing', () => {
         });
         expect(userSignIn.status).toBe(401);
         expect(userSignIn.body.accessToken).not.toBeDefined();
-      });
-
-      it(`should get current user and return 200 ;`, async () => {
-        const currentUser = await getCurrentUser(httpServer, accessToken);
-        expect(currentUser.status).toBe(200);
-        expect(currentUser.body.login).toEqual('leo');
-        expect(currentUser.body.email).toEqual('nazim86mammadov@yandex.ru');
       });
 
       it(`should logout and return 200 ;`, async () => {

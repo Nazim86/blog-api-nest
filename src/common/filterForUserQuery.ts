@@ -12,12 +12,12 @@ export const filterForUserQuery = (
   let searchEmail = '%%';
   let searchLogin = '%%';
 
-  const filter: any = {};
-  //filter.$and = [];
-
-  // if (searchLoginTerm || searchEmailTerm) {
-  //   filter.$or = [];
-  // }
+  // const filter: any = {};
+  // //filter.$and = [];
+  //
+  // // if (searchLoginTerm || searchEmailTerm) {
+  // //   filter.$or = [];
+  // // }
 
   if (banStatus === BanStatusEnum.banned) {
     banStatus01 = true; //filter.$and.push({ 'banInfo.isBanned': true });
@@ -30,33 +30,11 @@ export const filterForUserQuery = (
   if (searchLoginTerm && !searchEmailTerm && requestRole !== RoleEnum.Blogger) {
     searchLogin = searchLoginTerm;
     searchEmail = '';
-    // filter.$or.push({
-    //   'accountData.login': {
-    //     $regex: searchLoginTerm,
-    //     $options: 'i',
-    //   },
-    // });
   }
-
-  // if (searchLoginTerm && requestRole === RoleEnum.Blogger) {
-  //   console.log('inside mongoose code XXXXXXX');
-  //   filter.$or.push({
-  //     login: {
-  //       $regex: searchLoginTerm,
-  //       $options: 'i',
-  //     },
-  //   });
-  // }
 
   if (searchEmailTerm && !searchLoginTerm) {
     searchEmail = searchEmailTerm;
     searchLogin = '';
-    // filter.$or.push({
-    //   'accountData.email': {
-    //     $regex: searchEmailTerm,
-    //     $options: 'i',
-    //   },
-    // });
   }
 
   if (searchEmailTerm && searchLoginTerm) {

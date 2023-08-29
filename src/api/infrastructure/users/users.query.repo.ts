@@ -108,16 +108,6 @@ export class UserQueryRepo {
         login: filter.searchLogin,
         blogId: blogId,
       })
-      // .where(
-      //   'u.login ilike :login and ubb.blogId = :blogId and ' +
-      //     '(ubb.isBanned = :banStatus01 or ubb.isBanned = :banStatus02)',
-      //   {
-      //     login: filter.searchLogin,
-      //     blogId: blogId,
-      //     banStatus01: filter.banStatus01,
-      //     banStatus02: filter.banStatus02,
-      //   },
-      // )
       .orderBy(`u.${paginatedQuery.sortBy}`, paginatedQuery.sortDirection)
       .skip(skipSize)
       .take(paginatedQuery.pageSize)
@@ -162,23 +152,6 @@ export class UserQueryRepo {
 
     const skipSize = paginatedQuery.skipSize;
 
-    // const totalCount = await this.usersRepository
-    //   .createQueryBuilder('u')
-    //   .leftJoin('u.banInfo', 'ub', 'u.id=ub.userId')
-    //   .where(
-    //     '(u.login ilike :login or u.email ilike :email) and ' +
-    //       '(ub.isBanned = :banStatus01 or ub.isBanned = :banStatus02 )',
-    //     {
-    //       login: filter.searchLogin,
-    //       email: filter.searchEmail,
-    //       banStatus01: filter.banStatus01,
-    //       banStatus02: filter.banStatus02,
-    //     },
-    //   )
-    //   .getCount();
-
-    // console.log(paginatedQuery.banStatus);
-    // console.log(filter);
     const getUsers = await this.usersRepository
       .createQueryBuilder('u')
       .leftJoinAndSelect('u.banInfo', 'ub', 'u.id=ub.userId')
@@ -192,10 +165,6 @@ export class UserQueryRepo {
           banStatus: filter.banStatus01,
         },
       )
-      // .andWhere(`(u.login ilike :login or u.email ilike :email)`, {
-      //   login: filter.searchLogin,
-      //   email: filter.searchEmail,
-      // })
       .andWhere(
         `(u.login ilike :loginTerm OR u.email ilike :emailTerm)`,
 

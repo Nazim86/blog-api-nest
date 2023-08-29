@@ -115,15 +115,16 @@ export class AuthController {
     const accessToken = await this.jwtService.createJWT(
       user.id,
       settings.ACCESS_TOKEN_SECRET,
-      '10m',
+      '10s',
     );
 
     const refreshToken = await this.jwtService.createJWT(
       user.id,
       settings.REFRESH_TOKEN_SECRET,
-      '20m',
+      '20s',
     );
 
+    //console.log(headers['user-agent']);
     // const ipAddress = req.ip;
     const deviceName = headers['user-agent'] ?? 'chrome';
 
@@ -157,13 +158,13 @@ export class AuthController {
     const newAccessToken = await this.jwtService.createJWT(
       userId,
       settings.ACCESS_TOKEN_SECRET,
-      '10m',
+      '10s',
       deviceId,
     );
     const newRefreshToken = await this.jwtService.createJWT(
       userId,
       settings.REFRESH_TOKEN_SECRET,
-      '20m',
+      '20s',
       deviceId,
     );
 

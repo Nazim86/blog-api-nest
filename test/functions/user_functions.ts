@@ -47,11 +47,9 @@ export const registrationConfirmation = async (httpServer, code) => {
   return request(httpServer).post(`/auth/registration-confirmation`).send(code);
 };
 
-export const loginUser = async (httpServer, loginDto, deviceName?) => {
-  return request(httpServer)
-    .post(`/auth/login`)
-    .send(loginDto)
-    .set('User-Agent', deviceName);
+export const loginUser = async (httpServer, loginDto) => {
+  return request(httpServer).post(`/auth/login`).send(loginDto);
+  //.set('user-agent', deviceName);
 };
 
 export const newRefreshToken = async (httpServer, refreshToken) => {
@@ -70,6 +68,7 @@ export const setNewPassword = async (httpServer, recoveryCode) => {
 };
 
 export const getCurrentUser = async (httpServer, accessToken) => {
+  //console.log(accessToken);
   return request(httpServer)
     .get(`/auth/me`)
     .auth(accessToken, { type: 'bearer' })

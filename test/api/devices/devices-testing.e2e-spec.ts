@@ -15,7 +15,6 @@ import {
   creatingUser,
   deleteUser,
   getUsers,
-  loginUser,
 } from '../../functions/user_functions';
 
 describe('Super Admin blogs testing', () => {
@@ -23,6 +22,8 @@ describe('Super Admin blogs testing', () => {
   let httpServer;
   const countOfUsers = 5;
   const users = [];
+
+  const deviceName = ['iphone', 'chrome', 'nokia', 'mozilla'];
 
   jest.setTimeout(60 * 1000);
   beforeAll(async () => {
@@ -67,7 +68,7 @@ describe('Super Admin blogs testing', () => {
       }
     });
 
-    // it(`Get users`, async () => {
+    // it(`Login users from various devices`, async () => {
     //   const singIn = await loginUser(httpServer);
     // });
 
