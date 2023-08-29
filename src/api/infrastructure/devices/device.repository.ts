@@ -68,7 +68,7 @@ export class DeviceRepository {
       .createQueryBuilder()
       .delete()
       .from(Devices)
-      .where('deviceId = :id', { id: deviceId })
+      .where('deviceId != :id', { id: deviceId })
       .execute();
 
     // const result = await this.dataSource.query(
