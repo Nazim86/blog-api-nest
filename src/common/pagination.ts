@@ -16,7 +16,14 @@ export class Pagination<T> {
     this.pageNumber = pageNumber;
     this.pageSize = pageSize;
     this.sortBy = sortBy;
-    this.sortDirection = sortDirection;
+    if (
+      sortDirection === SortDirection.ASC ||
+      sortDirection === SortDirection.ASC.toLowerCase()
+    ) {
+      this.sortDirection = SortDirection.ASC;
+    } else {
+      this.sortDirection = SortDirection.DESC;
+    }
   }
 
   public totalPages(totalCount): number {

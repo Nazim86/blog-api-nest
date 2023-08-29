@@ -47,8 +47,11 @@ export const registrationConfirmation = async (httpServer, code) => {
   return request(httpServer).post(`/auth/registration-confirmation`).send(code);
 };
 
-export const loginUser = async (httpServer, loginDto) => {
-  return request(httpServer).post(`/auth/login`).send(loginDto);
+export const loginUser = async (httpServer, loginDto, deviceName?) => {
+  return request(httpServer)
+    .post(`/auth/login`)
+    .send(loginDto)
+    .set('User-Agent', deviceName);
 };
 
 export const newRefreshToken = async (httpServer, refreshToken) => {

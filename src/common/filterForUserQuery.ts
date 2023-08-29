@@ -7,10 +7,10 @@ export const filterForUserQuery = (
   banStatus?: BanStatusEnum,
   requestRole?: RoleEnum,
 ) => {
-  let banStatus01 = true;
-  let banStatus02 = false;
-  let searchEmail = '%';
-  let searchLogin = '%';
+  let banStatus01: boolean | null = null;
+
+  let searchEmail = '%%';
+  let searchLogin = '%%';
 
   const filter: any = {};
   //filter.$and = [];
@@ -20,7 +20,7 @@ export const filterForUserQuery = (
   // }
 
   if (banStatus === BanStatusEnum.banned) {
-    banStatus02 = true; //filter.$and.push({ 'banInfo.isBanned': true });
+    banStatus01 = true; //filter.$and.push({ 'banInfo.isBanned': true });
   }
 
   if (banStatus === BanStatusEnum.notBanned) {
@@ -28,7 +28,7 @@ export const filterForUserQuery = (
   }
 
   if (searchLoginTerm && !searchEmailTerm && requestRole !== RoleEnum.Blogger) {
-    searchLogin = `%${searchLoginTerm}%`;
+    searchLogin = searchLoginTerm;
     searchEmail = '';
     // filter.$or.push({
     //   'accountData.login': {
@@ -38,17 +38,18 @@ export const filterForUserQuery = (
     // });
   }
 
-  if (searchLoginTerm && requestRole === RoleEnum.Blogger) {
-    filter.$or.push({
-      login: {
-        $regex: searchLoginTerm,
-        $options: 'i',
-      },
-    });
-  }
+  // if (searchLoginTerm && requestRole === RoleEnum.Blogger) {
+  //   console.log('inside mongoose code XXXXXXX');
+  //   filter.$or.push({
+  //     login: {
+  //       $regex: searchLoginTerm,
+  //       $options: 'i',
+  //     },
+  //   });
+  // }
 
   if (searchEmailTerm && !searchLoginTerm) {
-    searchEmail = `%${searchEmailTerm}%`;
+    searchEmail = searchEmailTerm;
     searchLogin = '';
     // filter.$or.push({
     //   'accountData.email': {
@@ -59,13 +60,13 @@ export const filterForUserQuery = (
   }
 
   if (searchEmailTerm && searchLoginTerm) {
-    searchEmail = `%${searchEmailTerm}%`;
-    searchLogin = `%${searchLoginTerm}%`;
+    searchEmail = searchEmailTerm;
+    searchLogin = searchLoginTerm;
   }
 
   return {
     banStatus01: banStatus01,
-    banStatus02: banStatus02,
+    //banStatus02: banStatus02,
     searchLogin: searchLogin,
     searchEmail: searchEmail,
   };

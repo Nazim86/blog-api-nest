@@ -64,6 +64,12 @@ describe('Super Admin blogs testing', () => {
         expect(user.body.banInfo.banReason).toBe(null);
         users.push(user.body);
       }
+      const user = await creatingUser(httpServer, {
+        ...createUserDto,
+        login: `leo${1}`,
+        email: `nazim86mammadov${1}@yandex.ru`,
+      });
+      expect(user.status).toBe(400);
     });
 
     it(`Get users`, async () => {

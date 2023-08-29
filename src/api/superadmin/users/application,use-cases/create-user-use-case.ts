@@ -33,8 +33,8 @@ export class CreateUsersUseCase {
     usersBanBySA.user = user;
     usersBanBySA.isBanned = false;
 
-    await this.usersRepository.saveUsersBanBySA(usersBanBySA);
-
+    const result = await this.usersRepository.saveUsersBanBySA(usersBanBySA);
+    //console.log(result);
     return user.id;
   }
 }

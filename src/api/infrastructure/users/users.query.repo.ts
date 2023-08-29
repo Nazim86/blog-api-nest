@@ -94,10 +94,16 @@ export class UserQueryRepo {
     const bannedUsersForBlog = await this.usersRepository
       .createQueryBuilder('u')
       .leftJoinAndSelect('u.usersBanByBlogger', 'ubb', 'u.id = ubb.userId')
-      .where(`ubb.isBanned = :banStatus01 or ubb.isBanned = :banStatus02`, {
-        banStatus01: filter.banStatus01,
-        banStatus02: filter.banStatus02,
-      })
+      .where(
+        `${
+          filter.banStatus01 === true || filter.banStatus01 === false
+            ? 'ub.isBanned = :banStatus'
+            : 'ub.isBanned is not null'
+        }`,
+        {
+          banStatus: filter.banStatus01,
+        },
+      )
       .andWhere(`u.login ilike :login and ubb.blogId = :blogId`, {
         login: filter.searchLogin,
         blogId: blogId,
@@ -171,21 +177,39 @@ export class UserQueryRepo {
     //   )
     //   .getCount();
 
+    // console.log(paginatedQuery.banStatus);
+    // console.log(filter);
     const getUsers = await this.usersRepository
       .createQueryBuilder('u')
       .leftJoinAndSelect('u.banInfo', 'ub', 'u.id=ub.userId')
-      .where(`ub.isBanned = :banStatus01 or ub.isBanned = :banStatus02`, {
-        banStatus01: filter.banStatus01,
-        banStatus02: filter.banStatus02,
-      })
-      .andWhere(`u.login ilike :login and u.email ilike :email`, {
-        login: filter.searchLogin,
-        email: filter.searchEmail,
-      })
+      .where(
+        `${
+          filter.banStatus01 === true || filter.banStatus01 === false
+            ? 'ub.isBanned = :banStatus'
+            : 'ub.isBanned is not null'
+        }`,
+        {
+          banStatus: filter.banStatus01,
+        },
+      )
+      // .andWhere(`(u.login ilike :login or u.email ilike :email)`, {
+      //   login: filter.searchLogin,
+      //   email: filter.searchEmail,
+      // })
+      .andWhere(
+        `(u.login ilike :loginTerm OR u.email ilike :emailTerm)`,
+
+        {
+          loginTerm: `%${filter.searchLogin}%`,
+          emailTerm: `%${filter.searchEmail}%`,
+        },
+      )
       .orderBy(`u.${paginatedQuery.sortBy}`, paginatedQuery.sortDirection)
       .skip(skipSize)
       .take(paginatedQuery.pageSize)
       .getManyAndCount();
+
+    console.log(getUsers[0]);
 
     const totalCount = Number(getUsers[1]);
 
