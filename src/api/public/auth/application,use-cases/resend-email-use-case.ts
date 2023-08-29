@@ -23,7 +23,7 @@ export class ResendEmailUseCase {
     try {
       if (
         !user ||
-        // user.isConfirmed ||
+        user.isConfirmed ||
         user.emailConfirmation.emailExpiration < new Date()
       )
         return false;
