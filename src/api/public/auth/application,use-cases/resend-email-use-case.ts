@@ -19,15 +19,17 @@ export class ResendEmailUseCase {
     const user = await this.usersRepository.findUserByEmail(
       command.emailDto.email,
     );
+    console.log('user in ResendEmailUseCase', user);
 
     try {
       if (
         !user ||
-        //user.isConfirmed ||
+        user.isConfirmed ||
         user.emailConfirmation.emailExpiration < new Date()
       )
         return false;
 
+      console.log('ends here');
       const newCode = uuid();
 
       const newExpirationDate = add(new Date(), {

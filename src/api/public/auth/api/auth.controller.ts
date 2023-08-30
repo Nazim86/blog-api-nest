@@ -68,6 +68,8 @@ export class AuthController {
       new ResendEmailCommand(emailDto),
     );
 
+    console.log(isEmailSent);
+
     if (!isEmailSent) {
       const errorMessage = {
         message: [{ message: 'wrong email', field: 'email' }],

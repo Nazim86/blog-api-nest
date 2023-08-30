@@ -17,11 +17,6 @@ export class AccessTokenStrategy extends PassportStrategy(
   }
 
   async validate(payload: any) {
-    console.log(payload);
-    console.log('iat', new Date(payload.iat * 1000));
-    console.log('exp', new Date(payload.exp * 1000));
-
-    console.log('date now', new Date());
     if (!payload) {
       throw new UnauthorizedException();
     }
