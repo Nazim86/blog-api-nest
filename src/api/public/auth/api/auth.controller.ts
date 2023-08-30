@@ -47,7 +47,7 @@ export class AuthController {
     private commandBus: CommandBus,
   ) {}
 
-  @UseGuards(ThrottlerGuard)
+  //@UseGuards(ThrottlerGuard)
   @Throttle(5, 10)
   @Post('registration')
   @HttpCode(204)
@@ -61,7 +61,7 @@ export class AuthController {
     }
   }
 
-  @UseGuards(ThrottlerGuard)
+  //@UseGuards(ThrottlerGuard)
   @Throttle(5, 10)
   @Post('registration-email-resending')
   @HttpCode(204)
