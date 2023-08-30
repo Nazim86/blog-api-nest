@@ -346,7 +346,7 @@ export class PostsQueryRepo {
 
     const pagesCount = paginatedQuery.totalPages(totalCount);
 
-    if (posts.length === 0) return false;
+    if (!posts || posts.length === 0) return false;
 
     const mappedPost: PostsViewType[] = await this.postViewMapping(
       posts,
