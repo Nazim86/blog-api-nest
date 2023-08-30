@@ -58,15 +58,6 @@ export class BlogsQueryRepo {
         .where('b.id = :blogId', { blogId: id })
         .getOne();
 
-      // await this.dataSource.query(
-      //   `SELECT b.*, u."login", bbi."banDate", bbi."isBanned"
-      //   FROM public.blogs b
-      //   Left join public.users u on b."owner" = u."id"
-      //   Left join public.blog_ban_info bbi on b."id" = bbi."blogId"
-      //   where b."id" = $1 ;`,
-      //   [id],
-      // );
-
       if (!foundBlog || foundBlog.blogBanInfo.isBanned) {
         return false;
       }
