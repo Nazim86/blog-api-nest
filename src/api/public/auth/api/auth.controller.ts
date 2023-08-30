@@ -68,7 +68,7 @@ export class AuthController {
       new ResendEmailCommand(emailDto),
     );
 
-    console.log(isEmailSent);
+    //console.log(isEmailSent);
 
     if (!isEmailSent) {
       const errorMessage = {
