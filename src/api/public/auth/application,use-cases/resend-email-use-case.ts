@@ -40,7 +40,7 @@ export class ResendEmailUseCase {
     user.emailConfirmation.confirmationCode = newCode;
     user.emailConfirmation.emailExpiration = newExpirationDate;
 
-    await this.usersRepository.saveUser(user);
+    await this.usersRepository.saveEmailConfirmation(user.emailConfirmation);
 
     // const isUpdated = await this.usersRepository.updateConfirmationCode(
     //   user.id,
