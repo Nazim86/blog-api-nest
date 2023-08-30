@@ -21,43 +21,43 @@ export class ResendEmailUseCase {
     );
     console.log('user in ResendEmailUseCase', user);
 
-    try {
-      if (
-        !user ||
-        user.isConfirmed ||
-        user.emailConfirmation.emailExpiration < new Date()
-      )
-        return false;
-
-      console.log('ends here');
-      const newCode = uuid();
-
-      const newExpirationDate = add(new Date(), {
-        hours: 1,
-        minutes: 3,
-      });
-
-      user.emailConfirmation.confirmationCode = newCode;
-      user.emailConfirmation.emailExpiration = newExpirationDate;
-
-      await this.usersRepository.saveUser(user);
-
-      // const isUpdated = await this.usersRepository.updateConfirmationCode(
-      //   user.id,
-      //   newCode,
-      // );
-
-      // if (!isUpdated) return false;
-
-      await this.mailService.sendUserConfirmationEmail(
-        newCode,
-        user.email,
-        user.login,
-      );
-    } catch (e) {
-      console.log('error in ResendEmailUseCase', e);
+    // try {
+    if (
+      !user ||
+      user.isConfirmed ||
+      user.emailConfirmation.emailExpiration < new Date()
+    )
       return false;
-    }
+
+    console.log('ends here');
+    const newCode = uuid();
+
+    const newExpirationDate = add(new Date(), {
+      hours: 1,
+      minutes: 3,
+    });
+
+    user.emailConfirmation.confirmationCode = newCode;
+    user.emailConfirmation.emailExpiration = newExpirationDate;
+
+    await this.usersRepository.saveUser(user);
+
+    // const isUpdated = await this.usersRepository.updateConfirmationCode(
+    //   user.id,
+    //   newCode,
+    // );
+
+    // if (!isUpdated) return false;
+
+    await this.mailService.sendUserConfirmationEmail(
+      newCode,
+      user.email,
+      user.login,
+    );
+    // } catch (e) {
+    //   console.log('error in ResendEmailUseCase', e);
+    //   return false;
+    // }
 
     return true;
   }
