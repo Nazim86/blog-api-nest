@@ -13,12 +13,12 @@ import { join } from 'path';
         host: 'smtp.gmail.com',
         secure: true,
         auth: {
-          user: process.env.yandexEmail, //process.env.gmailEmail,
-          pass: process.env.yandexPass, //process.env.gmailPass,
+          user: process.env.gmailEmail2,
+          pass: process.env.gmailPass2,
         },
       },
       defaults: {
-        from: '"John" <process.env.gmailEmail>',
+        from: '"John" <process.env.gmailEmail2>',
       },
       template: {
         dir: join(__dirname, 'templates'),
