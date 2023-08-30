@@ -41,8 +41,6 @@ export class CreateUserUseCase {
     usersBanBySA.user = user;
     usersBanBySA.isBanned = false;
 
-    await this.usersRepository.saveUsersBanBySA(usersBanBySA);
-
     const confirmationCode = uuid();
 
     const expirationDate = add(new Date(), {
@@ -55,18 +53,22 @@ export class CreateUserUseCase {
     emailConfirmation.confirmationCode = confirmationCode;
     emailConfirmation.emailExpiration = expirationDate;
 
-    await this.usersRepository.saveEmailConfirmation(emailConfirmation);
+    await Promise.all([
+      this.usersRepository.saveUsersBanBySA(usersBanBySA),
+      this.usersRepository.saveEmailConfirmation(emailConfirmation),
+    ]);
 
     // const user = await this.usersRepository.findUserById(userId);
 
     try {
       this.mailService.sendUserConfirmationEmail(
+        //promise in pending -> {}
         emailConfirmation.confirmationCode,
         user.email,
         user.login,
       );
     } catch (e) {
-      return null;
+      console.log(e);
     }
     return user.id;
   }
