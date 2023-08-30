@@ -36,8 +36,8 @@ const useCases = [DeviceCreateUseCase, DeviceUpdateUseCase];
 @Module({
   imports: [
     ThrottlerModule.forRoot({
-      ttl: 1,
-      limit: 1000,
+      ttl: 60,
+      limit: 10,
     }),
     ScheduleModule.forRoot(),
     UsersModule,

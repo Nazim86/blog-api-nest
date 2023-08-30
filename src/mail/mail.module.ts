@@ -13,8 +13,8 @@ import { join } from 'path';
         host: 'smtp.gmail.com',
         secure: true,
         auth: {
-          user: process.env.gmailEmail,
-          pass: process.env.gmailPass,
+          user: process.env.yandexEmail, //process.env.gmailEmail,
+          pass: process.env.yandexPass, //process.env.gmailPass,
         },
       },
       defaults: {

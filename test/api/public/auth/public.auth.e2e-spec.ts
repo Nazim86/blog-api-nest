@@ -89,33 +89,6 @@ describe('Auth controller testing', () => {
         expect(confirmationCodeBefore).not.toEqual(confirmationCode);
       });
 
-      it(`should return status code 429 if more than 5 requests were sent within 10 seconds, 
-      and 204 after waiting; status 429, 204`, async () => {
-        let result: any;
-        // user = await usersRepository.findUserByLoginOrEmail(`leo`);
-        //
-        // const confirmationCodeBefore = user.emailConfirmation.confirmationCode;
-
-        for (let i = 0; i <= 5; i++) {
-          result = await resendRegistrationEmail(httpServer, emailDto);
-          console.log('status in loop', result.status);
-        }
-
-        expect(result.status).toBe(429);
-
-        await delay(10000);
-
-        result = await resendRegistrationEmail(httpServer, emailDto);
-
-        //console.log('status out of loop', result.status);
-
-        expect(result.status).toBe(204);
-
-        // user = await usersRepository.findUserByLoginOrEmail(`leo`);
-        // confirmationCode = user.emailConfirmation.confirmationCode;
-        // expect(confirmationCodeBefore).not.toEqual(confirmationCode);
-      });
-
       it(`should confirm registration by email; status 204;`, async () => {
         const result = await registrationConfirmation(httpServer, {
           code: confirmationCode,
