@@ -43,11 +43,9 @@ export class ResendEmailUseCase implements ICommandHandler<ResendEmailCommand> {
 
     await this.usersRepository.saveEmailConfirmation(user.emailConfirmation);
 
-    await this.mailService.sendUserConfirmationEmail(
-      newCode,
-      user.email,
-      user.login,
-    );
+    console.log('email-resending:', user);
+
+    this.mailService.sendUserConfirmationEmail(newCode, user.email, user.login);
     // } catch (e) {
     //   console.log('error in ResendEmailUseCase', e);
     //   return false;

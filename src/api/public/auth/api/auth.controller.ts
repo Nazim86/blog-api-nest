@@ -37,7 +37,7 @@ import { SetNewPasswordCommand } from '../application,use-cases/set-new-password
 import { CheckCredentialsCommand } from '../application,use-cases/check-credentials-use-case';
 import { CurrentUserCommand } from '../application,use-cases/current-user-use-case';
 import { Result } from '../../../../exception-handler/result-type';
-import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
+import { Throttle } from '@nestjs/throttler';
 
 @Controller('auth')
 export class AuthController {

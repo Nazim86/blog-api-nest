@@ -60,7 +60,7 @@ export class CreateUserUseCase {
     // const user = await this.usersRepository.findUserById(userId);
 
     try {
-      await this.mailService.sendUserConfirmationEmail(
+      this.mailService.sendUserConfirmationEmail(
         emailConfirmation.confirmationCode,
         user.email,
         user.login,
