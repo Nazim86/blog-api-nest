@@ -164,8 +164,8 @@ export class BlogsQueryRepo {
       blog = blog[0];
     }
 
-    console.log(isBanned01, isBanned02);
-    console.log('blog before map', blog);
+    // console.log(isBanned01, isBanned02);
+    // console.log('blog before map', blog);
 
     let mappedBlog: BlogsViewType[];
 
@@ -175,7 +175,7 @@ export class BlogsQueryRepo {
       mappedBlog = this.blogsMapping(blog);
     }
 
-    console.log('blog after map', mappedBlog);
+    // console.log('blog after map', mappedBlog);
 
     return {
       pagesCount: paginatedQuery.totalPages(totalCount),

@@ -38,7 +38,7 @@ export class BloggerBanUserUseCase {
         return { data: errorsMessages, code: ResultCode.BadRequest };
       }
 
-      console.log(command.blogOwnerId, blog.owner.id);
+      // console.log(command.blogOwnerId, blog.owner.id);
 
       if (command.blogOwnerId !== blog.owner.id) {
         return { code: ResultCode.Forbidden };
@@ -59,7 +59,7 @@ export class BloggerBanUserUseCase {
         const result = await this.usersRepository.saveUsersBanByBlogger(
           usersBanByBlogger,
         );
-        console.log(result);
+        // console.log(result);
       }
 
       // if (!user.usersBanByBlogger) {
