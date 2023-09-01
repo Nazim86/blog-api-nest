@@ -173,6 +173,8 @@ export class PostsQueryRepo {
 
     //const sortBy = 'addedAt';
 
+    console.log(paginatedQuery.pageSize);
+
     const posts = await this.postsRepo
       .createQueryBuilder('p')
       .addSelect((qb) => qb.select(`count(*)`).from(Posts, 'p'), 'totalCount')
@@ -240,6 +242,8 @@ export class PostsQueryRepo {
       .take(paginatedQuery.pageSize)
       .getRawMany();
 
+    //console.log('posts in getPosts in post query repo', posts);
+
     const totalCount = Number(posts[0].totalCount);
 
     const pagesCount = paginatedQuery.totalPages(totalCount);
@@ -270,6 +274,11 @@ export class PostsQueryRepo {
       query.sortDirection,
     );
     const skipSize = paginatedQuery.skipSize;
+
+    console.log(
+      'pageSize in getPostsByBlogId in post query',
+      paginatedQuery.pageSize,
+    );
 
     const posts = await this.postsRepo
       .createQueryBuilder('p')
@@ -344,11 +353,11 @@ export class PostsQueryRepo {
       .leftJoinAndSelect('u.banInfo', 'ub')
       .leftJoinAndSelect('b.blogBanInfo', 'bbi')
       .where('b.id = :blogId', { blogId: blogId })
-      .andWhere('bbi.isBanned = false')
-      .andWhere('ub.isBanned = false')
+      .andWhere(`bbi.isBanned = false`)
+      .andWhere(`ub.isBanned = false`)
       .orderBy(`p.${paginatedQuery.sortBy}`, paginatedQuery.sortDirection)
-      .skip(skipSize)
-      .take(paginatedQuery.pageSize)
+      .limit(paginatedQuery.pageSize)
+      .offset(skipSize)
       .getRawMany();
 
     //console.log('posts in getPostsByBlogId', posts);
