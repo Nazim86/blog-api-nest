@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, EntityManager } from 'typeorm';
-import { BaseTransaction } from './baseTransaction';
-import { Users } from '../api/entities/users/user.entity';
-import { CreateUserDto } from '../api/superadmin/users/dto/createUser.Dto';
+import { BaseTransaction } from '../../../../common/baseTransaction';
+import { Users } from '../../../entities/users/user.entity';
+import { CreateUserDto } from '../dto/createUser.Dto';
 import * as bcrypt from 'bcrypt';
 import process from 'process';
-import { UsersBanBySa } from '../api/entities/users/users-ban-by-sa.entity';
-import { UserWithBanInfo } from '../api/infrastructure/users/types/userWithBanInfo-type';
+import { UsersBanBySa } from '../../../entities/users/users-ban-by-sa.entity';
+import { UserWithBanInfo } from '../../../infrastructure/users/types/userWithBanInfo-type';
 
 // interface UserData {
 //   name: string;

@@ -2,7 +2,7 @@ import { CommandHandler } from '@nestjs/cqrs';
 import { UsersRepository } from '../../../infrastructure/users/users.repository';
 import { CreateUserDto } from '../dto/createUser.Dto';
 
-import { CreateUserTransaction } from '../../../../common/createUserTransaction';
+import { CreateUserTransaction } from './createUserTransaction';
 import bcrypt from 'bcrypt';
 import { UsersBanBySa } from '../../../entities/users/users-ban-by-sa.entity';
 import { Users } from '../../../entities/users/user.entity';

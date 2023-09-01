@@ -70,7 +70,7 @@ import { Devices } from './api/entities/devices/devices.entity';
 import { Blogs } from './api/entities/blogs/blogs.entity';
 import { UsersBanByBlogger } from './api/entities/users/usersBanByBlogger.entity';
 import { BlogBanInfo } from './api/entities/blogs/blogBanInfo.entity';
-import { CreateUserTransaction } from './common/createUserTransaction';
+import { CreateUserTransaction } from './api/superadmin/users/application,use-cases/createUserTransaction';
 
 const useCases = [
   BlogCreateUseCase,

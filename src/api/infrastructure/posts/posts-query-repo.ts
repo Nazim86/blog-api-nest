@@ -242,7 +242,7 @@ export class PostsQueryRepo {
       .offset(skipSize)
       .getRawMany();
 
-    //console.log('posts in getPosts in post query repo', posts);
+    console.log('posts in getPosts in post query repo', posts);
 
     const totalCount = Number(posts[0].totalCount);
 
