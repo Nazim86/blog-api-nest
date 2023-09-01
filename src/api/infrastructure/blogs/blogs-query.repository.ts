@@ -99,8 +99,8 @@ export class BlogsQueryRepo {
       blogOwnerUserId = userId;
     }
 
-    if (requestRole === RoleEnum.SA) {
-      isBanned01 = true;
+    if (requestRole !== RoleEnum.SA) {
+      isBanned01 = false;
     }
 
     const skipSize = paginatedQuery.skipSize;

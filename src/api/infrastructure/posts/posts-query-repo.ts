@@ -117,9 +117,15 @@ export class PostsQueryRepo {
         return false;
       }
 
+      // console.log(
+      //   'blog id in getPostById in post query',
+      //   post.p_blog,
+      //   post.b_id,
+      // );
+
       const blog = await this.blogsRepository.getBlogById(post.p_blog);
 
-      console.log(' in getPostById in post query', blog);
+      // console.log('post in getPostById in post query', post);
 
       if (blog.blogBanInfo.isBanned) {
         return false;
