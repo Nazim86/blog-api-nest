@@ -178,7 +178,7 @@ export class UserQueryRepo {
       .take(paginatedQuery.pageSize)
       .getManyAndCount();
 
-    console.log(getUsers[0]);
+    //console.log(getUsers[0]);
 
     const totalCount = Number(getUsers[1]);
 

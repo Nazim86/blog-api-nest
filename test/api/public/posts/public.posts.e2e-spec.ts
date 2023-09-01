@@ -16,7 +16,8 @@ import {
   dislikePost,
   getPostById,
   getPosts,
-  getPostsByBlogId,
+  getPostsByBlogIdBlogger,
+  getPostsByBlogIdPublic,
   likePost,
   setNonePost,
 } from '../../../functions/post_functions';
@@ -116,6 +117,18 @@ describe('Public posts testing', () => {
         expect(result.status).toBe(201);
         expect(result.body.title).toEqual(`ChatGPT${i}`);
       }
+    });
+
+    it(`Blogger gets post by blog id and return 200`, async () => {
+      const postsByBlogId = await getPostsByBlogIdBlogger(
+        httpServer,
+        blogs[0].id,
+        accessTokens[0],
+      );
+
+      console.log(postsByBlogId.body);
+      expect(postsByBlogId.status).toBe(200);
+      expect(postsByBlogId.body.title).toEqual('ChatGPT0');
     });
 
     it(`Public creates comments for post and return 201`, async () => {
@@ -361,7 +374,7 @@ describe('Public posts testing', () => {
       //checking the same like and dislikes with getPostByBlogId
       for (let i = 0; i < blogs.length; i++) {
         const blogId = blogs[i].id;
-        const postsByBlogId = await getPostsByBlogId(
+        const postsByBlogId = await getPostsByBlogIdPublic(
           httpServer,
           blogId,
           accessTokens[0],

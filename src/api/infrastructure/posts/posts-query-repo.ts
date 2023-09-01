@@ -118,6 +118,9 @@ export class PostsQueryRepo {
       }
 
       const blog = await this.blogsRepository.getBlogById(post.p_blog);
+
+      console.log(' in getPostById in post query', blog);
+
       if (blog.blogBanInfo.isBanned) {
         return false;
       }
@@ -134,7 +137,7 @@ export class PostsQueryRepo {
         shortDescription: post.p_shortDescription,
         content: post.p_content,
         blogId: post.p_blog,
-        blogName: post.p_blog.name,
+        blogName: blog.name,
         createdAt: post.p_createdAt,
         extendedLikesInfo: {
           likesCount: Number(post.likesCount),
@@ -342,11 +345,13 @@ export class PostsQueryRepo {
       .take(paginatedQuery.pageSize)
       .getRawMany();
 
+    //console.log('posts in getPostsByBlogId', posts);
+
+    if (!posts || posts.length === 0) return false;
+
     const totalCount = Number(posts[0].totalCount);
 
     const pagesCount = paginatedQuery.totalPages(totalCount);
-
-    if (!posts || posts.length === 0) return false;
 
     const mappedPost: PostsViewType[] = await this.postViewMapping(
       posts,

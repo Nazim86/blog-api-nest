@@ -34,7 +34,7 @@ export class DeviceQueryRepo {
     //                 Where d."userId"=$1;`,
     //   [userId],
     // );
-    console.log('device before map', device);
+    //console.log('device before map', device);
     return this.deviceMapping(device, ip);
   }
 }

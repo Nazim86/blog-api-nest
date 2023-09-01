@@ -32,14 +32,16 @@ export class PostCreateUseCase {
     newPost.title = command.createPostDto.title;
     newPost.shortDescription = command.createPostDto.shortDescription;
     newPost.content = command.createPostDto.content;
-    newPost.blog = blog;
     newPost.createdAt = new Date().toISOString();
+    newPost.blog = blog;
 
     const post = await this.postRepository.savePost(newPost);
     // const postId = await this.postRepository.createPost(
     //   command.createPostDto,
     //   blog,
     // );
+
+    //console.log('post in PostCreateUseCase', post);
 
     return { code: ResultCode.Success, data: post.id };
   }

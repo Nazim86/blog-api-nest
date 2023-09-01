@@ -35,7 +35,7 @@ export class DevicesController {
       ip,
       userId,
     );
-    console.log(devices);
+    //console.log(devices);
     return devices;
   }
 

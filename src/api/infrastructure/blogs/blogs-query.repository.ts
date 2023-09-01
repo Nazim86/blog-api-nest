@@ -80,8 +80,7 @@ export class BlogsQueryRepo {
     userId?: string,
   ): Promise<QueryPaginationType<BlogsViewType[]>> {
     let searchName = '%';
-    let isBanned01 = false;
-    const isBanned02 = false;
+    let isBanned01 = null;
     let blogOwnerUserId = '%';
 
     const paginatedQuery = new BlogPagination<PaginationType>(
@@ -114,21 +113,17 @@ export class BlogsQueryRepo {
         .createQueryBuilder('b')
         .leftJoinAndSelect('b.owner', 'o')
         .leftJoinAndSelect('b.blogBanInfo', 'bbi')
-        .orWhere('bbi.isBanned = :isBanned01', { isBanned01: isBanned01 })
-        .orWhere('bbi.isBanned = :isBanned02', { isBanned02: isBanned02 })
+        .where(
+          `${
+            isBanned01 === true || isBanned01 === false
+              ? 'bbi.isBanned = :banStatus'
+              : 'bbi.isBanned is not null'
+          }`,
+          { banStatus: isBanned01 },
+        )
         .andWhere('b.name ILIKE :name ', { name: searchName })
         .andWhere('o.id = :ownerId', { ownerId: blogOwnerUserId })
-
-        //   '(bbi.isBanned = :isBanned01 or bbi.isBanned = :isBanned02)' +
-        //     'and b.name ILIKE :name  and o.id = :ownerId',
-        //   {
-        //     isBanned01: isBanned01,
-        //     isBanned02: isBanned02,
-        //     name: searchName,
-        //     ownerId: blogOwnerUserId,
-        //   },
-        // )
-        .orderBy(`o.${paginatedQuery.sortBy}`, paginatedQuery.sortDirection)
+        .orderBy(`b.${paginatedQuery.sortBy}`, paginatedQuery.sortDirection)
         .skip(skipSize)
         .take(paginatedQuery.pageSize)
         .getManyAndCount();
@@ -142,8 +137,14 @@ export class BlogsQueryRepo {
         .createQueryBuilder('b')
         .leftJoinAndSelect('b.owner', 'o')
         .leftJoinAndSelect('b.blogBanInfo', 'bbi')
-        .orWhere('bbi.isBanned = :isBanned01', { isBanned01: isBanned01 })
-        .orWhere('bbi.isBanned = :isBanned02', { isBanned02: isBanned02 })
+        .where(
+          `${
+            isBanned01 === true || isBanned01 === false
+              ? 'bbi.isBanned = :banStatus'
+              : 'bbi.isBanned is not null'
+          }`,
+          { banStatus: isBanned01 },
+        )
         .andWhere('b.name ILIKE :name ', { name: searchName })
         // .where(
         //   '(bbi.isBanned = :isBanned01 or bbi.isBanned = :isBanned02)' +
@@ -154,7 +155,7 @@ export class BlogsQueryRepo {
         //     name: searchName,
         //   },
         // )
-        .orderBy(`o.${paginatedQuery.sortBy}`, paginatedQuery.sortDirection)
+        .orderBy(`b.${paginatedQuery.sortBy}`, paginatedQuery.sortDirection)
         .skip(skipSize)
         .take(paginatedQuery.pageSize)
         .getManyAndCount();

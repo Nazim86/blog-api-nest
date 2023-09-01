@@ -38,7 +38,7 @@ export const getPostById = async (httpServer, postId, accessToken) => {
     .send();
 };
 
-export const getPostsByBlogId = async (
+export const getPostsByBlogIdPublic = async (
   httpServer,
   blogId,
   accessToken,
@@ -46,6 +46,18 @@ export const getPostsByBlogId = async (
 ) => {
   return request(httpServer)
     .get(`/blogs/${blogId}/posts`)
+    .auth(accessToken, { type: 'bearer' })
+    .send(query);
+};
+
+export const getPostsByBlogIdBlogger = async (
+  httpServer,
+  blogId,
+  accessToken,
+  query?,
+) => {
+  return request(httpServer)
+    .get(`/blogger/blogs/${blogId}/posts`)
     .auth(accessToken, { type: 'bearer' })
     .send(query);
 };
