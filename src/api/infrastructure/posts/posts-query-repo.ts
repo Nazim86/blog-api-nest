@@ -173,7 +173,7 @@ export class PostsQueryRepo {
 
     //const sortBy = 'addedAt';
 
-    console.log(paginatedQuery.pageSize);
+    // console.log(paginatedQuery.pageSize);
 
     const posts = await this.postsRepo
       .createQueryBuilder('p')
@@ -238,8 +238,8 @@ export class PostsQueryRepo {
       .leftJoinAndSelect('p.blog', 'b')
       .leftJoinAndSelect('b.owner', 'u')
       .orderBy(`p.${paginatedQuery.sortBy}`, paginatedQuery.sortDirection)
-      .skip(skipSize)
-      .take(paginatedQuery.pageSize)
+      .limit(paginatedQuery.pageSize)
+      .offset(skipSize)
       .getRawMany();
 
     //console.log('posts in getPosts in post query repo', posts);
