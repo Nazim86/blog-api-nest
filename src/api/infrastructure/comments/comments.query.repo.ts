@@ -261,8 +261,8 @@ export class CommentsQueryRepo {
             .leftJoin('p.blog', 'b')
             .leftJoin('c.user', 'u')
             .leftJoin('u.banInfo', 'ub')
-            .where('ub.isBanned = false')
-            .andWhere('u.id = :userId', { userId: userId }),
+            .where('u.id = :userId', { userId: userId })
+            .andWhere('ub.isBanned = false'),
         'totalCount',
       )
       .addSelect(
@@ -302,8 +302,8 @@ export class CommentsQueryRepo {
       .leftJoinAndSelect('p.blog', 'b')
       .leftJoinAndSelect('c.user', 'u')
       .leftJoinAndSelect('u.banInfo', 'ub')
-      .where('ub.isBanned = false')
-      .andWhere('u.id = :userId', { userId: userId })
+      .where('u.id = :userId', { userId: userId })
+      .andWhere('ub.isBanned = false')
       .orderBy(`c.${paginatedQuery.sortBy}`, paginatedQuery.sortDirection)
       .limit(paginatedQuery.pageSize)
       .offset(skipSize)
@@ -312,6 +312,8 @@ export class CommentsQueryRepo {
     // console.log(' comment in comment query', comments);
 
     const totalCount = Number(comments[0].totalCount);
+
+    console.log(totalCount);
 
     const pagesCount = paginatedQuery.totalPages(totalCount);
 
