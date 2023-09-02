@@ -71,6 +71,7 @@ import { Blogs } from './api/entities/blogs/blogs.entity';
 import { UsersBanByBlogger } from './api/entities/users/usersBanByBlogger.entity';
 import { BlogBanInfo } from './api/entities/blogs/blogBanInfo.entity';
 import { CreateUserTransaction } from './api/superadmin/users/application,use-cases/createUserTransaction';
+import { CreateBlogTransaction } from './api/blogger/application,use-cases/createBlogTransaction';
 
 const useCases = [
   BlogCreateUseCase,
@@ -102,6 +103,7 @@ const useCases = [
   DeviceDeleteByIdUseCase,
   DeleteDevicesUseCase,
   CreateUserTransaction,
+  CreateBlogTransaction,
 ];
 
 const entities = [

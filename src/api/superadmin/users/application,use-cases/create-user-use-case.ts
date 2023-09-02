@@ -6,6 +6,7 @@ import { CreateUserTransaction } from './createUserTransaction';
 import bcrypt from 'bcrypt';
 import { UsersBanBySa } from '../../../entities/users/users-ban-by-sa.entity';
 import { Users } from '../../../entities/users/user.entity';
+import { UserWithBanInfo } from '../../../infrastructure/users/types/userWithBanInfo-type';
 
 export class CreateUsersCommand {
   constructor(public createUserDto: CreateUserDto) {}
@@ -51,9 +52,8 @@ export class CreateUsersUseCase {
   // inside of any other "main" transaction, i.e. without creating a new DB transaction
 
   async execute(command: CreateUsersCommand) {
-    const userWithBanInfo = await this.createUserTransaction.run(
-      command.createUserDto,
-    );
+    const userWithBanInfo: UserWithBanInfo =
+      await this.createUserTransaction.run(command.createUserDto);
 
     return userWithBanInfo.user.id;
   }

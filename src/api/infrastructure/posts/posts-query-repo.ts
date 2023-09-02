@@ -8,6 +8,7 @@ import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { Posts } from '../../entities/posts/posts.entity';
 import { PostLike } from '../../entities/like/postLike.entity';
+import { writeSql } from '../../../common/write_to_file';
 
 @Injectable()
 export class PostsQueryRepo {
@@ -241,6 +242,8 @@ export class PostsQueryRepo {
       .limit(paginatedQuery.pageSize)
       .offset(skipSize)
       .getRawMany();
+
+    // writeSql(posts);
 
     //console.log('posts in getPosts in post query repo', posts);
 

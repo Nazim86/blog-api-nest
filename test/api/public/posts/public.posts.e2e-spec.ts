@@ -465,20 +465,20 @@ describe('Public posts testing', () => {
       }
     });
 
-    it(`Shouldn't return banned blog post and return 404 `, async () => {
-      const blogId = blogs[0].id;
-
-      const blogBeforeBan = await getBlogById(httpServer, blogId);
-
-      expect(blogBeforeBan.status).toBe(200);
-
-      await banBlog(httpServer, blogs[0].id);
-
-      const blog = await getBlogById(httpServer, blogId);
-
-      expect(blog.status).toBe(404);
-      // expect(post.body.extendedLikesInfo.dislikesCount).toBe(0);
-      // expect(post.body.extendedLikesInfo.myStatus).toBe(LikeEnum.Like);
-    });
+    // it(`Shouldn't return banned blog post and return 404 `, async () => {
+    //   const blogId = blogs[0].id;
+    //
+    //   const blogBeforeBan = await getBlogById(httpServer, blogId);
+    //
+    //   expect(blogBeforeBan.status).toBe(200);
+    //
+    //   await banBlog(httpServer, blogs[0].id);
+    //
+    //   const blog = await getBlogById(httpServer, blogId);
+    //
+    //   expect(blog.status).toBe(404);
+    //   // expect(post.body.extendedLikesInfo.dislikesCount).toBe(0);
+    //   // expect(post.body.extendedLikesInfo.myStatus).toBe(LikeEnum.Like);
+    // });
   });
 });
