@@ -3,7 +3,6 @@ import { CommandHandler } from '@nestjs/cqrs';
 import { UsersRepository } from '../../infrastructure/users/users.repository';
 import { ResultCode } from '../../../exception-handler/result-code-enum';
 import { BlogRepository } from '../../infrastructure/blogs/blog.repository';
-import { UsersBanByBlogger } from '../../entities/users/usersBanByBlogger.entity';
 
 export class BloggerBanUserCommand {
   constructor(
@@ -44,24 +43,18 @@ export class BloggerBanUserUseCase {
         return { code: ResultCode.Forbidden };
       }
 
-      let usersBanByBlogger;
-
-      if (!user.usersBanByBlogger) {
-        usersBanByBlogger = new UsersBanByBlogger();
+      if (command.userBanDto.isBanned) {
+        user.usersBanByBlogger.isBanned = command.userBanDto.isBanned;
+        user.usersBanByBlogger.banDate = new Date().toISOString();
+        user.usersBanByBlogger.banReason = command.userBanDto.banReason;
+        user.usersBanByBlogger.blog = blog;
+      } else {
+        user.usersBanByBlogger.isBanned = false;
+        user.usersBanByBlogger.banDate = null;
+        user.usersBanByBlogger.banReason = null;
       }
 
-      if (usersBanByBlogger) {
-        usersBanByBlogger.isBanned = command.userBanDto.isBanned;
-        usersBanByBlogger.banDate = new Date().toISOString();
-        usersBanByBlogger.banReason = command.userBanDto.banReason;
-        usersBanByBlogger.blog = blog;
-        usersBanByBlogger.user = user;
-        const result = await this.usersRepository.saveUsersBanByBlogger(
-          usersBanByBlogger,
-        );
-        // console.log(result);
-      }
-
+      await this.usersRepository.saveUsersBanByBlogger(user.usersBanByBlogger);
       // if (!user.usersBanByBlogger) {
       //   usersBanByBlogger = new UsersBanByBlogger();
       //   usersBanByBlogger.isBanned = command.userBanDto.isBanned;

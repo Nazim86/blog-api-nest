@@ -1,9 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { UserViewType } from './types/user-view-type';
-import {
-  BanStatusEnum,
-  UserPagination,
-} from '../../superadmin/users/user-pagination';
+import { UserPagination } from '../../superadmin/users/user-pagination';
 import { PaginationType } from '../../../common/pagination';
 import { filterForUserQuery } from '../../../common/filterForUserQuery';
 import { RoleEnum } from '../../../enums/role-enum';
@@ -76,12 +73,18 @@ export class UserQueryRepo {
         query.sortDirection,
         query.searchLoginTerm,
       );
-    const filter = filterForUserQuery(
-      paginatedQuery.searchLoginTerm,
-      null,
-      BanStatusEnum.banned,
-      RoleEnum.Blogger,
-    );
+    // const filter = filterForUserQuery(
+    //   paginatedQuery.searchLoginTerm,
+    //   null,
+    //   BanStatusEnum.banned,
+    //   RoleEnum.Blogger,
+    // );
+
+    let searchlogin = '';
+
+    if (paginatedQuery.searchLoginTerm) {
+      searchlogin = paginatedQuery.searchLoginTerm;
+    }
 
     const blog = await this.blogsRepository.getBlogById(blogId);
 
@@ -94,20 +97,12 @@ export class UserQueryRepo {
     const bannedUsersForBlog = await this.usersRepository
       .createQueryBuilder('u')
       .leftJoinAndSelect('u.usersBanByBlogger', 'ubb')
-      .where(
-        `${
-          filter.banStatus01 === true || filter.banStatus01 === false
-            ? 'ubb.isBanned = :banStatus'
-            : 'ubb.isBanned is not null'
-        }`,
-        {
-          banStatus: filter.banStatus01,
-        },
-      )
-      .andWhere(`u.login ilike :login and ubb.blogId = :blogId`, {
-        login: `%${filter.searchLogin}%`,
-        blogId: blogId,
+      .leftJoinAndSelect('ubb.blog', 'b')
+      .where('ubb.isBanned = true')
+      .andWhere(`u.login ilike :login`, {
+        login: `%${searchlogin}%`,
       })
+      .andWhere('b.id = :blogId', { blogId: blogId })
       .orderBy(`u.${paginatedQuery.sortBy}`, paginatedQuery.sortDirection)
       .skip(skipSize)
       .take(paginatedQuery.pageSize)

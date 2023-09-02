@@ -9,6 +9,7 @@ import { EmailConfirmation } from '../../../entities/users/email-confirmation';
 import { v4 as uuid } from 'uuid';
 import { add } from 'date-fns';
 import { UsersBanBySa } from '../../../entities/users/users-ban-by-sa.entity';
+import { UsersBanByBlogger } from '../../../entities/users/usersBanByBlogger.entity';
 
 export class CreateUserCommand {
   constructor(public createUserDto: CreateUserDto) {}
@@ -41,6 +42,10 @@ export class CreateUserUseCase {
     usersBanBySA.user = user;
     usersBanBySA.isBanned = false;
 
+    const usersBanByBlogger = new UsersBanByBlogger();
+    usersBanByBlogger.user = user;
+    usersBanByBlogger.isBanned = false;
+
     const confirmationCode = uuid();
 
     const expirationDate = add(new Date(), {
@@ -56,6 +61,7 @@ export class CreateUserUseCase {
     await Promise.all([
       this.usersRepository.saveUsersBanBySA(usersBanBySA),
       this.usersRepository.saveEmailConfirmation(emailConfirmation),
+      this.usersRepository.saveUsersBanByBlogger(usersBanByBlogger),
     ]);
 
     // const user = await this.usersRepository.findUserById(userId);

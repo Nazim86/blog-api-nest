@@ -7,6 +7,7 @@ import * as bcrypt from 'bcrypt';
 import process from 'process';
 import { UsersBanBySa } from '../../../entities/users/users-ban-by-sa.entity';
 import { UserWithBanInfo } from '../../../infrastructure/users/types/userWithBanInfo-type';
+import { UsersBanByBlogger } from '../../../entities/users/usersBanByBlogger.entity';
 
 // interface UserData {
 //   name: string;
@@ -49,8 +50,13 @@ export class CreateUserTransaction extends BaseTransaction<
     usersBanBySA.user = user;
     usersBanBySA.isBanned = false;
 
+    const usersBanByBlogger = new UsersBanByBlogger();
+    usersBanByBlogger.user = user;
+    usersBanByBlogger.isBanned = false;
+
     user = await manager.save(user);
     usersBanBySA = await manager.save(usersBanBySA);
+    await manager.save(usersBanByBlogger);
     //console.log(result);
     return {
       user: user,

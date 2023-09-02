@@ -19,10 +19,10 @@ export class UsersBanByBlogger {
   @Column({ type: 'boolean' })
   isBanned: boolean;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   banDate: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   banReason: string;
 
   @ManyToOne(() => Blogs, (b) => b.usersBanByBlogger, { onDelete: 'CASCADE' })

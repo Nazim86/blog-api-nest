@@ -222,8 +222,8 @@ export class CommentsQueryRepo {
         id: comment.c_id,
         content: comment.c_content,
         commentatorInfo: {
-          userId: comment.c_userId,
-          userLogin: comment.u_login,
+          userId: user.id,
+          userLogin: user.login,
         },
         createdAt: comment.c_createdAt,
         likesInfo: {
