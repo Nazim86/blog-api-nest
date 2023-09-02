@@ -305,8 +305,8 @@ export class CommentsQueryRepo {
       .where('ub.isBanned = false')
       .andWhere('u.id = :userId', { userId: userId })
       .orderBy(`c.${paginatedQuery.sortBy}`, paginatedQuery.sortDirection)
-      .skip(skipSize)
-      .take(paginatedQuery.pageSize)
+      .limit(paginatedQuery.pageSize)
+      .offset(skipSize)
       .getRawMany();
 
     //console.log(comments);
