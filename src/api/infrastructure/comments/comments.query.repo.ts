@@ -50,30 +50,28 @@ export class CommentsQueryRepo {
     });
   }
   private async commentMappingForBlogger(comments, myStatus: string) {
-    return Promise.all(
-      comments.map(async (comment) => {
-        return {
-          id: comment.c_id,
-          content: comment.c_content,
-          commentatorInfo: {
-            userId: comment.u_id,
-            userLogin: comment.u_login,
-          },
-          createdAt: comment.c_createdAt,
-          likesInfo: {
-            likesCount: Number(comment.likesCount),
-            dislikesCount: Number(comment.dislikesCount),
-            myStatus: myStatus,
-          },
-          postInfo: {
-            id: comment.p_id,
-            title: comment.p_title,
-            blogId: comment.b_id,
-            blogName: comment.b_name,
-          },
-        };
-      }),
-    );
+    comments.map(async (comment) => {
+      return {
+        id: comment.c_id,
+        content: comment.c_content,
+        commentatorInfo: {
+          userId: comment.u_id,
+          userLogin: comment.u_login,
+        },
+        createdAt: comment.c_createdAt,
+        likesInfo: {
+          likesCount: Number(comment.likesCount),
+          dislikesCount: Number(comment.dislikesCount),
+          myStatus: myStatus,
+        },
+        postInfo: {
+          id: comment.p_id,
+          title: comment.p_title,
+          blogId: comment.b_id,
+          blogName: comment.b_name,
+        },
+      };
+    });
   }
 
   async getCommentsForPost(

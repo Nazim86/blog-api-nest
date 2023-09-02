@@ -105,7 +105,7 @@ export class UserQueryRepo {
         },
       )
       .andWhere(`u.login ilike :login and ubb.blogId = :blogId`, {
-        login: filter.searchLogin,
+        login: `%${filter.searchLogin}%`,
         blogId: blogId,
       })
       .orderBy(`u.${paginatedQuery.sortBy}`, paginatedQuery.sortDirection)
