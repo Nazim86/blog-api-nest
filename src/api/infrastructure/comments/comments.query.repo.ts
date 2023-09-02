@@ -50,7 +50,7 @@ export class CommentsQueryRepo {
     });
   }
   private async commentMappingForBlogger(comments, myStatus: string) {
-    comments.map(async (comment) => {
+    return comments.map((comment) => {
       return {
         id: comment.c_id,
         content: comment.c_content,
@@ -307,7 +307,7 @@ export class CommentsQueryRepo {
       .offset(skipSize)
       .getRawMany();
 
-    //console.log(comments);
+    console.log(' comment in comment query', comments);
 
     const totalCount = Number(comments[0].totalCount);
 
@@ -320,7 +320,7 @@ export class CommentsQueryRepo {
       myStatus,
     );
 
-    // console.log(mappedCommentsForBlog);
+    console.log(' mapped comment in comment query', mappedCommentsForBlog);
 
     return {
       pagesCount: pagesCount,

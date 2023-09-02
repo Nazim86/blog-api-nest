@@ -108,8 +108,6 @@ export class UserQueryRepo {
       .take(paginatedQuery.pageSize)
       .getManyAndCount();
 
-    console.log(bannedUsersForBlog[0]);
-
     const totalCount = Number(bannedUsersForBlog[1]);
 
     const pagesCount = paginatedQuery.totalPages(totalCount); //Math.ceil(totalCount / paginatedQuery.pageSize);
@@ -118,7 +116,6 @@ export class UserQueryRepo {
       bannedUsersForBlog[0],
     );
 
-    console.log(mappedBannedUsers);
     return {
       data: {
         pagesCount: pagesCount,

@@ -204,6 +204,7 @@ describe('Blogger blog testing', () => {
       const result = await request(app.getHttpServer())
         .get('/blogger/blogs/comments')
         .auth(accessToken[0], { type: 'bearer' });
+      console.log('comment in test for blogger', result.body);
       expect(result.status).toBe(200);
       expect(result.body).toEqual(commentForBloggerWithPagination);
     });
