@@ -141,8 +141,8 @@ export class CommentsQueryRepo {
       .leftJoinAndSelect('c.user', 'u')
       .where('c.postId = :postId', { postId: postId })
       .orderBy(`c.${paginatedQuery.sortBy}`, paginatedQuery.sortDirection)
-      .skip(skipSize)
-      .take(paginatedQuery.pageSize)
+      .limit(paginatedQuery.pageSize)
+      .offset(skipSize)
       .getRawMany();
 
     //console.log(comments);
