@@ -1,9 +1,6 @@
-import { BlogRepository } from '../../infrastructure/blogs/blog.repository';
 import { CreateBlogDto } from '../inputModel-Dto/createBlog.dto';
 import { CommandHandler } from '@nestjs/cqrs';
 import { UsersRepository } from '../../infrastructure/users/users.repository';
-import { Blogs } from '../../entities/blogs/blogs.entity';
-import { BlogBanInfo } from '../../entities/blogs/blogBanInfo.entity';
 import { CreateBlogTransaction } from './createBlogTransaction';
 
 export class BlogCreateCommand {
@@ -51,9 +48,9 @@ export class BlogCreateUseCase {
   ) {}
 
   async execute(command: BlogCreateCommand) {
-    const user = await this.usersRepository.findUserById(command.userId);
-
-    if (!user) return false;
+    // const user = await this.usersRepository.findUserById(command.userId);
+    //
+    // if (!user) return false;
 
     const blog = await this.createBlogTransaction.run(command);
 

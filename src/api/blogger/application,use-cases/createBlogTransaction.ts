@@ -1,11 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, EntityManager } from 'typeorm';
-import { CreateBlogDto } from '../inputModel-Dto/createBlog.dto';
-import { BlogWithBanInfoType } from '../../infrastructure/blogs/types/blogWithBanInfo-type';
 import { BaseTransaction } from '../../../common/baseTransaction';
 import { Blogs } from '../../entities/blogs/blogs.entity';
 import { BlogBanInfo } from '../../entities/blogs/blogBanInfo.entity';
-import { CommentCreateCommand } from '../../public/comments/application,use-cases/comment-create-use-case';
 import { BlogCreateCommand } from './blog-create-use-case';
 import { UsersRepository } from '../../infrastructure/users/users.repository';
 
@@ -54,7 +51,7 @@ export class CreateBlogTransaction extends BaseTransaction<
     blogBanInfo.blog = blog;
 
     blog = await manager.save(blog);
-    await manager.save(blogBanInfo); // const newUser = await manager.create(User, data);
+    manager.save(blogBanInfo); // const newUser = await manager.create(User, data);
     // const userBalance = await manager.create(Balance, { userId: newUser.id });
 
     return blog;
