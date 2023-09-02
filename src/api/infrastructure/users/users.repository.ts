@@ -139,10 +139,10 @@ export class UsersRepository {
     return await this.usersBanByBloggerRepo
       .createQueryBuilder('ubb')
       .leftJoinAndSelect('ubb.user', 'u')
-      .leftJoinAndSelect('u.banInfo', 'ub')
+      //.leftJoinAndSelect('u.banInfo', 'ub')
       .where('ubb.userId = :userId', { userId: userId })
       .andWhere('ubb.blogId = :blogId', { blogId: blogId })
-      .andWhere('ub.isBanned = true')
+      .andWhere('ubb.isBanned = true')
       .getOne();
   }
 

@@ -30,9 +30,11 @@ export class CommentCreateUseCase {
 
     const blog = await this.blogsRepository.getBlogById(post.blog.id);
 
+    if (!blog) return { code: ResultCode.NotFound };
+
     const bannedUser = await this.usersRepository.findBloggerBannedUser(
-      command.userId,
-      post.blog.id,
+      user.id,
+      blog.id,
     );
 
     if (bannedUser) {
