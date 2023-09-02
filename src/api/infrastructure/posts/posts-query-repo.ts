@@ -240,7 +240,7 @@ export class PostsQueryRepo {
       .leftJoinAndSelect('b.owner', 'u')
       .orderBy(`p.${paginatedQuery.sortBy}`, paginatedQuery.sortDirection)
       .limit(paginatedQuery.pageSize)
-      .offset(skipSize)
+      .skip(skipSize)
       .getRawMany();
 
     // writeSql(posts);
