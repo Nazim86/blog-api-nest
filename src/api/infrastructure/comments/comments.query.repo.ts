@@ -248,7 +248,7 @@ export class CommentsQueryRepo {
 
     const skipSize = paginatedQuery.skipSize;
 
-    //console.log(paginatedQuery.sortBy, paginatedQuery.sortDirection);
+    console.log(paginatedQuery.sortBy, paginatedQuery.sortDirection);
 
     const comments = await this.comentsRepo
       .createQueryBuilder('c')
@@ -259,7 +259,7 @@ export class CommentsQueryRepo {
             .from(Comments, 'c')
             .leftJoin('c.post', 'p')
             .leftJoin('p.blog', 'b')
-            .leftJoin('c.user', 'u')
+            .leftJoin('b.owner', 'u')
             .leftJoin('u.banInfo', 'ub')
             .where('u.id = :userId', { userId: userId })
             .andWhere('ub.isBanned = false'),
@@ -300,7 +300,7 @@ export class CommentsQueryRepo {
       )
       .leftJoinAndSelect('c.post', 'p')
       .leftJoinAndSelect('p.blog', 'b')
-      .leftJoinAndSelect('c.user', 'u')
+      .leftJoinAndSelect('b.owner', 'u')
       .leftJoinAndSelect('u.banInfo', 'ub')
       .where('u.id = :userId', { userId: userId })
       .andWhere('ub.isBanned = false')
