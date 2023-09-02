@@ -55,8 +55,8 @@ export class CommentsQueryRepo {
         id: comment.c_id,
         content: comment.c_content,
         commentatorInfo: {
-          userId: comment.u_id,
-          userLogin: comment.u_login,
+          userId: comment.cu_id,
+          userLogin: comment.cu_login,
         },
         createdAt: comment.c_createdAt,
         likesInfo: {
@@ -299,6 +299,7 @@ export class CommentsQueryRepo {
         'dislikesCount',
       )
       .leftJoinAndSelect('c.post', 'p')
+      .leftJoinAndSelect('c.user', 'cu')
       .leftJoinAndSelect('p.blog', 'b')
       .leftJoinAndSelect('b.owner', 'u')
       .leftJoinAndSelect('u.banInfo', 'ub')
