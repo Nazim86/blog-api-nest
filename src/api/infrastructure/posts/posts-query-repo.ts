@@ -8,7 +8,6 @@ import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { Posts } from '../../entities/posts/posts.entity';
 import { PostLike } from '../../entities/like/postLike.entity';
-import { writeSql } from '../../../common/write_to_file';
 
 @Injectable()
 export class PostsQueryRepo {
@@ -238,9 +237,16 @@ export class PostsQueryRepo {
       )
       .leftJoinAndSelect('p.blog', 'b')
       .leftJoinAndSelect('b.owner', 'u')
-      .orderBy(`p.${paginatedQuery.sortBy}`, paginatedQuery.sortDirection)
-      .skip(skipSize)
+      .orderBy(
+        `${
+          paginatedQuery.sortBy === 'blogName'
+            ? 'b.name'
+            : `p.${paginatedQuery.sortBy}`
+        }`,
+        paginatedQuery.sortDirection,
+      )
       .limit(paginatedQuery.pageSize)
+      .offset(skipSize)
       .getRawMany();
 
     // writeSql(posts);
