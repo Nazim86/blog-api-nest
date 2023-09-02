@@ -42,6 +42,11 @@ export class BlogCreateUseCase {
     blogBanInfo.banDate = null;
     blogBanInfo.blog = blog;
 
+    // const blogWithBanInfo = await Promise.all([
+    //   this.blogRepository.saveBlog(newBlog),
+    //   this.blogRepository.saveBlogBanInfo(blogBanInfo),
+    // ]);
+
     await this.blogRepository.saveBlogBanInfo(blogBanInfo);
 
     return blog.id;

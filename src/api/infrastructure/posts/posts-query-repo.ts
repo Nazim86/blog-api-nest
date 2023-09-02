@@ -242,7 +242,7 @@ export class PostsQueryRepo {
       .offset(skipSize)
       .getRawMany();
 
-    console.log('posts in getPosts in post query repo', posts);
+    //console.log('posts in getPosts in post query repo', posts);
 
     const totalCount = Number(posts[0].totalCount);
 
@@ -275,10 +275,10 @@ export class PostsQueryRepo {
     );
     const skipSize = paginatedQuery.skipSize;
 
-    console.log(
-      'pageSize in getPostsByBlogId in post query',
-      paginatedQuery.pageSize,
-    );
+    // console.log(
+    //   'pageSize in getPostsByBlogId in post query',
+    //   paginatedQuery.pageSize,
+    // );
 
     const posts = await this.postsRepo
       .createQueryBuilder('p')

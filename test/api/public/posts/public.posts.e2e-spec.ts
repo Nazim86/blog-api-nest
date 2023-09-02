@@ -126,9 +126,9 @@ describe('Public posts testing', () => {
         accessTokens[0],
       );
 
-      console.log(postsByBlogId.body);
+      // console.log(postsByBlogId.body);
       expect(postsByBlogId.status).toBe(200);
-      expect(postsByBlogId.body.title).toEqual('ChatGPT0');
+      expect(postsByBlogId.body.items[0].title).toEqual('ChatGPT0');
     });
 
     it(`Public creates comments for post and return 201`, async () => {
