@@ -57,11 +57,12 @@ export class BlogRepository {
         .createQueryBuilder('b')
         .delete()
         .from(Blogs)
-        .where('b.id = :blogId', { blogId: id })
+        .where('id = :blogId', { blogId: id })
         .execute();
 
       return result.affected === 1;
     } catch (e) {
+      console.log(e);
       return false;
     }
   }

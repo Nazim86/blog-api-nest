@@ -19,6 +19,7 @@ import {
 import { AppModule } from '../../../src/app.module';
 import { appSettings } from '../../../src/app.settings';
 import { nameField } from '../../data/400 error-data';
+import { deleteBlogById, getBlogById } from '../../functions/blog_functions';
 
 describe('Blogger blog testing', () => {
   let app: INestApplication;
@@ -225,6 +226,22 @@ describe('Blogger blog testing', () => {
         .auth(accessToken[0], { type: 'bearer' });
       expect(result.status).toBe(200);
       expect(result.body).toEqual(commentForBloggerWithPagination);
+    });
+
+    it(`Blogger delete blog by id`, async () => {
+      const blogBeforeDelete = await getBlogById(httpServer, blog[0].id);
+
+      expect(blogBeforeDelete.body.name).toEqual('Blog updated');
+
+      const result = await deleteBlogById(
+        httpServer,
+        blog[0].id,
+        accessToken[0],
+      );
+      expect(result.status).toBe(204);
+
+      const blogAfterDelete = await getBlogById(httpServer, blog[0].id);
+      expect(blogAfterDelete.body.name).toBeUndefined();
     });
   });
 });

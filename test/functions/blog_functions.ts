@@ -10,3 +10,10 @@ export const banBlog = async (httpServer, blogId) => {
 export const getBlogById = async (httpServer, blogId) => {
   return request(httpServer).get(`/blogs/${blogId}`).send();
 };
+
+export const deleteBlogById = async (httpServer, blogId, accessToken) => {
+  return request(httpServer)
+    .delete(`/blogger/blogs/${blogId}`)
+    .auth(accessToken, { type: 'bearer' })
+    .send();
+};
