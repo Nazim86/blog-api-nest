@@ -93,12 +93,12 @@ export class UserQueryRepo {
 
     const bannedUsersForBlog = await this.usersRepository
       .createQueryBuilder('u')
-      .leftJoinAndSelect('u.usersBanByBlogger', 'ubb', 'u.id = ubb.userId')
+      .leftJoinAndSelect('u.usersBanByBlogger', 'ubb')
       .where(
         `${
           filter.banStatus01 === true || filter.banStatus01 === false
-            ? 'ub.isBanned = :banStatus'
-            : 'ub.isBanned is not null'
+            ? 'ubb.isBanned = :banStatus'
+            : 'ubb.isBanned is not null'
         }`,
         {
           banStatus: filter.banStatus01,
