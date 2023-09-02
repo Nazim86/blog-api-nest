@@ -46,15 +46,15 @@ export class UserQueryRepo {
     });
   };
 
-  private bannedUserMappingForBlog = (bannedUsers) => {
-    return bannedUsers.map((bannedUser) => {
+  private bannedUserMappingForBlog = (users) => {
+    return users.map((user) => {
       return {
-        id: bannedUser.id,
-        login: bannedUser.login,
+        id: user.id,
+        login: user.login,
         banInfo: {
-          isBanned: bannedUser.isBanned,
-          banDate: bannedUser.banDate,
-          banReason: bannedUser.banReason,
+          isBanned: user.usersBanByBlogger.isBanned,
+          banDate: user.usersBanByBlogger.banDate,
+          banReason: user.usersBanByBlogger.banReason,
         },
       };
     });
@@ -108,6 +108,8 @@ export class UserQueryRepo {
       .take(paginatedQuery.pageSize)
       .getManyAndCount();
 
+    console.log(bannedUsersForBlog[0]);
+
     const totalCount = Number(bannedUsersForBlog[1]);
 
     const pagesCount = paginatedQuery.totalPages(totalCount); //Math.ceil(totalCount / paginatedQuery.pageSize);
@@ -116,6 +118,7 @@ export class UserQueryRepo {
       bannedUsersForBlog[0],
     );
 
+    console.log(mappedBannedUsers);
     return {
       data: {
         pagesCount: pagesCount,
