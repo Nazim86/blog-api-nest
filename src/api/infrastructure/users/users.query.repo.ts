@@ -37,11 +37,11 @@ export class UserQueryRepo {
         login: user.login,
         email: user.email,
         createdAt: user.createdAt,
-        banInfo: {
-          isBanned: user.banInfo.isBanned,
-          banDate: user.banInfo.banDate,
-          banReason: user.banInfo.banReason,
-        },
+        // banInfo: {
+        //   isBanned: user.banInfo.isBanned,
+        //   banDate: user.banInfo.banDate,
+        //   banReason: user.banInfo.banReason,
+        // },
       };
     });
   };
@@ -73,12 +73,6 @@ export class UserQueryRepo {
         query.sortDirection,
         query.searchLoginTerm,
       );
-    // const filter = filterForUserQuery(
-    //   paginatedQuery.searchLoginTerm,
-    //   null,
-    //   BanStatusEnum.banned,
-    //   RoleEnum.Blogger,
-    // );
 
     let searchlogin = '';
 
@@ -209,11 +203,11 @@ export class UserQueryRepo {
       login: user.login,
       email: user.email,
       createdAt: user.createdAt,
-      banInfo: {
-        isBanned: user.banInfo.isBanned,
-        banDate: user.banInfo.banDate,
-        banReason: user.banInfo.banReason,
-      },
+      // banInfo: {
+      //   isBanned: user.banInfo.isBanned,
+      //   banDate: user.banInfo.banDate,
+      //   banReason: user.banInfo.banReason,
+      // },
     };
   }
 }

@@ -146,15 +146,6 @@ export class BlogsQueryRepo {
           { banStatus: isBanned01 },
         )
         .andWhere('b.name ILIKE :name ', { name: searchName })
-        // .where(
-        //   '(bbi.isBanned = :isBanned01 or bbi.isBanned = :isBanned02)' +
-        //     'and b.name ILIKE :name',
-        //   {
-        //     isBanned01: isBanned01,
-        //     isBanned02: isBanned02,
-        //     name: searchName,
-        //   },
-        // )
         .orderBy(`b.${paginatedQuery.sortBy}`, paginatedQuery.sortDirection)
         .skip(skipSize)
         .take(paginatedQuery.pageSize)
@@ -164,9 +155,6 @@ export class BlogsQueryRepo {
 
       blog = blog[0];
     }
-
-    // console.log(isBanned01, isBanned02);
-    // console.log('blog before map', blog);
 
     let mappedBlog: BlogsViewType[];
 

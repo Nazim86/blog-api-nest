@@ -28,13 +28,6 @@ export class DeviceQueryRepo {
       .where('d.userId = :userId', { userId: userId })
       .getMany();
 
-    // const device = await this.dataSource.query(
-    //   `SELECT d.*
-    //                 FROM public.devices d
-    //                 Where d."userId"=$1;`,
-    //   [userId],
-    // );
-    //console.log('device before map', device);
     return this.deviceMapping(device, ip);
   }
 }

@@ -21,11 +21,6 @@ export class LikesRepository {
   }
 
   async findPostLike(postId: string, userId: string) {
-    //   await this.dataSource.query(
-    //   `Select * from public.post_like
-    //          Where "postId" = $1 and "userId"=$2`,
-    //   [postId, userId],
-    // );
     return await this.postLikeRepo
       .createQueryBuilder('pl')
       .leftJoin('pl.post', 'p')
@@ -44,74 +39,4 @@ export class LikesRepository {
       .andWhere('u.id = :userId', { userId: userId })
       .getOne();
   }
-
-  // async createPostLike(
-  //   postId: string,
-  //   userId: string,
-  //   createPostLikeDto: CreateLikeDto,
-  // ) {
-  //   const postLike = await this.dataSource.
-  //
-  //   // query(
-  //   //   `INSERT INTO public.post_like(
-  //   //          "postId", "userId", "addedAt", status , "user")
-  //   //           VALUES ( $1, $2, $3, $4, $5)
-  //   //           on conflict ("postId","userId")
-  //   //           Do Update set status = Excluded.status, "addedAt"=Excluded."addedAt";`,
-  //   //   [
-  //   //     postId,
-  //   //     userId,
-  //   //     new Date().toISOString(),
-  //   //     createPostLikeDto.likeStatus,
-  //   //     false,
-  //   //   ],
-  //   // );
-  //
-  //   return postLike[0];
-  // }
-
-  // async createCommentLike(
-  //   commentId: string,
-  //   userId: string,
-  //   createLikeDto: CreateLikeDto,
-  // ) {
-  //   await this.dataSource.query(
-  //     `INSERT INTO public.comment_like(
-  //           "commentId", "userId", "addedAt","status", "banStatus")
-  //             VALUES ( $1, $2, $3, $4, $5)
-  //             on conflict("commentId","userId")
-  //             Do Update Set "status" = Excluded."status", "addedAt" = Excluded."addedAt";`,
-  //     [
-  //       commentId,
-  //       userId,
-  //       new Date().toISOString(),
-  //       createLikeDto.likeStatus,
-  //       false,
-  //     ],
-  //   );
-  //
-  //   return true;
-  // }
-
-  // async setBanStatusForCommentLike(userId: string, banStatus: boolean) {
-  //   return this.dataSource.query(
-  //     `UPDATE public.comment_like
-  //       SET "banStatus"=$1
-  //       WHERE "userId"=$2;`,
-  //     [banStatus, userId],
-  //   );
-  // }
-
-  // async resetLikeRepository() {
-  //   return this.dataSource.query(`Truncate public.comment_like`);
-  // }
-
-  // async setBanStatusForPostLike(userId: string, banStatus: boolean) {
-  //   return this.dataSource.query(
-  //     `UPDATE public.post_like
-  //   SET "banStatus"=$1
-  //   WHERE "userId"= $2;`,
-  //     [banStatus, userId],
-  //   );
-  // }
 }
