@@ -358,18 +358,18 @@ export class PostsQueryRepo {
         'newestLikes',
       )
       .leftJoinAndSelect('p.blog', 'b')
-      .leftJoinAndSelect('b.owner', 'u')
-      .leftJoinAndSelect('u.banInfo', 'ub')
+      //.leftJoinAndSelect('b.owner', 'u')
+      //.leftJoinAndSelect('u.banInfo', 'ub')
       .leftJoinAndSelect('b.blogBanInfo', 'bbi')
       .where('b.id = :blogId', { blogId: blogId })
       .andWhere(`bbi.isBanned = false`)
-      .andWhere(`ub.isBanned = false`)
+      //.andWhere(`ub.isBanned = false`)
       .orderBy(`p.${paginatedQuery.sortBy}`, paginatedQuery.sortDirection)
       .limit(paginatedQuery.pageSize)
       .offset(skipSize)
       .getRawMany();
 
-    //console.log('posts in getPostsByBlogId', posts);
+    console.log('posts in getPostsByBlogId', posts);
 
     if (!posts || posts.length === 0) return false;
 
