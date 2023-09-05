@@ -25,7 +25,7 @@ export class PostUpdateUseCase {
 
     if (!blog) return { code: ResultCode.NotFound };
 
-    if (blog.owner.id !== command.userId) return { code: ResultCode.Forbidden };
+    // if (blog.owner.id !== command.userId) return { code: ResultCode.Forbidden };
 
     const post = await this.postsRepository.getPostById(command.params.postId);
 
@@ -36,10 +36,6 @@ export class PostUpdateUseCase {
     post.content = command.updatePostDto.content;
 
     const isUpdated = await this.postsRepository.savePost(post);
-    // const isUpdated = await this.postsRepository.updatePost(
-    //   command.updatePostDto,
-    //   post.id,
-    // );
 
     return { code: isUpdated ? ResultCode.Success : ResultCode.NotFound };
   }

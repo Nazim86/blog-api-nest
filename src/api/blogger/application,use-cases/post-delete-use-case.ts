@@ -25,7 +25,7 @@ export class PostDeleteUseCase {
       return { code: ResultCode.NotFound };
     }
 
-    if (blog.owner.id !== command.userId) return { code: ResultCode.Forbidden };
+    // if (blog.owner.id !== command.userId) return { code: ResultCode.Forbidden };
 
     const isPostDeleted = await this.postRepository.deletePostById(post.id);
 
