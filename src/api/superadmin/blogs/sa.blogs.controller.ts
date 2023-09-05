@@ -20,7 +20,7 @@ import { BanBlogCommand } from './use-cases/ban-blog-use-case';
 import { BanBlogInputModel } from './inputModel/banBlog-input-model';
 import { RoleEnum } from '../../../enums/role-enum';
 
-@Controller('sa/blogs')
+@Controller('saTemproray/blogs')
 @UseGuards(BasicAuthGuard)
 export class SuperAdminBlogsController {
   constructor(

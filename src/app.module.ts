@@ -72,6 +72,7 @@ import { UsersBanByBlogger } from './api/entities/users/usersBanByBlogger.entity
 import { BlogBanInfo } from './api/entities/blogs/blogBanInfo.entity';
 import { CreateUserTransaction } from './api/superadmin/users/application,use-cases/createUserTransaction';
 import { CreateBlogTransaction } from './api/blogger/application,use-cases/createBlogTransaction';
+import { SaBloggerBlogsController } from './api/superadmin/blogs/sa.blogger.blogs.controller';
 
 const useCases = [
   BlogCreateUseCase,
@@ -168,6 +169,7 @@ export const localConfigTypeOrm: TypeOrmModuleOptions = {
     SuperAdminUsersController,
     PublicBlogsController,
     BloggerUsersController,
+    SaBloggerBlogsController,
   ],
   providers: [
     AppService,

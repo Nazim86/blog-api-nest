@@ -10,7 +10,6 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { AccessTokenGuard } from '../../public/auth/guards/access-token.guard';
 import { CommandBus } from '@nestjs/cqrs';
 import { BlogRepository } from '../../infrastructure/blogs/blog.repository';
 import { BlogsQueryRepo } from '../../infrastructure/blogs/blogs-query.repository';
@@ -33,10 +32,11 @@ import { BlogDeleteCommand } from '../../blogger/application,use-cases/blog-dele
 import { PostCreateCommand } from '../../blogger/application,use-cases/post-create-use-case';
 import { BlogUpdateCommand } from '../../blogger/application,use-cases/blog-update-use-case';
 import { QueryPaginationType } from '../../../types/query-pagination-type';
+import { BasicAuthGuard } from '../../public/auth/guards/basic-auth.guard';
 
-@UseGuards(AccessTokenGuard)
+@UseGuards(BasicAuthGuard)
 @Controller('sa/blogs')
-export class BloggerBlogsController {
+export class SaBloggerBlogsController {
   constructor(
     private commandBus: CommandBus,
     private readonly blogsRepository: BlogRepository,
