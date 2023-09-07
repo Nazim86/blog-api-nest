@@ -73,6 +73,11 @@ import { BlogBanInfo } from './api/entities/blogs/blogBanInfo.entity';
 import { CreateUserTransaction } from './api/superadmin/users/application,use-cases/createUserTransaction';
 import { CreateBlogTransaction } from './api/blogger/application,use-cases/createBlogTransaction';
 import { SaBloggerBlogsController } from './api/superadmin/blogs/sa.blogger.blogs.controller';
+import { PlayersEntity } from './api/entities/quiz/players.entity';
+import { GamePairEntity } from './api/entities/quiz/gamePair.entity';
+import { SAQuizQuestionsController } from './api/superadmin/quiz/api/sa.quiz.questions.controller';
+import { AnswersEntity } from './api/entities/quiz/answers.entity';
+import { QuestionsEntity } from './api/entities/quiz/questionsEntity';
 
 const useCases = [
   BlogCreateUseCase,
@@ -120,6 +125,10 @@ const entities = [
   Blogs,
   UsersBanByBlogger,
   BlogBanInfo,
+  PlayersEntity,
+  GamePairEntity,
+  AnswersEntity,
+  QuestionsEntity,
 ];
 
 export const neonConfigForTypeOrm: TypeOrmModuleOptions = {
@@ -131,8 +140,8 @@ export const neonConfigForTypeOrm: TypeOrmModuleOptions = {
   entities,
   ssl: true,
   database: process.env.PG_DATABASE,
-  autoLoadEntities: true,
-  synchronize: true,
+  autoLoadEntities: false,
+  synchronize: false,
 };
 
 export const localConfigTypeOrm: TypeOrmModuleOptions = {
@@ -170,6 +179,7 @@ export const localConfigTypeOrm: TypeOrmModuleOptions = {
     PublicBlogsController,
     BloggerUsersController,
     SaBloggerBlogsController,
+    SAQuizQuestionsController,
   ],
   providers: [
     AppService,
