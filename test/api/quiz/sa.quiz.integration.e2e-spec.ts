@@ -11,10 +11,12 @@ import {
 import { appSettings } from '../../../src/app.settings';
 import {
   createQuestion,
+  publishQuestion,
   updatedQuestion,
 } from '../../functions/quiz_functions';
 import {
   createQuestionDTO,
+  publishQuestionDTO,
   questionViewModel,
   updatedQuestionViewModel,
   updateQuestionDTO,
@@ -23,6 +25,7 @@ import { CommandBus } from '@nestjs/cqrs';
 import { CreateQuestionCommand } from '../../../src/api/superadmin/quiz/use-cases/create-question-use-case';
 import { QuizQueryRepository } from '../../../src/api/infrastructure/quiz/quiz.query.repository';
 import { UpdateQuestionCommand } from '../../../src/api/superadmin/quiz/use-cases/update-question-use-case';
+import { PublishQuestionCommand } from '../../../src/api/superadmin/quiz/use-cases/publish-question-use-case';
 
 describe('Super Admin quiz testing', () => {
   let app: INestApplication;
@@ -54,7 +57,7 @@ describe('Super Admin quiz testing', () => {
   });
 
   describe('Creating questions ', () => {
-    let user;
+    //let user;
     let questionId;
 
     it('should wipe all data in db', async () => {
@@ -103,6 +106,27 @@ describe('Super Admin quiz testing', () => {
         httpServer,
         questionId,
         createQuestionDTO,
+      );
+
+      expect(updateQuestione2e.status).toBe(204);
+    });
+
+    it(`SA publish question, testing publish Question Use Case and e2e`, async () => {
+      // const createUser = await creatingUser(httpServer, createUserDto);
+      // user = createUser.body;
+
+      const isUpdated = await commandBus.execute(
+        new PublishQuestionCommand(questionId, publishQuestionDTO),
+      );
+
+      expect(isUpdated).toBe(true);
+      const question = await quizQueryRepository.getQuestionById(questionId);
+      expect(question.published).toBe(true);
+
+      const updateQuestione2e = await publishQuestion(
+        httpServer,
+        questionId,
+        publishQuestionDTO,
       );
 
       expect(updateQuestione2e.status).toBe(204);

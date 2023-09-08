@@ -15,6 +15,8 @@ import { QuizQueryRepository } from '../../../infrastructure/quiz/quiz.query.rep
 import { exceptionHandler } from '../../../../exception-handler/exception-handler';
 import { ResultCode } from '../../../../exception-handler/result-code-enum';
 import { UpdateQuestionCommand } from '../use-cases/update-question-use-case';
+import { PublishQuestionDto } from '../dto/publishQuestionDto';
+import { PublishQuestionCommand } from '../use-cases/publish-question-use-case';
 
 @UseGuards(BasicAuthGuard)
 @Controller('sa/quiz/questions')
@@ -35,12 +37,26 @@ export class SAQuizQuestionsController {
 
   @Put(':id')
   @HttpCode(204)
-  async Questions(
+  async updateQuestions(
     @Param('id') id,
     @Body() updateQuestionDto: CreateQuestionDto,
   ) {
     const isUpdated = await this.commandBus.execute(
       new UpdateQuestionCommand(id, updateQuestionDto),
+    );
+
+    if (!isUpdated) return exceptionHandler(ResultCode.BadRequest);
+    return;
+  }
+
+  @Put(':id/publish')
+  @HttpCode(204)
+  async publishQuestions(
+    @Param('id') id,
+    @Body() publishQuestionsDto: PublishQuestionDto,
+  ) {
+    const isUpdated = await this.commandBus.execute(
+      new PublishQuestionCommand(id, publishQuestionsDto),
     );
 
     if (!isUpdated) return exceptionHandler(ResultCode.BadRequest);

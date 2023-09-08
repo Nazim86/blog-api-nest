@@ -1,4 +1,5 @@
 import { CreateQuestionDto } from '../../src/api/superadmin/quiz/dto/createQuestionDto';
+import { PublishQuestionDto } from '../../src/api/superadmin/quiz/dto/publishQuestionDto';
 
 export const createQuestionDTO: CreateQuestionDto = {
   body: 'How old are you?',
@@ -8,6 +9,9 @@ export const createQuestionDTO: CreateQuestionDto = {
 export const updateQuestionDTO: CreateQuestionDto = {
   body: 'How old are your father?',
   correctAnswers: ['56', 'fifty-six', 'fifty six'],
+};
+export const publishQuestionDTO: PublishQuestionDto = {
+  published: true,
 };
 
 export const questionViewModel = {
