@@ -17,7 +17,6 @@ export class CreateQuestionUseCase {
     question.body = command.createQuestionDto.body;
     question.correctAnswers = command.createQuestionDto.correctAnswers;
     question.createdAt = new Date().toISOString();
-    question.published = true;
 
     const savedQuestion = await this.quizRepository.saveQuestion(question);
 

@@ -78,6 +78,9 @@ import { GamePairEntity } from './api/entities/quiz/gamePair.entity';
 import { SAQuizQuestionsController } from './api/superadmin/quiz/api/sa.quiz.questions.controller';
 import { AnswersEntity } from './api/entities/quiz/answers.entity';
 import { QuestionsEntity } from './api/entities/quiz/questionsEntity';
+import { CreateQuestionUseCase } from './api/superadmin/quiz/use-cases/create-question-use-case';
+import { QuizRepository } from './api/infrastructure/quiz/quiz.repository';
+import { QuizQueryRepository } from './api/infrastructure/quiz/quiz.query.repository';
 
 const useCases = [
   BlogCreateUseCase,
@@ -110,6 +113,7 @@ const useCases = [
   DeleteDevicesUseCase,
   CreateUserTransaction,
   CreateBlogTransaction,
+  CreateQuestionUseCase,
 ];
 
 const entities = [
@@ -140,8 +144,8 @@ export const neonConfigForTypeOrm: TypeOrmModuleOptions = {
   entities,
   ssl: true,
   database: process.env.PG_DATABASE,
-  autoLoadEntities: false,
-  synchronize: false,
+  autoLoadEntities: true,
+  synchronize: true,
 };
 
 export const localConfigTypeOrm: TypeOrmModuleOptions = {
@@ -195,6 +199,8 @@ export const localConfigTypeOrm: TypeOrmModuleOptions = {
     JwtService,
     IsBlogExistConstraint,
     DeviceRepository,
+    QuizRepository,
+    QuizQueryRepository,
     ...useCases,
   ],
   exports: [TypeOrmModule],
