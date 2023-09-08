@@ -8,20 +8,28 @@ import {
   rootMongooseTestModule,
 } from '../../mongoose-test-module';
 
-import { createUserDto } from '../../data/user-data';
 import { appSettings } from '../../../src/app.settings';
-import { creatingUser } from '../../functions/user_functions';
-import { createQuestion } from '../../functions/quiz_functions';
-import { createQuestionDTO, questionViewModel } from '../../data/quiz-data';
+import {
+  createQuestion,
+  updatedQuestion,
+} from '../../functions/quiz_functions';
+import {
+  createQuestionDTO,
+  questionViewModel,
+  updatedQuestionViewModel,
+  updateQuestionDTO,
+} from '../../data/quiz-data';
 import { CommandBus } from '@nestjs/cqrs';
 import { CreateQuestionCommand } from '../../../src/api/superadmin/quiz/use-cases/create-question-use-case';
 import { QuizQueryRepository } from '../../../src/api/infrastructure/quiz/quiz.query.repository';
+import { UpdateQuestionCommand } from '../../../src/api/superadmin/quiz/use-cases/update-question-use-case';
 
 describe('Super Admin quiz testing', () => {
   let app: INestApplication;
   let httpServer;
   let commandBus: CommandBus;
   let quizQueryRepository: QuizQueryRepository;
+
   jest.setTimeout(60 * 1000);
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -47,33 +55,57 @@ describe('Super Admin quiz testing', () => {
 
   describe('Creating questions ', () => {
     let user;
+    let questionId;
 
     it('should wipe all data in db', async () => {
       const response = await request(httpServer).delete('/testing/all-data');
       expect(response.status).toBe(204);
     });
 
-    it(`SA creates question, testing Create Question Use Case`, async () => {
+    it(`SA creates question, testing Create Question Use Case and e2e test`, async () => {
       // const createUser = await creatingUser(httpServer, createUserDto);
       // user = createUser.body;
 
-      const questionId = await commandBus.execute(
+      questionId = await commandBus.execute(
         new CreateQuestionCommand(createQuestionDTO),
       );
-
       expect(questionId).toEqual(expect.any(String));
-      const question = await quizQueryRepository.getQuestionById(questionId);
 
+      const question = await quizQueryRepository.getQuestionById(questionId);
       expect(question.body).toEqual('How old are you?');
+      expect(question.correctAnswers).toContain('36');
       expect(question).toEqual(questionViewModel);
 
       const createQuestione2e = await createQuestion(
         httpServer,
         createQuestionDTO,
       );
-
       expect(createQuestione2e.status).toBe(201);
       expect(createQuestione2e.body).toEqual(questionViewModel);
+    });
+
+    it(`SA update question, testing Update Question Use Case and e2e`, async () => {
+      // const createUser = await creatingUser(httpServer, createUserDto);
+      // user = createUser.body;
+
+      const isUpdated = await commandBus.execute(
+        new UpdateQuestionCommand(questionId, updateQuestionDTO),
+      );
+
+      expect(isUpdated).toBe(true);
+      const question = await quizQueryRepository.getQuestionById(questionId);
+
+      expect(question.body).toEqual('How old are your father?');
+      expect(question.correctAnswers).toContain('56');
+      expect(question).toEqual(updatedQuestionViewModel);
+
+      const updateQuestione2e = await updatedQuestion(
+        httpServer,
+        questionId,
+        createQuestionDTO,
+      );
+
+      expect(updateQuestione2e.status).toBe(204);
     });
     //
     // it(`Banning blog`, async () => {

@@ -81,6 +81,7 @@ import { QuestionsEntity } from './api/entities/quiz/questionsEntity';
 import { CreateQuestionUseCase } from './api/superadmin/quiz/use-cases/create-question-use-case';
 import { QuizRepository } from './api/infrastructure/quiz/quiz.repository';
 import { QuizQueryRepository } from './api/infrastructure/quiz/quiz.query.repository';
+import { UpdateQuestionUseCase } from './api/superadmin/quiz/use-cases/update-question-use-case';
 
 const useCases = [
   BlogCreateUseCase,
@@ -114,6 +115,7 @@ const useCases = [
   CreateUserTransaction,
   CreateBlogTransaction,
   CreateQuestionUseCase,
+  UpdateQuestionUseCase,
 ];
 
 const entities = [

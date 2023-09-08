@@ -10,3 +10,14 @@ export const createQuestion = async (
     .auth('admin', 'qwerty')
     .send(createQuestionDto);
 };
+
+export const updatedQuestion = async (
+  httpServer,
+  id: string,
+  updateQuestionDTO: CreateQuestionDto,
+) => {
+  return request(httpServer)
+    .put(`/sa/quiz/questions/${id}`)
+    .auth('admin', 'qwerty')
+    .send(updateQuestionDTO);
+};

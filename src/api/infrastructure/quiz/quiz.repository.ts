@@ -12,4 +12,11 @@ export class QuizRepository {
   async saveQuestion(question: QuestionsEntity) {
     return this.questionsRepo.save(question);
   }
+
+  async getQuestionById(id: string) {
+    return this.questionsRepo
+      .createQueryBuilder('q')
+      .where('q.id = :id', { id: id })
+      .getOne();
+  }
 }
