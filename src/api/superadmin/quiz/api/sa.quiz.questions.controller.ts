@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   Param,
@@ -20,6 +21,7 @@ import { UpdateQuestionCommand } from '../use-cases/update-question-use-case';
 import { PublishQuestionDto } from '../dto/publishQuestionDto';
 import { PublishQuestionCommand } from '../use-cases/publish-question-use-case';
 import { QuestionQueryClass } from '../../../infrastructure/quiz/type/questionQueryClass';
+import { DeleteQuestionCommand } from '../use-cases/delete-question-use-case';
 
 @UseGuards(BasicAuthGuard)
 @Controller('sa/quiz/questions')
@@ -68,8 +70,16 @@ export class SAQuizQuestionsController {
 
   @Get()
   async getQuestions(@Query() query: QuestionQueryClass) {
-    const result = await this.quizQueryRepository.getQuestions(query);
-    //console.log(result);
-    return result;
+    return await this.quizQueryRepository.getQuestions(query);
+  }
+
+  @Delete(':id')
+  @HttpCode(204)
+  async deleteQuestion(@Param('id') id) {
+    const isDeleted = await this.commandBus.execute(
+      new DeleteQuestionCommand(id),
+    );
+    if (!isDeleted) return exceptionHandler(ResultCode.NotFound);
+    return;
   }
 }

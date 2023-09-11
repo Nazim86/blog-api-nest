@@ -11,6 +11,7 @@ import {
 import { appSettings } from '../../../src/app.settings';
 import {
   createQuestion,
+  deleteQuestion,
   getQuestions,
   publishQuestion,
   updatedQuestion,
@@ -62,7 +63,6 @@ describe('Super Admin quiz testing', () => {
   describe('Creating,updating, publishing, deleting,getting questions ', () => {
     //let user;
     let questionId;
-    const questionIds = [];
 
     it('should wipe all data in db', async () => {
       const response = await request(httpServer).delete('/testing/all-data');
@@ -209,10 +209,20 @@ describe('Super Admin quiz testing', () => {
         pageNumber: 3,
         pageSize: 4,
       });
-      console.log(questions.body.items);
+      questionId = questions.body.items[0].id; // I am getting this id for next test deleteQuestions
       expect(questions.status).toBe(200);
       expect(questions.body.items.length).toBe(1);
       expect(questions.body.items[0].body).toEqual('How old are you?0');
+    });
+
+    it(`SA delete question, integration test Delete Question Use Case and e2e`, async () => {
+      const isUpdated = await deleteQuestion(httpServer, questionId);
+
+      expect(isUpdated.status).toBe(204);
+
+      const question = await quizQueryRepository.getQuestionById(questionId);
+
+      expect(question).toBeNull();
     });
   });
 });

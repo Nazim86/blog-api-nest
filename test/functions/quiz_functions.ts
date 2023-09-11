@@ -41,3 +41,10 @@ export const getQuestions = async (httpServer, query?) => {
     .query(query)
     .send();
 };
+
+export const deleteQuestion = async (httpServer, id: string) => {
+  return request(httpServer)
+    .delete(`/sa/quiz/questions/${id}`)
+    .auth('admin', 'qwerty')
+    .send();
+};

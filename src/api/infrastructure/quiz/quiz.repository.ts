@@ -19,4 +19,15 @@ export class QuizRepository {
       .where('q.id = :id', { id: id })
       .getOne();
   }
+
+  async deleteQuestionById(id: string) {
+    const isDeleted = await this.questionsRepo
+      .createQueryBuilder()
+      .delete()
+      .from(QuestionsEntity)
+      .where('id = :id', { id: id })
+      .execute();
+
+    return isDeleted.affected === 1;
+  }
 }
