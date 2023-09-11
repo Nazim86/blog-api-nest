@@ -5,6 +5,18 @@ export const createQuestionDTO: CreateQuestionDto = {
   body: 'How old are you?',
   correctAnswers: ['36', 'thirty-six', 'thirty six'],
 };
+export const createQuestionDTO2: CreateQuestionDto = {
+  body: 'How old are your mom?',
+  correctAnswers: ['46', 'forty-six', 'forty six'],
+};
+export const createQuestionDTO3: CreateQuestionDto = {
+  body: 'How old are your sister?',
+  correctAnswers: ['30', 'thirty'],
+};
+export const createQuestionDTO4: CreateQuestionDto = {
+  body: 'How old are your brother?',
+  correctAnswers: ['20', 'twenty'],
+};
 
 export const updateQuestionDTO: CreateQuestionDto = {
   body: 'How old are your father?',

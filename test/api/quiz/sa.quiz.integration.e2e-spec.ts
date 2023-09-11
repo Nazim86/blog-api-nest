@@ -11,6 +11,7 @@ import {
 import { appSettings } from '../../../src/app.settings';
 import {
   createQuestion,
+  getQuestions,
   publishQuestion,
   updatedQuestion,
 } from '../../functions/quiz_functions';
@@ -26,6 +27,8 @@ import { CreateQuestionCommand } from '../../../src/api/superadmin/quiz/use-case
 import { QuizQueryRepository } from '../../../src/api/infrastructure/quiz/quiz.query.repository';
 import { UpdateQuestionCommand } from '../../../src/api/superadmin/quiz/use-cases/update-question-use-case';
 import { PublishQuestionCommand } from '../../../src/api/superadmin/quiz/use-cases/publish-question-use-case';
+import { PublishedStatusEnum } from '../../../src/enums/publishedStatus-enum';
+import { SortDirection } from '../../../src/enums/sort-direction.enum';
 
 describe('Super Admin quiz testing', () => {
   let app: INestApplication;
@@ -56,16 +59,17 @@ describe('Super Admin quiz testing', () => {
     await app.close();
   });
 
-  describe('Creating questions ', () => {
+  describe('Creating,updating, publishing, deleting,getting questions ', () => {
     //let user;
     let questionId;
+    const questionIds = [];
 
     it('should wipe all data in db', async () => {
       const response = await request(httpServer).delete('/testing/all-data');
       expect(response.status).toBe(204);
     });
 
-    it(`SA creates question, testing Create Question Use Case and e2e test`, async () => {
+    it(`SA creates question, integration Create Question Use Case and e2e test`, async () => {
       // const createUser = await creatingUser(httpServer, createUserDto);
       // user = createUser.body;
 
@@ -79,15 +83,15 @@ describe('Super Admin quiz testing', () => {
       expect(question.correctAnswers).toContain('36');
       expect(question).toEqual(questionViewModel);
 
-      const createQuestione2e = await createQuestion(
-        httpServer,
-        createQuestionDTO,
-      );
+      const createQuestione2e = await createQuestion(httpServer, {
+        ...createQuestionDTO,
+        body: 'How old are your grandmother?',
+      });
       expect(createQuestione2e.status).toBe(201);
       expect(createQuestione2e.body).toEqual(questionViewModel);
     });
 
-    it(`SA update question, testing Update Question Use Case and e2e`, async () => {
+    it(`SA update question, integration test Update Question Use Case and e2e`, async () => {
       // const createUser = await creatingUser(httpServer, createUserDto);
       // user = createUser.body;
 
@@ -105,13 +109,13 @@ describe('Super Admin quiz testing', () => {
       const updateQuestione2e = await updatedQuestion(
         httpServer,
         questionId,
-        createQuestionDTO,
+        updateQuestionDTO,
       );
 
       expect(updateQuestione2e.status).toBe(204);
     });
 
-    it(`SA publish question, testing publish Question Use Case and e2e`, async () => {
+    it(`SA publish question, integration test publish Question Use Case and e2e`, async () => {
       // const createUser = await creatingUser(httpServer, createUserDto);
       // user = createUser.body;
 
@@ -131,97 +135,84 @@ describe('Super Admin quiz testing', () => {
 
       expect(updateQuestione2e.status).toBe(204);
     });
-    //
-    // it(`Banning blog`, async () => {
-    //   const result = await request(app.getHttpServer())
-    //     .put(`/sa/blogs/${blog.id}/ban`)
-    //     .auth('admin', 'qwerty')
-    //     .send({
-    //       isBanned: true,
-    //     });
-    //   expect(result.status).toBe(200);
-    // });
-    //
-    // it(`Does not show banned blogs in public api`, async () => {
-    //   const result = await request(app.getHttpServer()).get(`/blogs`);
-    //   expect(result.status).toBe(200);
-    //   expect(result.body).toEqual(emptyBlogDataWithPagination);
-    // });
-    //
-    // it(`Does not show banned blogById in public api`, async () => {
-    //   const result = await request(app.getHttpServer()).get(
-    //     `/blogs/${blog.id}`,
-    //   );
-    //   expect(result.status).toBe(404);
-    // });
-    //
-    // it(`Super Admin get all (banned or unbanned) blogs with pagination`, async () => {
-    //   const result = await request(app.getHttpServer())
-    //     .get('/sa/blogs')
-    //     .auth('admin', 'qwerty');
-    //
-    //   console.log('blog in test', result.body);
-    //   expect(result.status).toBe(200);
-    //   expect(result.body).toEqual(createdBlogWithPaginationForSa);
-    // });
-    //
-    // it(`Unbanning blog`, async () => {
-    //   const result = await request(app.getHttpServer())
-    //     .put(`/sa/blogs/${blog.id}/ban`)
-    //     .auth('admin', 'qwerty')
-    //     .send({
-    //       isBanned: false,
-    //     });
-    //   expect(result.status).toBe(200);
-    // });
-    //
-    // it(`Must show unbanned blogs in public api`, async () => {
-    //   const result = await request(app.getHttpServer()).get(`/blogs`);
-    //   expect(result.status).toBe(200);
-    //   expect(result.body).toEqual(createdBlogWithPaginationForPublic);
-    // });
-    //
-    // it(`After deleting user BlogOwnerInfo.login should be null`, async () => {
-    //   await deleteUser(httpServer, user.id);
-    //
-    //   const result = await request(app.getHttpServer())
-    //     .get('/sa/blogs')
-    //     .auth('admin', 'qwerty');
-    //   expect(result.status).toBe(200);
-    //   expect(result.body).toEqual(blogWithBlogOwnerInfoNull);
-    // });
 
-    // it(`Creating user`, async () => {
-    //   const result = await creatingUser(httpServer, createUserDto);
-    //   expect(result.status).toBe(201);
-    //   user = result.body;
-    // });
-    //
-    // it(`Should bind blog with user`, async () => {
-    //   const result = await request(app.getHttpServer())
-    //     .put(`/sa/blogs/${blog.id}/bind-with-user/${user.id}`)
-    //     .auth('admin', 'qwerty');
-    //   expect(result.status).toBe(204);
-    // });
-    //
-    // it(`BlogOwnerInfo.login should be leonid`, async () => {
-    //   const result = await request(app.getHttpServer())
-    //     .get('/sa/blogs')
-    //     .auth('admin', 'qwerty');
-    //   expect(result.status).toBe(200);
-    //   expect(result.body).toEqual({
-    //     ...blogWithBlogOwnerInfoNull,
-    //     items: [
-    //       {
-    //         ...blogWithBlogOwnerInfoNull.items[0],
-    //         blogOwnerInfo: {
-    //           ...blogWithBlogOwnerInfoNull.items[0].blogOwnerInfo,
-    //           userLogin: 'leonid',
-    //           userId: expect.any(String),
-    //         },
-    //       },
-    //     ],
-    //   });
-    // });
+    it('should wipe all data in db', async () => {
+      const response = await request(httpServer).delete('/testing/all-data');
+      expect(response.status).toBe(204);
+    });
+
+    it(`SA gets all questions with filter and pagination with e2e test `, async () => {
+      // const createUser = await creatingUser(httpServer, createUserDto);
+      // user = createUser.body;
+      for (let i = 0; i <= 8; i++) {
+        createQuestionDTO.correctAnswers.push(i.toString());
+        const question = await createQuestion(httpServer, {
+          ...createQuestionDTO,
+          body: `How old are you?${i}`,
+        });
+
+        // making half of questions published true in order to test publishedStatus
+        if (i > 4) {
+          await publishQuestion(
+            httpServer,
+            question.body.id,
+            publishQuestionDTO,
+          );
+        }
+      }
+
+      let questions = await getQuestions(httpServer, {
+        publishedStatus: PublishedStatusEnum.published,
+      });
+      expect(questions.status).toBe(200);
+      expect(questions.body.items[0].published).toBe(true);
+      expect(questions.body.items[3].published).toBe(true);
+      expect(questions.body.items.length).toBe(4);
+
+      questions = await getQuestions(httpServer, {
+        publishedStatus: PublishedStatusEnum.notPublished,
+      });
+      expect(questions.status).toBe(200);
+      expect(questions.body.items[0].published).toBe(false);
+      expect(questions.body.items[4].published).toBe(false);
+      expect(questions.body.items.length).toBe(5);
+
+      questions = await getQuestions(httpServer, {
+        bodySearchTerm: '5',
+      });
+      expect(questions.status).toBe(200);
+      expect(questions.body.items[0].body).toEqual('How old are you?5');
+      expect(questions.body.items.length).toBe(1);
+
+      questions = await getQuestions(httpServer, {
+        sortBy: 'body',
+      });
+      expect(questions.status).toBe(200);
+      expect(questions.body.items.length).toBe(9);
+      expect(questions.body.items[0].body).toEqual('How old are you?8');
+      expect(questions.body.items[1].body).toEqual('How old are you?7');
+      expect(questions.body.items[7].body).toEqual('How old are you?1');
+      expect(questions.body.items[8].body).toEqual('How old are you?0');
+
+      questions = await getQuestions(httpServer, {
+        sortBy: 'body',
+        sortDirection: SortDirection.ASC,
+      });
+      expect(questions.status).toBe(200);
+      expect(questions.body.items.length).toBe(9);
+      expect(questions.body.items[0].body).toEqual('How old are you?0');
+      expect(questions.body.items[1].body).toEqual('How old are you?1');
+      expect(questions.body.items[7].body).toEqual('How old are you?7');
+      expect(questions.body.items[8].body).toEqual('How old are you?8');
+
+      questions = await getQuestions(httpServer, {
+        pageNumber: 3,
+        pageSize: 4,
+      });
+      console.log(questions.body.items);
+      expect(questions.status).toBe(200);
+      expect(questions.body.items.length).toBe(1);
+      expect(questions.body.items[0].body).toEqual('How old are you?0');
+    });
   });
 });

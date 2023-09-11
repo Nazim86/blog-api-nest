@@ -1,10 +1,12 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   Param,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { BasicAuthGuard } from '../../../public/auth/guards/basic-auth.guard';
@@ -17,6 +19,7 @@ import { ResultCode } from '../../../../exception-handler/result-code-enum';
 import { UpdateQuestionCommand } from '../use-cases/update-question-use-case';
 import { PublishQuestionDto } from '../dto/publishQuestionDto';
 import { PublishQuestionCommand } from '../use-cases/publish-question-use-case';
+import { QuestionQueryClass } from '../../../infrastructure/quiz/type/questionQueryClass';
 
 @UseGuards(BasicAuthGuard)
 @Controller('sa/quiz/questions')
@@ -61,5 +64,12 @@ export class SAQuizQuestionsController {
 
     if (!isUpdated) return exceptionHandler(ResultCode.BadRequest);
     return;
+  }
+
+  @Get()
+  async getQuestions(@Query() query: QuestionQueryClass) {
+    const result = await this.quizQueryRepository.getQuestions(query);
+    //console.log(result);
+    return result;
   }
 }

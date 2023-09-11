@@ -33,3 +33,11 @@ export const publishQuestion = async (
     .auth('admin', 'qwerty')
     .send(publishQuestionDTO);
 };
+
+export const getQuestions = async (httpServer, query?) => {
+  return request(httpServer)
+    .get(`/sa/quiz/questions`)
+    .auth('admin', 'qwerty')
+    .query(query)
+    .send();
+};
