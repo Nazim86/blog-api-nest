@@ -48,3 +48,10 @@ export const deleteQuestion = async (httpServer, id: string) => {
     .auth('admin', 'qwerty')
     .send();
 };
+
+export const connectUserToGame = async (httpServer, id: string) => {
+  return request(httpServer)
+    .post(`/pair-game-quiz/pairs/connection`)
+    .auth('admin', 'qwerty')
+    .send();
+};

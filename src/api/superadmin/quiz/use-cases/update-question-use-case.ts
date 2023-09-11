@@ -1,7 +1,7 @@
 import { CreateQuestionDto } from '../dto/createQuestionDto';
 import { CommandHandler } from '@nestjs/cqrs';
 import { QuestionsEntity } from '../../../entities/quiz/questionsEntity';
-import { QuizRepository } from '../../../infrastructure/quiz/quiz.repository';
+import { QuestionsRepository } from '../../../infrastructure/quiz/questions.repository';
 
 export class UpdateQuestionCommand {
   constructor(
@@ -12,7 +12,7 @@ export class UpdateQuestionCommand {
 
 @CommandHandler(UpdateQuestionCommand)
 export class UpdateQuestionUseCase {
-  constructor(private readonly quizRepository: QuizRepository) {}
+  constructor(private readonly quizRepository: QuestionsRepository) {}
 
   async execute(command: UpdateQuestionCommand) {
     const question: QuestionsEntity = await this.quizRepository.getQuestionById(

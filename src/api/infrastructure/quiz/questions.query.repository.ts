@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { QuestionQueryClass } from './type/questionQueryClass';
 import { PublishedStatusEnum } from '../../../enums/publishedStatus-enum';
 
-export class QuizQueryRepository {
+export class QuestionsQueryRepository {
   constructor(
     //private readonly dataSource: DataSource,
     @InjectRepository(QuestionsEntity)

@@ -25,7 +25,7 @@ import {
 } from '../../data/quiz-data';
 import { CommandBus } from '@nestjs/cqrs';
 import { CreateQuestionCommand } from '../../../src/api/superadmin/quiz/use-cases/create-question-use-case';
-import { QuizQueryRepository } from '../../../src/api/infrastructure/quiz/quiz.query.repository';
+import { QuestionsQueryRepository } from '../../../src/api/infrastructure/quiz/questions.query.repository';
 import { UpdateQuestionCommand } from '../../../src/api/superadmin/quiz/use-cases/update-question-use-case';
 import { PublishQuestionCommand } from '../../../src/api/superadmin/quiz/use-cases/publish-question-use-case';
 import { PublishedStatusEnum } from '../../../src/enums/publishedStatus-enum';
@@ -35,7 +35,7 @@ describe('Super Admin quiz testing', () => {
   let app: INestApplication;
   let httpServer;
   let commandBus: CommandBus;
-  let quizQueryRepository: QuizQueryRepository;
+  let quizQueryRepository: QuestionsQueryRepository;
 
   jest.setTimeout(60 * 1000);
   beforeAll(async () => {
@@ -52,7 +52,7 @@ describe('Super Admin quiz testing', () => {
     httpServer = app.getHttpServer();
 
     commandBus = app.get(CommandBus);
-    quizQueryRepository = app.get(QuizQueryRepository);
+    quizQueryRepository = app.get(QuestionsQueryRepository);
   });
 
   afterAll(async () => {

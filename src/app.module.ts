@@ -79,8 +79,8 @@ import { SAQuizQuestionsController } from './api/superadmin/quiz/api/sa.quiz.que
 import { AnswersEntity } from './api/entities/quiz/answers.entity';
 import { QuestionsEntity } from './api/entities/quiz/questionsEntity';
 import { CreateQuestionUseCase } from './api/superadmin/quiz/use-cases/create-question-use-case';
-import { QuizRepository } from './api/infrastructure/quiz/quiz.repository';
-import { QuizQueryRepository } from './api/infrastructure/quiz/quiz.query.repository';
+import { QuestionsRepository } from './api/infrastructure/quiz/questions.repository';
+import { QuestionsQueryRepository } from './api/infrastructure/quiz/questions.query.repository';
 import { UpdateQuestionUseCase } from './api/superadmin/quiz/use-cases/update-question-use-case';
 import { PublishQuestionUseCase } from './api/superadmin/quiz/use-cases/publish-question-use-case';
 import { DeleteQuestionUseCase } from './api/superadmin/quiz/use-cases/delete-question-use-case';
@@ -205,8 +205,8 @@ export const localConfigTypeOrm: TypeOrmModuleOptions = {
     JwtService,
     IsBlogExistConstraint,
     DeviceRepository,
-    QuizRepository,
-    QuizQueryRepository,
+    QuestionsRepository,
+    QuestionsQueryRepository,
     ...useCases,
   ],
   exports: [TypeOrmModule],

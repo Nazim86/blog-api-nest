@@ -1,18 +1,16 @@
 import { Repository } from 'typeorm';
 import { QuestionsEntity } from '../../entities/quiz/questionsEntity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { PlayersEntity } from '../../entities/quiz/players.entity';
 
-export class QuizRepository {
+export class QuestionsRepository {
   constructor(
     //private readonly dataSource: DataSource,
-    @InjectRepository(PlayersEntity)
+    @InjectRepository(QuestionsEntity)
     private readonly questionsRepo: Repository<QuestionsEntity>,
-    private readonly playersRepo: Repository<PlayersEntity>,
   ) {}
 
-  async savePlayer(player: PlayersEntity) {
-    return this.playersRepo.save(player);
+  async saveQuestion(question: QuestionsEntity) {
+    return this.questionsRepo.save(question);
   }
 
   async getQuestionById(id: string) {
