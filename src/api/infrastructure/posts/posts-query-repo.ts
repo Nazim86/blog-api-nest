@@ -89,7 +89,7 @@ export class PostsQueryRepo {
               .select(
                 `jsonb_agg(json_build_object('addedAt', to_char(
             agg."addedAt"::timestamp at time zone 'UTC',
-            'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"'), 'userId', cast(agg.id as varchar), 'login', agg.login)
+            'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"'), 'user', cast(agg.id as varchar), 'login', agg.login)
                  )`,
               )
               .from((qb) => {
@@ -112,6 +112,8 @@ export class PostsQueryRepo {
         .leftJoinAndSelect('u.banInfo', 'ub')
         .where('p.id = :postId', { postId: postId })
         .getRawOne();
+
+      console.log(post);
 
       if (!post) {
         return false;

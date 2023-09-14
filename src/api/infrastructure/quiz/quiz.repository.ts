@@ -1,35 +1,67 @@
 import { Repository } from 'typeorm';
-import { QuestionsEntity } from '../../entities/quiz/questionsEntity';
-import { InjectRepository } from '@nestjs/typeorm';
-import { PlayersEntity } from '../../entities/quiz/players.entity';
 
+import { GamePairEntity } from '../../entities/quiz/gamePair.entity';
+import { GameStatusEnum } from '../../../enums/game-status-enum';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Injectable } from '@nestjs/common';
+
+@Injectable()
 export class QuizRepository {
   constructor(
     //private readonly dataSource: DataSource,
-    @InjectRepository(PlayersEntity)
-    private readonly questionsRepo: Repository<QuestionsEntity>,
-    private readonly playersRepo: Repository<PlayersEntity>,
+    @InjectRepository(GamePairEntity)
+    private readonly gamePairRepo: Repository<GamePairEntity>,
   ) {}
 
-  async savePlayer(player: PlayersEntity) {
-    return this.playersRepo.save(player);
+  // async savePlayer(player: PlayersEntity) {
+  //   return this.playersRepo.save(player);
+  // }
+
+  async saveGamePair(gamePair: GamePairEntity): Promise<GamePairEntity> {
+    return this.gamePairRepo.save(gamePair);
   }
 
-  async getQuestionById(id: string) {
-    return this.questionsRepo
-      .createQueryBuilder('q')
-      .where('q.id = :id', { id: id })
+  // async getPlayerByUserId(userId: string) {
+  //   return this.playersRepo
+  //     .createQueryBuilder('p')
+  //     .leftJoinAndSelect('p.gamePair', 'gp')
+  //     .leftJoinAndSelect('p.answer', 'a')
+  //     .leftJoinAndSelect('p.user', 'u')
+  //     .where('u.id = :userId', { userId: userId })
+  //     .getOne();
+  // }
+
+  async getGamePairByUserId(userId: string): Promise<GamePairEntity> {
+    const result: GamePairEntity = await this.gamePairRepo
+      .createQueryBuilder('gp')
+      .leftJoinAndSelect('gp.player1', 'pl1')
+      .leftJoinAndSelect('gp.player2', 'pl2')
+      .leftJoinAndSelect('gp.questions', 'q')
+      .where('pl1.id = :userId', { userId: userId })
+      .orWhere('pl2.id = :userId', { userId: userId })
+      .getOne();
+
+    console.log(result);
+    return result;
+  }
+  async getGamePairById(id: string): Promise<GamePairEntity> {
+    return this.gamePairRepo
+      .createQueryBuilder('gp')
+      .leftJoinAndSelect('gp.player1', 'pl1')
+      .leftJoinAndSelect('gp.player2', 'pl2')
+      .leftJoinAndSelect('gp.questions', 'q')
+      .leftJoinAndSelect('gp.answers', 'a')
+
+      .where('gp.id = :id', { id: id })
       .getOne();
   }
-
-  async deleteQuestionById(id: string) {
-    const isDeleted = await this.questionsRepo
-      .createQueryBuilder()
-      .delete()
-      .from(QuestionsEntity)
-      .where('id = :id', { id: id })
-      .execute();
-
-    return isDeleted.affected === 1;
+  async getGamePairByStatus(status: GameStatusEnum): Promise<GamePairEntity> {
+    return this.gamePairRepo
+      .createQueryBuilder('gp')
+      .leftJoinAndSelect('gp.player1', 'pl1')
+      .leftJoinAndSelect('gp.player2', 'pl2')
+      .leftJoinAndSelect('gp.questions', 'q')
+      .where('gp.status = :status', { status: status })
+      .getOne();
   }
 }

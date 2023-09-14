@@ -1,6 +1,14 @@
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 import { AnswersEntity } from './answers.entity';
+import { GamePairEntity } from './gamePair.entity';
 
 @Entity({ name: 'questions' })
 export class QuestionsEntity {
@@ -24,4 +32,11 @@ export class QuestionsEntity {
 
   @OneToOne(() => AnswersEntity, (a) => a.question, { nullable: true })
   playerAnswer: AnswersEntity;
+
+  @ManyToMany(() => GamePairEntity, (gp) => gp.questions)
+  @JoinTable()
+  gamePairs: GamePairEntity[];
+
+  // @ManyToOne(() => GamePairEntity, (gp) => gp.question)
+  // gamePair: GamePairEntity;
 }

@@ -84,6 +84,12 @@ import { QuestionsQueryRepository } from './api/infrastructure/quiz/questions.qu
 import { UpdateQuestionUseCase } from './api/superadmin/quiz/use-cases/update-question-use-case';
 import { PublishQuestionUseCase } from './api/superadmin/quiz/use-cases/publish-question-use-case';
 import { DeleteQuestionUseCase } from './api/superadmin/quiz/use-cases/delete-question-use-case';
+import { PublicQuizController } from './api/public/quiz/public.quiz.controller';
+import { CreateGamePairUseCase } from './api/public/quiz/applications,use-cases/create.gamePair.use-case';
+import { UpdateGamePairUseCase } from './api/public/quiz/applications,use-cases/update.gamePair.use-case';
+import { QuizQueryRepository } from './api/infrastructure/quiz/quiz.query.repository';
+import { QuizRepository } from './api/infrastructure/quiz/quiz.repository';
+import { CreateConnectionService } from './api/public/quiz/applications,use-cases/create-connection.service';
 
 const useCases = [
   BlogCreateUseCase,
@@ -120,6 +126,8 @@ const useCases = [
   UpdateQuestionUseCase,
   PublishQuestionUseCase,
   DeleteQuestionUseCase,
+  CreateGamePairUseCase,
+  UpdateGamePairUseCase,
 ];
 
 const entities = [
@@ -190,6 +198,7 @@ export const localConfigTypeOrm: TypeOrmModuleOptions = {
     BloggerUsersController,
     SaBloggerBlogsController,
     SAQuizQuestionsController,
+    PublicQuizController,
   ],
   providers: [
     AppService,
@@ -207,6 +216,9 @@ export const localConfigTypeOrm: TypeOrmModuleOptions = {
     DeviceRepository,
     QuestionsRepository,
     QuestionsQueryRepository,
+    QuizRepository,
+    QuizQueryRepository,
+    CreateConnectionService,
     ...useCases,
   ],
   exports: [TypeOrmModule],

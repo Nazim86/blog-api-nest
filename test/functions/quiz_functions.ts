@@ -49,9 +49,9 @@ export const deleteQuestion = async (httpServer, id: string) => {
     .send();
 };
 
-export const connectUserToGame = async (httpServer, id: string) => {
+export const connectUserToGame = async (httpServer, accessToken: string) => {
   return request(httpServer)
     .post(`/pair-game-quiz/pairs/connection`)
-    .auth('admin', 'qwerty')
+    .auth(accessToken, { type: 'bearer' })
     .send();
 };

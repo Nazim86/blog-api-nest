@@ -9,18 +9,27 @@ export class QuestionsRepository {
     private readonly questionsRepo: Repository<QuestionsEntity>,
   ) {}
 
-  async saveQuestion(question: QuestionsEntity) {
+  async saveQuestion(question: QuestionsEntity): Promise<QuestionsEntity> {
     return this.questionsRepo.save(question);
   }
 
-  async getQuestionById(id: string) {
+  async getQuestionById(id: string): Promise<QuestionsEntity> {
     return this.questionsRepo
       .createQueryBuilder('q')
       .where('q.id = :id', { id: id })
       .getOne();
   }
 
-  async deleteQuestionById(id: string) {
+  async getRandomQuestions(count: number): Promise<QuestionsEntity[]> {
+    return this.questionsRepo
+      .createQueryBuilder()
+      .where('published = true')
+      .orderBy('RANDOM()') // Use RANDOM() for PostgreSQL
+      .limit(count)
+      .getMany();
+  }
+
+  async deleteQuestionById(id: string): Promise<boolean> {
     const isDeleted = await this.questionsRepo
       .createQueryBuilder()
       .delete()

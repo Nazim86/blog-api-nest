@@ -1,5 +1,6 @@
 import { CreateQuestionDto } from '../../src/api/superadmin/quiz/dto/createQuestionDto';
 import { PublishQuestionDto } from '../../src/api/superadmin/quiz/dto/publishQuestionDto';
+import { GameStatusEnum } from '../../src/enums/game-status-enum';
 
 export const createQuestionDTO: CreateQuestionDto = {
   body: 'How old are you?',
@@ -42,4 +43,86 @@ export const updatedQuestionViewModel = {
   published: expect.any(Boolean),
   createdAt: expect.any(String),
   updatedAt: expect.any(String),
+};
+
+export const gamePairViewModelWithPlayer1 = {
+  id: expect.any(String),
+  firstPlayerProgress: {
+    answers: [
+      {
+        questionId: expect.any(String),
+        answerStatus: expect.any(String),
+        addedAt: expect.any(String),
+      },
+    ],
+    player: {
+      id: expect.any(String),
+      login: expect.any(String),
+    },
+    score: expect.any(Number),
+  },
+  secondPlayerProgress: null,
+  questions: null,
+  status: GameStatusEnum.PendingSecondPlayer,
+  pairCreatedDate: expect.any(String),
+  startGameDate: null,
+  finishGameDate: null,
+};
+
+export const gamePairViewModelWithPlayer2 = {
+  id: expect.any(String),
+  firstPlayerProgress: {
+    answers: [
+      {
+        questionId: expect.any(String),
+        answerStatus: expect.any(String),
+        addedAt: expect.any(String),
+      },
+    ],
+    player: {
+      id: expect.any(String),
+      login: expect.any(String),
+    },
+    score: expect.any(Number),
+  },
+  secondPlayerProgress: {
+    answers: [
+      {
+        questionId: expect.any(String),
+        answerStatus: expect.any(String),
+        addedAt: expect.any(String),
+      },
+    ],
+    player: {
+      id: expect.any(String),
+      login: expect.any(String),
+    },
+    score: expect.any(Number),
+  },
+  questions: [
+    {
+      id: expect.any(String),
+      body: expect.any(String),
+    },
+    {
+      id: expect.any(String),
+      body: expect.any(String),
+    },
+    {
+      id: expect.any(String),
+      body: expect.any(String),
+    },
+    {
+      id: expect.any(String),
+      body: expect.any(String),
+    },
+    {
+      id: expect.any(String),
+      body: expect.any(String),
+    },
+  ],
+  status: GameStatusEnum.Active,
+  pairCreatedDate: expect.any(String),
+  startGameDate: expect.any(String),
+  finishGameDate: expect.any(String),
 };
