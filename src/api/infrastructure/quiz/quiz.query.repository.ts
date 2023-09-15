@@ -130,7 +130,7 @@ export class QuizQueryRepository {
       .getRawOne();
 
     //writeSql(gamePair);
-    console.log(gamePair);
+    //console.log(gamePair);
 
     return {
       id: gamePair.gp_id,

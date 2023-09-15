@@ -41,7 +41,7 @@ export class QuizRepository {
       .orWhere('pl2.id = :userId', { userId: userId })
       .getOne();
 
-    console.log(result);
+    //console.log(result);
     return result;
   }
   async getGamePairById(id: string): Promise<GamePairEntity> {

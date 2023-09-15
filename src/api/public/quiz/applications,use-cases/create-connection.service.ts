@@ -19,7 +19,7 @@ export class CreateConnectionService {
       userId,
     );
 
-    console.log(gamePairByUserId);
+    //console.log(gamePairByUserId);
 
     if (
       gamePairByUserId &&
@@ -45,7 +45,7 @@ export class CreateConnectionService {
       );
     }
 
-    return gamePair.id;
+    return { code: ResultCode.Success, data: gamePair.id };
 
     // const player = await this.playersRepository.getPlayerByUserId(userId);
     //

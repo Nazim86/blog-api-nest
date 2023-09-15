@@ -11,19 +11,26 @@ import {
   createQuestion,
   publishQuestion,
 } from '../../functions/quiz_functions';
-import { createQuestionDTO, publishQuestionDTO } from '../../data/quiz-data';
+import {
+  AnswerEntityModel,
+  createQuestionDTO,
+  publishQuestionDTO,
+} from '../../data/quiz-data';
 import { CommandBus } from '@nestjs/cqrs';
 import { QuestionsQueryRepository } from '../../../src/api/infrastructure/quiz/questions.query.repository';
 
 import { creatingUser, loginUser } from '../../functions/user_functions';
 import { createUserDto, loginDto } from '../../data/user-data';
 import { GameStatusEnum } from '../../../src/enums/game-status-enum';
+import { QuestionsRepository } from '../../../src/api/infrastructure/quiz/questions.repository';
+import { CreateAnswerCommand } from '../../../src/api/public/quiz/applications,use-cases/create.answer.use-case';
 
 describe('Super Admin quiz testing', () => {
   let app: INestApplication;
   let httpServer;
   let commandBus: CommandBus;
-  let quizQueryRepository: QuestionsQueryRepository;
+  let questionsQueryRepository: QuestionsQueryRepository;
+  let questionRepository: QuestionsRepository;
 
   jest.setTimeout(60 * 1000);
   beforeAll(async () => {
@@ -40,7 +47,8 @@ describe('Super Admin quiz testing', () => {
     httpServer = app.getHttpServer();
 
     commandBus = app.get(CommandBus);
-    quizQueryRepository = app.get(QuestionsQueryRepository);
+    questionsQueryRepository = app.get(QuestionsQueryRepository);
+    questionRepository = app.get(QuestionsRepository);
   });
 
   afterAll(async () => {
@@ -82,8 +90,6 @@ describe('Super Admin quiz testing', () => {
         accessTokens[0],
       );
 
-      console.log(gamePairWithPlayer1.body);
-
       expect(gamePairWithPlayer1.status).toBe(200);
       //expect(gamePairWithPlayer1.body).toEqual(gamePairViewModelWithPlayer1);
       expect(gamePairWithPlayer1.body.firstPlayerProgress.player.login).toEqual(
@@ -92,6 +98,7 @@ describe('Super Admin quiz testing', () => {
       expect(gamePairWithPlayer1.body.status).toEqual(
         GameStatusEnum.PendingSecondPlayer,
       );
+      expect(gamePairWithPlayer1.body.questions).toBe(null);
 
       // const player = await getGamePairByUserId(user.body.id);
     });
@@ -115,12 +122,12 @@ describe('Super Admin quiz testing', () => {
       }
     });
 
-    it(`Connecting second player`, async () => {
+    it(`Connecting second player and checking questions attached`, async () => {
       const gamePairWithPlayer2 = await connectUserToGame(
         httpServer,
         accessTokens[1],
       );
-      console.log(gamePairWithPlayer2.body);
+      //console.log(gamePairWithPlayer2.body);
       expect(gamePairWithPlayer2.status).toBe(200);
       //expect(gamePairWithPlayer2.body).toEqual(gamePairViewModelWithPlayer2);
       expect(gamePairWithPlayer2.body.firstPlayerProgress.player.login).toEqual(
@@ -130,6 +137,42 @@ describe('Super Admin quiz testing', () => {
         gamePairWithPlayer2.body.secondPlayerProgress.player.login,
       ).toEqual('leo1');
       expect(gamePairWithPlayer2.body.status).toEqual(GameStatusEnum.Active);
+
+      expect(gamePairWithPlayer2.body.questions.length).toBe(5);
+
+      //checking question published for first question
+      let question = await questionRepository.getQuestionById(
+        gamePairWithPlayer2.body.questions[0].id,
+      );
+      expect(question.published).toBe(true);
+
+      //checking question published for last question
+      question = await questionRepository.getQuestionById(
+        gamePairWithPlayer2.body.questions[4].id,
+      );
+      expect(question.published).toBe(true);
+    });
+
+    it(`Current user is already participating in active pair and status 403`, async () => {
+      const gamePairWithPlayer1 = await connectUserToGame(
+        httpServer,
+        accessTokens[0],
+      );
+      const gamePairWithPlayer2 = await connectUserToGame(
+        httpServer,
+        accessTokens[1],
+      );
+
+      expect(gamePairWithPlayer2.status).toBe(403);
+      expect(gamePairWithPlayer1.status).toBe(403);
+    });
+
+    it(`Answering questions and status 200`, async () => {
+      const answer = await commandBus.execute(
+        new CreateAnswerCommand(accessTokens[0], { answer: '56' }),
+      );
+
+      expect(answer).toEqual(AnswerEntityModel);
     });
   });
 });

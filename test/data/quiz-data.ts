@@ -126,3 +126,15 @@ export const gamePairViewModelWithPlayer2 = {
   startGameDate: expect.any(String),
   finishGameDate: expect.any(String),
 };
+
+export const AnswerEntityModel = {
+  id: expect.any(String),
+  answerStatus: expect.any(String),
+  addedAt: expect.any(String),
+  question: expect.any(String),
+  player: expect.any(String),
+  score: expect.any(Number),
+  gamePairs: expect.any(String),
+};
+
+export const createAnswerDto = { answer: expect.any(String) };

@@ -90,6 +90,7 @@ import { UpdateGamePairUseCase } from './api/public/quiz/applications,use-cases/
 import { QuizQueryRepository } from './api/infrastructure/quiz/quiz.query.repository';
 import { QuizRepository } from './api/infrastructure/quiz/quiz.repository';
 import { CreateConnectionService } from './api/public/quiz/applications,use-cases/create-connection.service';
+import { CreateAnswerUseCase } from './api/public/quiz/applications,use-cases/create.answer.use-case';
 
 const useCases = [
   BlogCreateUseCase,
@@ -128,6 +129,7 @@ const useCases = [
   DeleteQuestionUseCase,
   CreateGamePairUseCase,
   UpdateGamePairUseCase,
+  CreateAnswerUseCase,
 ];
 
 const entities = [
