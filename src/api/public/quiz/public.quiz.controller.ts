@@ -37,11 +37,13 @@ export class PublicQuizController {
     return result;
   }
 
-  @Post('connection')
+  @Post('my-current/answers')
   @HttpCode(200)
   async createAnswers(@UserId() userId, createAnswerDto: CreateAnswerDto) {
     const answerId = await this.commandBus.execute(
       new CreateAnswerCommand(userId, createAnswerDto),
     );
+
+    console.log(answerId);
   }
 }

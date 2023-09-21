@@ -1,7 +1,6 @@
 import {
   Column,
   Entity,
-  JoinColumn,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -15,7 +14,6 @@ import { Devices } from '../devices/devices.entity';
 import { Comments } from '../comments/comments.entity';
 import { Blogs } from '../blogs/blogs.entity';
 import { UsersBanByBlogger } from './usersBanByBlogger.entity';
-import { PlayersEntity } from '../quiz/players.entity';
 
 @Entity({ name: 'users' })
 export class Users {
@@ -76,7 +74,7 @@ export class Users {
   })
   usersBanByBlogger: UsersBanByBlogger;
 
-  @OneToOne(() => PlayersEntity, (p) => p.user)
-  @JoinColumn()
-  player: PlayersEntity;
+  // @OneToOne(() => PlayersEntity, (p) => p.user)
+  // @JoinColumn()
+  // player: PlayersEntity;
 }

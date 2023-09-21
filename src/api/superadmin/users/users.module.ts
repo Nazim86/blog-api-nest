@@ -12,8 +12,6 @@ import { EmailConfirmation } from '../../entities/users/email-confirmation';
 import { PasswordRecovery } from '../../entities/users/password-recovery';
 import { UsersBanByBlogger } from '../../entities/users/usersBanByBlogger.entity';
 import { BlogBanInfo } from '../../entities/blogs/blogBanInfo.entity';
-import { QuizRepository } from '../../infrastructure/quiz/quiz.repository';
-import { PlayersEntity } from '../../entities/quiz/players.entity';
 
 @Module({
   imports: [

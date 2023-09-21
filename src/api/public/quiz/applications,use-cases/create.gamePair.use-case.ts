@@ -1,8 +1,8 @@
-import { CommandBus, CommandHandler } from '@nestjs/cqrs';
+import { CommandHandler } from '@nestjs/cqrs';
 import { QuizRepository } from '../../../infrastructure/quiz/quiz.repository';
 import { GamePairEntity } from '../../../entities/quiz/gamePair.entity';
-import { UsersRepository } from '../../../infrastructure/users/users.repository';
 import { GameStatusEnum } from '../../../../enums/game-status-enum';
+import { UsersRepository } from '../../../infrastructure/users/users.repository';
 
 export class CreateGamePairCommand {
   constructor(public userId: string) {}
@@ -12,15 +12,15 @@ export class CreateGamePairCommand {
 export class CreateGamePairUseCase {
   constructor(
     private readonly quizRepository: QuizRepository,
-    private commandBus: CommandBus,
     private readonly usersRepository: UsersRepository,
   ) {}
 
   async execute(command: CreateGamePairCommand) {
-    const user = await this.usersRepository.findUserById(command.userId);
+    const player = await this.usersRepository.findUserById(command.userId);
+    //const player = await this.quizRepository.getPlayerByUserId(command.userId);
 
     const gamePair = new GamePairEntity();
-    gamePair.player1 = user;
+    gamePair.player1 = player;
     gamePair.pairCreatedDate = new Date().toISOString();
     gamePair.status = GameStatusEnum.PendingSecondPlayer;
 

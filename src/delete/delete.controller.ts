@@ -9,6 +9,9 @@ export class DeleteController {
   @Delete()
   @HttpCode(204)
   async deleteRoutes() {
+    await this.dataSource.query(`Delete from public.answers`);
+    await this.dataSource.query(`Delete from public.questions`);
+    await this.dataSource.query(`Delete from public.game_pair`);
     await this.dataSource.query(`Delete from public.users`);
     await this.dataSource.query(`Delete from public.devices`);
     await this.dataSource.query(`Delete from public.post_like`);
@@ -22,10 +25,7 @@ export class DeleteController {
     await this.dataSource.query(`Delete from public.comments`);
     await this.dataSource.query(`Delete from public.post_like`);
     await this.dataSource.query(`Delete from public.users_ban_by_blogger`);
-    await this.dataSource.query(`Delete from public.questions`);
-    await this.dataSource.query(`Delete from public.game_pair`);
-    await this.dataSource.query(`Delete from public.answers`);
-    await this.dataSource.query(`Delete from public.players`);
+    //await this.dataSource.query(`Delete from public.players`);
 
     return;
   }

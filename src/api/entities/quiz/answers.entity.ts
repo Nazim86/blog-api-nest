@@ -5,7 +5,6 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { QuestionsEntity } from './questionsEntity';
@@ -24,18 +23,20 @@ export class AnswersEntity {
   @Column({ type: 'varchar', nullable: true })
   addedAt: string;
 
-  @OneToOne(() => QuestionsEntity, (q) => q.playerAnswer)
+  @ManyToOne(() => QuestionsEntity, (q) => q.playerAnswer)
   @JoinColumn()
   question: QuestionsEntity;
 
-  @ManyToOne(() => Users)
+  @ManyToOne(() => Users, { onDelete: 'CASCADE' })
   @JoinColumn()
   player: Users;
 
   @Column({ type: 'integer', default: 0 })
   score: number;
 
-  @ManyToMany(() => GamePairEntity, (gp) => gp.answers)
+  @ManyToMany(() => GamePairEntity, (gp) => gp.answers, {
+    onDelete: 'CASCADE',
+  })
   @JoinTable()
   gamePairs: GamePairEntity;
 }

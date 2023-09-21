@@ -73,7 +73,6 @@ import { BlogBanInfo } from './api/entities/blogs/blogBanInfo.entity';
 import { CreateUserTransaction } from './api/superadmin/users/application,use-cases/createUserTransaction';
 import { CreateBlogTransaction } from './api/blogger/application,use-cases/createBlogTransaction';
 import { SaBloggerBlogsController } from './api/superadmin/blogs/sa.blogger.blogs.controller';
-import { PlayersEntity } from './api/entities/quiz/players.entity';
 import { GamePairEntity } from './api/entities/quiz/gamePair.entity';
 import { SAQuizQuestionsController } from './api/superadmin/quiz/api/sa.quiz.questions.controller';
 import { AnswersEntity } from './api/entities/quiz/answers.entity';
@@ -145,7 +144,6 @@ const entities = [
   Blogs,
   UsersBanByBlogger,
   BlogBanInfo,
-  PlayersEntity,
   GamePairEntity,
   AnswersEntity,
   QuestionsEntity,
@@ -171,8 +169,8 @@ export const localConfigTypeOrm: TypeOrmModuleOptions = {
   username: 'postgres',
   password: 'sa',
   database: 'blog-api-nest-rawSql',
-  autoLoadEntities: false,
-  synchronize: false,
+  autoLoadEntities: true,
+  synchronize: true,
 };
 
 @Module({

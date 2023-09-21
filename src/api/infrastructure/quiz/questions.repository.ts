@@ -39,4 +39,18 @@ export class QuestionsRepository {
 
     return isDeleted.affected === 1;
   }
+
+  // async getQuestionsByGamePairAndUserId(
+  //   gamePairId: string,
+  //   userId: string,
+  // ): Promise<QuestionsEntity[]> {
+  //   return this.questionsRepo
+  //     .createQueryBuilder('q')
+  //     .leftJoinAndSelect('q.gamePairs', 'gp')
+  //     .leftJoinAndSelect('gp.answers', 'a')
+  //     .leftJoinAndSelect('a.player', 'pl')
+  //     .where('gp.id = :gamePairId', { gamePairId: gamePairId })
+  //     .andWhere('pl.id = :userId', { userId: userId })
+  //     .getRawMany();
+  // }
 }

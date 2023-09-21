@@ -11,11 +11,7 @@ import {
   createQuestion,
   publishQuestion,
 } from '../../functions/quiz_functions';
-import {
-  AnswerEntityModel,
-  createQuestionDTO,
-  publishQuestionDTO,
-} from '../../data/quiz-data';
+import { createQuestionDTO, publishQuestionDTO } from '../../data/quiz-data';
 import { CommandBus } from '@nestjs/cqrs';
 import { QuestionsQueryRepository } from '../../../src/api/infrastructure/quiz/questions.query.repository';
 
@@ -24,9 +20,11 @@ import { createUserDto, loginDto } from '../../data/user-data';
 import { GameStatusEnum } from '../../../src/enums/game-status-enum';
 import { QuestionsRepository } from '../../../src/api/infrastructure/quiz/questions.repository';
 import { CreateAnswerCommand } from '../../../src/api/public/quiz/applications,use-cases/create.answer.use-case';
+import { AnswersEnum } from '../../../src/enums/answers-enum';
 
 describe('Super Admin quiz testing', () => {
   let app: INestApplication;
+  //let createAnswerUseCase: CreateAnswerUseCase;
   let httpServer;
   let commandBus: CommandBus;
   let questionsQueryRepository: QuestionsQueryRepository;
@@ -49,6 +47,7 @@ describe('Super Admin quiz testing', () => {
     commandBus = app.get(CommandBus);
     questionsQueryRepository = app.get(QuestionsQueryRepository);
     questionRepository = app.get(QuestionsRepository);
+    //createAnswerUseCase = app.get(CreateAnswerUseCase);
   });
 
   afterAll(async () => {
@@ -57,7 +56,7 @@ describe('Super Admin quiz testing', () => {
 
   describe('Game connection, answers, return unfinished tests,getting game by id ', () => {
     //let user;
-    let questionId;
+
     const users = [];
     const accessTokens = [];
 
@@ -105,11 +104,14 @@ describe('Super Admin quiz testing', () => {
 
     it(`Creating 10 questions and publishing 5 of them `, async () => {
       for (let i = 0; i <= 9; i++) {
+        createQuestionDTO.correctAnswers.pop();
         createQuestionDTO.correctAnswers.push(i.toString());
         const question = await createQuestion(httpServer, {
           ...createQuestionDTO,
           body: `How old are you?${i}`,
         });
+
+        //console.log(question.body);
 
         // making half of questions published true in order to test publishedStatus
         if (i > 4) {
@@ -168,11 +170,27 @@ describe('Super Admin quiz testing', () => {
     });
 
     it(`Answering questions and status 200`, async () => {
-      const answer = await commandBus.execute(
-        new CreateAnswerCommand(accessTokens[0], { answer: '56' }),
-      );
+      for (let i = 0; i < 5; i++) {
+        // console.log(`${i + 5}`, typeof `${i + 5}`);
+        const answerDto = {
+          answer: `${i + 5}`,
+        };
 
-      expect(answer).toEqual(AnswerEntityModel);
+        const answerPl1 = await commandBus.execute(
+          new CreateAnswerCommand(users[0].id, answerDto),
+        );
+        const answerPl2 = await commandBus.execute(
+          new CreateAnswerCommand(users[1].id, answerDto),
+        );
+
+        expect(answerPl1.player.login).toEqual('leo0');
+        expect(answerPl1.gamePairs.status).toEqual(GameStatusEnum.Active);
+        expect(answerPl1.answerStatus).toEqual(AnswersEnum.Correct);
+
+        expect(answerPl2.player.login).toEqual('leo1');
+        expect(answerPl2.gamePairs.status).toEqual(GameStatusEnum.Active);
+        expect(answerPl2.answerStatus).toEqual(AnswersEnum.Correct);
+      }
     });
   });
 });

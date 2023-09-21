@@ -36,18 +36,15 @@ export class GamePairEntity {
   @JoinColumn()
   player2: Users;
 
-  @ManyToMany(() => QuestionsEntity, (q) => q.gamePairs, {
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
+  @ManyToMany(() => QuestionsEntity, (q) => q.gamePairs)
   questions: QuestionsEntity[];
 
   @ManyToMany(() => AnswersEntity, (a) => a.gamePairs)
   answers: AnswersEntity[];
-
-  // @Column({ type: 'number', default: 0 })
-  // player1Score;
-  //
-  // @Column({ type: 'number', default: 0 })
-  // player2Score;
 }
+
+// @Column({ type: 'number', default: 0 })
+// player1Score;
+//
+// @Column({ type: 'number', default: 0 })
+// player2Score;

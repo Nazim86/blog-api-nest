@@ -4,7 +4,7 @@ import { GameStatusEnum } from '../../src/enums/game-status-enum';
 
 export const createQuestionDTO: CreateQuestionDto = {
   body: 'How old are you?',
-  correctAnswers: ['36', 'thirty-six', 'thirty six'],
+  correctAnswers: ['thirty-six', 'thirty six'],
 };
 export const createQuestionDTO2: CreateQuestionDto = {
   body: 'How old are your mom?',

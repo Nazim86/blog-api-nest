@@ -1,14 +1,17 @@
 import {
   Column,
   Entity,
+  JoinColumn,
   JoinTable,
   ManyToMany,
+  ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
 import { AnswersEntity } from './answers.entity';
 import { GamePairEntity } from './gamePair.entity';
+import { Users } from '../users/user.entity';
 
 @Entity({ name: 'questions' })
 export class QuestionsEntity {
@@ -30,10 +33,17 @@ export class QuestionsEntity {
   @Column({ type: 'varchar', nullable: true })
   updatedAt: string;
 
-  @OneToOne(() => AnswersEntity, (a) => a.question, { nullable: true })
-  playerAnswer: AnswersEntity;
+  @ManyToOne(() => Users, { onDelete: 'CASCADE' })
+  @JoinColumn()
+  player: Users;
 
-  @ManyToMany(() => GamePairEntity, (gp) => gp.questions)
+  @OneToOne(() => AnswersEntity, (a) => a.question, { nullable: true })
+  playerAnswer: AnswersEntity[];
+
+  @ManyToMany(() => GamePairEntity, (gp) => gp.questions, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   @JoinTable()
   gamePairs: GamePairEntity[];
 
