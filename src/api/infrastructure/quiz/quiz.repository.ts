@@ -93,6 +93,7 @@ export class QuizRepository {
       //.where('(pl1.id = :userId or pl2.id = :userId)', { userId })
       // .orWhere('pl2.id = :userId', { userId: userId })
       .andWhere('gp.id = :gamePairId', { gamePairId: gamePairId })
+      .addOrderBy('q.createdAt', 'ASC')
       .getMany();
 
     // const result2 = this.answerRepo

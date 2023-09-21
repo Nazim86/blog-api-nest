@@ -80,7 +80,7 @@ export class CreateAnswerUseCase {
 
     const newAnswer = await this.quizRepository.saveAnswer(answer);
 
-    console.log(newAnswer);
+    //console.log(newAnswer);
 
     gamePair.status = gameStatus;
     gamePair.answers.push(newAnswer);

@@ -53,7 +53,6 @@ describe('Super Admin quiz testing', () => {
     httpServer = app.getHttpServer();
 
     commandBus = app.get(CommandBus);
-    questionsQueryRepository = app.get(QuestionsQueryRepository);
     questionRepository = app.get(QuestionsRepository);
     usersRepository = app.get(UsersRepository);
     quizRepository = app.get(QuizRepository);
@@ -197,7 +196,7 @@ describe('Super Admin quiz testing', () => {
       for (let i = 0; i < 5; i++) {
         // console.log(`${i + 5}`, typeof `${i + 5}`);
         const answerDto = {
-          answer: `${9 - i}`,
+          answer: `${i + 5}`,
         };
 
         const answerPl1 = await commandBus.execute(
