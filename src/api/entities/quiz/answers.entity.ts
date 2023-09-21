@@ -34,6 +34,9 @@ export class AnswersEntity {
   @Column({ type: 'integer', default: 0 })
   score: number;
 
+  // @Column({ type: 'varchar', nullable: true })
+  // playerAnswers: string[];
+
   @ManyToMany(() => GamePairEntity, (gp) => gp.answers, {
     onDelete: 'CASCADE',
   })

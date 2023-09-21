@@ -23,10 +23,10 @@ export class CreateAnswerUseCase {
     //   command.userId,
     // );
 
-    console.log(
-      command.createAnswerDto.answer,
-      typeof command.createAnswerDto.answer,
-    );
+    // console.log(
+    //   command.createAnswerDto.answer,
+    //   typeof command.createAnswerDto.answer,
+    // );
 
     const player = await this.usersRepository.findUserById(command.userId);
 
@@ -42,9 +42,6 @@ export class CreateAnswerUseCase {
         gamePair.id,
       );
 
-    console.log('answersLength', answers.length);
-    console.log('asnwers', answers);
-
     if (
       (gamePair && gamePair.status !== GameStatusEnum.Active) ||
       (gamePair.status === GameStatusEnum.Active && answers.length === 5)
@@ -58,6 +55,11 @@ export class CreateAnswerUseCase {
     }
 
     let answerStatus;
+
+    console.log('userid', player.id);
+    console.log('answersLength', answers.length);
+    console.log('questions', gamePair.questions[answers.length]);
+    console.log('playerAnswer', command.createAnswerDto.answer);
 
     if (
       gamePair.questions[answers.length].correctAnswers.includes(

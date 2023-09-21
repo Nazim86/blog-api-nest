@@ -25,13 +25,14 @@ import { GamePairEntity } from '../../../src/api/entities/quiz/gamePair.entity';
 import { QuizRepository } from '../../../src/api/infrastructure/quiz/quiz.repository';
 import { DataSource } from 'typeorm';
 import { QuestionsEntity } from '../../../src/api/entities/quiz/questionsEntity';
+import { CreateAnswerCommand } from '../../../src/api/public/quiz/applications,use-cases/create.answer.use-case';
+import { AnswersEnum } from '../../../src/enums/answers-enum';
 
 describe('Super Admin quiz testing', () => {
   let app: INestApplication;
   //let createAnswerUseCase: CreateAnswerUseCase;
   let httpServer;
   let commandBus: CommandBus;
-  let questionsQueryRepository: QuestionsQueryRepository;
   let questionRepository: QuestionsRepository;
   let usersRepository;
   let quizRepository;
@@ -142,37 +143,28 @@ describe('Super Admin quiz testing', () => {
           GameStatusEnum.PendingSecondPlayer,
         );
 
+      const fiveQuestions = await dataSource
+        .getRepository(QuestionsEntity)
+        .createQueryBuilder('q')
+        .where('q.published = true')
+        .orderBy('q.createdAt', 'ASC')
+        .limit(5)
+        .getMany();
+
       const gamePair = gamePairByStatus;
       gamePair.player2 = player2;
       gamePair.startGameDate = new Date().toISOString();
-      gamePair.questions = await dataSource
-        .getRepository(QuestionsEntity)
-        .createQueryBuilder('q')
-        .where('published = true')
-        .limit(5)
-        .getMany();
+      gamePair.questions = fiveQuestions;
       gamePair.status = GameStatusEnum.Active;
 
       const updatedGamePair = await quizRepository.saveGamePair(gamePair);
+
+      console.log(updatedGamePair.questions);
 
       expect(updatedGamePair.player1.login).toEqual('leo0');
       expect(updatedGamePair.player2.login).toEqual('leo1');
       expect(updatedGamePair.status).toEqual(GameStatusEnum.Active);
       expect(updatedGamePair.questions.length).toBe(5);
-      // const gamePairWithPlayer2 = await connectUserToGame(
-      //   httpServer,
-      //   accessTokens[1],
-      // );
-      //console.log(gamePairWithPlayer2.body);
-      //expect(gamePairWithPlayer2.status).toBe(200);
-      //expect(gamePairWithPlayer2.body).toEqual(gamePairViewModelWithPlayer2);
-      //expect(gamePairWithPlayer2.body.firstPlayerProgress.player.login).toEqual('leo0',);
-      // expect(
-      //   gamePairWithPlayer2.body.secondPlayerProgress.player.login,
-      // ).toEqual('leo1');
-      // expect(gamePairWithPlayer2.body.status).toEqual(GameStatusEnum.Active);
-      //
-      // expect(gamePairWithPlayer2.body.questions.length).toBe(5);
 
       // checking question published for first question
       let question = await questionRepository.getQuestionById(
@@ -187,42 +179,48 @@ describe('Super Admin quiz testing', () => {
       expect(question.published).toBe(true);
     });
 
-    // it(`Current user is already participating in active pair and status 403`, async () => {
-    //   const gamePairWithPlayer1 = await connectUserToGame(
-    //     httpServer,
-    //     accessTokens[0],
-    //   );
-    //   const gamePairWithPlayer2 = await connectUserToGame(
-    //     httpServer,
-    //     accessTokens[1],
-    //   );
-    //
-    //   expect(gamePairWithPlayer2.status).toBe(403);
-    //   expect(gamePairWithPlayer1.status).toBe(403);
-    // });
-    //
-    // it(`Answering questions and status 200`, async () => {
-    //   for (let i = 0; i < 5; i++) {
-    //     // console.log(`${i + 5}`, typeof `${i + 5}`);
-    //     const answerDto = {
-    //       answer: `${i + 5}`,
-    //     };
-    //
-    //     const answerPl1 = await commandBus.execute(
-    //       new CreateAnswerCommand(users[0].id, answerDto),
-    //     );
-    //     const answerPl2 = await commandBus.execute(
-    //       new CreateAnswerCommand(users[1].id, answerDto),
-    //     );
-    //
-    //     expect(answerPl1.player.login).toEqual('leo0');
-    //     expect(answerPl1.gamePairs.status).toEqual(GameStatusEnum.Active);
-    //     expect(answerPl1.answerStatus).toEqual(AnswersEnum.Correct);
-    //
-    //     expect(answerPl2.player.login).toEqual('leo1');
-    //     expect(answerPl2.gamePairs.status).toEqual(GameStatusEnum.Active);
-    //     expect(answerPl2.answerStatus).toEqual(AnswersEnum.Correct);
-    //   }
-    // });
+    it(`Current user is already participating in active pair and status 403`, async () => {
+      const gamePairWithPlayer1 = await connectUserToGame(
+        httpServer,
+        accessTokens[0],
+      );
+      const gamePairWithPlayer2 = await connectUserToGame(
+        httpServer,
+        accessTokens[1],
+      );
+
+      expect(gamePairWithPlayer2.status).toBe(403);
+      expect(gamePairWithPlayer1.status).toBe(403);
+    });
+
+    it(`Answering questions and status 200`, async () => {
+      for (let i = 0; i < 5; i++) {
+        // console.log(`${i + 5}`, typeof `${i + 5}`);
+        const answerDto = {
+          answer: `${9 - i}`,
+        };
+
+        const answerPl1 = await commandBus.execute(
+          new CreateAnswerCommand(users[0].id, answerDto),
+        );
+        const answerPl2 = await commandBus.execute(
+          new CreateAnswerCommand(users[1].id, answerDto),
+        );
+
+        expect(answerPl1.player.login).toEqual('leo0');
+        expect(answerPl1.gamePairs.status).toEqual(GameStatusEnum.Active);
+        expect(answerPl1.answerStatus).toEqual(AnswersEnum.Correct);
+
+        if (i === 4) {
+          expect(answerPl2.gamePairs.status).toEqual(GameStatusEnum.Finished);
+        } else {
+          expect(answerPl2.gamePairs.status).toEqual(GameStatusEnum.Active);
+        }
+
+        expect(answerPl2.player.login).toEqual('leo1');
+
+        expect(answerPl2.answerStatus).toEqual(AnswersEnum.Correct);
+      }
+    });
   });
 });

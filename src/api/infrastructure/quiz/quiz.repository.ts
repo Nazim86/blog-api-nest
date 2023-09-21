@@ -6,7 +6,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable } from '@nestjs/common';
 import { AnswersEntity } from '../../entities/quiz/answers.entity';
 import { UserId } from '../../../decorators/UserId';
-import { writeSql } from '../../../common/write_to_file';
 
 @Injectable()
 export class QuizRepository {
@@ -86,28 +85,30 @@ export class QuizRepository {
       .createQueryBuilder('a')
       //.leftJoinAndSelect('a.player', 'pl')
       .leftJoinAndSelect('a.gamePairs', 'gp')
-      .leftJoinAndSelect('gp.player1', 'pl1')
-      .leftJoinAndSelect('gp.player2', 'pl2')
+      .leftJoinAndSelect('a.player', 'pl')
+      //.leftJoinAndSelect('gp.player1', 'pl1')
+      //.leftJoinAndSelect('gp.player2', 'pl2')
       .leftJoinAndSelect('gp.questions', 'q')
-      .where('pl1.id = :userId', { userId: userId })
-      .orWhere('pl2.id = :userId', { userId: userId })
+      .where('pl.id = :userId', { userId })
+      //.where('(pl1.id = :userId or pl2.id = :userId)', { userId })
+      // .orWhere('pl2.id = :userId', { userId: userId })
       .andWhere('gp.id = :gamePairId', { gamePairId: gamePairId })
       .getMany();
 
-    const result2 = this.answerRepo
-      .createQueryBuilder('a')
-      //.leftJoinAndSelect('a.player', 'pl')
-      .leftJoinAndSelect('a.gamePairs', 'gp')
-      .leftJoinAndSelect('gp.player1', 'pl1')
-      .leftJoinAndSelect('gp.player2', 'pl2')
-      .leftJoinAndSelect('gp.questions', 'q')
-      .where('pl1.id = :userId', { userId: userId })
-      .orWhere('pl2.id = :userId', { userId: userId })
-      .andWhere('gp.id = :gamePairId', { gamePairId: gamePairId })
-      .getSql();
-
-    writeSql(result2);
-    console.log(result);
+    // const result2 = this.answerRepo
+    //   .createQueryBuilder('a')
+    //   //.leftJoinAndSelect('a.player', 'pl')
+    //   .leftJoinAndSelect('a.gamePairs', 'gp')
+    //   .leftJoinAndSelect('gp.player1', 'pl1')
+    //   .leftJoinAndSelect('gp.player2', 'pl2')
+    //   .leftJoinAndSelect('gp.questions', 'q')
+    //   .where('pl1.id = :userId', { userId: userId })
+    //   .orWhere('pl2.id = :userId', { userId: userId })
+    //   .andWhere('gp.id = :gamePairId', { gamePairId: gamePairId })
+    //   .getSql();
+    //
+    // writeSql(result2);
+    // console.log(result);
     return result;
 
     // .andWhere('gp.status = :gamePairStatus', {
@@ -115,18 +116,18 @@ export class QuizRepository {
     // });
   }
 
-  async getAnswerById(id: string) {
-    return this.answerRepo
-      .createQueryBuilder('a')
-      .leftJoinAndSelect('a.player', 'pl')
-      .leftJoinAndSelect('a.gamePairs', 'gp')
-      .leftJoinAndSelect('a.questions', 'q')
-      .where('pl.id = :userId', { userId: UserId })
-      .getMany();
-    // .andWhere('gp.status = :gamePairStatus', {
-    //   gamePairStatus: GameStatusEnum.Active,
-    // });
-  }
+  // async getAnswerById(id: string) {
+  //   return this.answerRepo
+  //     .createQueryBuilder('a')
+  //     .leftJoinAndSelect('a.player', 'pl')
+  //     .leftJoinAndSelect('a.gamePairs', 'gp')
+  //     .leftJoinAndSelect('a.questions', 'q')
+  //     .where('pl.id = :userId', { userId: UserId })
+  //     .getMany();
+  //   // .andWhere('gp.status = :gamePairStatus', {
+  //   //   gamePairStatus: GameStatusEnum.Active,
+  //   // });
+  // }
 
   // async getPlayerByUserId(userId: string) {
   //   try {
