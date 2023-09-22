@@ -2,7 +2,6 @@ import { Repository } from 'typeorm';
 import { QuestionsEntity } from '../../entities/quiz/questionsEntity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GamePairEntity } from '../../entities/quiz/gamePair.entity';
-import { GameStatusEnum } from '../../../enums/game-status-enum';
 import { AnswersEntity } from '../../entities/quiz/answers.entity';
 import { AnswersEnum } from '../../../enums/answers-enum';
 
@@ -15,9 +14,17 @@ export class QuizQueryRepository {
     private readonly answersRepo: Repository<AnswersEntity>,
   ) {}
 
-  // async getAnswerById(answerId: string) {
-  //   return this.answersRepo.createQueryBuilder('a')
-  // }
+  async getAnswerById(answerId: string) {
+    const answer = await this.answersRepo
+      .createQueryBuilder('a')
+      .where('a.id = :id', { id: answerId })
+      .getOne();
+    return {
+      questionId: answer.question.id,
+      answerStatus: answer.answerStatus,
+      addedAt: answer.addedAt,
+    };
+  }
 
   // async getPlayerByUserId(userId: string) {
   //   return this.playersRepo

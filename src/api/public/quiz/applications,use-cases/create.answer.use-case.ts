@@ -48,8 +48,6 @@ export class CreateAnswerUseCase {
     )
       return { code: ResultCode.Forbidden };
 
-    let gameStatus;
-
     let answerStatus;
 
     console.log('userid', player.id);
@@ -79,8 +77,7 @@ export class CreateAnswerUseCase {
     //console.log(newAnswer);
 
     if (answers.length === 4 && gamePair.answers.length === 9) {
-      gameStatus = GameStatusEnum.Finished;
-      gamePair.status = gameStatus;
+      gamePair.status = GameStatusEnum.Finished;
     }
 
     gamePair.answers.push(newAnswer);
@@ -89,11 +86,7 @@ export class CreateAnswerUseCase {
 
     return {
       code: ResultCode.Success,
-      data: {
-        questionId: answer.question.id,
-        answerStatus: answer.answerStatus,
-        addedAt: answer.addedAt,
-      },
+      data: newAnswer.id,
     };
   }
 }

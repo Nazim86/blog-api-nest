@@ -1,4 +1,4 @@
-import { DataSource, EntityManager, QueryRunner } from 'typeorm';
+import { DataSource, EntityManager } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
@@ -12,15 +12,15 @@ export abstract class BaseTransaction<TransactionInput, TransactionOutput> {
     manager: EntityManager,
   ): Promise<TransactionOutput>;
 
-  private async createRunner(): Promise<QueryRunner> {
-    return this.dataSource.createQueryRunner();
-  }
+  // private async createRunner(): Promise<QueryRunner> {
+  //   return this.dataSource.createQueryRunner();
+  // }
 
   // this is the main function that runs the transaction
   async run(data: TransactionInput): Promise<TransactionOutput> {
     // since everything in Nest.js is a singleton we should create a separate
     // QueryRunner instance for each call
-    const queryRunner = await this.createRunner();
+    const queryRunner = await this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 

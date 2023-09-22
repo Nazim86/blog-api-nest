@@ -13,7 +13,6 @@ import {
 } from '../../functions/quiz_functions';
 import { createQuestionDTO, publishQuestionDTO } from '../../data/quiz-data';
 import { CommandBus } from '@nestjs/cqrs';
-import { QuestionsQueryRepository } from '../../../src/api/infrastructure/quiz/questions.query.repository';
 
 import { creatingUser, loginUser } from '../../functions/user_functions';
 import { createUserDto, loginDto } from '../../data/user-data';
@@ -27,6 +26,7 @@ import { DataSource } from 'typeorm';
 import { QuestionsEntity } from '../../../src/api/entities/quiz/questionsEntity';
 import { CreateAnswerCommand } from '../../../src/api/public/quiz/applications,use-cases/create.answer.use-case';
 import { AnswersEnum } from '../../../src/enums/answers-enum';
+import { AnswersEntity } from '../../../src/api/entities/quiz/answers.entity';
 
 describe('Super Admin quiz testing', () => {
   let app: INestApplication;
@@ -69,6 +69,7 @@ describe('Super Admin quiz testing', () => {
 
     const users = [];
     const accessTokens = [];
+    let gamePairId: string;
 
     it('should wipe all data in db', async () => {
       const response = await request(httpServer).delete('/testing/all-data');
@@ -158,6 +159,8 @@ describe('Super Admin quiz testing', () => {
 
       const updatedGamePair = await quizRepository.saveGamePair(gamePair);
 
+      gamePairId = updatedGamePair.id;
+
       console.log(updatedGamePair.questions);
 
       expect(updatedGamePair.player1.login).toEqual('leo0');
@@ -199,26 +202,53 @@ describe('Super Admin quiz testing', () => {
           answer: `${i + 5}`,
         };
 
-        const answerPl1 = await commandBus.execute(
+        const answerPl1Id = await commandBus.execute(
           new CreateAnswerCommand(users[0].id, answerDto),
         );
-        const answerPl2 = await commandBus.execute(
+
+        const answersForPl1 = await dataSource
+          .getRepository(AnswersEntity)
+          .createQueryBuilder('a')
+          .leftJoinAndSelect('a.gamePairs', 'gp')
+          .leftJoinAndSelect('a.player', 'pl')
+          .where('a.id = :id', { id: answerPl1Id.data })
+          .getOne();
+
+        console.log(i);
+
+        expect(answersForPl1.player.login).toEqual('leo0');
+        expect(answersForPl1.gamePairs[0].status).toEqual(
+          GameStatusEnum.Active,
+        );
+        expect(answersForPl1.answerStatus).toEqual(AnswersEnum.Correct);
+
+        const answerPl2Id = await commandBus.execute(
           new CreateAnswerCommand(users[1].id, answerDto),
         );
 
-        expect(answerPl1.player.login).toEqual('leo0');
-        expect(answerPl1.gamePairs.status).toEqual(GameStatusEnum.Active);
-        expect(answerPl1.answerStatus).toEqual(AnswersEnum.Correct);
+        console.log(answerPl1Id, answerPl2Id);
+
+        const answersForPl2 = await dataSource
+          .getRepository(AnswersEntity)
+          .createQueryBuilder('a')
+          .leftJoinAndSelect('a.gamePairs', 'gp')
+          .leftJoinAndSelect('a.player', 'pl')
+          .where('a.id = :id', { id: answerPl2Id.data })
+          .getOne();
 
         if (i === 4) {
-          expect(answerPl2.gamePairs.status).toEqual(GameStatusEnum.Finished);
+          expect(answersForPl2.gamePairs[0].status).toEqual(
+            GameStatusEnum.Finished,
+          );
         } else {
-          expect(answerPl2.gamePairs.status).toEqual(GameStatusEnum.Active);
+          expect(answersForPl2.gamePairs[0].status).toEqual(
+            GameStatusEnum.Active,
+          );
         }
 
-        expect(answerPl2.player.login).toEqual('leo1');
+        expect(answersForPl2.player.login).toEqual('leo1');
 
-        expect(answerPl2.answerStatus).toEqual(AnswersEnum.Correct);
+        expect(answersForPl2.answerStatus).toEqual(AnswersEnum.Correct);
       }
     });
   });
