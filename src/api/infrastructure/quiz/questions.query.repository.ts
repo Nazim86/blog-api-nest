@@ -41,6 +41,7 @@ export class QuestionsQueryRepository {
 
     const questions = await this.questionsRepo
       .createQueryBuilder('q')
+      //.leftJoinAndSelect('q.playerAnswer', 'a')
       .where(
         `${
           publishedStatus === true || publishedStatus === false

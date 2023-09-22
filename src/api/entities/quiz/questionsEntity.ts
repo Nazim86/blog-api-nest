@@ -5,7 +5,7 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
-  OneToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -21,7 +21,7 @@ export class QuestionsEntity {
   @Column({ type: 'varchar', nullable: true, unique: true })
   body: string;
 
-  @Column({ type: 'varchar', nullable: true })
+  @Column({ type: 'varchar', nullable: true, array: true })
   correctAnswers: string[];
 
   @Column({ type: 'boolean', default: false })
@@ -37,7 +37,7 @@ export class QuestionsEntity {
   @JoinColumn()
   player: Users;
 
-  @OneToOne(() => AnswersEntity, (a) => a.question, { nullable: true })
+  @OneToMany(() => AnswersEntity, (a) => a.question, { nullable: true })
   playerAnswer: AnswersEntity[];
 
   @ManyToMany(() => GamePairEntity, (gp) => gp.questions, {
