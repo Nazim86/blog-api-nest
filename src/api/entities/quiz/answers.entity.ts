@@ -23,7 +23,9 @@ export class AnswersEntity {
   @Column({ type: 'timestamp without time zone', nullable: true })
   addedAt: Date;
 
-  @ManyToOne(() => QuestionsEntity, (q) => q.playerAnswer)
+  @ManyToOne(() => QuestionsEntity, (q) => q.playerAnswer, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn()
   question: QuestionsEntity;
 

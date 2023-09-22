@@ -70,7 +70,9 @@ export class SAQuizQuestionsController {
 
   @Get()
   async getQuestions(@Query() query: QuestionQueryClass) {
-    return await this.quizQueryRepository.getQuestions(query);
+    const result = await this.quizQueryRepository.getQuestions(query);
+    console.log(result);
+    return result;
   }
 
   @Delete(':id')

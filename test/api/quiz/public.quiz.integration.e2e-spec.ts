@@ -255,7 +255,7 @@ describe('Super Admin quiz testing', () => {
 
     it(`Get game by id and status 200`, async () => {
       const game = await getGameById(httpServer, accessTokens[0], gamePairId);
-      console.log(game.body);
+      //console.log(game.body);
     });
   });
 });
