@@ -20,8 +20,8 @@ export class AnswersEntity {
   @Column({ type: 'enum', enum: AnswersEnum })
   answerStatus: AnswersEnum;
 
-  @Column({ type: 'varchar', nullable: true })
-  addedAt: string;
+  @Column({ type: 'timestamp without time zone', nullable: true })
+  addedAt: Date;
 
   @ManyToOne(() => QuestionsEntity, (q) => q.playerAnswer)
   @JoinColumn()

@@ -55,3 +55,14 @@ export const connectUserToGame = async (httpServer, accessToken: string) => {
     .auth(accessToken, { type: 'bearer' })
     .send();
 };
+
+export const getGameById = async (
+  httpServer,
+  accessToken: string,
+  id: string,
+) => {
+  return request(httpServer)
+    .get(`/pair-game-quiz/pairs/${id}`)
+    .auth(accessToken, { type: 'bearer' })
+    .send();
+};

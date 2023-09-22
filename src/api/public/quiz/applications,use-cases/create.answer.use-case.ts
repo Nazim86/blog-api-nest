@@ -68,7 +68,7 @@ export class CreateAnswerUseCase {
     const answer: AnswersEntity = new AnswersEntity();
     answer.player = player;
     answer.question = gamePair.questions[answers.length];
-    answer.addedAt = new Date().toISOString();
+    answer.addedAt = new Date();
     answer.answerStatus = answerStatus;
     answer.gamePairs = gamePair;
 
@@ -78,6 +78,7 @@ export class CreateAnswerUseCase {
 
     if (answers.length === 4 && gamePair.answers.length === 9) {
       gamePair.status = GameStatusEnum.Finished;
+      gamePair.finishGameDate = new Date().toISOString();
     }
 
     gamePair.answers.push(newAnswer);

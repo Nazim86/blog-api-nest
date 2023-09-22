@@ -9,6 +9,7 @@ import { appSettings } from '../../../src/app.settings';
 import {
   connectUserToGame,
   createQuestion,
+  getGameById,
   publishQuestion,
 } from '../../functions/quiz_functions';
 import { createQuestionDTO, publishQuestionDTO } from '../../data/quiz-data';
@@ -161,7 +162,7 @@ describe('Super Admin quiz testing', () => {
 
       gamePairId = updatedGamePair.id;
 
-      console.log(updatedGamePair.questions);
+      //console.log(updatedGamePair.questions);
 
       expect(updatedGamePair.player1.login).toEqual('leo0');
       expect(updatedGamePair.player2.login).toEqual('leo1');
@@ -250,6 +251,11 @@ describe('Super Admin quiz testing', () => {
 
         expect(answersForPl2.answerStatus).toEqual(AnswersEnum.Correct);
       }
+    });
+
+    it(`Get game by id and status 200`, async () => {
+      const game = await getGameById(httpServer, accessTokens[0], gamePairId);
+      console.log(game.body);
     });
   });
 });

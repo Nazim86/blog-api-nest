@@ -60,6 +60,30 @@ export class QuizQueryRepository {
   async getGamePairById(id: string, userId: string) {
     const gamePair = await this.gamePairRepo
       .createQueryBuilder('gp')
+      .addSelect((qb) =>
+        qb
+          .select(`count(*)`, 'pl1Score')
+          .from(AnswersEntity, 'a')
+          .leftJoin('a.gamePairs', 'gp')
+          .leftJoin('gp.player1', 'pl1')
+          .leftJoin('a.player', 'apl')
+          .where('apl.id = pl1.id')
+          .andWhere('a.answerStatus = :answerStatus', {
+            answerStatus: AnswersEnum.Correct,
+          }),
+      )
+      .addSelect((qb) =>
+        qb
+          .select(`count(*)`, 'pl2Score')
+          .from(AnswersEntity, 'a')
+          .leftJoin('a.gamePairs', 'gp')
+          .leftJoin('gp.player2', 'pl2')
+          .leftJoin('a.player', 'apl')
+          .where('apl.id = pl2.id')
+          .andWhere('a.answerStatus = :answerStatus', {
+            answerStatus: AnswersEnum.Correct,
+          }),
+      )
       .addSelect(
         (qb) =>
           qb
@@ -122,11 +146,12 @@ export class QuizQueryRepository {
       .leftJoinAndSelect('gp.player1', 'pl1')
       .leftJoinAndSelect('gp.player2', 'pl2')
       .leftJoinAndSelect('gp.questions', 'q')
-      .leftJoinAndSelect(
-        'gp.answers',
-        'pl1Answer',
-        'pl1Answer.playerId = pl1.id',
-      )
+      .leftJoinAndSelect('gp.answers', 'a')
+      // .leftJoinAndSelect(
+      //   'gp.answers',
+      //   'pl1Answer',
+      //   'pl1Answer.playerId = pl1.id',
+      // )
       // .where('a.playerId = pl1')
       //.leftJoinAndSelect('a.player', 'pa1' as 'pl1Answer', 'pa1.id = pl1.id')
       //.leftJoinAndSelect('a.player', 'pa2' as 'pl2Answer', 'pa2.id = pl2.id')
@@ -135,13 +160,14 @@ export class QuizQueryRepository {
       //.getSql();
       .getRawOne();
 
+    //console.log(gamePair);
     //writeSql(gamePair);
     //console.log(gamePair);
 
     if (!gamePair) return { code: ResultCode.NotFound };
 
-    console.log(gamePair.pl1_id, gamePair.pl2_id);
-    console.log(userId);
+    // console.log(gamePair.pl1_id, gamePair.pl2_id);
+    // console.log(userId);
 
     if (gamePair.pl1_id === userId || gamePair.pl2_id === userId) {
       return {
@@ -154,7 +180,7 @@ export class QuizQueryRepository {
               id: gamePair.pl1_id,
               login: gamePair.pl1_login,
             },
-            score: gamePair.pl1Answer_score,
+            score: Number(gamePair.pl1Score),
           },
           secondPlayerProgress: {
             answers: gamePair.player2Answers,
@@ -162,7 +188,7 @@ export class QuizQueryRepository {
               id: gamePair.pl2_id,
               login: gamePair.pl2_login,
             },
-            score: gamePair.pl2Answer_score,
+            score: Number(gamePair.pl2Score),
           },
           questions: gamePair.questions,
           status: gamePair.gp_status,
