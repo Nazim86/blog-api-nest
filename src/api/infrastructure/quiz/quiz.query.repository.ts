@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { GamePairEntity } from '../../entities/quiz/gamePair.entity';
 import { AnswersEntity } from '../../entities/quiz/answers.entity';
 import { AnswersEnum } from '../../../enums/answers-enum';
+import { ResultCode } from '../../../exception-handler/result-code-enum';
 
 export class QuizQueryRepository {
   constructor(
@@ -56,7 +57,7 @@ export class QuizQueryRepository {
   //     .getOne();
   // }
 
-  async getGamePairById(id: string) {
+  async getGamePairById(id: string, userId: string) {
     const gamePair = await this.gamePairRepo
       .createQueryBuilder('gp')
       .addSelect(
@@ -137,29 +138,41 @@ export class QuizQueryRepository {
     //writeSql(gamePair);
     //console.log(gamePair);
 
-    return {
-      id: gamePair.gp_id,
-      firstPlayerProgress: {
-        answers: gamePair.player1Answers,
-        player: {
-          id: gamePair.pl1_id,
-          login: gamePair.pl1_login,
+    if (!gamePair) return { code: ResultCode.NotFound };
+
+    console.log(gamePair.pl1_id, gamePair.pl2_id);
+    console.log(userId);
+
+    if (gamePair.pl1_id === userId || gamePair.pl2_id === userId) {
+      return {
+        code: ResultCode.Success,
+        data: {
+          id: gamePair.gp_id,
+          firstPlayerProgress: {
+            answers: gamePair.player1Answers,
+            player: {
+              id: gamePair.pl1_id,
+              login: gamePair.pl1_login,
+            },
+            score: gamePair.pl1Answer_score,
+          },
+          secondPlayerProgress: {
+            answers: gamePair.player2Answers,
+            player: {
+              id: gamePair.pl2_id,
+              login: gamePair.pl2_login,
+            },
+            score: gamePair.pl2Answer_score,
+          },
+          questions: gamePair.questions,
+          status: gamePair.gp_status,
+          pairCreatedDate: gamePair.gp_pairCreatedDate,
+          startGameDate: gamePair.gp_startGameDate,
+          finishGameDate: gamePair.gp_finishGameDate,
         },
-        score: gamePair.pl1Answer_score,
-      },
-      secondPlayerProgress: {
-        answers: gamePair.player2Answers,
-        player: {
-          id: gamePair.pl2_id,
-          login: gamePair.pl2_login,
-        },
-        score: gamePair.pl2Answer_score,
-      },
-      questions: gamePair.questions,
-      status: gamePair.gp_status,
-      pairCreatedDate: gamePair.gp_pairCreatedDate,
-      startGameDate: gamePair.gp_startGameDate,
-      finishGameDate: gamePair.gp_finishGameDate,
-    };
+      };
+    } else {
+      return { code: ResultCode.Forbidden };
+    }
   }
 }

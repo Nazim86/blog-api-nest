@@ -50,10 +50,10 @@ export class CreateAnswerUseCase {
 
     let answerStatus;
 
-    console.log('userid', player.id);
-    console.log('answersLength', answers.length);
-    console.log('questions', gamePair.questions[answers.length]);
-    console.log('playerAnswer', command.createAnswerDto.answer);
+    // console.log('userid', player.id);
+    // console.log('answersLength', answers.length);
+    // console.log('questions', gamePair.questions[answers.length]);
+    // console.log('playerAnswer', command.createAnswerDto.answer);
 
     if (
       gamePair.questions[answers.length].correctAnswers.includes(

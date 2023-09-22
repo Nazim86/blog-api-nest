@@ -214,7 +214,7 @@ describe('Super Admin quiz testing', () => {
           .where('a.id = :id', { id: answerPl1Id.data })
           .getOne();
 
-        console.log(i);
+        //console.log(i);
 
         expect(answersForPl1.player.login).toEqual('leo0');
         expect(answersForPl1.gamePairs[0].status).toEqual(
@@ -226,7 +226,7 @@ describe('Super Admin quiz testing', () => {
           new CreateAnswerCommand(users[1].id, answerDto),
         );
 
-        console.log(answerPl1Id, answerPl2Id);
+        //console.log(answerPl1Id, answerPl2Id);
 
         const answersForPl2 = await dataSource
           .getRepository(AnswersEntity)
