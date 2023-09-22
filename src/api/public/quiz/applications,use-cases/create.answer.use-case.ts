@@ -48,11 +48,7 @@ export class CreateAnswerUseCase {
     )
       return { code: ResultCode.Forbidden };
 
-    let gameStatus = GameStatusEnum.Active;
-
-    if (answers.length === 4 && gamePair.answers.length === 9) {
-      gameStatus = GameStatusEnum.Finished;
-    }
+    let gameStatus;
 
     let answerStatus;
 
@@ -82,38 +78,22 @@ export class CreateAnswerUseCase {
 
     //console.log(newAnswer);
 
-    gamePair.status = gameStatus;
+    if (answers.length === 4 && gamePair.answers.length === 9) {
+      gameStatus = GameStatusEnum.Finished;
+      gamePair.status = gameStatus;
+    }
+
     gamePair.answers.push(newAnswer);
 
     await this.quizRepository.saveGamePair(gamePair);
 
-    return answer;
+    return {
+      code: ResultCode.Success,
+      data: {
+        questionId: answer.question.id,
+        answerStatus: answer.answerStatus,
+        addedAt: answer.addedAt,
+      },
+    };
   }
 }
-
-// if (answers.length === 4) {
-//   gamePair.status = GameStatusEnum.Finished;
-// }
-
-// const questions: QuestionsEntity[] =
-//   await this.questionsRepository.getQuestionsByGamePairAndUserId(
-//     gamePair.id,
-//     command.userId,
-//   );
-
-// for(let i=0; i<questions.length; i++) {
-//   if(  questions[i].playerAnswer.id === answers[i].id)
-// }
-
-// outerLoop:for(let i = 0; i<gamePair.questions.length;i++){
-//   for(let y = 0; y<gamePair.answers.length;y++){
-//   if(gamePair.questions[i].id !== answers[i].question.id){
-//     const answer = new AnswersEntity();
-//
-//     break outerLoop
-//
-//   }
-//   }
-// }
-
-//return user;

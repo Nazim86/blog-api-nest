@@ -31,8 +31,8 @@ export class AnswersEntity {
   @JoinColumn()
   player: Users;
 
-  @Column({ type: 'integer', default: 0 })
-  score: number;
+  // @Column({ type: 'integer', default: 0 })
+  // score: number;
 
   // @Column({ type: 'varchar', nullable: true })
   // playerAnswers: string[];

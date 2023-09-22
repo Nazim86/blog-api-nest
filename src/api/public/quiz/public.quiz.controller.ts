@@ -40,10 +40,13 @@ export class PublicQuizController {
   @Post('my-current/answers')
   @HttpCode(200)
   async createAnswers(@UserId() userId, createAnswerDto: CreateAnswerDto) {
-    const answerId = await this.commandBus.execute(
+    const answer = await this.commandBus.execute(
       new CreateAnswerCommand(userId, createAnswerDto),
     );
 
-    console.log(answerId);
+    if (answer.code !== ResultCode.Success) {
+      return exceptionHandler(answer.code);
+    }
+    return answer.data;
   }
 }

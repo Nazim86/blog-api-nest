@@ -48,6 +48,8 @@ export class QuizRepository {
       .leftJoinAndSelect('gp.answers', 'a')
       .where('pl1.id = :userId', { userId: userId })
       .orWhere('pl2.id = :userId', { userId: userId })
+      .orderBy('q.createdAt', 'ASC')
+
       // .andWhere('gp.status = :gameStatus', {
       //   gameStatus: GameStatusEnum.Active,
       // })
@@ -93,7 +95,7 @@ export class QuizRepository {
       //.where('(pl1.id = :userId or pl2.id = :userId)', { userId })
       // .orWhere('pl2.id = :userId', { userId: userId })
       .andWhere('gp.id = :gamePairId', { gamePairId: gamePairId })
-      .addOrderBy('q.createdAt', 'ASC')
+      //.orderBy('q.createdAt', 'ASC')
       .getMany();
 
     // const result2 = this.answerRepo

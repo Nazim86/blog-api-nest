@@ -11,15 +11,13 @@ export class QuizQueryRepository {
     //private readonly dataSource: DataSource,
     @InjectRepository(GamePairEntity)
     private readonly gamePairRepo: Repository<GamePairEntity>,
+    @InjectRepository(AnswersEntity)
+    private readonly answersRepo: Repository<AnswersEntity>,
   ) {}
 
-  // async savePlayer(player: PlayersEntity) {
-  //   return this.playersRepo.save(player);
+  // async getAnswerById(answerId: string) {
+  //   return this.answersRepo.createQueryBuilder('a')
   // }
-
-  async saveGamePair(gamePair: GamePairEntity): Promise<GamePairEntity> {
-    return this.gamePairRepo.save(gamePair);
-  }
 
   // async getPlayerByUserId(userId: string) {
   //   return this.playersRepo
@@ -31,25 +29,25 @@ export class QuizQueryRepository {
   //     .getOne();
   // }
 
-  async getGamePairByUserId(userId: string): Promise<GamePairEntity> {
-    return this.gamePairRepo
-      .createQueryBuilder('gp')
-      .leftJoinAndSelect('gp.player1', 'pl1')
-      .leftJoinAndSelect('gp.player2', 'pl2')
-      .leftJoinAndSelect('gp.questions', 'q')
-      .where('pl1.id = :userId', { userId: userId })
-      .orWhere('pl2.id = :userId', { userId: userId })
-      .getOne();
-  }
-  async getGamePairByStatus(status: GameStatusEnum): Promise<GamePairEntity> {
-    return this.gamePairRepo
-      .createQueryBuilder('gp')
-      .leftJoinAndSelect('gp.player1', 'pl1')
-      .leftJoinAndSelect('gp.player2', 'pl2')
-      .leftJoinAndSelect('gp.questions', 'q')
-      .where('gp.status = :status', { status: status })
-      .getOne();
-  }
+  // async getGamePairByUserId(userId: string): Promise<GamePairEntity> {
+  //   return this.gamePairRepo
+  //     .createQueryBuilder('gp')
+  //     .leftJoinAndSelect('gp.player1', 'pl1')
+  //     .leftJoinAndSelect('gp.player2', 'pl2')
+  //     .leftJoinAndSelect('gp.questions', 'q')
+  //     .where('pl1.id = :userId', { userId: userId })
+  //     .orWhere('pl2.id = :userId', { userId: userId })
+  //     .getOne();
+  // }
+  // async getGamePairByStatus(status: GameStatusEnum): Promise<GamePairEntity> {
+  //   return this.gamePairRepo
+  //     .createQueryBuilder('gp')
+  //     .leftJoinAndSelect('gp.player1', 'pl1')
+  //     .leftJoinAndSelect('gp.player2', 'pl2')
+  //     .leftJoinAndSelect('gp.questions', 'q')
+  //     .where('gp.status = :status', { status: status })
+  //     .getOne();
+  // }
 
   async getGamePairById(id: string) {
     const gamePair = await this.gamePairRepo
