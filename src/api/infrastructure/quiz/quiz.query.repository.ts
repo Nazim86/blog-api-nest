@@ -5,6 +5,7 @@ import { GamePairEntity } from '../../entities/quiz/gamePair.entity';
 import { AnswersEntity } from '../../entities/quiz/answers.entity';
 import { AnswersEnum } from '../../../enums/answers-enum';
 import { ResultCode } from '../../../exception-handler/result-code-enum';
+import { GameStatusEnum } from '../../../enums/game-status-enum';
 
 export class QuizQueryRepository {
   constructor(
@@ -60,6 +61,26 @@ export class QuizQueryRepository {
   async getGamePairById(id: string, userId: string) {
     const gamePair = await this.gamePairRepo
       .createQueryBuilder('gp')
+      .addSelect((qb) =>
+        qb
+          .select(`sum(date_part('microseconds',"addedAt"))`, 'pl1DateSum')
+          .from(AnswersEntity, 'a')
+          .leftJoin('a.gamePairs', 'gp')
+          .leftJoin('gp.player1', 'pl1')
+          .leftJoin('a.player', 'apl')
+          .where('apl.id = pl1.id')
+          .andWhere('gp.status = :status', { status: GameStatusEnum.Finished }),
+      )
+      .addSelect((qb) =>
+        qb
+          .select(`sum(date_part('microseconds',"addedAt"))`, 'pl2DateSum')
+          .from(AnswersEntity, 'a')
+          .leftJoin('a.gamePairs', 'gp')
+          .leftJoin('gp.player2', 'pl2')
+          .leftJoin('a.player', 'apl')
+          .where('apl.id = pl2.id')
+          .andWhere('gp.status = :status', { status: GameStatusEnum.Finished }),
+      )
       .addSelect((qb) =>
         qb
           .select(`count(*)`, 'pl1Score')
@@ -169,36 +190,46 @@ export class QuizQueryRepository {
     // console.log(gamePair.pl1_id, gamePair.pl2_id);
     // console.log(userId);
 
-    if (gamePair.pl1_id === userId || gamePair.pl2_id === userId) {
-      return {
-        code: ResultCode.Success,
-        data: {
-          id: gamePair.gp_id,
-          firstPlayerProgress: {
-            answers: gamePair.player1Answers,
-            player: {
-              id: gamePair.pl1_id,
-              login: gamePair.pl1_login,
-            },
-            score: Number(gamePair.pl1Score),
-          },
-          secondPlayerProgress: {
-            answers: gamePair.player2Answers,
-            player: {
-              id: gamePair.pl2_id,
-              login: gamePair.pl2_login,
-            },
-            score: Number(gamePair.pl2Score),
-          },
-          questions: gamePair.questions,
-          status: gamePair.gp_status,
-          pairCreatedDate: gamePair.gp_pairCreatedDate,
-          startGameDate: gamePair.gp_startGameDate,
-          finishGameDate: gamePair.gp_finishGameDate,
-        },
-      };
-    } else {
+    if (gamePair.pl1_id !== userId && gamePair.pl2_id !== userId)
       return { code: ResultCode.Forbidden };
+
+    let player1Score = Number(gamePair.pl1Score);
+    let player2Score = Number(gamePair.pl2Score);
+
+    if (player1Score > 0 && gamePair.pl1DateSum < gamePair.pl2DateSum) {
+      player1Score += 1;
     }
+
+    if (player2Score > 0 && gamePair.pl2DateSum < gamePair.pl1DateSum) {
+      player2Score += 1;
+    }
+
+    return {
+      code: ResultCode.Success,
+      data: {
+        id: gamePair.gp_id,
+        firstPlayerProgress: {
+          answers: gamePair.player1Answers,
+          player: {
+            id: gamePair.pl1_id,
+            login: gamePair.pl1_login,
+          },
+          score: player1Score,
+        },
+        secondPlayerProgress: {
+          answers: gamePair.player2Answers,
+          player: {
+            id: gamePair.pl2_id,
+            login: gamePair.pl2_login,
+          },
+          score: player2Score,
+        },
+        questions: gamePair.questions,
+        status: gamePair.gp_status,
+        pairCreatedDate: gamePair.gp_pairCreatedDate,
+        startGameDate: gamePair.gp_startGameDate,
+        finishGameDate: gamePair.gp_finishGameDate,
+      },
+    };
   }
 }
