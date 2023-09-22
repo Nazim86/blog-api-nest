@@ -27,6 +27,21 @@ export class PublicQuizController {
     private commandBus: CommandBus, //private readonly usersRepository: UsersRepository,
   ) {}
 
+  @Get('my-current')
+  async getMyCurrentGame(@UserId() userId: string) {
+    const gameByUserId = await this.quizRepository.getGamePairByUserId(userId); // is this anti pattern to call from repository directly
+
+    if (!gameByUserId) return exceptionHandler(ResultCode.NotFound);
+
+    const game = await this.quizQueryRepository.getGamePairById(
+      gameByUserId.id,
+      userId,
+    );
+
+    if (game.code !== ResultCode.Success) return exceptionHandler(game.code);
+
+    return game.data;
+  }
   @Get(':id')
   async getGameById(@Param('id') gamePairId: string, @UserId() userId: string) {
     const game = await this.quizQueryRepository.getGamePairById(
