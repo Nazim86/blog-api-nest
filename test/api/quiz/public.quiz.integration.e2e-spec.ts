@@ -43,6 +43,7 @@ describe('Super Admin quiz testing', () => {
   let usersRepository;
   let quizRepository;
   let dataSource;
+  let gamePairId: string;
 
   jest.setTimeout(60 * 1000);
   beforeAll(async () => {
@@ -106,6 +107,8 @@ describe('Super Admin quiz testing', () => {
         accessTokens[0],
       );
 
+      gamePairId = gamePairWithPlayer1.body.id;
+
       expect(gamePairWithPlayer1.status).toBe(200);
       //expect(gamePairWithPlayer1.body).toEqual(gamePairViewModelWithPlayer1);
       expect(gamePairWithPlayer1.body.firstPlayerProgress.player.login).toEqual(
@@ -115,8 +118,17 @@ describe('Super Admin quiz testing', () => {
         GameStatusEnum.PendingSecondPlayer,
       );
       expect(gamePairWithPlayer1.body.questions).toBe(null);
+    });
 
-      // const player = await getGamePairByUserId(user.body.id);
+    it(`Game created by user1, trying to get game by user2. Should return error if current
+    user tries to get pair in which not participated; status 403`, async () => {
+      const gamePair = await getGameById(
+        httpServer,
+        accessTokens[1],
+        gamePairId,
+      );
+
+      expect(gamePair.status).toBe(403);
     });
 
     it(`Creating 10 questions and publishing 5 of them `, async () => {

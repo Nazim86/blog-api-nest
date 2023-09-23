@@ -3,6 +3,7 @@ import {
   Get,
   HttpCode,
   Param,
+  ParseUUIDPipe,
   Post,
   UseGuards,
 } from '@nestjs/common';
@@ -45,12 +46,12 @@ export class PublicQuizController {
   }
   @Get(':id')
   async getGameById(
-    @Param('id') gamePairIdDto: UuidIdDto,
-    @UserId() userIdDto: UuidIdDto,
+    @Param('id', new ParseUUIDPipe()) gamePairId: string,
+    @UserId() userId: string,
   ) {
     const game = await this.quizQueryRepository.getGamePairById(
-      gamePairIdDto.id,
-      userIdDto.id,
+      gamePairId,
+      userId,
     );
 
     if (game.code !== ResultCode.Success) return exceptionHandler(game.code);
