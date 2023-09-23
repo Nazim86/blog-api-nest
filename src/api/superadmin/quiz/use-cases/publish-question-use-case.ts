@@ -2,6 +2,7 @@ import { CommandHandler } from '@nestjs/cqrs';
 import { QuestionsEntity } from '../../../entities/quiz/questionsEntity';
 import { QuestionsRepository } from '../../../infrastructure/quiz/questions.repository';
 import { PublishQuestionDto } from '../dto/publishQuestionDto';
+import { ResultCode } from '../../../../exception-handler/result-code-enum';
 
 export class PublishQuestionCommand {
   constructor(
@@ -19,10 +20,12 @@ export class PublishQuestionUseCase {
       command.questionId,
     );
 
+    if (!question) return { code: ResultCode.NotFound };
+
     question.published = command.publishQuestionDto.published;
 
     const savedQuestion = await this.quizRepository.saveQuestion(question);
 
-    return !!savedQuestion;
+    return { code: ResultCode.Success, data: savedQuestion };
   }
 }

@@ -50,8 +50,10 @@ export class SAQuizQuestionsController {
       new UpdateQuestionCommand(id, updateQuestionDto),
     );
 
-    if (!isUpdated) return exceptionHandler(ResultCode.BadRequest);
-    return;
+    if (isUpdated.code !== ResultCode.Success)
+      return exceptionHandler(isUpdated.code);
+
+    return isUpdated.data;
   }
 
   @Put(':id/publish')
@@ -64,8 +66,10 @@ export class SAQuizQuestionsController {
       new PublishQuestionCommand(id, publishQuestionsDto),
     );
 
-    if (!isUpdated) return exceptionHandler(ResultCode.BadRequest);
-    return;
+    if (isUpdated.code !== ResultCode.Success)
+      return exceptionHandler(isUpdated.code);
+
+    return isUpdated.data;
   }
 
   @Get()
