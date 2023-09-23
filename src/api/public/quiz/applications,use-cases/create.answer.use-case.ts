@@ -36,6 +36,8 @@ export class CreateAnswerUseCase {
 
     //console.log(gamePair.id);
 
+    if (!gamePair) return { code: ResultCode.Forbidden };
+
     const answers: AnswersEntity[] =
       await this.quizRepository.getAnswerByUserIdAndGamePairId(
         command.userId,
