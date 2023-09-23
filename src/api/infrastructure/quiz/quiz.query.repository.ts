@@ -178,7 +178,6 @@ export class QuizQueryRepository {
       //.leftJoinAndSelect('a.player', 'pa2' as 'pl2Answer', 'pa2.id = pl2.id')
 
       .where('gp.id = :id', { id: id })
-      //.getSql();
       .getRawOne();
 
     //console.log(gamePair);
@@ -195,6 +194,7 @@ export class QuizQueryRepository {
 
     let player1Score = Number(gamePair.pl1Score);
     let player2Score = Number(gamePair.pl2Score);
+    let secondPlayerProgress = null;
 
     if (player1Score > 0 && gamePair.pl1DateSum < gamePair.pl2DateSum) {
       player1Score += 1;
@@ -202,6 +202,17 @@ export class QuizQueryRepository {
 
     if (player2Score > 0 && gamePair.pl2DateSum < gamePair.pl1DateSum) {
       player2Score += 1;
+    }
+
+    if (gamePair.pl1_id && gamePair.pl2_id) {
+      secondPlayerProgress = {
+        answers: gamePair.player2Answers,
+        player: {
+          id: gamePair.pl2_id,
+          login: gamePair.pl2_login,
+        },
+        score: player2Score,
+      };
     }
 
     return {
@@ -216,14 +227,7 @@ export class QuizQueryRepository {
           },
           score: player1Score,
         },
-        secondPlayerProgress: {
-          answers: gamePair.player2Answers,
-          player: {
-            id: gamePair.pl2_id,
-            login: gamePair.pl2_login,
-          },
-          score: player2Score,
-        },
+        secondPlayerProgress: secondPlayerProgress,
         questions: gamePair.questions,
         status: gamePair.gp_status,
         pairCreatedDate: gamePair.gp_pairCreatedDate,

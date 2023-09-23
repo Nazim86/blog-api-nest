@@ -16,6 +16,7 @@ import { exceptionHandler } from '../../../exception-handler/exception-handler';
 import { CreateAnswerDto } from './dto/create-answer.dto';
 import { CommandBus } from '@nestjs/cqrs';
 import { CreateAnswerCommand } from './applications,use-cases/create.answer.use-case';
+import { UuidIdDto } from '../../../common/uuidId.dto';
 
 @UseGuards(AccessTokenGuard)
 @Controller('pair-game-quiz/pairs')
@@ -43,10 +44,13 @@ export class PublicQuizController {
     return game.data;
   }
   @Get(':id')
-  async getGameById(@Param('id') gamePairId: string, @UserId() userId: string) {
+  async getGameById(
+    @Param('id') gamePairIdDto: UuidIdDto,
+    @UserId() userIdDto: UuidIdDto,
+  ) {
     const game = await this.quizQueryRepository.getGamePairById(
-      gamePairId,
-      userId,
+      gamePairIdDto.id,
+      userIdDto.id,
     );
 
     if (game.code !== ResultCode.Success) return exceptionHandler(game.code);

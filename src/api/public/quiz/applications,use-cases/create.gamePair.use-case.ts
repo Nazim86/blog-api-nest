@@ -23,6 +23,7 @@ export class CreateGamePairUseCase {
     gamePair.player1 = player;
     gamePair.pairCreatedDate = new Date().toISOString();
     gamePair.status = GameStatusEnum.PendingSecondPlayer;
+    gamePair.answers = [];
 
     return await this.quizRepository.saveGamePair(gamePair);
   }
