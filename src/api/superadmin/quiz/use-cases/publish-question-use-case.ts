@@ -1,5 +1,5 @@
 import { CommandHandler } from '@nestjs/cqrs';
-import { QuestionsEntity } from '../../../entities/quiz/questionsEntity';
+import { QuestionsEntity } from '../../../entities/quiz/questions.entity';
 import { QuestionsRepository } from '../../../infrastructure/quiz/questions.repository';
 import { PublishQuestionDto } from '../dto/publishQuestionDto';
 import { ResultCode } from '../../../../exception-handler/result-code-enum';
@@ -24,8 +24,8 @@ export class PublishQuestionUseCase {
 
     question.published = command.publishQuestionDto.published;
 
-    const savedQuestion = await this.quizRepository.saveQuestion(question);
+    await this.quizRepository.saveQuestion(question);
 
-    return { code: ResultCode.Success, data: savedQuestion };
+    return { code: ResultCode.Success };
   }
 }

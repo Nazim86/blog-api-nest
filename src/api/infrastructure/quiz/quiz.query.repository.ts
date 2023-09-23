@@ -1,5 +1,5 @@
 import { Repository } from 'typeorm';
-import { QuestionsEntity } from '../../entities/quiz/questionsEntity';
+import { QuestionsEntity } from '../../entities/quiz/questions.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GamePairEntity } from '../../entities/quiz/gamePair.entity';
 import { AnswersEntity } from '../../entities/quiz/answers.entity';

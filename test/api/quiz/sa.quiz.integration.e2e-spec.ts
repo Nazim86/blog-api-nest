@@ -22,6 +22,7 @@ import {
   questionViewModel,
   updatedQuestionViewModel,
   updateQuestionDTO,
+  updateQuestionModel,
 } from '../../data/quiz-data';
 import { CommandBus } from '@nestjs/cqrs';
 import { CreateQuestionCommand } from '../../../src/api/superadmin/quiz/use-cases/create-question-use-case';
@@ -99,7 +100,7 @@ describe('Super Admin quiz testing', () => {
         new UpdateQuestionCommand(questionId, updateQuestionDTO),
       );
 
-      expect(isUpdated).toBe(true);
+      expect(isUpdated.data).toEqual(updateQuestionModel);
       const question = await quizQueryRepository.getQuestionById(questionId);
 
       expect(question.body).toEqual('How old are your father?');
@@ -123,7 +124,7 @@ describe('Super Admin quiz testing', () => {
         new PublishQuestionCommand(questionId, publishQuestionDTO),
       );
 
-      expect(isUpdated).toBe(true);
+      expect(isUpdated.code).toBe(0);
       const question = await quizQueryRepository.getQuestionById(questionId);
       expect(question.published).toBe(true);
 

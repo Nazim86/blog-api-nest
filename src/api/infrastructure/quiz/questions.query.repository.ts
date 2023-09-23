@@ -1,5 +1,5 @@
 import { Repository } from 'typeorm';
-import { QuestionsEntity } from '../../entities/quiz/questionsEntity';
+import { QuestionsEntity } from '../../entities/quiz/questions.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QuestionQueryClass } from './type/questionQueryClass';
 import { PublishedStatusEnum } from '../../../enums/publishedStatus-enum';

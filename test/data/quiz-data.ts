@@ -39,10 +39,15 @@ export const questionViewModel = {
 export const updatedQuestionViewModel = {
   id: expect.any(String),
   body: expect.any(String),
-  correctAnswers: expect.any(String),
+  correctAnswers: expect.arrayContaining([expect.any(String)]),
   published: expect.any(Boolean),
   createdAt: expect.any(String),
   updatedAt: expect.any(String),
+};
+
+export const updateQuestionModel = {
+  body: expect.any(String),
+  correctAnswers: expect.arrayContaining([expect.any(String)]),
 };
 
 export const gamePairViewModelWithPlayer1 = {

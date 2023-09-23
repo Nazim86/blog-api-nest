@@ -69,7 +69,7 @@ export class SAQuizQuestionsController {
     if (isUpdated.code !== ResultCode.Success)
       return exceptionHandler(isUpdated.code);
 
-    return isUpdated.data;
+    return;
   }
 
   @Get()

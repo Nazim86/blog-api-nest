@@ -7,7 +7,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { QuestionsEntity } from './questionsEntity';
+import { QuestionsEntity } from './questions.entity';
 import { AnswersEnum } from '../../../enums/answers-enum';
 import { Users } from '../users/user.entity';
 import { GamePairEntity } from './gamePair.entity';

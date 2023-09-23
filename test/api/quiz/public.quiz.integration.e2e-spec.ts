@@ -29,7 +29,7 @@ import { UsersRepository } from '../../../src/api/infrastructure/users/users.rep
 import { GamePairEntity } from '../../../src/api/entities/quiz/gamePair.entity';
 import { QuizRepository } from '../../../src/api/infrastructure/quiz/quiz.repository';
 import { DataSource } from 'typeorm';
-import { QuestionsEntity } from '../../../src/api/entities/quiz/questionsEntity';
+import { QuestionsEntity } from '../../../src/api/entities/quiz/questions.entity';
 import { CreateAnswerCommand } from '../../../src/api/public/quiz/applications,use-cases/create.answer.use-case';
 import { AnswersEnum } from '../../../src/enums/answers-enum';
 import { AnswersEntity } from '../../../src/api/entities/quiz/answers.entity';

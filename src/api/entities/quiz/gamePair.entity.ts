@@ -7,7 +7,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { GameStatusEnum } from '../../../enums/game-status-enum';
-import { QuestionsEntity } from './questionsEntity';
+import { QuestionsEntity } from './questions.entity';
 import { Users } from '../users/user.entity';
 import { AnswersEntity } from './answers.entity';
 

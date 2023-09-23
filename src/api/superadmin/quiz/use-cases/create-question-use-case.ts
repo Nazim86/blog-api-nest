@@ -1,6 +1,6 @@
 import { CreateQuestionDto } from '../dto/createQuestionDto';
 import { CommandHandler } from '@nestjs/cqrs';
-import { QuestionsEntity } from '../../../entities/quiz/questionsEntity';
+import { QuestionsEntity } from '../../../entities/quiz/questions.entity';
 import { QuestionsRepository } from '../../../infrastructure/quiz/questions.repository';
 
 export class CreateQuestionCommand {

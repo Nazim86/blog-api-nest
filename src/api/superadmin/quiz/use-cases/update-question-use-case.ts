@@ -1,6 +1,6 @@
 import { CreateQuestionDto } from '../dto/createQuestionDto';
 import { CommandHandler } from '@nestjs/cqrs';
-import { QuestionsEntity } from '../../../entities/quiz/questionsEntity';
+import { QuestionsEntity } from '../../../entities/quiz/questions.entity';
 import { QuestionsRepository } from '../../../infrastructure/quiz/questions.repository';
 import { ResultCode } from '../../../../exception-handler/result-code-enum';
 
@@ -28,6 +28,12 @@ export class UpdateQuestionUseCase {
 
     const savedQuestion = await this.quizRepository.saveQuestion(question);
 
-    return { code: ResultCode.Success, data: savedQuestion };
+    return {
+      code: ResultCode.Success,
+      data: {
+        body: savedQuestion.body,
+        correctAnswers: savedQuestion.correctAnswers,
+      },
+    };
   }
 }

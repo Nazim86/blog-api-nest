@@ -76,7 +76,7 @@ import { SaBloggerBlogsController } from './api/superadmin/blogs/sa.blogger.blog
 import { GamePairEntity } from './api/entities/quiz/gamePair.entity';
 import { SAQuizQuestionsController } from './api/superadmin/quiz/api/sa.quiz.questions.controller';
 import { AnswersEntity } from './api/entities/quiz/answers.entity';
-import { QuestionsEntity } from './api/entities/quiz/questionsEntity';
+import { QuestionsEntity } from './api/entities/quiz/questions.entity';
 import { CreateQuestionUseCase } from './api/superadmin/quiz/use-cases/create-question-use-case';
 import { QuestionsRepository } from './api/infrastructure/quiz/questions.repository';
 import { QuestionsQueryRepository } from './api/infrastructure/quiz/questions.query.repository';
