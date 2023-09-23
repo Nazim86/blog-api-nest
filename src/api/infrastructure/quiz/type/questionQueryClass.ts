@@ -13,7 +13,14 @@ export class QuestionQueryClass extends Paginator {
   ) {
     super(pageNumber, pageSize);
     this.sortBy = sortBy;
-    this.sortDirection = sortDirection;
+    if (
+      sortDirection === SortDirection.ASC ||
+      sortDirection === SortDirection.ASC.toLowerCase()
+    ) {
+      this.sortDirection = SortDirection.ASC;
+    } else {
+      this.sortDirection = SortDirection.DESC;
+    }
     this.bodySearchTerm = bodySearchTerm;
     this.publishedStatus = publishedStatus;
   }
