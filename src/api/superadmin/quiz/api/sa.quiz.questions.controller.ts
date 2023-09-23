@@ -75,7 +75,7 @@ export class SAQuizQuestionsController {
   @Get()
   async getQuestions(@Query() query: QuestionQueryClass) {
     const result = await this.quizQueryRepository.getQuestions(query);
-    console.log(result);
+    //console.log(result);
     return result;
   }
 

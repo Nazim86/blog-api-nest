@@ -81,7 +81,7 @@ describe('Super Admin quiz testing', () => {
 
       const question = await quizQueryRepository.getQuestionById(questionId);
       expect(question.body).toEqual('How old are you?');
-      expect(question.correctAnswers).toContain('36');
+      expect(question.correctAnswers).toContain('thirty-six');
       expect(question).toEqual(questionViewModel);
 
       const createQuestione2e = await createQuestion(httpServer, {
@@ -224,6 +224,23 @@ describe('Super Admin quiz testing', () => {
       const question = await quizQueryRepository.getQuestionById(questionId);
 
       expect(question).toBeNull();
+    });
+
+    it(`Should update publish status of quiz question; status 204; used additional methods: `, async () => {
+      let questions = await getQuestions(httpServer);
+
+      expect(questions.body.items[4].published).toBe(false);
+
+      const isUpdated = await publishQuestion(
+        httpServer,
+        questions.body.items[4].id,
+        publishQuestionDTO,
+      );
+      expect(isUpdated.status).toBe(204);
+
+      questions = await getQuestions(httpServer);
+
+      expect(questions.body.items[4].published).toBe(true);
     });
   });
 });

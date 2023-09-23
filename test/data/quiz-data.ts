@@ -30,7 +30,7 @@ export const publishQuestionDTO: PublishQuestionDto = {
 export const questionViewModel = {
   id: expect.any(String),
   body: expect.any(String),
-  correctAnswers: expect.any(String),
+  correctAnswers: expect.arrayContaining([expect.any(String)]),
   published: expect.any(Boolean),
   createdAt: expect.any(String),
   updatedAt: null, // could not make expecting null or string therefore made two Models one for create one for update
