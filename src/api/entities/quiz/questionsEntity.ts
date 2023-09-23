@@ -18,7 +18,7 @@ export class QuestionsEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'varchar', nullable: true, unique: true })
+  @Column({ type: 'varchar', nullable: true })
   body: string;
 
   @Column({ type: 'varchar', nullable: true, array: true })

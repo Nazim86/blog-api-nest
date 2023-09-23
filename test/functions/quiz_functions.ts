@@ -1,6 +1,7 @@
 import { CreateQuestionDto } from '../../src/api/superadmin/quiz/dto/createQuestionDto';
 import request from 'supertest';
 import { PublishQuestionDto } from '../../src/api/superadmin/quiz/dto/publishQuestionDto';
+import { CreateAnswerDto } from '../../src/api/public/quiz/dto/create-answer.dto';
 
 export const createQuestion = async (
   httpServer,
@@ -65,4 +66,15 @@ export const getGameById = async (
     .get(`/pair-game-quiz/pairs/${id}`)
     .auth(accessToken, { type: 'bearer' })
     .send();
+};
+
+export const sendAnswer = (
+  httpServer,
+  answerDto: CreateAnswerDto,
+  accessToken: string,
+) => {
+  return request(httpServer)
+    .post(`/pair-game-quiz/pairs/my-current/answers`)
+    .auth(accessToken, { type: 'bearer' })
+    .send(answerDto);
 };

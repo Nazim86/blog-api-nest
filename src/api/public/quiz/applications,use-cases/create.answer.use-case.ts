@@ -56,7 +56,7 @@ export class CreateAnswerUseCase {
     // console.log('answersLength', answers.length);
     // console.log('questions', gamePair.questions[answers.length]);
     // console.log('playerAnswer', command.createAnswerDto.answer);
-
+    console.log(command.createAnswerDto);
     if (
       gamePair.questions[answers.length].correctAnswers.includes(
         command.createAnswerDto.answer,

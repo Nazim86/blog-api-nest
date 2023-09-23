@@ -11,8 +11,13 @@ import {
   createQuestion,
   getGameById,
   publishQuestion,
+  sendAnswer,
 } from '../../functions/quiz_functions';
-import { createQuestionDTO, publishQuestionDTO } from '../../data/quiz-data';
+import {
+  createAnswerDto,
+  createQuestionDTO,
+  publishQuestionDTO,
+} from '../../data/quiz-data';
 import { CommandBus } from '@nestjs/cqrs';
 
 import { creatingUser, loginUser } from '../../functions/user_functions';
@@ -207,6 +212,17 @@ describe('Super Admin quiz testing', () => {
           new CreateAnswerCommand(users[0].id, answerDto),
         );
 
+        // Current user is not inside active pair or
+        // user is in active pair but has already answered to all questions and status 403
+        if (i === 2) {
+          const result = await sendAnswer(
+            httpServer,
+            answerDto,
+            accessTokens[2],
+          );
+          expect(result.status).toBe(403);
+        }
+
         const answersForPl1 = await dataSource
           .getRepository(AnswersEntity)
           .createQueryBuilder('a')
@@ -256,6 +272,25 @@ describe('Super Admin quiz testing', () => {
     it(`Get game by id and status 200`, async () => {
       const game = await getGameById(httpServer, accessTokens[0], gamePairId);
       //console.log(game.body);
+    });
+
+    it(`Current user is not inside active pair or 
+        user is in active pair but has already answered to all questions and status 403`, async () => {
+      const result = await sendAnswer(
+        httpServer,
+        createAnswerDto,
+        accessTokens[2],
+      );
+      expect(result.status).toBe(403);
+    });
+
+    it(`User answered to all questions and finished game trying to answer again and status 403`, async () => {
+      const result = await sendAnswer(
+        httpServer,
+        createAnswerDto,
+        accessTokens[1],
+      );
+      expect(result.status).toBe(403);
     });
   });
 });
