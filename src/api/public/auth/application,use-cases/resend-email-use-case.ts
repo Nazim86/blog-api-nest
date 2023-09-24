@@ -20,8 +20,6 @@ export class ResendEmailUseCase implements ICommandHandler<ResendEmailCommand> {
       command.emailDto.email,
     );
 
-    //console.log('user in ResendEmailUseCase', user);
-    // try {
     if (
       !user ||
       user.isConfirmed ||
@@ -46,10 +44,6 @@ export class ResendEmailUseCase implements ICommandHandler<ResendEmailCommand> {
     //console.log('email-resending:', user);
 
     this.mailService.sendUserConfirmationEmail(newCode, user.email, user.login);
-    // } catch (e) {
-    //   console.log('error in ResendEmailUseCase', e);
-    //   return false;
-    // }
 
     return true;
   }

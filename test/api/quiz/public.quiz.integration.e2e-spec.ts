@@ -132,6 +132,15 @@ describe('Super Admin quiz testing', () => {
 
       expect(gamePair.status).toBe(403);
     });
+    it(`should return error if id has invalid format; status 400;`, async () => {
+      const gamePair = await getGameById(
+        httpServer,
+        accessTokens[1],
+        'incorrect_id_format',
+      );
+
+      expect(gamePair.status).toBe(400);
+    });
 
     it(`call "/pair-game-quiz/pairs/my-current" by user1. 
     Should return new created active game; status 200;`, async () => {

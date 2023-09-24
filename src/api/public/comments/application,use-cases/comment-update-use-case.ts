@@ -36,15 +36,6 @@ export class CommentUpdateUseCase {
 
     await this.commentsRepository.saveComment(comment);
 
-    // const isCommentUpdated = await this.commentsRepository.updateComment(
-    //   comment.id,
-    //   command.createCommentDto,
-    // );
-
-    // comment.updateComment(command.createCommentDto);
-    //
-    // await this.commentsRepository.save(comment);
-
     return {
       code: comment ? ResultCode.Success : ResultCode.NotFound,
     };

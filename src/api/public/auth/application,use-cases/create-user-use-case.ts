@@ -64,8 +64,6 @@ export class CreateUserUseCase {
       this.usersRepository.saveUsersBanByBlogger(usersBanByBlogger),
     ]);
 
-    // const user = await this.usersRepository.findUserById(userId);
-
     try {
       this.mailService.sendUserConfirmationEmail(
         //promise in pending -> {}

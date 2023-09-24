@@ -47,17 +47,6 @@ export class CommentCreateUseCase {
     newComment.createdAt = new Date().toISOString();
     newComment.user = user;
 
-    // const commentId = await this.commentsRepository.createComment({
-    //   createCommentDto: command.createCommentDto,
-    //   postId: command.postId,
-    //   userId: command.userId,
-    //   login: user.login,
-    //   title: post.title,
-    //   blogId: post.blog.id,
-    //   blogName: post.blog.name,
-    //   blogOwnerId: blog.owner,
-    // });
-
     const comment = await this.commentsRepository.saveComment(newComment);
 
     return { data: comment.id, code: ResultCode.Success };

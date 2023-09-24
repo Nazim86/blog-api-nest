@@ -3,7 +3,6 @@ import {
   Get,
   HttpCode,
   Param,
-  ParseUUIDPipe,
   Post,
   UseGuards,
 } from '@nestjs/common';
@@ -17,7 +16,7 @@ import { exceptionHandler } from '../../../exception-handler/exception-handler';
 import { CreateAnswerDto } from './dto/create-answer.dto';
 import { CommandBus } from '@nestjs/cqrs';
 import { CreateAnswerCommand } from './applications,use-cases/create.answer.use-case';
-import { UuidIdDto } from '../../../common/uuidId.dto';
+import { CustomParseUUIDPipe } from '../../../exception-handler/custom-parse-uuid-pipe';
 
 @UseGuards(AccessTokenGuard)
 @Controller('pair-game-quiz/pairs')
@@ -46,7 +45,7 @@ export class PublicQuizController {
   }
   @Get(':id')
   async getGameById(
-    @Param('id', new ParseUUIDPipe()) gamePairId: string,
+    @Param('id', new CustomParseUUIDPipe()) gamePairId: string,
     @UserId() userId: string,
   ) {
     const game = await this.quizQueryRepository.getGamePairById(
