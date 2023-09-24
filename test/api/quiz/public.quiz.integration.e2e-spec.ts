@@ -9,6 +9,7 @@ import { appSettings } from '../../../src/app.settings';
 import {
   connectUserToGame,
   createQuestion,
+  getCurrentGame,
   getGameById,
   publishQuestion,
   sendAnswer,
@@ -16,6 +17,7 @@ import {
 import {
   createAnswerDto,
   createQuestionDTO,
+  notStartedGamePairViewModelWithPlayer1,
   publishQuestionDTO,
 } from '../../data/quiz-data';
 import { CommandBus } from '@nestjs/cqrs';
@@ -131,6 +133,14 @@ describe('Super Admin quiz testing', () => {
       expect(gamePair.status).toBe(403);
     });
 
+    it(`call "/pair-game-quiz/pairs/my-current" by user1. 
+    Should return new created active game; status 200;`, async () => {
+      const game = await getCurrentGame(httpServer, accessTokens[0]);
+
+      expect(game.status).toBe(200);
+      expect(game.body).toEqual(notStartedGamePairViewModelWithPlayer1);
+    });
+
     it(`Creating 10 questions and publishing 5 of them `, async () => {
       for (let i = 0; i <= 9; i++) {
         createQuestionDTO.correctAnswers.pop();
@@ -213,7 +223,7 @@ describe('Super Admin quiz testing', () => {
       expect(gamePairWithPlayer1.status).toBe(403);
     });
 
-    it(`Answering questions and status 200`, async () => {
+    it(`Player1 and player2 answering questions and status 200`, async () => {
       for (let i = 0; i < 5; i++) {
         // console.log(`${i + 5}`, typeof `${i + 5}`);
         const answerDto = {
@@ -281,10 +291,10 @@ describe('Super Admin quiz testing', () => {
       }
     });
 
-    it(`Get game by id and status 200`, async () => {
-      const game = await getGameById(httpServer, accessTokens[0], gamePairId);
-      //console.log(game.body);
-    });
+    // it(`Get game by id and status 200`, async () => {
+    //   const game = await getGameById(httpServer, accessTokens[0], gamePairId);
+    //   //console.log(game.body);
+    // });
 
     it(`Current user is not inside active pair or 
         user is in active pair but has already answered to all questions and status 403`, async () => {

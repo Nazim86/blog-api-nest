@@ -78,3 +78,9 @@ export const sendAnswer = (
     .auth(accessToken, { type: 'bearer' })
     .send(answerDto);
 };
+export const getCurrentGame = (httpServer, accessToken: string) => {
+  return request(httpServer)
+    .get(`/pair-game-quiz/pairs/my-current`)
+    .auth(accessToken, { type: 'bearer' })
+    .send();
+};

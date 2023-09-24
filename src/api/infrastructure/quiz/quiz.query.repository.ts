@@ -206,7 +206,7 @@ export class QuizQueryRepository {
 
     if (gamePair.pl1_id && gamePair.pl2_id) {
       secondPlayerProgress = {
-        answers: gamePair.player2Answers,
+        answers: gamePair.player2Answers ?? [],
         player: {
           id: gamePair.pl2_id,
           login: gamePair.pl2_login,
@@ -220,7 +220,7 @@ export class QuizQueryRepository {
       data: {
         id: gamePair.gp_id,
         firstPlayerProgress: {
-          answers: gamePair.player1Answers,
+          answers: gamePair.player1Answers ?? [],
           player: {
             id: gamePair.pl1_id,
             login: gamePair.pl1_login,

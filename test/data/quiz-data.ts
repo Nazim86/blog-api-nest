@@ -74,6 +74,24 @@ export const gamePairViewModelWithPlayer1 = {
   finishGameDate: null,
 };
 
+export const notStartedGamePairViewModelWithPlayer1 = {
+  id: expect.any(String),
+  firstPlayerProgress: {
+    answers: expect.arrayContaining([]),
+    player: {
+      id: expect.any(String),
+      login: expect.any(String),
+    },
+    score: expect.any(Number),
+  },
+  secondPlayerProgress: null,
+  questions: null,
+  status: GameStatusEnum.PendingSecondPlayer,
+  pairCreatedDate: expect.any(String),
+  startGameDate: null,
+  finishGameDate: null,
+};
+
 export const gamePairViewModelWithPlayer2 = {
   id: expect.any(String),
   firstPlayerProgress: {

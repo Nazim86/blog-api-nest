@@ -42,9 +42,3 @@ export class GamePairEntity {
   @ManyToMany(() => AnswersEntity, (a) => a.gamePairs)
   answers: AnswersEntity[];
 }
-
-// @Column({ type: 'number', default: 0 })
-// player1Score;
-//
-// @Column({ type: 'number', default: 0 })
-// player2Score;
