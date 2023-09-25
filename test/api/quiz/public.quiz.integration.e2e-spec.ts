@@ -16,6 +16,7 @@ import {
 } from '../../functions/quiz_functions';
 import {
   createQuestionDTO,
+  gamePairViewModelWithPlayer2,
   notStartedGamePairViewModelWithPlayer1,
   publishQuestionDTO,
 } from '../../data/quiz-data';
@@ -287,8 +288,6 @@ describe('Super Admin quiz testing', () => {
           new CreateAnswerCommand(users[1].id, answerDto),
         );
 
-        //console.log(answerPl1Id, answerPl2Id);
-
         const answersForPl2 = await dataSource
           .getRepository(AnswersEntity)
           .createQueryBuilder('a')
@@ -341,6 +340,48 @@ describe('Super Admin quiz testing', () => {
       const game = await getCurrentGame(httpServer, accessTokens[0]);
 
       expect(game.status).toBe(404);
+    });
+
+    it(`Create game with two players add correct answer by firstPlayer; 
+    add incorrect answer by secondPlayer; add correct answer by secondPlayer; 
+    get active game and call "/pair-game-quiz/pairs/my-current by both users after each answer"; 
+    status 200;`, async () => {
+      let currentGame;
+      //connecting player3
+      await connectUserToGame(httpServer, accessTokens[2]);
+
+      const player4 = await usersRepository.findUserById(users[3].id);
+
+      const gamePairByStatus: GamePairEntity =
+        await quizRepository.getGamePairByStatus(
+          GameStatusEnum.PendingSecondPlayer,
+        );
+
+      const fiveQuestions = await dataSource
+        .getRepository(QuestionsEntity)
+        .createQueryBuilder('q')
+        .where('q.published = true')
+        .orderBy('q.createdAt', 'ASC')
+        .limit(5)
+        .getMany();
+
+      const gamePair = gamePairByStatus;
+      gamePair.player2 = player4;
+      gamePair.startGameDate = new Date().toISOString();
+      gamePair.questions = fiveQuestions;
+      gamePair.status = GameStatusEnum.Active;
+
+      const updatedGamePair = await quizRepository.saveGamePair(gamePair);
+
+      gamePairId = updatedGamePair.id;
+
+      await sendAnswer(httpServer, { answer: '5' }, accessTokens[2]);
+
+      // eslint-disable-next-line prefer-const
+      currentGame = await getCurrentGame(httpServer, accessTokens[2]);
+
+      expect(currentGame.status).toBe(200);
+      expect(currentGame.body).toEqual(gamePairViewModelWithPlayer2);
     });
   });
 });
