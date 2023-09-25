@@ -5,7 +5,6 @@ import { GameStatusEnum } from '../../../enums/game-status-enum';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable } from '@nestjs/common';
 import { AnswersEntity } from '../../entities/quiz/answers.entity';
-import { UserId } from '../../../decorators/UserId';
 
 @Injectable()
 export class QuizRepository {
@@ -40,23 +39,45 @@ export class QuizRepository {
   // }
 
   async getGamePairByUserId(userId: string): Promise<GamePairEntity> {
-    const result: GamePairEntity = await this.gamePairRepo
+    //console.log(result);
+    return await this.gamePairRepo
       .createQueryBuilder('gp')
       .leftJoinAndSelect('gp.player1', 'pl1')
       .leftJoinAndSelect('gp.player2', 'pl2')
       .leftJoinAndSelect('gp.questions', 'q')
       .leftJoinAndSelect('gp.answers', 'a')
-      .where('pl1.id = :userId', { userId: userId })
-      .orWhere('pl2.id = :userId', { userId: userId })
-      .orderBy('q.createdAt', 'ASC')
+      .where('(pl1.id = :userId or pl2.id = :userId)', { userId })
+      //.orWhere('pl2.id = :userId', { userId: userId })
+      //.orderBy('q.createdAt', 'ASC')
 
       // .andWhere('gp.status = :gameStatus', {
-      //   gameStatus: GameStatusEnum.Active,
+      //   gameStatus: GameStatusEnum.PendingSecondPlayer || GameStatusEnum.Active,
       // })
       .getOne();
+  }
 
+  async getGamePairByUserIdAndGameStatus(
+    userId: string,
+  ): Promise<GamePairEntity> {
     //console.log(result);
-    return result;
+    return await this.gamePairRepo
+      .createQueryBuilder('gp')
+      .leftJoinAndSelect('gp.player1', 'pl1')
+      .leftJoinAndSelect('gp.player2', 'pl2')
+      .leftJoinAndSelect('gp.questions', 'q')
+      .leftJoinAndSelect('gp.answers', 'a')
+      .where('(pl1.id = :userId or pl2.id = :userId)', { userId })
+      //.orWhere('pl2.id = :userId', { userId: userId })
+      //.orderBy('q.createdAt', 'ASC')
+
+      .andWhere(
+        '(gp.status = :gameStatusActive or gp.status = :gameStatusPending)',
+        {
+          gameStatusActive: GameStatusEnum.Active,
+          gameStatusPending: GameStatusEnum.PendingSecondPlayer,
+        },
+      )
+      .getOne();
   }
   async getGamePairById(id: string): Promise<GamePairEntity> {
     return this.gamePairRepo
@@ -83,21 +104,6 @@ export class QuizRepository {
     userId: string,
     gamePairId: string,
   ): Promise<AnswersEntity[]> {
-    const result = await this.answerRepo
-      .createQueryBuilder('a')
-      //.leftJoinAndSelect('a.player', 'pl')
-      .leftJoinAndSelect('a.gamePairs', 'gp')
-      .leftJoinAndSelect('a.player', 'pl')
-      //.leftJoinAndSelect('gp.player1', 'pl1')
-      //.leftJoinAndSelect('gp.player2', 'pl2')
-      .leftJoinAndSelect('gp.questions', 'q')
-      .where('pl.id = :userId', { userId })
-      //.where('(pl1.id = :userId or pl2.id = :userId)', { userId })
-      // .orWhere('pl2.id = :userId', { userId: userId })
-      .andWhere('gp.id = :gamePairId', { gamePairId: gamePairId })
-      //.orderBy('q.createdAt', 'ASC')
-      .getMany();
-
     // const result2 = this.answerRepo
     //   .createQueryBuilder('a')
     //   //.leftJoinAndSelect('a.player', 'pl')
@@ -112,7 +118,20 @@ export class QuizRepository {
     //
     // writeSql(result2);
     // console.log(result);
-    return result;
+    return await this.answerRepo
+      .createQueryBuilder('a')
+      //.leftJoinAndSelect('a.player', 'pl')
+      .leftJoinAndSelect('a.gamePairs', 'gp')
+      .leftJoinAndSelect('a.player', 'pl')
+      //.leftJoinAndSelect('gp.player1', 'pl1')
+      //.leftJoinAndSelect('gp.player2', 'pl2')
+      .leftJoinAndSelect('gp.questions', 'q')
+      .where('pl.id = :userId', { userId })
+      //.where('(pl1.id = :userId or pl2.id = :userId)', { userId })
+      // .orWhere('pl2.id = :userId', { userId: userId })
+      .andWhere('gp.id = :gamePairId', { gamePairId: gamePairId })
+      //.orderBy('q.createdAt', 'ASC')
+      .getMany();
 
     // .andWhere('gp.status = :gamePairStatus', {
     //   gamePairStatus: GameStatusEnum.Active,

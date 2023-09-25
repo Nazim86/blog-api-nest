@@ -31,7 +31,8 @@ export class PublicQuizController {
 
   @Get('my-current')
   async getMyCurrentGame(@UserId() userId: string) {
-    const gameByUserId = await this.quizRepository.getGamePairByUserId(userId); // is this anti pattern to call from repository directly
+    const gameByUserId =
+      await this.quizRepository.getGamePairByUserIdAndGameStatus(userId); // is this anti pattern to call from repository directly
 
     if (!gameByUserId) return exceptionHandler(ResultCode.NotFound);
 

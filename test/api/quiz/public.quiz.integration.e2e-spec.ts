@@ -336,5 +336,11 @@ describe('Super Admin quiz testing', () => {
       );
       expect(result.status).toBe(403);
     });
+
+    it(`Should return error if no active pair for current user; status 404`, async () => {
+      const game = await getCurrentGame(httpServer, accessTokens[0]);
+
+      expect(game.status).toBe(404);
+    });
   });
 });
