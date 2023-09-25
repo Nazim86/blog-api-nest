@@ -19,8 +19,10 @@ export class QuizQueryRepository {
   async getAnswerById(answerId: string) {
     const answer = await this.answersRepo
       .createQueryBuilder('a')
+      .leftJoinAndSelect('a.question', 'q')
       .where('a.id = :id', { id: answerId })
       .getOne();
+    console.log(answer);
     return {
       questionId: answer.question.id,
       answerStatus: answer.answerStatus,

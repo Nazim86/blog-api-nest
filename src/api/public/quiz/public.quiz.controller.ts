@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Get,
   HttpCode,
@@ -82,9 +83,10 @@ export class PublicQuizController {
   @Post('my-current/answers')
   @HttpCode(200)
   async createAnswers(
-    @UserId() userId: string,
-    createAnswerDto: CreateAnswerDto,
+    @UserId() userId,
+    @Body() createAnswerDto: CreateAnswerDto,
   ) {
+    //console.log(createAnswerDto);
     const answerId = await this.commandBus.execute(
       new CreateAnswerCommand(userId, createAnswerDto),
     );
@@ -92,6 +94,6 @@ export class PublicQuizController {
     if (answerId.code !== ResultCode.Success) {
       return exceptionHandler(answerId.code);
     }
-    return this.quizQueryRepository.getAnswerById(answerId);
+    return this.quizQueryRepository.getAnswerById(answerId.data);
   }
 }

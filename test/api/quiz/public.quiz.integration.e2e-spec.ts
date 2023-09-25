@@ -15,7 +15,6 @@ import {
   sendAnswer,
 } from '../../functions/quiz_functions';
 import {
-  createAnswerDto,
   createQuestionDTO,
   notStartedGamePairViewModelWithPlayer1,
   publishQuestionDTO,
@@ -270,6 +269,20 @@ describe('Super Admin quiz testing', () => {
         );
         expect(answersForPl1.answerStatus).toEqual(AnswersEnum.Correct);
 
+        //create new game by user1, connect to game by user2, add 6 answers by user1.
+        // Should return error if current user has already answered to all questions; status 403;
+        if (i === 4) {
+          // console.log(answerDto);
+          // console.log(accessTokens[1]);
+          const result = await sendAnswer(
+            httpServer,
+            answerDto,
+            accessTokens[0],
+          );
+          //console.log(result.body);
+          expect(result.status).toBe(403);
+        }
+
         const answerPl2Id = await commandBus.execute(
           new CreateAnswerCommand(users[1].id, answerDto),
         );
@@ -309,7 +322,7 @@ describe('Super Admin quiz testing', () => {
         user is in active pair but has already answered to all questions and status 403`, async () => {
       const result = await sendAnswer(
         httpServer,
-        createAnswerDto,
+        { answer: 'y' },
         accessTokens[2],
       );
       expect(result.status).toBe(403);
@@ -318,7 +331,7 @@ describe('Super Admin quiz testing', () => {
     it(`User answered to all questions and finished game trying to answer again and status 403`, async () => {
       const result = await sendAnswer(
         httpServer,
-        createAnswerDto,
+        { answer: 'y' },
         accessTokens[1],
       );
       expect(result.status).toBe(403);
