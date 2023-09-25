@@ -145,9 +145,11 @@ describe('Super Admin quiz testing', () => {
     it(`SA gets all questions with filter and pagination with e2e test `, async () => {
       // const createUser = await creatingUser(httpServer, createUserDto);
       // user = createUser.body;
+
+      let question;
       for (let i = 0; i <= 8; i++) {
         createQuestionDTO.correctAnswers.push(i.toString());
-        const question = await createQuestion(httpServer, {
+        question = await createQuestion(httpServer, {
           ...createQuestionDTO,
           body: `How old are you?${i}`,
         });
@@ -169,6 +171,12 @@ describe('Super Admin quiz testing', () => {
       expect(questions.body.items[0].published).toBe(true);
       expect(questions.body.items[3].published).toBe(true);
       expect(questions.body.items.length).toBe(4);
+
+      questions = await getQuestions(httpServer, {
+        publishedStatus: PublishedStatusEnum.all,
+      });
+      expect(questions.status).toBe(200);
+      expect(questions.body.items.length).toBe(9);
 
       questions = await getQuestions(httpServer, {
         publishedStatus: PublishedStatusEnum.notPublished,
@@ -214,6 +222,16 @@ describe('Super Admin quiz testing', () => {
       expect(questions.status).toBe(200);
       expect(questions.body.items.length).toBe(1);
       expect(questions.body.items[0].body).toEqual('How old are you?0');
+
+      await publishQuestion(httpServer, question.body.id, {
+        published: false,
+      });
+
+      questions = await getQuestions(httpServer, {
+        publishedStatus: PublishedStatusEnum.published,
+      });
+
+      expect(questions.body.items.length).toBe(3);
     });
 
     it(`SA delete question, integration test Delete Question Use Case and e2e`, async () => {

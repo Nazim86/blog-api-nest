@@ -257,6 +257,16 @@ describe('Super Admin quiz testing', () => {
             accessTokens[2],
           );
           expect(result.status).toBe(403);
+          // const userAnswer
+          // const qRepo: any = '';
+          // const game = {
+          //   firstU: {},
+          //   secondU: {},
+          //   questions: [{ id: '123', body: '123' }], //random 5 q
+          // };
+          // const queWithAnswers = await Promise.all(
+          //   game.questions.map(async (el) => await qRepo.findById(el.id)),
+          // );
         }
 
         const answersForPl1 = await dataSource
@@ -353,9 +363,9 @@ describe('Super Admin quiz testing', () => {
     status 200;`, async () => {
       let currentGame;
       //connecting player3
-      await connectUserToGame(httpServer, accessTokens[2]);
+      await connectUserToGame(httpServer, accessTokens[0]);
 
-      const player4 = await usersRepository.findUserById(users[3].id);
+      const player4 = await usersRepository.findUserById(users[1].id);
 
       const gamePairByStatus: GamePairEntity =
         await quizRepository.getGamePairByStatus(
@@ -380,7 +390,7 @@ describe('Super Admin quiz testing', () => {
 
       gamePairId = updatedGamePair.id;
 
-      await sendAnswer(httpServer, { answer: '5' }, accessTokens[2]);
+      await sendAnswer(httpServer, { answer: '5' }, accessTokens[0]);
 
       // eslint-disable-next-line prefer-const
       currentGame = await getCurrentGame(httpServer, accessTokens[2]);
@@ -388,7 +398,46 @@ describe('Super Admin quiz testing', () => {
       console.log(currentGame.body);
 
       expect(currentGame.status).toBe(200);
-      //expect(currentGame.body).toEqual(gamePairViewModelWithPlayer2);
+      expect(currentGame.body.firstPlayerProgress.score).toBe(1);
+      expect(currentGame.body.secondPlayerProgress.score).toBe(0);
+
+      currentGame = await getCurrentGame(httpServer, accessTokens[3]);
+
+      expect(currentGame.status).toBe(200);
+      expect(currentGame.body.firstPlayerProgress.score).toBe(1);
+      expect(currentGame.body.secondPlayerProgress.score).toBe(0);
+
+      await sendAnswer(httpServer, { answer: 'y' }, accessTokens[1]);
+
+      currentGame = await getCurrentGame(httpServer, accessTokens[1]);
+
+      expect(currentGame.status).toBe(200);
+      expect(currentGame.body.firstPlayerProgress.score).toBe(1);
+      expect(currentGame.body.secondPlayerProgress.score).toBe(0);
+
+      currentGame = await getCurrentGame(httpServer, accessTokens[0]);
+
+      console.log(currentGame.body);
+
+      expect(currentGame.status).toBe(200);
+      expect(currentGame.body.firstPlayerProgress.score).toBe(1);
+      expect(currentGame.body.secondPlayerProgress.score).toBe(0);
+
+      await sendAnswer(httpServer, { answer: '6' }, accessTokens[1]);
+
+      currentGame = await getCurrentGame(httpServer, accessTokens[1]);
+
+      expect(currentGame.status).toBe(200);
+      expect(currentGame.body.firstPlayerProgress.score).toBe(1);
+      expect(currentGame.body.secondPlayerProgress.score).toBe(1);
+
+      currentGame = await getCurrentGame(httpServer, accessTokens[0]);
+
+      console.log(currentGame.body);
+
+      expect(currentGame.status).toBe(200);
+      expect(currentGame.body.firstPlayerProgress.score).toBe(1);
+      expect(currentGame.body.secondPlayerProgress.score).toBe(1);
     });
   });
 });
