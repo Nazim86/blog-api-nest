@@ -22,7 +22,7 @@ export class QuizQueryRepository {
       .leftJoinAndSelect('a.question', 'q')
       .where('a.id = :id', { id: answerId })
       .getOne();
-    console.log(answer);
+    //console.log(answer);
     return {
       questionId: answer.question.id,
       answerStatus: answer.answerStatus,
@@ -60,7 +60,7 @@ export class QuizQueryRepository {
   //     .getOne();
   // }
 
-  async getGamePairById(id: string, userId: string) {
+  async getGamePairById(gameId: string, userId: string) {
     const gamePair = await this.gamePairRepo
       .createQueryBuilder('gp')
       .addSelect((qb) =>
@@ -70,7 +70,8 @@ export class QuizQueryRepository {
           .leftJoin('a.gamePairs', 'gp')
           .leftJoin('gp.player1', 'pl1')
           .leftJoin('a.player', 'apl')
-          .where('apl.id = pl1.id')
+          .where('gp.id = :gameId', { gameId })
+          .andWhere('apl.id = pl1.id')
           .andWhere('gp.status = :status', { status: GameStatusEnum.Finished }),
       )
       .addSelect((qb) =>
@@ -80,7 +81,8 @@ export class QuizQueryRepository {
           .leftJoin('a.gamePairs', 'gp')
           .leftJoin('gp.player2', 'pl2')
           .leftJoin('a.player', 'apl')
-          .where('apl.id = pl2.id')
+          .where('gp.id = :gameId', { gameId })
+          .andWhere('apl.id = pl2.id')
           .andWhere('gp.status = :status', { status: GameStatusEnum.Finished }),
       )
       .addSelect((qb) =>
@@ -90,7 +92,8 @@ export class QuizQueryRepository {
           .leftJoin('a.gamePairs', 'gp')
           .leftJoin('gp.player1', 'pl1')
           .leftJoin('a.player', 'apl')
-          .where('apl.id = pl1.id')
+          .where('gp.id = :gameId', { gameId })
+          .andWhere('apl.id = pl1.id')
           .andWhere('a.answerStatus = :answerStatus', {
             answerStatus: AnswersEnum.Correct,
           }),
@@ -102,7 +105,8 @@ export class QuizQueryRepository {
           .leftJoin('a.gamePairs', 'gp')
           .leftJoin('gp.player2', 'pl2')
           .leftJoin('a.player', 'apl')
-          .where('apl.id = pl2.id')
+          .where('gp.id = :gameId', { gameId })
+          .andWhere('apl.id = pl2.id')
           .andWhere('a.answerStatus = :answerStatus', {
             answerStatus: AnswersEnum.Correct,
           }),
@@ -179,7 +183,8 @@ export class QuizQueryRepository {
       //.leftJoinAndSelect('a.player', 'pa1' as 'pl1Answer', 'pa1.id = pl1.id')
       //.leftJoinAndSelect('a.player', 'pa2' as 'pl2Answer', 'pa2.id = pl2.id')
 
-      .where('gp.id = :id', { id: id })
+      .where('gp.id = :gameId', { gameId })
+      //.andWhere('(pl1.id = :userId or pl2.id = :userId)', { userId })
       .getRawOne();
 
     //console.log(gamePair);
