@@ -14,6 +14,7 @@ import { Devices } from '../devices/devices.entity';
 import { Comments } from '../comments/comments.entity';
 import { Blogs } from '../blogs/blogs.entity';
 import { UsersBanByBlogger } from './usersBanByBlogger.entity';
+import { GamePairEntity } from '../quiz/gamePair.entity';
 
 @Entity({ name: 'users' })
 export class Users {
@@ -73,6 +74,12 @@ export class Users {
     onUpdate: 'CASCADE',
   })
   usersBanByBlogger: UsersBanByBlogger;
+
+  @OneToMany(() => GamePairEntity, (g) => g.player1)
+  games1: GamePairEntity[];
+
+  @OneToMany(() => GamePairEntity, (g) => g.player2)
+  games2: GamePairEntity[];
 
   // @OneToOne(() => PlayersEntity, (p) => p.user)
   // @JoinColumn()

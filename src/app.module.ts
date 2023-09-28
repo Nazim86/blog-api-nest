@@ -70,7 +70,6 @@ import { Devices } from './api/entities/devices/devices.entity';
 import { Blogs } from './api/entities/blogs/blogs.entity';
 import { UsersBanByBlogger } from './api/entities/users/usersBanByBlogger.entity';
 import { BlogBanInfo } from './api/entities/blogs/blogBanInfo.entity';
-import { CreateUserTransaction } from './api/superadmin/users/application,use-cases/createUserTransaction';
 import { CreateBlogTransaction } from './api/blogger/application,use-cases/createBlogTransaction';
 import { SaBloggerBlogsController } from './api/superadmin/blogs/sa.blogger.blogs.controller';
 import { GamePairEntity } from './api/entities/quiz/gamePair.entity';
@@ -84,12 +83,13 @@ import { UpdateQuestionUseCase } from './api/superadmin/quiz/use-cases/update-qu
 import { PublishQuestionUseCase } from './api/superadmin/quiz/use-cases/publish-question-use-case';
 import { DeleteQuestionUseCase } from './api/superadmin/quiz/use-cases/delete-question-use-case';
 import { PublicQuizController } from './api/public/quiz/public.quiz.controller';
-import { CreateGamePairUseCase } from './api/public/quiz/applications,use-cases/create.gamePair.use-case';
 import { UpdateGamePairUseCase } from './api/public/quiz/applications,use-cases/update.gamePair.use-case';
 import { QuizQueryRepository } from './api/infrastructure/quiz/quiz.query.repository';
 import { QuizRepository } from './api/infrastructure/quiz/quiz.repository';
 import { CreateConnectionService } from './api/public/quiz/applications,use-cases/create-connection.service';
 import { CreateAnswerUseCase } from './api/public/quiz/applications,use-cases/create.answer.use-case';
+import { CreateUserTransaction } from './api/superadmin/users/application,use-cases/createUserTransaction';
+import { CreateGamePairUseCase } from './api/public/quiz/applications,use-cases/create.gamePair.use-case';
 
 const useCases = [
   BlogCreateUseCase,

@@ -3,7 +3,7 @@ import {
   Entity,
   JoinColumn,
   ManyToMany,
-  OneToOne,
+  ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { GameStatusEnum } from '../../../enums/game-status-enum';
@@ -28,11 +28,11 @@ export class GamePairEntity {
   @Column({ type: 'enum', enum: GameStatusEnum })
   status: GameStatusEnum;
 
-  @OneToOne(() => Users, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Users, (u) => u.games1)
   @JoinColumn()
   player1: Users;
 
-  @OneToOne(() => Users, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Users, (u) => u.games2)
   @JoinColumn()
   player2: Users;
 

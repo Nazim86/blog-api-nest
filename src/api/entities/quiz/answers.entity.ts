@@ -20,7 +20,7 @@ export class AnswersEntity {
   @Column({ type: 'enum', enum: AnswersEnum })
   answerStatus: AnswersEnum;
 
-  @Column({ type: 'timestamp with time zone', nullable: true })
+  @Column({ type: 'timestamptz', nullable: true })
   addedAt: Date;
 
   @ManyToOne(() => QuestionsEntity, (q) => q.playerAnswer, {

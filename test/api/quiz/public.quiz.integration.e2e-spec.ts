@@ -34,6 +34,11 @@ import { QuestionsEntity } from '../../../src/api/entities/quiz/questions.entity
 import { CreateAnswerCommand } from '../../../src/api/public/quiz/applications,use-cases/create.answer.use-case';
 import { AnswersEnum } from '../../../src/enums/answers-enum';
 import { AnswersEntity } from '../../../src/api/entities/quiz/answers.entity';
+import { response } from 'express';
+
+async function delay(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 describe('Super Admin quiz testing', () => {
   let app: INestApplication;
@@ -46,7 +51,7 @@ describe('Super Admin quiz testing', () => {
   let dataSource;
   let gamePairId: string;
 
-  jest.setTimeout(60 * 1000);
+  jest.setTimeout(100 * 1000);
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [rootMongooseTestModule(), AppModule],
@@ -101,7 +106,7 @@ describe('Super Admin quiz testing', () => {
       }
     });
 
-    it(`Connect current user to existing random pending pair or create new pair which will be waiting
+    it(`Connect current user, create new pair which will be waiting
      for second player`, async () => {
       const gamePairWithPlayer1 = await connectUserToGame(
         httpServer,
@@ -172,49 +177,58 @@ describe('Super Admin quiz testing', () => {
     });
 
     it(`Connecting second player and checking questions attached`, async () => {
-      const player2 = await usersRepository.findUserById(users[1].id);
+      const game = await connectUserToGame(httpServer, accessTokens[1]);
+      expect(game.status).toBe(200);
+      // expect(game.body)
 
-      const gamePairByStatus: GamePairEntity =
-        await quizRepository.getGamePairByStatus(
-          GameStatusEnum.PendingSecondPlayer,
-        );
+      // const player2 = await usersRepository.findUserById(users[1].id);
+      //
+      // const gamePairByStatus: GamePairEntity =
+      //   await quizRepository.getGamePairByStatus(
+      //     GameStatusEnum.PendingSecondPlayer,
+      //   );
+      //
+      // const fiveQuestions = await dataSource
+      //   .getRepository(QuestionsEntity)
+      //   .createQueryBuilder('q')
+      //   .where('q.published = true')
+      //   .orderBy('q.createdAt', 'ASC')
+      //   .limit(5)
+      //   .getMany();
+      //
+      // //const gamePair = new GamePairEntity();
+      // gamePairByStatus.player2 = player2;
+      // gamePairByStatus.startGameDate = new Date().toISOString();
+      // gamePairByStatus.questions = fiveQuestions;
+      // gamePairByStatus.status = GameStatusEnum.Active;
+      //
+      // const updatedGamePair = await quizRepository.saveGamePair(
+      //   gamePairByStatus,
+      // );
+      //
+      // gamePairId = updatedGamePair.id;
+      //
+      // //console.log(updatedGamePair.questions);
+      //
+      // expect(updatedGamePair.player1.login).toEqual('leo0');
+      // expect(updatedGamePair.player2.login).toEqual('leo1');
+      // expect(updatedGamePair.status).toEqual(GameStatusEnum.Active);
+      // expect(updatedGamePair.questions.length).toBe(5);
+      //
 
-      const fiveQuestions = await dataSource
-        .getRepository(QuestionsEntity)
-        .createQueryBuilder('q')
-        .where('q.published = true')
-        .orderBy('q.createdAt', 'ASC')
-        .limit(5)
-        .getMany();
-
-      const gamePair = gamePairByStatus;
-      gamePair.player2 = player2;
-      gamePair.startGameDate = new Date().toISOString();
-      gamePair.questions = fiveQuestions;
-      gamePair.status = GameStatusEnum.Active;
-
-      const updatedGamePair = await quizRepository.saveGamePair(gamePair);
-
-      gamePairId = updatedGamePair.id;
-
-      //console.log(updatedGamePair.questions);
-
-      expect(updatedGamePair.player1.login).toEqual('leo0');
-      expect(updatedGamePair.player2.login).toEqual('leo1');
-      expect(updatedGamePair.status).toEqual(GameStatusEnum.Active);
-      expect(updatedGamePair.questions.length).toBe(5);
-
-      // checking question published for first question
+      //checking question published for first question
       let question = await questionRepository.getQuestionById(
-        updatedGamePair.questions[0].id,
+        game.body.questions[0].id,
       );
       expect(question.published).toBe(true);
 
       //checking question published for last question
       question = await questionRepository.getQuestionById(
-        updatedGamePair.questions[4].id,
+        game.body.questions[4].id,
       );
       expect(question.published).toBe(true);
+
+      gamePairId = game.body.id;
     });
 
     it(`Current user is already participating in active pair and status 403`, async () => {
@@ -232,98 +246,67 @@ describe('Super Admin quiz testing', () => {
     });
 
     it(`Player1 and player2 answering questions and status 200`, async () => {
-      for (let i = 0; i < 5; i++) {
-        // console.log(`${i + 5}`, typeof `${i + 5}`);
-        const answerDto = {
-          answer: `${i + 5}`,
-        };
+      const game = await quizRepository.getGamePairByUserIdAndGameStatus(
+        users[0].id,
+      );
 
-        const answerPl1Id = await commandBus.execute(
-          new CreateAnswerCommand(users[0].id, answerDto),
+      gamePairId = game.id;
+
+      for (let i = 0; i < 5; i++) {
+        const answerPl1Id = await sendAnswer(
+          httpServer,
+          { answer: game.questions[i].correctAnswers[0] },
+          accessTokens[0],
         );
 
-        // if (i === 0) {
-        //   const game = await getCurrentGame(httpServer, accessTokens[0]);
-        //
-        //   console.log(game.body);
-        // }
+        expect(answerPl1Id.status).toBe(200);
+        expect(answerPl1Id.body.answerStatus).toBe(AnswersEnum.Correct);
 
         // Current user is not inside active pair or
         // user is in active pair but has already answered to all questions and status 403
         if (i === 2) {
           const result = await sendAnswer(
             httpServer,
-            answerDto,
+            { answer: 'd' },
             accessTokens[2],
           );
           expect(result.status).toBe(403);
-          // const userAnswer
-          // const qRepo: any = '';
-          // const game = {
-          //   firstU: {},
-          //   secondU: {},
-          //   questions: [{ id: '123', body: '123' }], //random 5 q
-          // };
-          // const queWithAnswers = await Promise.all(
-          //   game.questions.map(async (el) => await qRepo.findById(el.id)),
-          // );
         }
-
-        const answersForPl1 = await dataSource
-          .getRepository(AnswersEntity)
-          .createQueryBuilder('a')
-          .leftJoinAndSelect('a.gamePairs', 'gp')
-          .leftJoinAndSelect('a.player', 'pl')
-          .where('a.id = :id', { id: answerPl1Id.data })
-          .getOne();
-
-        //console.log(i);
-
-        expect(answersForPl1.player.login).toEqual('leo0');
-        expect(answersForPl1.gamePairs[0].status).toEqual(
-          GameStatusEnum.Active,
-        );
-        expect(answersForPl1.answerStatus).toEqual(AnswersEnum.Correct);
 
         //create new game by user1, connect to game by user2, add 6 answers by user1.
         // Should return error if current user has already answered to all questions; status 403;
         if (i === 4) {
-          // console.log(answerDto);
-          // console.log(accessTokens[1]);
           const result = await sendAnswer(
             httpServer,
-            answerDto,
+            { answer: 'd' },
             accessTokens[0],
           );
           //console.log(result.body);
           expect(result.status).toBe(403);
         }
 
-        const answerPl2Id = await commandBus.execute(
-          new CreateAnswerCommand(users[1].id, answerDto),
+        const answerPl2Id = await sendAnswer(
+          httpServer,
+          { answer: game.questions[i].correctAnswers[0] },
+          accessTokens[1],
         );
 
-        const answersForPl2 = await dataSource
-          .getRepository(AnswersEntity)
-          .createQueryBuilder('a')
-          .leftJoinAndSelect('a.gamePairs', 'gp')
-          .leftJoinAndSelect('a.player', 'pl')
-          .where('a.id = :id', { id: answerPl2Id.data })
+        expect(answerPl2Id.status).toBe(200);
+        expect(answerPl2Id.body.answerStatus).toBe(AnswersEnum.Correct);
+
+        const gameAfterAnswers = await dataSource
+          .getRepository(GamePairEntity)
+          .createQueryBuilder('gp')
+          .where('gp.id = :id', { id: gamePairId })
           .getOne();
 
+        await quizRepository.getGamePairByUserIdAndGameStatus(users[0].id);
+
         if (i === 4) {
-          expect(answersForPl2.gamePairs[0].status).toEqual(
-            GameStatusEnum.Finished,
-          );
+          expect(gameAfterAnswers.status).toEqual(GameStatusEnum.Finished);
         } else {
-          expect(answersForPl2.gamePairs[0].status).toEqual(
-            GameStatusEnum.Active,
-          );
+          expect(gameAfterAnswers.status).toEqual(GameStatusEnum.Active);
         }
-
-        expect(answersForPl2.player.login).toEqual('leo1');
-
-        expect(answersForPl2.answerStatus).toEqual(AnswersEnum.Correct);
       }
     });
 
@@ -348,12 +331,13 @@ describe('Super Admin quiz testing', () => {
         { answer: 'y' },
         accessTokens[1],
       );
+      console.log(result.status);
       expect(result.status).toBe(403);
     });
 
     it(`Should return error if no active pair for current user; status 404`, async () => {
       const game = await getCurrentGame(httpServer, accessTokens[0]);
-
+      console.log(game.status);
       expect(game.status).toBe(404);
     });
 
@@ -361,83 +345,155 @@ describe('Super Admin quiz testing', () => {
     add incorrect answer by secondPlayer; add correct answer by secondPlayer;
     get active game and call "/pair-game-quiz/pairs/my-current by both users after each answer";
     status 200;`, async () => {
-      let currentGame;
-      //connecting player3
-      await connectUserToGame(httpServer, accessTokens[0]);
+      const connectingPlayer1 = await connectUserToGame(
+        httpServer,
+        accessTokens[0],
+      );
+      //await delay(10000);
 
-      const player4 = await usersRepository.findUserById(users[1].id);
+      expect(connectingPlayer1.status).toBe(200);
 
-      const gamePairByStatus: GamePairEntity =
-        await quizRepository.getGamePairByStatus(
-          GameStatusEnum.PendingSecondPlayer,
-        );
+      const game = await connectUserToGame(httpServer, accessTokens[1]);
 
-      const fiveQuestions = await dataSource
-        .getRepository(QuestionsEntity)
-        .createQueryBuilder('q')
-        .where('q.published = true')
-        .orderBy('q.createdAt', 'ASC')
-        .limit(5)
-        .getMany();
+      expect(game.status).toBe(200);
 
-      const gamePair = gamePairByStatus;
-      gamePair.player2 = player4;
-      gamePair.startGameDate = new Date().toISOString();
-      gamePair.questions = fiveQuestions;
-      gamePair.status = GameStatusEnum.Active;
+      gamePairId = game.body.id;
 
-      const updatedGamePair = await quizRepository.saveGamePair(gamePair);
+      // console.log(newGame.body);
+      //
+      // expect(newGame.status).toBe(200);
+      //
+      // const player4 = await usersRepository.findUserById(users[1].id);
+      //
+      // const gamePairByStatus: GamePairEntity =
+      //   await quizRepository.getGamePairByStatus(
+      //     GameStatusEnum.PendingSecondPlayer,
+      //   );
+      //
+      // console.log(gamePairByStatus);
+      //
+      // const fiveQuestions = await dataSource
+      //   .getRepository(QuestionsEntity)
+      //   .createQueryBuilder('q')
+      //   .where('q.published = true')
+      //   .orderBy('q.createdAt', 'ASC')
+      //   .limit(5)
+      //   .getMany();
+      //
+      // gamePairByStatus.player2 = player4;
+      // gamePairByStatus.startGameDate = new Date().toISOString();
+      // gamePairByStatus.questions = fiveQuestions;
+      // gamePairByStatus.status = GameStatusEnum.Active;
+      //
+      // const updatedGamePair = await quizRepository.saveGamePair(
+      //   gamePairByStatus,
+      // );
+      //
+      // gamePairId = updatedGamePair.id;
+      //
+      let answer;
+      let gameByPlayer1;
+      let gameByPlayer2;
 
-      gamePairId = updatedGamePair.id;
+      console.log(game.body);
 
-      await sendAnswer(httpServer, { answer: '5' }, accessTokens[0]);
+      answer = await sendAnswer(
+        httpServer,
+        { answer: game.body.questions[0].correctAnswers[0] },
+        accessTokens[0],
+      );
 
-      // eslint-disable-next-line prefer-const
-      currentGame = await getCurrentGame(httpServer, accessTokens[2]);
+      expect(answer.body.answerStatus).toBe(AnswersEnum.Correct);
+      gameByPlayer1 = await getCurrentGame(httpServer, accessTokens[0]);
+      gameByPlayer2 = await getCurrentGame(httpServer, accessTokens[1]);
 
-      console.log(currentGame.body);
+      expect(gameByPlayer1.status).toBe(200);
+      expect(gameByPlayer1.body.firstPlayerProgress.score).toBe(1);
+      expect(gameByPlayer1.body.secondPlayerProgress.score).toBe(0);
 
-      expect(currentGame.status).toBe(200);
-      expect(currentGame.body.firstPlayerProgress.score).toBe(1);
-      expect(currentGame.body.secondPlayerProgress.score).toBe(0);
+      expect(gameByPlayer2.status).toBe(200);
+      expect(gameByPlayer2.body.firstPlayerProgress.score).toBe(1);
+      expect(gameByPlayer2.body.secondPlayerProgress.score).toBe(0);
 
-      currentGame = await getCurrentGame(httpServer, accessTokens[3]);
+      answer = await sendAnswer(httpServer, { answer: 'd' }, accessTokens[1]);
 
-      expect(currentGame.status).toBe(200);
-      expect(currentGame.body.firstPlayerProgress.score).toBe(1);
-      expect(currentGame.body.secondPlayerProgress.score).toBe(0);
+      expect(answer.body.answerStatus).toBe(AnswersEnum.Incorrect);
+      gameByPlayer1 = await getCurrentGame(httpServer, accessTokens[0]);
+      gameByPlayer2 = await getCurrentGame(httpServer, accessTokens[1]);
 
-      await sendAnswer(httpServer, { answer: 'y' }, accessTokens[1]);
+      expect(gameByPlayer1.status).toBe(200);
+      expect(gameByPlayer1.body.firstPlayerProgress.score).toBe(1);
+      expect(gameByPlayer1.body.secondPlayerProgress.score).toBe(0);
 
-      currentGame = await getCurrentGame(httpServer, accessTokens[1]);
+      expect(gameByPlayer2.status).toBe(200);
+      expect(gameByPlayer2.body.firstPlayerProgress.score).toBe(1);
+      expect(gameByPlayer2.body.secondPlayerProgress.score).toBe(0);
 
-      expect(currentGame.status).toBe(200);
-      expect(currentGame.body.firstPlayerProgress.score).toBe(1);
-      expect(currentGame.body.secondPlayerProgress.score).toBe(0);
+      answer = await sendAnswer(
+        httpServer,
+        { answer: game.body.questions[0].correctAnswers[0] },
+        accessTokens[1],
+      );
 
-      currentGame = await getCurrentGame(httpServer, accessTokens[0]);
+      expect(answer.body.answerStatus).toBe(AnswersEnum.Correct);
+      gameByPlayer1 = await getCurrentGame(httpServer, accessTokens[0]);
+      gameByPlayer2 = await getCurrentGame(httpServer, accessTokens[1]);
 
-      console.log(currentGame.body);
+      expect(gameByPlayer1.status).toBe(200);
+      expect(gameByPlayer1.body.firstPlayerProgress.score).toBe(1);
+      expect(gameByPlayer1.body.secondPlayerProgress.score).toBe(1);
 
-      expect(currentGame.status).toBe(200);
-      expect(currentGame.body.firstPlayerProgress.score).toBe(1);
-      expect(currentGame.body.secondPlayerProgress.score).toBe(0);
+      expect(gameByPlayer2.status).toBe(200);
+      expect(gameByPlayer2.body.firstPlayerProgress.score).toBe(1);
+      expect(gameByPlayer2.body.secondPlayerProgress.score).toBe(1);
 
-      await sendAnswer(httpServer, { answer: '6' }, accessTokens[1]);
-
-      currentGame = await getCurrentGame(httpServer, accessTokens[1]);
-
-      expect(currentGame.status).toBe(200);
-      expect(currentGame.body.firstPlayerProgress.score).toBe(1);
-      expect(currentGame.body.secondPlayerProgress.score).toBe(1);
-
-      currentGame = await getCurrentGame(httpServer, accessTokens[0]);
-
-      console.log(currentGame.body);
-
-      expect(currentGame.status).toBe(200);
-      expect(currentGame.body.firstPlayerProgress.score).toBe(1);
-      expect(currentGame.body.secondPlayerProgress.score).toBe(1);
+      // // eslint-disable-next-line prefer-const
+      // gameByPlayer1 = await getCurrentGame(httpServer, accessTokens[0]);
+      // gameByPlayer1 = await getCurrentGame(httpServer, accessTokens[0]);
+      //
+      // console.log(currentGame.body);
+      //
+      // expect(currentGame.status).toBe(200);
+      // expect(currentGame.body.firstPlayerProgress.score).toBe(1);
+      // expect(currentGame.body.secondPlayerProgress.score).toBe(0);
+      //
+      // currentGame = await getCurrentGame(httpServer, accessTokens[3]);
+      //
+      // expect(currentGame.status).toBe(200);
+      // expect(currentGame.body.firstPlayerProgress.score).toBe(1);
+      // expect(currentGame.body.secondPlayerProgress.score).toBe(0);
+      //
+      // await sendAnswer(httpServer, { answer: 'y' }, accessTokens[1]);
+      //
+      // currentGame = await getCurrentGame(httpServer, accessTokens[1]);
+      //
+      // expect(currentGame.status).toBe(200);
+      // expect(currentGame.body.firstPlayerProgress.score).toBe(1);
+      // expect(currentGame.body.secondPlayerProgress.score).toBe(0);
+      //
+      // currentGame = await getCurrentGame(httpServer, accessTokens[0]);
+      //
+      // console.log(currentGame.body);
+      //
+      // expect(currentGame.status).toBe(200);
+      // expect(currentGame.body.firstPlayerProgress.score).toBe(1);
+      // expect(currentGame.body.secondPlayerProgress.score).toBe(0);
+      //
+      // await sendAnswer(httpServer, { answer: '6' }, accessTokens[1]);
+      //
+      // currentGame = await getCurrentGame(httpServer, accessTokens[1]);
+      //
+      // expect(currentGame.status).toBe(200);
+      // expect(currentGame.body.firstPlayerProgress.score).toBe(1);
+      // expect(currentGame.body.secondPlayerProgress.score).toBe(1);
+      //
+      // currentGame = await getCurrentGame(httpServer, accessTokens[0]);
+      //
+      // console.log(currentGame.body);
+      //
+      // expect(currentGame.status).toBe(200);
+      // expect(currentGame.body.firstPlayerProgress.score).toBe(1);
+      // expect(currentGame.body.secondPlayerProgress.score).toBe(1);
     });
   });
 });

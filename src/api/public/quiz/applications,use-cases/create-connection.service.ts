@@ -48,18 +48,22 @@ export class CreateConnectionService {
         GameStatusEnum.PendingSecondPlayer,
       );
 
-    let gamePair;
+    //console.log(gamePairByStatus);
+
+    let gamePairId;
 
     if (!gamePairByStatus) {
-      gamePair = await this.commandBus.execute(
+      gamePairId = await this.commandBus.execute(
         new CreateGamePairCommand(userId),
       );
     } else {
-      gamePair = await this.commandBus.execute(
+      gamePairId = await this.commandBus.execute(
         new UpdateGamePairCommand(userId, gamePairByStatus),
       );
     }
 
-    return { code: ResultCode.Success, data: gamePair.id };
+    console.log(gamePairId);
+
+    return { code: ResultCode.Success, data: gamePairId };
   }
 }

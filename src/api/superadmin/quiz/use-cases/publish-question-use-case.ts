@@ -23,6 +23,7 @@ export class PublishQuestionUseCase {
     if (!question) return { code: ResultCode.NotFound };
 
     question.published = command.publishQuestionDto.published;
+    question.updatedAt = new Date().toISOString();
 
     await this.quizRepository.saveQuestion(question);
 

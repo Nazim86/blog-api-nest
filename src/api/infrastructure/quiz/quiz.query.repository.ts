@@ -61,6 +61,7 @@ export class QuizQueryRepository {
   // }
 
   async getGamePairById(gameId: string, userId: string) {
+    console.log('userId:', userId, 'gameId:', gameId);
     const gamePair = await this.gamePairRepo
       .createQueryBuilder('gp')
       .addSelect((qb) =>

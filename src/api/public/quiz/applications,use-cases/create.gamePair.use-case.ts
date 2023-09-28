@@ -16,6 +16,8 @@ export class CreateGamePairUseCase {
   ) {}
 
   async execute(command: CreateGamePairCommand) {
+    //return this.createGameTransaction.run(command.userId);
+
     const player = await this.usersRepository.findUserById(command.userId);
     //const player = await this.quizRepository.getPlayerByUserId(command.userId);
 
@@ -25,6 +27,9 @@ export class CreateGamePairUseCase {
     gamePair.status = GameStatusEnum.PendingSecondPlayer;
     // gamePair.answers = [];
 
-    return await this.quizRepository.saveGamePair(gamePair);
+    const game = await this.quizRepository.saveGamePair(gamePair);
+
+    //console.log(result);
+    return game.id;
   }
 }
