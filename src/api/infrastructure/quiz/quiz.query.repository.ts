@@ -134,7 +134,9 @@ export class QuizQueryRepository {
           qb
             .select(
               `jsonb_agg(json_build_object('questionId',cast(agg."questionId" as varchar),
-              'answerStatus',agg."answerStatus",'addedAt', agg."addedAt"))`,
+              'answerStatus',agg."answerStatus",'addedAt', to_char(
+            agg."addedAt"::timestamp at time zone 'UTC',
+            'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"'), agg."addedAt"))`,
             )
             .from((qb) => {
               return qb
@@ -155,7 +157,9 @@ export class QuizQueryRepository {
           qb
             .select(
               `jsonb_agg(json_build_object('questionId',cast(agg."questionId" as varchar),
-              'answerStatus',agg."answerStatus",'addedAt', agg."addedAt"))`,
+              'answerStatus',agg."answerStatus",'addedAt',to_char(
+            agg."addedAt"::timestamp at time zone 'UTC',
+            'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"'), agg."addedAt"))`,
             )
             .from((qb) => {
               return qb
@@ -188,7 +192,7 @@ export class QuizQueryRepository {
       //.andWhere('(pl1.id = :userId or pl2.id = :userId)', { userId })
       .getRawOne();
 
-    //console.log(gamePair);
+    console.log(gamePair);
     //writeSql(gamePair);
     //console.log(gamePair);
 
