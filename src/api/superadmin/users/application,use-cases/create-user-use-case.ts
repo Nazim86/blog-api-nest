@@ -50,6 +50,7 @@ export class CreateUsersUseCase extends BaseTransaction<CreateUserDto, string> {
     user = await this.transactionRepository.save(user, manager);
     await this.transactionRepository.save(usersBanBySA, manager);
     await this.transactionRepository.save(usersBanByBlogger, manager);
+    console.log(user);
     //console.log(result);
     return user.id;
     // const newUser = await manager.create(User, data);

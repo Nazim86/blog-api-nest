@@ -88,6 +88,7 @@ import { QuizRepository } from './api/infrastructure/quiz/quiz.repository';
 import { CreateConnectionService } from './api/public/quiz/applications,use-cases/create-connection.service';
 import { CreateAnswerUseCase } from './api/public/quiz/applications,use-cases/create.answer.use-case';
 import { CreateGamePairUseCase } from './api/public/quiz/applications,use-cases/create.gamePair.use-case';
+import { TransactionRepository } from './api/infrastructure/common/transaction.repository';
 
 const useCases = [
   BlogCreateUseCase,
@@ -217,6 +218,7 @@ export const localConfigTypeOrm: TypeOrmModuleOptions = {
     QuizRepository,
     QuizQueryRepository,
     CreateConnectionService,
+    TransactionRepository,
     ...useCases,
   ],
   exports: [TypeOrmModule],
