@@ -6,6 +6,7 @@ import { BaseTransaction } from '../../../common/baseTransaction';
 import { DataSource, EntityManager } from 'typeorm';
 import { Blogs } from '../../entities/blogs/blogs.entity';
 import { BlogBanInfo } from '../../entities/blogs/blogBanInfo.entity';
+import { TransactionRepository } from '../../infrastructure/common/transaction.repository';
 
 export class BlogCreateCommand {
   constructor(public userId: string, public createBlogDto: CreateBlogDto) {}
@@ -51,7 +52,8 @@ export class BlogCreateUseCase extends BaseTransaction<
 > {
   constructor(
     dataSource: DataSource,
-    private readonly usersRepository: UsersRepository, //private readonly createBlogTransaction: CreateBlogTransaction,
+    private readonly usersRepository: UsersRepository,
+    private readonly transactionRepository: TransactionRepository,
   ) {
     super(dataSource);
   }
@@ -77,8 +79,8 @@ export class BlogCreateUseCase extends BaseTransaction<
     blogBanInfo.banDate = null;
     blogBanInfo.blog = blog;
 
-    blog = await manager.save(blog);
-    await manager.save(blogBanInfo); // const newUser = await manager.create(User, data);
+    blog = await this.transactionRepository.save(blog, manager);
+    await this.transactionRepository.save(blogBanInfo, manager); // const newUser = await manager.create(User, data);
     // const userBalance = await manager.create(Balance, { userId: newUser.id });
 
     return blog;

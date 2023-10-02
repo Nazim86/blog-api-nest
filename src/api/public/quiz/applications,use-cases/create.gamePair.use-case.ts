@@ -1,23 +1,29 @@
 import { CommandHandler } from '@nestjs/cqrs';
-import { QuizRepository } from '../../../infrastructure/quiz/quiz.repository';
 import { GamePairEntity } from '../../../entities/quiz/gamePair.entity';
 import { GameStatusEnum } from '../../../../enums/game-status-enum';
 import { UsersRepository } from '../../../infrastructure/users/users.repository';
+import { BaseTransaction } from '../../../../common/baseTransaction';
+import { DataSource, EntityManager } from 'typeorm';
+import { TransactionRepository } from '../../../infrastructure/common/transaction.repository';
 
 export class CreateGamePairCommand {
   constructor(public userId: string) {}
 }
 
 @CommandHandler(CreateGamePairCommand)
-export class CreateGamePairUseCase {
+export class CreateGamePairUseCase extends BaseTransaction<
+  CreateGamePairCommand,
+  string
+> {
   constructor(
-    private readonly quizRepository: QuizRepository,
+    dataSource: DataSource,
+    private readonly transactionRepository: TransactionRepository,
     private readonly usersRepository: UsersRepository,
-  ) {}
+  ) {
+    super(dataSource);
+  }
 
-  async execute(command: CreateGamePairCommand) {
-    //return this.createGameTransaction.run(command.userId);
-
+  async doLogic(command: CreateGamePairCommand, manager: EntityManager) {
     const player = await this.usersRepository.findUserById(command.userId);
     //const player = await this.quizRepository.getPlayerByUserId(command.userId);
 
@@ -27,9 +33,15 @@ export class CreateGamePairUseCase {
     gamePair.status = GameStatusEnum.PendingSecondPlayer;
     // gamePair.answers = [];
 
-    const game = await this.quizRepository.saveGamePair(gamePair);
+    const game = await this.transactionRepository.save(gamePair, manager); //await this.quizRepository.saveGamePair(gamePair);
 
     //console.log(result);
     return game.id;
+  }
+
+  async execute(command: CreateGamePairCommand) {
+    //return this.createGameTransaction.run(command.userId);
+
+    return super.run(command);
   }
 }

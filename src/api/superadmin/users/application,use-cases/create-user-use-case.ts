@@ -1,7 +1,5 @@
 import { CommandHandler } from '@nestjs/cqrs';
-import { UsersRepository } from '../../../infrastructure/users/users.repository';
 import { CreateUserDto } from '../dto/createUser.Dto';
-import { UserWithBanInfo } from '../../../infrastructure/users/types/userWithBanInfo-type';
 import { BaseTransaction } from '../../../../common/baseTransaction';
 import { DataSource, EntityManager } from 'typeorm';
 import * as bcrypt from 'bcrypt';
@@ -9,6 +7,7 @@ import process from 'process';
 import { Users } from '../../../entities/users/user.entity';
 import { UsersBanBySa } from '../../../entities/users/users-ban-by-sa.entity';
 import { UsersBanByBlogger } from '../../../entities/users/usersBanByBlogger.entity';
+import { TransactionRepository } from '../../../infrastructure/common/transaction.repository';
 
 export class CreateUsersCommand {
   constructor(public createUserDto: CreateUserDto) {}
@@ -18,7 +17,7 @@ export class CreateUsersCommand {
 export class CreateUsersUseCase extends BaseTransaction<CreateUserDto, string> {
   constructor(
     dataSource: DataSource,
-    private readonly usersRepository: UsersRepository, //private readonly createUserTransaction: CreateUserTransaction,
+    private readonly transactionRepository: TransactionRepository,
   ) {
     super(dataSource);
   }
@@ -48,9 +47,9 @@ export class CreateUsersUseCase extends BaseTransaction<CreateUserDto, string> {
     usersBanByBlogger.user = user;
     usersBanByBlogger.isBanned = false;
 
-    user = await manager.save(user);
-    await manager.save(usersBanBySA);
-    await manager.save(usersBanByBlogger);
+    user = await this.transactionRepository.save(user, manager);
+    await this.transactionRepository.save(usersBanBySA, manager);
+    await this.transactionRepository.save(usersBanByBlogger, manager);
     //console.log(result);
     return user.id;
     // const newUser = await manager.create(User, data);
