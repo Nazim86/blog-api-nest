@@ -62,7 +62,7 @@ export class CreateConnectionService {
       );
     }
 
-    console.log(gamePairId);
+    //console.log(gamePairId);
 
     return { code: ResultCode.Success, data: gamePairId };
   }

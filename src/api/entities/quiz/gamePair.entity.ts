@@ -28,11 +28,11 @@ export class GamePairEntity {
   @Column({ type: 'enum', enum: GameStatusEnum })
   status: GameStatusEnum;
 
-  @ManyToOne(() => Users, (u) => u.games1)
+  @ManyToOne(() => Users)
   @JoinColumn()
   player1: Users;
 
-  @ManyToOne(() => Users, (u) => u.games2)
+  @ManyToOne(() => Users)
   @JoinColumn()
   player2: Users;
 

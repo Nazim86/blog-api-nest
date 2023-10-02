@@ -198,6 +198,8 @@ export class UserQueryRepo {
       .where('u.id=:id', { id })
       .getOne();
 
+    // console.log(user);
+
     return {
       id: user.id,
       login: user.login,

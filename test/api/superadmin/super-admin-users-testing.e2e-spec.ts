@@ -56,6 +56,7 @@ describe('Super Admin blogs testing', () => {
           login: `leo${i}`,
           email: `nazim86mammadov${i}@yandex.ru`,
         });
+        console.log(user.body);
         expect(user.status).toBe(201);
         expect(user.body.login).toEqual(`leo${i}`);
         expect(user.body.email).toEqual(`nazim86mammadov${i}@yandex.ru`);

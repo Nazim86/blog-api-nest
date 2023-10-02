@@ -30,6 +30,8 @@ export class UpdateGamePairUseCase {
     gamePair.questions = await this.questionsRepository.getRandomQuestions(5);
     gamePair.status = GameStatusEnum.Active;
 
-    return await this.quizRepository.saveGamePair(gamePair);
+    const game = await this.quizRepository.saveGamePair(gamePair);
+
+    return game.id;
   }
 }

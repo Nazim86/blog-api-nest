@@ -70,7 +70,6 @@ import { Devices } from './api/entities/devices/devices.entity';
 import { Blogs } from './api/entities/blogs/blogs.entity';
 import { UsersBanByBlogger } from './api/entities/users/usersBanByBlogger.entity';
 import { BlogBanInfo } from './api/entities/blogs/blogBanInfo.entity';
-import { CreateBlogTransaction } from './api/blogger/application,use-cases/createBlogTransaction';
 import { SaBloggerBlogsController } from './api/superadmin/blogs/sa.blogger.blogs.controller';
 import { GamePairEntity } from './api/entities/quiz/gamePair.entity';
 import { SAQuizQuestionsController } from './api/superadmin/quiz/api/sa.quiz.questions.controller';
@@ -88,7 +87,6 @@ import { QuizQueryRepository } from './api/infrastructure/quiz/quiz.query.reposi
 import { QuizRepository } from './api/infrastructure/quiz/quiz.repository';
 import { CreateConnectionService } from './api/public/quiz/applications,use-cases/create-connection.service';
 import { CreateAnswerUseCase } from './api/public/quiz/applications,use-cases/create.answer.use-case';
-import { CreateUserTransaction } from './api/superadmin/users/application,use-cases/createUserTransaction';
 import { CreateGamePairUseCase } from './api/public/quiz/applications,use-cases/create.gamePair.use-case';
 
 const useCases = [
@@ -120,8 +118,8 @@ const useCases = [
   RegistrationConfirmationUseCase,
   DeviceDeleteByIdUseCase,
   DeleteDevicesUseCase,
-  CreateUserTransaction,
-  CreateBlogTransaction,
+  //CreateUserTransaction,
+  //CreateBlogTransaction,
   CreateQuestionUseCase,
   UpdateQuestionUseCase,
   PublishQuestionUseCase,

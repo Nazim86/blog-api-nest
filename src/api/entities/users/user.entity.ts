@@ -75,11 +75,11 @@ export class Users {
   })
   usersBanByBlogger: UsersBanByBlogger;
 
-  @OneToMany(() => GamePairEntity, (g) => g.player1)
-  games1: GamePairEntity[];
-
-  @OneToMany(() => GamePairEntity, (g) => g.player2)
-  games2: GamePairEntity[];
+  // @OneToMany(() => GamePairEntity, (g) => g.player1)
+  // games1: GamePairEntity[];
+  //
+  // @OneToMany(() => GamePairEntity, (g) => g.player2)
+  // games2: GamePairEntity[];
 
   // @OneToOne(() => PlayersEntity, (p) => p.user)
   // @JoinColumn()

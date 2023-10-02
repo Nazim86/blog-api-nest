@@ -7,7 +7,7 @@ export abstract class BaseTransaction<TransactionInput, TransactionOutput> {
 
   // this function will contain all of the operations that you need to perform
   // and has to be implemented in all transaction classes
-  protected abstract execute(
+  protected abstract doLogic(
     data: TransactionInput,
     manager: EntityManager,
   ): Promise<TransactionOutput>;
@@ -25,7 +25,7 @@ export abstract class BaseTransaction<TransactionInput, TransactionOutput> {
     await queryRunner.startTransaction();
 
     try {
-      const result = await this.execute(data, queryRunner.manager);
+      const result = await this.doLogic(data, queryRunner.manager);
       await queryRunner.commitTransaction();
       return result;
     } catch (error) {
@@ -42,6 +42,6 @@ export abstract class BaseTransaction<TransactionInput, TransactionOutput> {
     data: TransactionInput,
     manager: EntityManager,
   ): Promise<TransactionOutput> {
-    return this.execute(data, manager);
+    return this.doLogic(data, manager);
   }
 }
