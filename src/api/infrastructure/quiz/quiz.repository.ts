@@ -55,6 +55,21 @@ export class QuizRepository {
       // })
       .getOne();
   }
+  // async getGamePairByUserIdAndGameId(
+  //   userId: string,
+  //   gameId: string,
+  // ): Promise<GamePairEntity> {
+  //   //console.log(result);
+  //   return await this.gamePairRepo
+  //     .createQueryBuilder('gp')
+  //     .leftJoinAndSelect('gp.player1', 'pl1')
+  //     .leftJoinAndSelect('gp.player2', 'pl2')
+  //     .leftJoinAndSelect('gp.questions', 'q')
+  //     .leftJoinAndSelect('gp.answers', 'a')
+  //     .where('(pl1.id = :userId or pl2.id = :userId)', { userId })
+  //     .andWhere('gp.id = gameId', { gameId })
+  //     .getOne();
+  // }
 
   async getGamePairByUserIdAndGameStatus(
     userId: string,
@@ -77,6 +92,22 @@ export class QuizRepository {
           gameStatusPending: GameStatusEnum.PendingSecondPlayer,
         },
       )
+      .getOne();
+  }
+
+  async getGamePairByUserIdAndGameStatusActive(
+    userId: string,
+  ): Promise<GamePairEntity> {
+    return await this.gamePairRepo
+      .createQueryBuilder('gp')
+      .leftJoinAndSelect('gp.player1', 'pl1')
+      .leftJoinAndSelect('gp.player2', 'pl2')
+      .leftJoinAndSelect('gp.questions', 'q')
+      .leftJoinAndSelect('gp.answers', 'a')
+      .where(`(pl1.id = :userId or pl2.id = :userId)`, { userId })
+      .andWhere('gp.status = :gameStatusActive', {
+        gameStatusActive: GameStatusEnum.Active,
+      })
       .getOne();
   }
   async getGamePairById(id: string): Promise<GamePairEntity> {

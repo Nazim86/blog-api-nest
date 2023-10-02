@@ -315,11 +315,18 @@ describe('Super Admin quiz testing', () => {
 
       expect(connectingPlayer1.status).toBe(200);
 
-      const game = await connectUserToGame(httpServer, accessTokens[1]);
+      const gameFromConnectGame = await connectUserToGame(
+        httpServer,
+        accessTokens[1],
+      );
 
-      expect(game.status).toBe(200);
+      expect(gameFromConnectGame.status).toBe(200);
 
-      gamePairId = game.body.id;
+      gamePairId = gameFromConnectGame.body.id;
+
+      const game = await quizRepository.getGamePairById(gamePairId);
+
+      //console.log(game);
 
       // console.log(newGame.body);
       //
@@ -358,13 +365,14 @@ describe('Super Admin quiz testing', () => {
       let gameByPlayer2;
 
       //console.log(game.body);
+      //console.log(game.body);
 
       answer = await sendAnswer(
         httpServer,
-        { answer: game.body.questions[0].correctAnswers[0] },
+        { answer: game.questions[0].correctAnswers[0] },
         accessTokens[0],
       );
-
+      console.log(answer.body);
       expect(answer.body.answerStatus).toBe(AnswersEnum.Correct);
       gameByPlayer1 = await getCurrentGame(httpServer, accessTokens[0]);
       gameByPlayer2 = await getCurrentGame(httpServer, accessTokens[1]);
@@ -396,7 +404,7 @@ describe('Super Admin quiz testing', () => {
 
       answer = await sendAnswer(
         httpServer,
-        { answer: game.body.questions[0].correctAnswers[0] },
+        { answer: game.questions[1].correctAnswers[0] },
         accessTokens[1],
       );
 

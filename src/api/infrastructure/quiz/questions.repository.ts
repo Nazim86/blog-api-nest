@@ -25,10 +25,16 @@ export class QuestionsRepository {
       .createQueryBuilder()
       .where('published = true')
       .orderBy('RANDOM()') // Use RANDOM() for PostgreSQL
-      .limit(count)
+      .take(count)
       .getMany();
   }
 
+  // async getQuestions(): Promise<QuestionsEntity[]> {
+  //   return this.questionsRepo
+  //     .createQueryBuilder()
+  //     .where('published = true')
+  //     .getMany();
+  // }
   async deleteQuestionById(id: string): Promise<boolean> {
     const isDeleted = await this.questionsRepo
       .createQueryBuilder()

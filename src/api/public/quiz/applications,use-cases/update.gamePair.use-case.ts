@@ -32,6 +32,8 @@ export class UpdateGamePairUseCase extends BaseTransaction<
     //   command.userId,
     // );
 
+    // const questions = await this.questionsRepository.getQuestions();
+
     const gamePair = command.gamePair;
     gamePair.player2 = player;
     gamePair.startGameDate = new Date().toISOString();

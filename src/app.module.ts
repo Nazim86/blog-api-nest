@@ -157,8 +157,8 @@ export const neonConfigForTypeOrm: TypeOrmModuleOptions = {
   entities,
   ssl: true,
   database: process.env.PG_DATABASE,
-  autoLoadEntities: true,
-  synchronize: true,
+  autoLoadEntities: false,
+  synchronize: false,
 };
 
 export const localConfigTypeOrm: TypeOrmModuleOptions = {
