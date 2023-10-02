@@ -6,28 +6,29 @@ import { GameStatusEnum } from '../../../../enums/game-status-enum';
 import { ResultCode } from '../../../../exception-handler/result-code-enum';
 import { UsersRepository } from '../../../infrastructure/users/users.repository';
 import { AnswersEnum } from '../../../../enums/answers-enum';
+import { BaseTransaction } from '../../../../common/baseTransaction';
+import { DataSource, EntityManager } from 'typeorm';
+import { TransactionRepository } from '../../../infrastructure/common/transaction.repository';
 
 export class CreateAnswerCommand {
   constructor(public userId: string, public createAnswerDto: CreateAnswerDto) {}
 }
 
 @CommandHandler(CreateAnswerCommand)
-export class CreateAnswerUseCase {
+export class CreateAnswerUseCase extends BaseTransaction<
+  CreateAnswerCommand,
+  any
+> {
   constructor(
+    dataSource: DataSource,
     private readonly quizRepository: QuizRepository,
     private readonly usersRepository: UsersRepository,
-  ) {}
+    private transactionRepository: TransactionRepository,
+  ) {
+    super(dataSource);
+  }
 
-  async execute(command: CreateAnswerCommand) {
-    // const player: PlayersEntity = await this.quizRepository.getPlayerByUserId(
-    //   command.userId,
-    // );
-
-    // console.log(
-    //   command.createAnswerDto.answer,
-    //   typeof command.createAnswerDto.answer,
-    // );
-
+  async doLogic(command: CreateAnswerCommand, manager: EntityManager) {
     const player = await this.usersRepository.findUserById(command.userId);
 
     const gamePair = await this.quizRepository.getGamePairByUserId(
@@ -52,11 +53,6 @@ export class CreateAnswerUseCase {
 
     let answerStatus;
 
-    // console.log('userid', player.id);
-    // console.log('answersLength', answers.length);
-    // console.log('questions', gamePair.questions[answers.length]);
-    // console.log('playerAnswer', command.createAnswerDto.answer);
-    //console.log(command.createAnswerDto);
     if (
       gamePair.questions[answers.length].correctAnswers.includes(
         command.createAnswerDto.answer,
@@ -74,7 +70,7 @@ export class CreateAnswerUseCase {
     answer.answerStatus = answerStatus;
     answer.gamePairs = gamePair;
 
-    const newAnswer = await this.quizRepository.saveAnswer(answer);
+    const newAnswer = await this.transactionRepository.save(answer, manager);
 
     //console.log(newAnswer);
 
@@ -85,11 +81,22 @@ export class CreateAnswerUseCase {
 
     gamePair.answers.push(newAnswer);
 
-    await this.quizRepository.saveGamePair(gamePair);
+    await this.transactionRepository.save(gamePair, manager);
 
     return {
       code: ResultCode.Success,
       data: newAnswer.id,
     };
+  }
+  async execute(command: CreateAnswerCommand) {
+    // const player: PlayersEntity = await this.quizRepository.getPlayerByUserId(
+    //   command.userId,
+    // );
+
+    // console.log(
+    //   command.createAnswerDto.answer,
+    //   typeof command.createAnswerDto.answer,
+    // );
+    return super.run(command);
   }
 }

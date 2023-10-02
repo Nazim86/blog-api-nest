@@ -28,11 +28,7 @@ import { UsersRepository } from '../../../src/api/infrastructure/users/users.rep
 import { GamePairEntity } from '../../../src/api/entities/quiz/gamePair.entity';
 import { QuizRepository } from '../../../src/api/infrastructure/quiz/quiz.repository';
 import { DataSource } from 'typeorm';
-import { QuestionsEntity } from '../../../src/api/entities/quiz/questions.entity';
-import { CreateAnswerCommand } from '../../../src/api/public/quiz/applications,use-cases/create.answer.use-case';
 import { AnswersEnum } from '../../../src/enums/answers-enum';
-import { AnswersEntity } from '../../../src/api/entities/quiz/answers.entity';
-import { response } from 'express';
 
 async function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -297,13 +293,13 @@ describe('Super Admin quiz testing', () => {
         { answer: 'y' },
         accessTokens[1],
       );
-      console.log(result.status);
+      //console.log(result.status);
       expect(result.status).toBe(403);
     });
 
     it(`Should return error if no active pair for current user; status 404`, async () => {
       const game = await getCurrentGame(httpServer, accessTokens[0]);
-      console.log(game.status);
+      //console.log(game.status);
       expect(game.status).toBe(404);
     });
 
@@ -361,7 +357,7 @@ describe('Super Admin quiz testing', () => {
       let gameByPlayer1;
       let gameByPlayer2;
 
-      console.log(game.body);
+      //console.log(game.body);
 
       answer = await sendAnswer(
         httpServer,
