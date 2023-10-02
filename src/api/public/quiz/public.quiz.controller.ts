@@ -41,6 +41,10 @@ export class PublicQuizController {
       userId,
     );
 
+    console.log(game);
+
+    // console.log(gameByUserId.id);
+
     if (game.code !== ResultCode.Success) return exceptionHandler(game.code);
 
     return game.data;

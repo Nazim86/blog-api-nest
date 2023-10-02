@@ -31,14 +31,14 @@ export class CreateAnswerUseCase extends BaseTransaction<
   async doLogic(command: CreateAnswerCommand, manager: EntityManager) {
     const player = await this.usersRepository.findUserById(command.userId);
 
-    console.log(command.userId);
+    //console.log(command.userId);
 
     const gamePair =
       await this.quizRepository.getGamePairByUserIdAndGameStatusActive(
         command.userId,
       );
 
-    console.log(gamePair);
+    //console.log(gamePair);
 
     if (!gamePair) return { code: ResultCode.Forbidden };
 
@@ -48,7 +48,7 @@ export class CreateAnswerUseCase extends BaseTransaction<
         gamePair.id,
       );
 
-    console.log(answers);
+    //console.log(answers);
 
     if (gamePair && answers.length === 5) return { code: ResultCode.Forbidden };
 

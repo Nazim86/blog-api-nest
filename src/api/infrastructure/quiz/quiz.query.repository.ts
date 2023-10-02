@@ -143,12 +143,12 @@ export class QuizQueryRepository {
                 .select(`a."questionId", a."answerStatus",a."addedAt"`)
                 .from(AnswersEntity, 'a')
                 .leftJoin('a.gamePairs', 'agp')
-                .leftJoin('agp.player1', 'pl1')
-                .where('pl1.id = gp.player1Id')
-                .andWhere('agp.id = gp.id')
-                .andWhere('a.answerStatus = :answerStatus', {
-                  answerStatus: AnswersEnum.Correct,
-                });
+                .leftJoin('a.player', 'pl')
+                .where('pl.id = gp.player1Id')
+                .andWhere('agp.id = :gameId', { gameId });
+              // .andWhere('a.answerStatus = :answerStatus', {
+              //   answerStatus: AnswersEnum.Correct,
+              // });
             }, 'agg'),
         'player1Answers',
       )
@@ -166,12 +166,12 @@ export class QuizQueryRepository {
                 .select(`a."questionId", a."answerStatus",a."addedAt"`)
                 .from(AnswersEntity, 'a')
                 .leftJoin('a.gamePairs', 'agp')
-                .leftJoin('agp.player2', 'pl2')
-                .where('pl2.id = gp.player2Id')
-                .andWhere('agp.id = gp.id')
-                .andWhere('a.answerStatus = :answerStatus', {
-                  answerStatus: AnswersEnum.Correct,
-                });
+                .leftJoin('a.player', 'pl')
+                .where('pl.id = gp.player2Id')
+                .andWhere('agp.id = :gameId', { gameId });
+              // .andWhere('a.answerStatus = :answerStatus', {
+              //   answerStatus: AnswersEnum.Correct,
+              // });
             }, 'agg'),
         'player2Answers',
       )
@@ -192,9 +192,8 @@ export class QuizQueryRepository {
       //.andWhere('(pl1.id = :userId or pl2.id = :userId)', { userId })
       .getRawOne();
 
-    //console.log(gamePair);
+    console.log(gamePair);
     //writeSql(gamePair);
-    //console.log(gamePair);
 
     if (!gamePair) return { code: ResultCode.NotFound };
 

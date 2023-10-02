@@ -67,6 +67,12 @@ export const getGameById = async (
     .auth(accessToken, { type: 'bearer' })
     .send();
 };
+export const getGames = async (httpServer, accessToken: string, id: string) => {
+  return request(httpServer)
+    .get(`/pair-game-quiz/pairs`)
+    .auth(accessToken, { type: 'bearer' })
+    .send();
+};
 
 export const sendAnswer = (
   httpServer,
