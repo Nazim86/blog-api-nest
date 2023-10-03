@@ -8,7 +8,6 @@ import { ResultCode } from '../../../exception-handler/result-code-enum';
 
 export class QuizQueryRepository {
   constructor(
-    //private readonly dataSource: DataSource,
     @InjectRepository(GamePairEntity)
     private readonly gamePairRepo: Repository<GamePairEntity>,
     @InjectRepository(AnswersEntity)
@@ -29,62 +28,10 @@ export class QuizQueryRepository {
     };
   }
 
-  // async getPlayerByUserId(userId: string) {
-  //   return this.playersRepo
-  //     .createQueryBuilder('p')
-  //     .leftJoinAndSelect('p.gamePair', 'gp')
-  //     .leftJoinAndSelect('p.answer', 'a')
-  //     .leftJoinAndSelect('p.user', 'u')
-  //     .where('u.id = :userId', { userId: userId })
-  //     .getOne();
-  // }
-
-  // async getGamePairByUserId(userId: string): Promise<GamePairEntity> {
-  //   return this.gamePairRepo
-  //     .createQueryBuilder('gp')
-  //     .leftJoinAndSelect('gp.player1', 'pl1')
-  //     .leftJoinAndSelect('gp.player2', 'pl2')
-  //     .leftJoinAndSelect('gp.questions', 'q')
-  //     .where('pl1.id = :userId', { userId: userId })
-  //     .orWhere('pl2.id = :userId', { userId: userId })
-  //     .getOne();
-  // }
-  // async getGamePairByStatus(status: GameStatusEnum): Promise<GamePairEntity> {
-  //   return this.gamePairRepo
-  //     .createQueryBuilder('gp')
-  //     .leftJoinAndSelect('gp.player1', 'pl1')
-  //     .leftJoinAndSelect('gp.player2', 'pl2')
-  //     .leftJoinAndSelect('gp.questions', 'q')
-  //     .where('gp.status = :status', { status: status })
-  //     .getOne();
-  // }
-
   async getGamePairById(gameId: string, userId: string) {
     //console.log('userId:', userId, 'gameId:', gameId);
     const gamePair = await this.gamePairRepo
       .createQueryBuilder('gp')
-      // .addSelect((qb) =>
-      //   qb
-      //     .select(`sum(date_part('microseconds',"addedAt"))`, 'pl1DateSum')
-      //     .from(AnswersEntity, 'a')
-      //     .leftJoin('a.gamePairs', 'gp')
-      //     .leftJoin('gp.player1', 'pl1')
-      //     .leftJoin('a.player', 'apl')
-      //     .where('gp.id = :gameId', { gameId })
-      //     .andWhere('apl.id = pl1.id')
-      //     .andWhere('gp.status = :status', { status: GameStatusEnum.Finished }),
-      // )
-      // .addSelect((qb) =>
-      //   qb
-      //     .select(`sum(date_part('microseconds',"addedAt"))`, 'pl2DateSum')
-      //     .from(AnswersEntity, 'a')
-      //     .leftJoin('a.gamePairs', 'gp')
-      //     .leftJoin('gp.player2', 'pl2')
-      //     .leftJoin('a.player', 'apl')
-      //     .where('gp.id = :gameId', { gameId })
-      //     .andWhere('apl.id = pl2.id')
-      //     .andWhere('gp.status = :status', { status: GameStatusEnum.Finished }),
-      // )
       .addSelect((qb) =>
         qb
           .select(`count(*)`, 'pl1Score')
@@ -181,26 +128,13 @@ export class QuizQueryRepository {
       .leftJoinAndSelect('gp.player2', 'pl2')
       .leftJoinAndSelect('gp.questions', 'q')
       .leftJoinAndSelect('gp.answers', 'a')
-      // .leftJoinAndSelect(
-      //   'gp.answers',
-      //   'pl1Answer',
-      //   'pl1Answer.playerId = pl1.id',
-      // )
-      // .where('a.playerId = pl1')
-      //.leftJoinAndSelect('a.player', 'pa1' as 'pl1Answer', 'pa1.id = pl1.id')
-      //.leftJoinAndSelect('a.player', 'pa2' as 'pl2Answer', 'pa2.id = pl2.id')
-
       .where('gp.id = :gameId', { gameId })
-      //.andWhere('(pl1.id = :userId or pl2.id = :userId)', { userId })
       .getRawOne();
 
     console.log(gamePair);
     //writeSql(gamePair);
 
     if (!gamePair) return { code: ResultCode.NotFound };
-
-    // console.log(gamePair.pl1_id, gamePair.pl2_id);
-    // console.log(userId);
 
     if (gamePair.pl1_id !== userId && gamePair.pl2_id !== userId)
       return { code: ResultCode.Forbidden };
@@ -225,22 +159,6 @@ export class QuizQueryRepository {
         player2Score += 1;
       }
     }
-
-    // if (
-    //   player1Score > 0 &&
-    //   gamePair.pl1DateSum &&
-    //   gamePair.pl1DateSum < gamePair.pl2DateSum
-    // ) {
-    //   player1Score += 1;
-    // }
-    //
-    // if (
-    //   player2Score > 0 &&
-    //   gamePair.pl2DateSum &&
-    //   gamePair.pl2DateSum < gamePair.pl1DateSum
-    // ) {
-    //   player2Score += 1;
-    // }
 
     if (gamePair.pl1_id && gamePair.pl2_id) {
       secondPlayerProgress = {
