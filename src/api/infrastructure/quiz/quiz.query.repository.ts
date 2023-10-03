@@ -5,7 +5,6 @@ import { GamePairEntity } from '../../entities/quiz/gamePair.entity';
 import { AnswersEntity } from '../../entities/quiz/answers.entity';
 import { AnswersEnum } from '../../../enums/answers-enum';
 import { ResultCode } from '../../../exception-handler/result-code-enum';
-import { GameStatusEnum } from '../../../enums/game-status-enum';
 
 export class QuizQueryRepository {
   constructor(
@@ -64,28 +63,28 @@ export class QuizQueryRepository {
     //console.log('userId:', userId, 'gameId:', gameId);
     const gamePair = await this.gamePairRepo
       .createQueryBuilder('gp')
-      .addSelect((qb) =>
-        qb
-          .select(`sum(date_part('microseconds',"addedAt"))`, 'pl1DateSum')
-          .from(AnswersEntity, 'a')
-          .leftJoin('a.gamePairs', 'gp')
-          .leftJoin('gp.player1', 'pl1')
-          .leftJoin('a.player', 'apl')
-          .where('gp.id = :gameId', { gameId })
-          .andWhere('apl.id = pl1.id')
-          .andWhere('gp.status = :status', { status: GameStatusEnum.Finished }),
-      )
-      .addSelect((qb) =>
-        qb
-          .select(`sum(date_part('microseconds',"addedAt"))`, 'pl2DateSum')
-          .from(AnswersEntity, 'a')
-          .leftJoin('a.gamePairs', 'gp')
-          .leftJoin('gp.player2', 'pl2')
-          .leftJoin('a.player', 'apl')
-          .where('gp.id = :gameId', { gameId })
-          .andWhere('apl.id = pl2.id')
-          .andWhere('gp.status = :status', { status: GameStatusEnum.Finished }),
-      )
+      // .addSelect((qb) =>
+      //   qb
+      //     .select(`sum(date_part('microseconds',"addedAt"))`, 'pl1DateSum')
+      //     .from(AnswersEntity, 'a')
+      //     .leftJoin('a.gamePairs', 'gp')
+      //     .leftJoin('gp.player1', 'pl1')
+      //     .leftJoin('a.player', 'apl')
+      //     .where('gp.id = :gameId', { gameId })
+      //     .andWhere('apl.id = pl1.id')
+      //     .andWhere('gp.status = :status', { status: GameStatusEnum.Finished }),
+      // )
+      // .addSelect((qb) =>
+      //   qb
+      //     .select(`sum(date_part('microseconds',"addedAt"))`, 'pl2DateSum')
+      //     .from(AnswersEntity, 'a')
+      //     .leftJoin('a.gamePairs', 'gp')
+      //     .leftJoin('gp.player2', 'pl2')
+      //     .leftJoin('a.player', 'apl')
+      //     .where('gp.id = :gameId', { gameId })
+      //     .andWhere('apl.id = pl2.id')
+      //     .andWhere('gp.status = :status', { status: GameStatusEnum.Finished }),
+      // )
       .addSelect((qb) =>
         qb
           .select(`count(*)`, 'pl1Score')
@@ -210,21 +209,38 @@ export class QuizQueryRepository {
     let player2Score = Number(gamePair.pl2Score);
     let secondPlayerProgress = null;
 
-    if (
-      player1Score > 0 &&
-      gamePair.pl1DateSum &&
-      gamePair.pl1DateSum < gamePair.pl2DateSum
-    ) {
-      player1Score += 1;
-    }
+    console.log(gamePair.pl1DateSum, gamePair.pl2DateSum);
 
     if (
-      player2Score > 0 &&
-      gamePair.pl2DateSum &&
-      gamePair.pl2DateSum < gamePair.pl1DateSum
+      gamePair.player1Answers &&
+      gamePair.player2Answers &&
+      gamePair.player1Answers.length === 5 &&
+      gamePair.player2Answers.length === 5
     ) {
-      player2Score += 1;
+      if (
+        gamePair.player1Answers[4].addedAt < gamePair.player2Answers[4].addedAt
+      ) {
+        player1Score += 1;
+      } else {
+        player2Score += 1;
+      }
     }
+
+    // if (
+    //   player1Score > 0 &&
+    //   gamePair.pl1DateSum &&
+    //   gamePair.pl1DateSum < gamePair.pl2DateSum
+    // ) {
+    //   player1Score += 1;
+    // }
+    //
+    // if (
+    //   player2Score > 0 &&
+    //   gamePair.pl2DateSum &&
+    //   gamePair.pl2DateSum < gamePair.pl1DateSum
+    // ) {
+    //   player2Score += 1;
+    // }
 
     if (gamePair.pl1_id && gamePair.pl2_id) {
       secondPlayerProgress = {

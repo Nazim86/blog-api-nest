@@ -17,14 +17,11 @@ import {
   notStartedGamePairViewModelWithPlayer1,
   publishQuestionDTO,
 } from '../../data/quiz-data';
-import { CommandBus } from '@nestjs/cqrs';
 
 import { creatingUser, loginUser } from '../../functions/user_functions';
 import { createUserDto, loginDto } from '../../data/user-data';
 import { GameStatusEnum } from '../../../src/enums/game-status-enum';
 import { QuestionsRepository } from '../../../src/api/infrastructure/quiz/questions.repository';
-
-import { UsersRepository } from '../../../src/api/infrastructure/users/users.repository';
 import { GamePairEntity } from '../../../src/api/entities/quiz/gamePair.entity';
 import { QuizRepository } from '../../../src/api/infrastructure/quiz/quiz.repository';
 import { DataSource } from 'typeorm';
@@ -524,6 +521,9 @@ describe('Super Admin quiz testing', () => {
       );
 
       console.log(gameById.body);
+
+      expect(gameById.body.firstPlayerProgress.score).toBe(5);
+      expect(gameById.body.secondPlayerProgress.score).toBe(4);
 
       // expect(gameByPlayer1.body.firstPlayerProgress.score).toBe(5);
       // expect(gameByPlayer1.body.secondPlayerProgress.score).toBe(4);
