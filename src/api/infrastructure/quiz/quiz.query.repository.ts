@@ -145,7 +145,8 @@ export class QuizQueryRepository {
                 .leftJoin('a.gamePairs', 'agp')
                 .leftJoin('a.player', 'pl')
                 .where('pl.id = gp.player1Id')
-                .andWhere('agp.id = :gameId', { gameId });
+                .andWhere('agp.id = :gameId', { gameId })
+                .orderBy('a.addedAt', 'ASC');
               // .andWhere('a.answerStatus = :answerStatus', {
               //   answerStatus: AnswersEnum.Correct,
               // });
@@ -168,7 +169,8 @@ export class QuizQueryRepository {
                 .leftJoin('a.gamePairs', 'agp')
                 .leftJoin('a.player', 'pl')
                 .where('pl.id = gp.player2Id')
-                .andWhere('agp.id = :gameId', { gameId });
+                .andWhere('agp.id = :gameId', { gameId })
+                .orderBy('a.addedAt', 'ASC');
               // .andWhere('a.answerStatus = :answerStatus', {
               //   answerStatus: AnswersEnum.Correct,
               // });
@@ -192,7 +194,7 @@ export class QuizQueryRepository {
       //.andWhere('(pl1.id = :userId or pl2.id = :userId)', { userId })
       .getRawOne();
 
-    console.log(gamePair);
+    //console.log(gamePair);
     //writeSql(gamePair);
 
     if (!gamePair) return { code: ResultCode.NotFound };

@@ -377,10 +377,10 @@ describe('Super Admin quiz testing', () => {
       gameByPlayer1 = await getCurrentGame(httpServer, accessTokens[0]);
       gameByPlayer2 = await getCurrentGame(httpServer, accessTokens[1]);
 
-      console.log(gameByPlayer2.body.secondPlayerProgress);
-      console.log(gameByPlayer2.body.firstPlayerProgress);
-      console.log(gameByPlayer1.body.firstPlayerProgress);
-      console.log(gameByPlayer1.body.secondPlayerProgress);
+      // console.log(gameByPlayer2.body.secondPlayerProgress);
+      // console.log(gameByPlayer2.body.firstPlayerProgress);
+      // console.log(gameByPlayer1.body.firstPlayerProgress);
+      // console.log(gameByPlayer1.body.secondPlayerProgress);
       expect(gameByPlayer1.status).toBe(200);
       expect(gameByPlayer1.body.firstPlayerProgress.score).toBe(1);
       expect(gameByPlayer1.body.secondPlayerProgress.score).toBe(0);
@@ -396,8 +396,8 @@ describe('Super Admin quiz testing', () => {
       gameByPlayer1 = await getCurrentGame(httpServer, accessTokens[0]);
       gameByPlayer2 = await getCurrentGame(httpServer, accessTokens[1]);
 
-      console.log(gameByPlayer1.body);
-      console.log(gameByPlayer2.body);
+      //console.log(gameByPlayer1.body);
+      //console.log(gameByPlayer2.body);
 
       expect(gameByPlayer1.status).toBe(200);
       expect(gameByPlayer1.body.firstPlayerProgress.score).toBe(1);
