@@ -38,12 +38,12 @@ describe('Super Admin quiz testing', () => {
   let app: INestApplication;
   //let createAnswerUseCase: CreateAnswerUseCase;
   let httpServer;
-  let commandBus: CommandBus;
+  //let commandBus: CommandBus;
   let questionRepository: QuestionsRepository;
-  let usersRepository;
+  //let usersRepository;
   let quizRepository;
   let dataSource;
-  let gamePairId: string;
+  //let gamePairId: string;
 
   jest.setTimeout(100 * 1000);
   beforeAll(async () => {
@@ -59,9 +59,9 @@ describe('Super Admin quiz testing', () => {
 
     httpServer = app.getHttpServer();
 
-    commandBus = app.get(CommandBus);
+    //commandBus = app.get(CommandBus);
     questionRepository = app.get(QuestionsRepository);
-    usersRepository = app.get(UsersRepository);
+    //usersRepository = app.get(UsersRepository);
     quizRepository = app.get(QuizRepository);
     dataSource = app.get(DataSource);
     //createAnswerUseCase = app.get(CreateAnswerUseCase);
@@ -390,9 +390,29 @@ describe('Super Admin quiz testing', () => {
       expect(gameByPlayer2.body.firstPlayerProgress.score).toBe(1);
       expect(gameByPlayer2.body.secondPlayerProgress.score).toBe(0);
 
-      answer = await sendAnswer(httpServer, { answer: 'd' }, accessTokens[1]);
+      answer = await sendAnswer(
+        httpServer,
+        { answer: game.questions[1].correctAnswers[0] },
+        accessTokens[0],
+      );
+      console.log(answer.body);
+      expect(answer.body.answerStatus).toBe(AnswersEnum.Correct);
+      gameByPlayer1 = await getCurrentGame(httpServer, accessTokens[0]);
+      gameByPlayer2 = await getCurrentGame(httpServer, accessTokens[1]);
 
-      expect(answer.body.answerStatus).toBe(AnswersEnum.Incorrect);
+      expect(gameByPlayer1.body.firstPlayerProgress.score).toBe(2);
+      expect(gameByPlayer1.body.secondPlayerProgress.score).toBe(0);
+
+      expect(gameByPlayer2.body.firstPlayerProgress.score).toBe(2);
+      expect(gameByPlayer2.body.secondPlayerProgress.score).toBe(0);
+
+      answer = await sendAnswer(
+        httpServer,
+        { answer: game.questions[0].correctAnswers[0] },
+        accessTokens[1],
+      );
+
+      expect(answer.body.answerStatus).toBe(AnswersEnum.Correct);
       gameByPlayer1 = await getCurrentGame(httpServer, accessTokens[0]);
       gameByPlayer2 = await getCurrentGame(httpServer, accessTokens[1]);
 
@@ -400,12 +420,12 @@ describe('Super Admin quiz testing', () => {
       //console.log(gameByPlayer2.body);
 
       expect(gameByPlayer1.status).toBe(200);
-      expect(gameByPlayer1.body.firstPlayerProgress.score).toBe(1);
-      expect(gameByPlayer1.body.secondPlayerProgress.score).toBe(0);
+      expect(gameByPlayer1.body.firstPlayerProgress.score).toBe(2);
+      expect(gameByPlayer1.body.secondPlayerProgress.score).toBe(1);
 
       expect(gameByPlayer2.status).toBe(200);
-      expect(gameByPlayer2.body.firstPlayerProgress.score).toBe(1);
-      expect(gameByPlayer2.body.secondPlayerProgress.score).toBe(0);
+      expect(gameByPlayer2.body.firstPlayerProgress.score).toBe(2);
+      expect(gameByPlayer2.body.secondPlayerProgress.score).toBe(1);
 
       answer = await sendAnswer(
         httpServer,
@@ -417,13 +437,99 @@ describe('Super Admin quiz testing', () => {
       gameByPlayer1 = await getCurrentGame(httpServer, accessTokens[0]);
       gameByPlayer2 = await getCurrentGame(httpServer, accessTokens[1]);
 
-      expect(gameByPlayer1.status).toBe(200);
-      expect(gameByPlayer1.body.firstPlayerProgress.score).toBe(1);
-      expect(gameByPlayer1.body.secondPlayerProgress.score).toBe(1);
+      expect(gameByPlayer1.body.firstPlayerProgress.score).toBe(2);
+      expect(gameByPlayer1.body.secondPlayerProgress.score).toBe(2);
 
-      expect(gameByPlayer2.status).toBe(200);
-      expect(gameByPlayer2.body.firstPlayerProgress.score).toBe(1);
-      expect(gameByPlayer2.body.secondPlayerProgress.score).toBe(1);
+      expect(gameByPlayer2.body.firstPlayerProgress.score).toBe(2);
+      expect(gameByPlayer2.body.secondPlayerProgress.score).toBe(2);
+
+      answer = await sendAnswer(httpServer, { answer: 'y' }, accessTokens[0]);
+
+      expect(answer.body.answerStatus).toBe(AnswersEnum.Incorrect);
+      gameByPlayer1 = await getCurrentGame(httpServer, accessTokens[0]);
+
+      expect(gameByPlayer1.body.firstPlayerProgress.score).toBe(2);
+      expect(gameByPlayer1.body.secondPlayerProgress.score).toBe(2);
+
+      answer = await sendAnswer(
+        httpServer,
+        { answer: game.questions[3].correctAnswers[0] },
+        accessTokens[0],
+      );
+      expect(answer.body.answerStatus).toBe(AnswersEnum.Correct);
+      gameByPlayer1 = await getCurrentGame(httpServer, accessTokens[0]);
+      gameByPlayer2 = await getCurrentGame(httpServer, accessTokens[1]);
+
+      expect(gameByPlayer1.body.firstPlayerProgress.score).toBe(3);
+      expect(gameByPlayer1.body.secondPlayerProgress.score).toBe(2);
+
+      expect(gameByPlayer2.body.firstPlayerProgress.score).toBe(3);
+      expect(gameByPlayer2.body.secondPlayerProgress.score).toBe(2);
+
+      answer = await sendAnswer(
+        httpServer,
+        { answer: game.questions[2].correctAnswers[0] },
+        accessTokens[1],
+      );
+      console.log(answer.body);
+      expect(answer.body.answerStatus).toBe(AnswersEnum.Correct);
+      gameByPlayer1 = await getCurrentGame(httpServer, accessTokens[0]);
+      gameByPlayer2 = await getCurrentGame(httpServer, accessTokens[1]);
+
+      expect(gameByPlayer1.body.firstPlayerProgress.score).toBe(3);
+      expect(gameByPlayer1.body.secondPlayerProgress.score).toBe(3);
+
+      expect(gameByPlayer2.body.firstPlayerProgress.score).toBe(3);
+      expect(gameByPlayer2.body.secondPlayerProgress.score).toBe(3);
+
+      answer = await sendAnswer(
+        httpServer,
+        { answer: game.questions[4].correctAnswers[0] },
+        accessTokens[0],
+      );
+      expect(answer.body.answerStatus).toBe(AnswersEnum.Correct);
+      gameByPlayer1 = await getCurrentGame(httpServer, accessTokens[0]);
+      gameByPlayer2 = await getCurrentGame(httpServer, accessTokens[1]);
+
+      expect(gameByPlayer1.body.firstPlayerProgress.score).toBe(4);
+      expect(gameByPlayer1.body.secondPlayerProgress.score).toBe(3);
+
+      expect(gameByPlayer2.body.firstPlayerProgress.score).toBe(4);
+      expect(gameByPlayer2.body.secondPlayerProgress.score).toBe(3);
+
+      answer = await sendAnswer(httpServer, { answer: 'y' }, accessTokens[1]);
+      console.log(answer.body);
+      expect(answer.body.answerStatus).toBe(AnswersEnum.Incorrect);
+      gameByPlayer1 = await getCurrentGame(httpServer, accessTokens[0]);
+      gameByPlayer2 = await getCurrentGame(httpServer, accessTokens[1]);
+
+      expect(gameByPlayer1.body.firstPlayerProgress.score).toBe(4);
+      expect(gameByPlayer1.body.secondPlayerProgress.score).toBe(3);
+
+      expect(gameByPlayer2.body.firstPlayerProgress.score).toBe(4);
+      expect(gameByPlayer2.body.secondPlayerProgress.score).toBe(3);
+
+      answer = await sendAnswer(
+        httpServer,
+        { answer: game.questions[4].correctAnswers[0] },
+        accessTokens[1],
+      );
+      console.log(answer.body);
+      expect(answer.body.answerStatus).toBe(AnswersEnum.Correct);
+      console.log(gameByPlayer1.body);
+      const gameById = await getGameById(
+        httpServer,
+        accessTokens[0],
+        gameByPlayer1.body.id,
+      );
+
+      console.log(gameById.body);
+
+      // expect(gameByPlayer1.body.firstPlayerProgress.score).toBe(5);
+      // expect(gameByPlayer1.body.secondPlayerProgress.score).toBe(4);
+      //
+      // expect(gameByPlayer2.body.firstPlayerProgress.score).toBe(5);
+      // expect(gameByPlayer2.body.secondPlayerProgress.score).toBe(4);
 
       // // eslint-disable-next-line prefer-const
       // gameByPlayer1 = await getCurrentGame(httpServer, accessTokens[0]);

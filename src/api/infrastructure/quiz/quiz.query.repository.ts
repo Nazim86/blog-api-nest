@@ -209,11 +209,19 @@ export class QuizQueryRepository {
     let player2Score = Number(gamePair.pl2Score);
     let secondPlayerProgress = null;
 
-    if (player1Score > 0 && gamePair.pl1DateSum < gamePair.pl2DateSum) {
+    if (
+      player1Score > 0 &&
+      gamePair.pl1DateSum &&
+      gamePair.pl1DateSum < gamePair.pl2DateSum
+    ) {
       player1Score += 1;
     }
 
-    if (player2Score > 0 && gamePair.pl2DateSum < gamePair.pl1DateSum) {
+    if (
+      player2Score > 0 &&
+      gamePair.pl2DateSum &&
+      gamePair.pl2DateSum < gamePair.pl1DateSum
+    ) {
       player2Score += 1;
     }
 
