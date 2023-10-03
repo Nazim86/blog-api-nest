@@ -125,7 +125,8 @@ export class QuizQueryRepository {
                 .from(QuestionsEntity, 'q')
                 .leftJoin('q.gamePairs', 'qgp')
                 .where('qgp.id = gp.id')
-                .andWhere('q.published = true');
+                .andWhere('q.published = true')
+                .orderBy('q.createdAt', 'ASC');
             }, 'agg'),
         'questions',
       )
@@ -194,7 +195,7 @@ export class QuizQueryRepository {
       //.andWhere('(pl1.id = :userId or pl2.id = :userId)', { userId })
       .getRawOne();
 
-    //console.log(gamePair);
+    console.log(gamePair);
     //writeSql(gamePair);
 
     if (!gamePair) return { code: ResultCode.NotFound };
