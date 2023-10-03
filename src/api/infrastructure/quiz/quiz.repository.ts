@@ -108,6 +108,7 @@ export class QuizRepository {
       .andWhere('gp.status = :gameStatusActive', {
         gameStatusActive: GameStatusEnum.Active,
       })
+      .orderBy('q.createdAt', 'ASC')
       .getOne();
   }
   async getGamePairById(id: string): Promise<GamePairEntity> {

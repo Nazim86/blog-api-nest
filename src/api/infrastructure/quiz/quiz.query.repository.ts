@@ -125,8 +125,8 @@ export class QuizQueryRepository {
                 .from(QuestionsEntity, 'q')
                 .leftJoin('q.gamePairs', 'qgp')
                 .where('qgp.id = gp.id')
-                .andWhere('q.published = true')
-                .orderBy('q.createdAt', 'ASC');
+                .andWhere('q.published = true');
+              //.orderBy('q.createdAt', 'ASC');
             }, 'agg'),
         'questions',
       )
