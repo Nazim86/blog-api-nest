@@ -9,6 +9,7 @@ import { AnswersEnum } from '../../../../enums/answers-enum';
 import { BaseTransaction } from '../../../../common/baseTransaction';
 import { DataSource, EntityManager } from 'typeorm';
 import { TransactionRepository } from '../../../infrastructure/common/transaction.repository';
+import { pl } from 'date-fns/locale';
 
 export class CreateAnswerCommand {
   constructor(public userId: string, public createAnswerDto: CreateAnswerDto) {}
@@ -29,7 +30,7 @@ export class CreateAnswerUseCase extends BaseTransaction<
   }
 
   async doLogic(command: CreateAnswerCommand, manager: EntityManager) {
-    const player = await this.usersRepository.findUserById(command.userId);
+    //const player = await this.usersRepository.findUserById(command.userId);
 
     //console.log(command.userId);
 
@@ -62,6 +63,14 @@ export class CreateAnswerUseCase extends BaseTransaction<
       answerStatus = AnswersEnum.Correct;
     } else {
       answerStatus = AnswersEnum.Incorrect;
+    }
+
+    let player;
+
+    if (gamePair.player1.id === command.userId) {
+      player = gamePair.player1;
+    } else {
+      player = gamePair.player2;
     }
 
     const answer: AnswersEntity = new AnswersEntity();

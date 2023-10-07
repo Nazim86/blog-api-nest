@@ -36,6 +36,9 @@ export class Users {
   @Column({ type: 'bool' })
   isConfirmed: boolean;
 
+  @Column({ type: 'int' })
+  score: number;
+
   @OneToOne(() => UsersBanBySa, (ub) => ub.user, {
     cascade: true,
     onUpdate: 'CASCADE',

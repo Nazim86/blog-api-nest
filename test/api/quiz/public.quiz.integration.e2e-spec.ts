@@ -524,60 +524,6 @@ describe('Super Admin quiz testing', () => {
 
       expect(gameById.body.firstPlayerProgress.score).toBe(5);
       expect(gameById.body.secondPlayerProgress.score).toBe(4);
-
-      // expect(gameByPlayer1.body.firstPlayerProgress.score).toBe(5);
-      // expect(gameByPlayer1.body.secondPlayerProgress.score).toBe(4);
-      //
-      // expect(gameByPlayer2.body.firstPlayerProgress.score).toBe(5);
-      // expect(gameByPlayer2.body.secondPlayerProgress.score).toBe(4);
-
-      // // eslint-disable-next-line prefer-const
-      // gameByPlayer1 = await getCurrentGame(httpServer, accessTokens[0]);
-      // gameByPlayer1 = await getCurrentGame(httpServer, accessTokens[0]);
-      //
-      // console.log(currentGame.body);
-      //
-      // expect(currentGame.status).toBe(200);
-      // expect(currentGame.body.firstPlayerProgress.score).toBe(1);
-      // expect(currentGame.body.secondPlayerProgress.score).toBe(0);
-      //
-      // currentGame = await getCurrentGame(httpServer, accessTokens[3]);
-      //
-      // expect(currentGame.status).toBe(200);
-      // expect(currentGame.body.firstPlayerProgress.score).toBe(1);
-      // expect(currentGame.body.secondPlayerProgress.score).toBe(0);
-      //
-      // await sendAnswer(httpServer, { answer: 'y' }, accessTokens[1]);
-      //
-      // currentGame = await getCurrentGame(httpServer, accessTokens[1]);
-      //
-      // expect(currentGame.status).toBe(200);
-      // expect(currentGame.body.firstPlayerProgress.score).toBe(1);
-      // expect(currentGame.body.secondPlayerProgress.score).toBe(0);
-      //
-      // currentGame = await getCurrentGame(httpServer, accessTokens[0]);
-      //
-      // console.log(currentGame.body);
-      //
-      // expect(currentGame.status).toBe(200);
-      // expect(currentGame.body.firstPlayerProgress.score).toBe(1);
-      // expect(currentGame.body.secondPlayerProgress.score).toBe(0);
-      //
-      // await sendAnswer(httpServer, { answer: '6' }, accessTokens[1]);
-      //
-      // currentGame = await getCurrentGame(httpServer, accessTokens[1]);
-      //
-      // expect(currentGame.status).toBe(200);
-      // expect(currentGame.body.firstPlayerProgress.score).toBe(1);
-      // expect(currentGame.body.secondPlayerProgress.score).toBe(1);
-      //
-      // currentGame = await getCurrentGame(httpServer, accessTokens[0]);
-      //
-      // console.log(currentGame.body);
-      //
-      // expect(currentGame.status).toBe(200);
-      // expect(currentGame.body.firstPlayerProgress.score).toBe(1);
-      // expect(currentGame.body.secondPlayerProgress.score).toBe(1);
     });
   });
 });
