@@ -14,7 +14,6 @@ import { Devices } from '../devices/devices.entity';
 import { Comments } from '../comments/comments.entity';
 import { Blogs } from '../blogs/blogs.entity';
 import { UsersBanByBlogger } from './usersBanByBlogger.entity';
-import { GamePairEntity } from '../quiz/gamePair.entity';
 
 @Entity({ name: 'users' })
 export class Users {
@@ -36,7 +35,7 @@ export class Users {
   @Column({ type: 'bool' })
   isConfirmed: boolean;
 
-  @Column({ type: 'int' })
+  @Column({ type: 'int', default: 0 })
   score: number;
 
   @OneToOne(() => UsersBanBySa, (ub) => ub.user, {
