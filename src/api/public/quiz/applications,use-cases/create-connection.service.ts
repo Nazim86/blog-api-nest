@@ -35,8 +35,9 @@ export class CreateConnectionService {
     newPlayer.user = user;
     newPlayer.gamePair = gamePairByUserId;
 
-    const player: PlayersEntity =
-      await this.quizRepository.savePlayerStatistics(newPlayer);
+    const player: PlayersEntity = await this.quizRepository.savePlayer(
+      newPlayer,
+    );
 
     const gamePairByStatus: GamePairEntity =
       await this.quizRepository.getGamePairByStatus(

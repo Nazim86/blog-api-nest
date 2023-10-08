@@ -106,7 +106,7 @@ export class QuizQueryRepository {
       .where('gp.id = :gameId', { gameId })
       .getRawOne();
 
-    console.log(gamePair);
+    //console.log(gamePair);
     //writeSql(gamePair);
 
     if (!gamePair) return { code: ResultCode.NotFound };

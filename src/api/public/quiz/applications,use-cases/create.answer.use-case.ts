@@ -67,6 +67,7 @@ export class CreateAnswerUseCase extends BaseTransaction<
       //console.log(player);
       answerStatus = AnswersEnum.Correct;
       player.score += 1;
+      console.log('player', player);
       await this.transactionRepository.save(player, manager);
     } else {
       answerStatus = AnswersEnum.Incorrect;
@@ -79,12 +80,13 @@ export class CreateAnswerUseCase extends BaseTransaction<
     answer.answerStatus = answerStatus;
     answer.gamePairs = gamePair;
 
+    console.log('answer', answer);
     const newAnswer = await this.transactionRepository.save(answer, manager);
 
     //console.log(newAnswer);
 
     if (answers.length === 4 && gamePair.answers.length === 9) {
-      console.log(gamePair.player1, gamePair.player2);
+      //console.log(gamePair.player1, gamePair.player2);
       let bonusPlayer;
       if (
         gamePair.player1.score > 0 &&
@@ -130,11 +132,13 @@ export class CreateAnswerUseCase extends BaseTransaction<
       gamePair.status = GameStatusEnum.Finished;
       gamePair.finishGameDate = new Date().toISOString();
 
+      console.log('bonusPlayer', bonusPlayer);
       await this.transactionRepository.save(bonusPlayer, manager);
     }
 
     gamePair.answers.push(newAnswer);
 
+    console.log('gamePair', gamePair);
     await this.transactionRepository.save(gamePair, manager);
 
     return {

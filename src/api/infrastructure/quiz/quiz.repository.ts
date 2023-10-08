@@ -16,11 +16,11 @@ export class QuizRepository {
     @InjectRepository(AnswersEntity)
     private readonly answerRepo: Repository<AnswersEntity>,
     @InjectRepository(PlayersEntity)
-    private readonly playerStatisticsRepo: Repository<PlayersEntity>,
+    private readonly playersRepo: Repository<PlayersEntity>,
   ) {}
 
-  async savePlayerStatistics(playerStatistic: PlayersEntity) {
-    return this.playerStatisticsRepo.save(playerStatistic);
+  async savePlayer(player: PlayersEntity) {
+    return this.playersRepo.save(player);
   }
 
   async getGamePairByUserId(userId: string): Promise<GamePairEntity> {
