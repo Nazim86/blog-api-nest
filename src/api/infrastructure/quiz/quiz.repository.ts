@@ -5,6 +5,7 @@ import { GameStatusEnum } from '../../../enums/game-status-enum';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable } from '@nestjs/common';
 import { AnswersEntity } from '../../entities/quiz/answers.entity';
+import { PlayersEntity } from '../../entities/quiz/players.entity';
 
 @Injectable()
 export class QuizRepository {
@@ -14,17 +15,25 @@ export class QuizRepository {
     private readonly gamePairRepo: Repository<GamePairEntity>,
     @InjectRepository(AnswersEntity)
     private readonly answerRepo: Repository<AnswersEntity>,
+    @InjectRepository(PlayersEntity)
+    private readonly playerStatisticsRepo: Repository<PlayersEntity>,
   ) {}
+
+  async savePlayerStatistics(playerStatistic: PlayersEntity) {
+    return this.playerStatisticsRepo.save(playerStatistic);
+  }
 
   async getGamePairByUserId(userId: string): Promise<GamePairEntity> {
     //console.log(result);
     return await this.gamePairRepo
       .createQueryBuilder('gp')
       .leftJoinAndSelect('gp.player1', 'pl1')
+      .leftJoinAndSelect('pl1.user', 'u1')
       .leftJoinAndSelect('gp.player2', 'pl2')
+      .leftJoinAndSelect('pl2.user', 'u2')
       .leftJoinAndSelect('gp.questions', 'q')
       .leftJoinAndSelect('gp.answers', 'a')
-      .where('(pl1.id = :userId or pl2.id = :userId)', { userId })
+      .where('(u1.id = :userId or u2.id = :userId)', { userId })
       .getOne();
   }
 
@@ -35,13 +44,12 @@ export class QuizRepository {
     return await this.gamePairRepo
       .createQueryBuilder('gp')
       .leftJoinAndSelect('gp.player1', 'pl1')
+      .leftJoinAndSelect('pl1.user', 'u1')
       .leftJoinAndSelect('gp.player2', 'pl2')
+      .leftJoinAndSelect('pl2.user', 'u2')
       .leftJoinAndSelect('gp.questions', 'q')
       .leftJoinAndSelect('gp.answers', 'a')
-      .where('(pl1.id = :userId or pl2.id = :userId)', { userId })
-      //.orWhere('pl2.id = :userId', { userId: userId })
-      //.orderBy('q.createdAt', 'ASC')
-
+      .where('(u1.id = :userId or u2.id = :userId)', { userId })
       .andWhere(
         '(gp.status = :gameStatusActive or gp.status = :gameStatusPending)',
         {
@@ -58,10 +66,12 @@ export class QuizRepository {
     return await this.gamePairRepo
       .createQueryBuilder('gp')
       .leftJoinAndSelect('gp.player1', 'pl1')
+      .leftJoinAndSelect('pl1.user', 'u1')
       .leftJoinAndSelect('gp.player2', 'pl2')
+      .leftJoinAndSelect('pl2.user', 'u2')
       .leftJoinAndSelect('gp.questions', 'q')
       .leftJoinAndSelect('gp.answers', 'a')
-      .where(`(pl1.id = :userId or pl2.id = :userId)`, { userId })
+      .where(`(u1.id = :userId or u2.id = :userId)`, { userId })
       .andWhere('gp.status = :gameStatusActive', {
         gameStatusActive: GameStatusEnum.Active,
       })
@@ -72,10 +82,11 @@ export class QuizRepository {
     return this.gamePairRepo
       .createQueryBuilder('gp')
       .leftJoinAndSelect('gp.player1', 'pl1')
+      .leftJoinAndSelect('pl1.user', 'u1')
       .leftJoinAndSelect('gp.player2', 'pl2')
+      .leftJoinAndSelect('pl2.user', 'u2')
       .leftJoinAndSelect('gp.questions', 'q')
       .leftJoinAndSelect('gp.answers', 'a')
-
       .where('gp.id = :id', { id: id })
       .getOne();
   }
@@ -83,7 +94,9 @@ export class QuizRepository {
     return this.gamePairRepo
       .createQueryBuilder('gp')
       .leftJoinAndSelect('gp.player1', 'pl1')
+      .leftJoinAndSelect('pl1.user', 'u1')
       .leftJoinAndSelect('gp.player2', 'pl2')
+      .leftJoinAndSelect('pl2.user', 'u2')
       .leftJoinAndSelect('gp.questions', 'q')
       .where('gp.status = :status', { status: status })
       .getOne();
@@ -97,8 +110,9 @@ export class QuizRepository {
       .createQueryBuilder('a')
       .leftJoinAndSelect('a.gamePairs', 'gp')
       .leftJoinAndSelect('a.player', 'pl')
+      .leftJoinAndSelect('pl.user', 'u')
       .leftJoinAndSelect('gp.questions', 'q')
-      .where('pl.id = :userId', { userId })
+      .where('u.id = :userId', { userId })
       .andWhere('gp.id = :gamePairId', { gamePairId: gamePairId })
       .getMany();
   }

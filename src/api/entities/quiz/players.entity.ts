@@ -1,36 +1,36 @@
-// import {
-//   Column,
-//   Entity,
-//   ManyToMany,
-//   OneToMany,
-//   OneToOne,
-//   PrimaryGeneratedColumn,
-// } from 'typeorm';
-// import { AnswersEntity } from './answers.entity';
-// import { Users } from '../users/user.entity';
-// import { GamePairEntity } from './gamePair.entity';
-// import { QuestionsEntity } from './questionsEntity';
-// import { QuestionsRepository } from '../../infrastructure/quiz/questions.repository';
-//
-// @Entity({ name: 'players' })
-// export class PlayersEntity {
-//   @PrimaryGeneratedColumn('uuid')
-//   id: string;
-//
-//   @Column({ type: 'varchar' })
-//   createdAt: string;
-//
-//   @OneToMany(() => AnswersEntity, (a) => a.player)
-//   answers: AnswersEntity[];
-//
-//   @OneToOne(() => Users, (u) => u.player)
-//   user: Users;
-//
-//   @OneToOne(() => GamePairEntity)
-//   gamePair: GamePairEntity;
-//
-//   @OneToMany(() => QuestionsEntity, (q) => q.player)
-//   questions: QuestionsEntity[];
-// }
-//
-//
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Users } from '../users/user.entity';
+import { GamePairEntity } from './gamePair.entity';
+import { AnswersEntity } from './answers.entity';
+
+@Entity({ name: 'players' })
+export class PlayersEntity {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  @Column({ type: 'int', default: 0 })
+  score: number;
+
+  // @Column({ type: 'enum', enum: WinningStatusEnum })
+  // winningStatus: WinningStatusEnum;
+
+  @ManyToOne(() => Users, (u) => u.player, { onDelete: 'CASCADE' })
+  @JoinColumn()
+  user: Users;
+
+  @ManyToOne(() => GamePairEntity, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn()
+  gamePair: GamePairEntity;
+
+  @OneToMany(() => AnswersEntity, (a) => a.player)
+  answers: AnswersEntity;
+}

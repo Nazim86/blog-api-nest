@@ -8,8 +8,8 @@ import {
 } from 'typeorm';
 import { GameStatusEnum } from '../../../enums/game-status-enum';
 import { QuestionsEntity } from './questions.entity';
-import { Users } from '../users/user.entity';
 import { AnswersEntity } from './answers.entity';
+import { PlayersEntity } from './players.entity';
 
 @Entity({ name: 'game_pair' })
 export class GamePairEntity {
@@ -28,17 +28,20 @@ export class GamePairEntity {
   @Column({ type: 'enum', enum: GameStatusEnum })
   status: GameStatusEnum;
 
-  @ManyToOne(() => Users)
+  @ManyToOne(() => PlayersEntity)
   @JoinColumn()
-  player1: Users;
+  player1: PlayersEntity;
 
-  @ManyToOne(() => Users)
+  @ManyToOne(() => PlayersEntity)
   @JoinColumn()
-  player2: Users;
+  player2: PlayersEntity;
 
   @ManyToMany(() => QuestionsEntity, (q) => q.gamePairs)
   questions: QuestionsEntity[];
 
   @ManyToMany(() => AnswersEntity, (a) => a.gamePairs)
   answers: AnswersEntity[];
+
+  // @OneToMany(() => PlayersEntity, (pls) => pls.gamePair)
+  // playerScore: PlayersEntity;
 }

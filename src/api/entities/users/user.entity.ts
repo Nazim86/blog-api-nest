@@ -14,6 +14,7 @@ import { Devices } from '../devices/devices.entity';
 import { Comments } from '../comments/comments.entity';
 import { Blogs } from '../blogs/blogs.entity';
 import { UsersBanByBlogger } from './usersBanByBlogger.entity';
+import { PlayersEntity } from '../quiz/players.entity';
 
 @Entity({ name: 'users' })
 export class Users {
@@ -35,8 +36,8 @@ export class Users {
   @Column({ type: 'bool' })
   isConfirmed: boolean;
 
-  @Column({ type: 'int', default: 0 })
-  score: number;
+  // @Column({ type: 'int', default: 0 })
+  // score: number;
 
   @OneToOne(() => UsersBanBySa, (ub) => ub.user, {
     cascade: true,
@@ -76,6 +77,9 @@ export class Users {
     onUpdate: 'CASCADE',
   })
   usersBanByBlogger: UsersBanByBlogger;
+
+  @OneToMany(() => PlayersEntity, (pls) => pls.user)
+  player: PlayersEntity;
 
   // @OneToMany(() => GamePairEntity, (g) => g.player1)
   // games1: GamePairEntity[];

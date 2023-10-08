@@ -9,8 +9,8 @@ import {
 } from 'typeorm';
 import { QuestionsEntity } from './questions.entity';
 import { AnswersEnum } from '../../../enums/answers-enum';
-import { Users } from '../users/user.entity';
 import { GamePairEntity } from './gamePair.entity';
+import { PlayersEntity } from './players.entity';
 
 @Entity({ name: 'answers' })
 export class AnswersEntity {
@@ -29,9 +29,11 @@ export class AnswersEntity {
   @JoinColumn()
   question: QuestionsEntity;
 
-  @ManyToOne(() => Users, { onDelete: 'CASCADE' })
+  @ManyToOne(() => PlayersEntity, (pl) => pl.answers, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn()
-  player: Users;
+  player: PlayersEntity;
 
   @ManyToMany(() => GamePairEntity, (gp) => gp.answers, {
     onDelete: 'CASCADE',

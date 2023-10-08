@@ -6,31 +6,19 @@ import { Injectable } from '@nestjs/common';
 import { GamePairEntity } from '../../../entities/quiz/gamePair.entity';
 import { CreateGamePairCommand } from './create.gamePair.use-case';
 import { UpdateGamePairCommand } from './update.gamePair.use-case';
+import { PlayersEntity } from '../../../entities/quiz/players.entity';
+import { UsersRepository } from '../../../infrastructure/users/users.repository';
 
 @Injectable()
 export class CreateConnectionService {
   constructor(
     private readonly quizRepository: QuizRepository,
     private commandBus: CommandBus,
+    private readonly usersRepository: UsersRepository,
   ) {}
 
   async createConnection(userId: string) {
-    // let player: PlayersEntity = await this.quizRepository.getPlayerByUserId(
-    //   userId,
-    // );
-    //
-    // if (!player) {
-    //   player = await this.commandBus.execute(new CreatePlayerCommand(userId));
-    // }
-    //
-    // if (
-    //   player.gamePair &&
-    //   (player.gamePair.status === GameStatusEnum.Active ||
-    //     player.gamePair.status === GameStatusEnum.PendingSecondPlayer)
-    // )
-    //   return { code: ResultCode.Forbidden };
-
-    //console.log(gamePairByUserId);
+    const user = await this.usersRepository.findUserById(userId);
 
     const gamePairByUserId = await this.quizRepository.getGamePairByUserId(
       userId,
@@ -43,6 +31,13 @@ export class CreateConnectionService {
     )
       return { code: ResultCode.Forbidden };
 
+    const newPlayer = new PlayersEntity();
+    newPlayer.user = user;
+    newPlayer.gamePair = gamePairByUserId;
+
+    const player: PlayersEntity =
+      await this.quizRepository.savePlayerStatistics(newPlayer);
+
     const gamePairByStatus: GamePairEntity =
       await this.quizRepository.getGamePairByStatus(
         GameStatusEnum.PendingSecondPlayer,
@@ -54,11 +49,11 @@ export class CreateConnectionService {
 
     if (!gamePairByStatus) {
       gamePairId = await this.commandBus.execute(
-        new CreateGamePairCommand(userId),
+        new CreateGamePairCommand(player),
       );
     } else {
       gamePairId = await this.commandBus.execute(
-        new UpdateGamePairCommand(userId, gamePairByStatus),
+        new UpdateGamePairCommand(player, gamePairByStatus),
       );
     }
 

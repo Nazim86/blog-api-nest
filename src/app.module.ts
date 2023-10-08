@@ -89,6 +89,7 @@ import { CreateConnectionService } from './api/public/quiz/applications,use-case
 import { CreateAnswerUseCase } from './api/public/quiz/applications,use-cases/create.answer.use-case';
 import { CreateGamePairUseCase } from './api/public/quiz/applications,use-cases/create.gamePair.use-case';
 import { TransactionRepository } from './api/infrastructure/common/transaction.repository';
+import { PlayersEntity } from './api/entities/quiz/players.entity';
 
 const useCases = [
   BlogCreateUseCase,
@@ -146,6 +147,7 @@ const entities = [
   GamePairEntity,
   AnswersEntity,
   QuestionsEntity,
+  PlayersEntity,
 ];
 
 export const neonConfigForTypeOrm: TypeOrmModuleOptions = {
@@ -163,6 +165,7 @@ export const neonConfigForTypeOrm: TypeOrmModuleOptions = {
 
 export const localConfigTypeOrm: TypeOrmModuleOptions = {
   type: 'postgres',
+  //schema: 'public', // Specify your schema here
   host: 'localhost',
   port: 5432,
   username: 'postgres',

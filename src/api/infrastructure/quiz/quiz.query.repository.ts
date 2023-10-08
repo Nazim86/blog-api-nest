@@ -3,7 +3,6 @@ import { QuestionsEntity } from '../../entities/quiz/questions.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GamePairEntity } from '../../entities/quiz/gamePair.entity';
 import { AnswersEntity } from '../../entities/quiz/answers.entity';
-import { AnswersEnum } from '../../../enums/answers-enum';
 import { ResultCode } from '../../../exception-handler/result-code-enum';
 
 export class QuizQueryRepository {
@@ -32,32 +31,6 @@ export class QuizQueryRepository {
     //console.log('userId:', userId, 'gameId:', gameId);
     const gamePair = await this.gamePairRepo
       .createQueryBuilder('gp')
-      .addSelect((qb) =>
-        qb
-          .select(`count(*)`, 'pl1Score')
-          .from(AnswersEntity, 'a')
-          .leftJoin('a.gamePairs', 'gp')
-          .leftJoin('gp.player1', 'pl1')
-          .leftJoin('a.player', 'apl')
-          .where('gp.id = :gameId', { gameId })
-          .andWhere('apl.id = pl1.id')
-          .andWhere('a.answerStatus = :answerStatus', {
-            answerStatus: AnswersEnum.Correct,
-          }),
-      )
-      .addSelect((qb) =>
-        qb
-          .select(`count(*)`, 'pl2Score')
-          .from(AnswersEntity, 'a')
-          .leftJoin('a.gamePairs', 'gp')
-          .leftJoin('gp.player2', 'pl2')
-          .leftJoin('a.player', 'apl')
-          .where('gp.id = :gameId', { gameId })
-          .andWhere('apl.id = pl2.id')
-          .andWhere('a.answerStatus = :answerStatus', {
-            answerStatus: AnswersEnum.Correct,
-          }),
-      )
       .addSelect(
         (qb) =>
           qb
@@ -125,7 +98,9 @@ export class QuizQueryRepository {
         'player2Answers',
       )
       .leftJoinAndSelect('gp.player1', 'pl1')
+      .leftJoinAndSelect('pl1.user', 'u1')
       .leftJoinAndSelect('gp.player2', 'pl2')
+      .leftJoinAndSelect('pl2.user', 'u2')
       .leftJoinAndSelect('gp.questions', 'q')
       .leftJoinAndSelect('gp.answers', 'a')
       .where('gp.id = :gameId', { gameId })
@@ -136,38 +111,19 @@ export class QuizQueryRepository {
 
     if (!gamePair) return { code: ResultCode.NotFound };
 
-    if (gamePair.pl1_id !== userId && gamePair.pl2_id !== userId)
+    if (gamePair.u1_id !== userId && gamePair.u2_id !== userId)
       return { code: ResultCode.Forbidden };
 
-    let player1Score = Number(gamePair.pl1Score);
-    let player2Score = Number(gamePair.pl2Score);
     let secondPlayerProgress = null;
-
-    console.log(gamePair.pl1DateSum, gamePair.pl2DateSum);
-
-    if (
-      gamePair.player1Answers &&
-      gamePair.player2Answers &&
-      gamePair.player1Answers.length === 5 &&
-      gamePair.player2Answers.length === 5
-    ) {
-      if (
-        gamePair.player1Answers[4].addedAt < gamePair.player2Answers[4].addedAt
-      ) {
-        player1Score += 1;
-      } else {
-        player2Score += 1;
-      }
-    }
 
     if (gamePair.pl1_id && gamePair.pl2_id) {
       secondPlayerProgress = {
         answers: gamePair.player2Answers ?? [],
         player: {
-          id: gamePair.pl2_id,
-          login: gamePair.pl2_login,
+          id: gamePair.u2_id,
+          login: gamePair.u2_login,
         },
-        score: player2Score,
+        score: gamePair.pl2_score,
       };
     }
 
@@ -178,10 +134,10 @@ export class QuizQueryRepository {
         firstPlayerProgress: {
           answers: gamePair.player1Answers ?? [],
           player: {
-            id: gamePair.pl1_id,
-            login: gamePair.pl1_login,
+            id: gamePair.u1_id,
+            login: gamePair.u1_login,
           },
-          score: player1Score,
+          score: gamePair.pl1_score,
         },
         secondPlayerProgress: secondPlayerProgress,
         questions: gamePair.questions,

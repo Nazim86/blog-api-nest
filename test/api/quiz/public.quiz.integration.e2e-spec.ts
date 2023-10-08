@@ -323,46 +323,9 @@ describe('Super Admin quiz testing', () => {
 
       const game = await quizRepository.getGamePairById(gamePairId);
 
-      //console.log(game);
-
-      // console.log(newGame.body);
-      //
-      // expect(newGame.status).toBe(200);
-      //
-      // const player4 = await usersRepository.findUserById(users[1].id);
-      //
-      // const gamePairByStatus: GamePairEntity =
-      //   await quizRepository.getGamePairByStatus(
-      //     GameStatusEnum.PendingSecondPlayer,
-      //   );
-      //
-      // console.log(gamePairByStatus);
-      //
-      // const fiveQuestions = await dataSource
-      //   .getRepository(QuestionsEntity)
-      //   .createQueryBuilder('q')
-      //   .where('q.published = true')
-      //   .orderBy('q.createdAt', 'ASC')
-      //   .limit(5)
-      //   .getMany();
-      //
-      // gamePairByStatus.player2 = player4;
-      // gamePairByStatus.startGameDate = new Date().toISOString();
-      // gamePairByStatus.questions = fiveQuestions;
-      // gamePairByStatus.status = GameStatusEnum.Active;
-      //
-      // const updatedGamePair = await quizRepository.saveGamePair(
-      //   gamePairByStatus,
-      // );
-      //
-      // gamePairId = updatedGamePair.id;
-      //
       let answer;
       let gameByPlayer1;
       let gameByPlayer2;
-
-      //console.log(game.body);
-      //console.log(game.body);
 
       answer = await sendAnswer(
         httpServer,
@@ -374,10 +337,6 @@ describe('Super Admin quiz testing', () => {
       gameByPlayer1 = await getCurrentGame(httpServer, accessTokens[0]);
       gameByPlayer2 = await getCurrentGame(httpServer, accessTokens[1]);
 
-      // console.log(gameByPlayer2.body.secondPlayerProgress);
-      // console.log(gameByPlayer2.body.firstPlayerProgress);
-      // console.log(gameByPlayer1.body.firstPlayerProgress);
-      // console.log(gameByPlayer1.body.secondPlayerProgress);
       expect(gameByPlayer1.status).toBe(200);
       expect(gameByPlayer1.body.firstPlayerProgress.score).toBe(1);
       expect(gameByPlayer1.body.secondPlayerProgress.score).toBe(0);
