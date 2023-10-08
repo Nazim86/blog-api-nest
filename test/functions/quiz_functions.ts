@@ -90,3 +90,11 @@ export const getCurrentGame = (httpServer, accessToken: string) => {
     .auth(accessToken, { type: 'bearer' })
     .send();
 };
+
+export const getAllMyGames = (httpServer, accessToken: string, query?) => {
+  return request(httpServer)
+    .get(`/pair-game-quiz/pairs/my`)
+    .auth(accessToken, { type: 'bearer' })
+    .query(query)
+    .send();
+};

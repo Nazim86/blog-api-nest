@@ -90,6 +90,7 @@ import { CreateAnswerUseCase } from './api/public/quiz/applications,use-cases/cr
 import { CreateGamePairUseCase } from './api/public/quiz/applications,use-cases/create.gamePair.use-case';
 import { TransactionRepository } from './api/infrastructure/common/transaction.repository';
 import { PlayersEntity } from './api/entities/quiz/players.entity';
+import { GamesQueryRepo } from './api/infrastructure/quiz/games.query.repo';
 
 const useCases = [
   BlogCreateUseCase,
@@ -181,7 +182,7 @@ export const localConfigTypeOrm: TypeOrmModuleOptions = {
     ScheduleModule.forRoot(),
     AuthModule,
     UsersModule,
-    TypeOrmModule.forRoot(neonConfigForTypeOrm),
+    TypeOrmModule.forRoot(localConfigTypeOrm),
     TypeOrmModule.forFeature(entities),
     MailModule,
     CqrsModule,
@@ -222,6 +223,7 @@ export const localConfigTypeOrm: TypeOrmModuleOptions = {
     QuizQueryRepository,
     CreateConnectionService,
     TransactionRepository,
+    GamesQueryRepo,
     ...useCases,
   ],
   exports: [TypeOrmModule],

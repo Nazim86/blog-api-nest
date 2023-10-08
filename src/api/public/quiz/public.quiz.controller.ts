@@ -5,6 +5,7 @@ import {
   HttpCode,
   Param,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { UserId } from '../../../decorators/UserId';
@@ -18,6 +19,7 @@ import { CreateAnswerDto } from './dto/create-answer.dto';
 import { CommandBus } from '@nestjs/cqrs';
 import { CreateAnswerCommand } from './applications,use-cases/create.answer.use-case';
 import { CustomParseUUIDPipe } from '../../../exception-handler/custom-parse-uuid-pipe';
+import { GamesQueryRepo } from '../../infrastructure/quiz/games.query.repo';
 
 @UseGuards(AccessTokenGuard)
 @Controller('pair-game-quiz/pairs')
@@ -26,8 +28,16 @@ export class PublicQuizController {
     private readonly createConnectionService: CreateConnectionService,
     private readonly quizQueryRepository: QuizQueryRepository,
     private readonly quizRepository: QuizRepository,
-    private commandBus: CommandBus, //private readonly usersRepository: UsersRepository,
+    private readonly gamesQueryRepo: GamesQueryRepo,
+    private commandBus: CommandBus,
   ) {}
+
+  @Get('my')
+  async getAllMyGames(@Query() query, @UserId() userId: string) {
+    const result = await this.gamesQueryRepo.getAllMyGames(query, userId);
+    console.log(result);
+    return result;
+  }
 
   @Get('my-current')
   async getMyCurrentGame(@UserId() userId: string) {
@@ -49,6 +59,7 @@ export class PublicQuizController {
 
     return game.data;
   }
+
   @Get(':id')
   async getGameById(
     @Param('id', new CustomParseUUIDPipe()) gamePairId: string,
@@ -58,11 +69,12 @@ export class PublicQuizController {
       gamePairId,
       userId,
     );
-
+    //, new CustomParseUUIDPipe()
     if (game.code !== ResultCode.Success) return exceptionHandler(game.code);
 
     return game.data;
   }
+
   @Post('connection')
   @HttpCode(200)
   async createConnection(@UserId() userId: string) {

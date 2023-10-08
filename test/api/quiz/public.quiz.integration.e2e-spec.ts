@@ -7,6 +7,7 @@ import { appSettings } from '../../../src/app.settings';
 import {
   connectUserToGame,
   createQuestion,
+  getAllMyGames,
   getCurrentGame,
   getGameById,
   publishQuestion,
@@ -483,6 +484,11 @@ describe('Super Admin quiz testing', () => {
 
       expect(gameById.body.firstPlayerProgress.score).toBe(5);
       expect(gameById.body.secondPlayerProgress.score).toBe(4);
+    });
+
+    it(`Get all my games`, async () => {
+      const games = await getAllMyGames(httpServer, accessTokens[0]);
+      //console.log(games.body);
     });
   });
 });
