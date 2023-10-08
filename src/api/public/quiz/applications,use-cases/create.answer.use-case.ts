@@ -87,9 +87,9 @@ export class CreateAnswerUseCase extends BaseTransaction<
 
     if (answers.length === 4 && gamePair.answers.length === 9) {
       //console.log(gamePair.player1, gamePair.player2);
-      let bonusPlayer;
+      let bonusPlayer = gamePair.player1;
       if (
-        gamePair.player1.score > 0 &&
+        gamePair.player2.score > 0 &&
         gamePair.player1.user.id === command.userId
       ) {
         bonusPlayer = gamePair.player2;
@@ -97,7 +97,7 @@ export class CreateAnswerUseCase extends BaseTransaction<
       }
 
       if (
-        gamePair.player2.score > 0 &&
+        gamePair.player1.score > 0 &&
         gamePair.player2.user.id === command.userId
       ) {
         bonusPlayer = gamePair.player1;
