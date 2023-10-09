@@ -1,14 +1,13 @@
 import { Repository } from 'typeorm';
-import { QuestionsEntity } from '../../entities/quiz/questions.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GamePairEntity } from '../../entities/quiz/gamePair.entity';
 import { AnswersEntity } from '../../entities/quiz/answers.entity';
-import { ResultCode } from '../../../exception-handler/result-code-enum';
+import { PlayersEntity } from '../../entities/quiz/players.entity';
 
 export class QuizQueryRepository {
   constructor(
-    @InjectRepository(GamePairEntity)
-    private readonly gamePairRepo: Repository<GamePairEntity>,
+    @InjectRepository(PlayersEntity)
+    private readonly playersRepo: Repository<PlayersEntity>,
     @InjectRepository(AnswersEntity)
     private readonly answersRepo: Repository<AnswersEntity>,
   ) {}
@@ -27,125 +26,78 @@ export class QuizQueryRepository {
     };
   }
 
-  async getGamePairById(gameId: string, userId: string) {
-    //console.log('userId:', userId, 'gameId:', gameId);
-    const gamePair = await this.gamePairRepo
-      .createQueryBuilder('gp')
+  async getMyStatistic(userId: string) {
+    const myStatistic = await this.playersRepo
+      .createQueryBuilder('p')
       .addSelect(
         (qb) =>
           qb
-            .select(
-              `jsonb_agg(json_build_object('id',cast(agg.id as varchar),
-            'body', agg.body))`,
-            )
-            .from((qb) => {
-              return qb
-                .select(`q.id, q.body`)
-                .from(QuestionsEntity, 'q')
-                .leftJoin('q.gamePairs', 'qgp')
-                .where('qgp.id = gp.id')
-                .andWhere('q.published = true')
-                .orderBy('q.createdAt', 'ASC');
-            }, 'agg'),
-        'questions',
+            .select(`sum(p.score)`)
+            .from(PlayersEntity, 'p')
+            .leftJoin('p.user', 'u')
+            .where('u.id = :userId', { userId }),
+        'sumScore',
       )
       .addSelect(
         (qb) =>
           qb
-            .select(
-              `jsonb_agg(json_build_object('questionId',cast(agg."questionId" as varchar),
-              'answerStatus',agg."answerStatus",'addedAt', to_char(
-            agg."addedAt"::timestamp at time zone 'UTC',
-            'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"')))`,
-            )
-            .from((qb) => {
-              return qb
-                .select(`a."questionId", a."answerStatus",a."addedAt"`)
-                .from(AnswersEntity, 'a')
-                .leftJoin('a.gamePairs', 'agp')
-                .leftJoin('a.player', 'pl')
-                .where('pl.id = gp.player1Id')
-                .andWhere('agp.id = :gameId', { gameId })
-                .orderBy('a.addedAt', 'ASC');
-              // .andWhere('a.answerStatus = :answerStatus', {
-              //   answerStatus: AnswersEnum.Correct,
-              // });
-            }, 'agg'),
-        'player1Answers',
+            .select(`count(*)`)
+            .from(GamePairEntity, 'g')
+            .leftJoin('g.player1', 'pl1')
+            .leftJoin('pl1.user', 'u1')
+            .leftJoin('g.player2', 'pl2')
+            .leftJoin('pl2.user', 'u2')
+
+            .where(
+              '((u1.id = :userId and pl1.score > pl2.score ) or (u2.id = :userId and pl2.score >pl1.score))',
+              { userId },
+            ),
+        'winsCount',
       )
       .addSelect(
         (qb) =>
           qb
-            .select(
-              `jsonb_agg(json_build_object('questionId',cast(agg."questionId" as varchar),
-              'answerStatus',agg."answerStatus",'addedAt',to_char(
-            agg."addedAt"::timestamp at time zone 'UTC',
-            'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') ))`,
-            )
-            .from((qb) => {
-              return qb
-                .select(`a."questionId", a."answerStatus",a."addedAt"`)
-                .from(AnswersEntity, 'a')
-                .leftJoin('a.gamePairs', 'agp')
-                .leftJoin('a.player', 'pl')
-                .where('pl.id = gp.player2Id')
-                .andWhere('agp.id = :gameId', { gameId })
-                .orderBy('a.addedAt', 'ASC');
-              // .andWhere('a.answerStatus = :answerStatus', {
-              //   answerStatus: AnswersEnum.Correct,
-              // });
-            }, 'agg'),
-        'player2Answers',
+            .select(`count(*)`)
+            .from(GamePairEntity, 'g')
+            .leftJoin('g.player1', 'pl1')
+            .leftJoin('pl1.user', 'u1')
+            .leftJoin('g.player2', 'pl2')
+            .leftJoin('pl2.user', 'u2')
+
+            .where(
+              '((u1.id = :userId and pl1.score < pl2.score ) or (u2.id = :userId and pl2.score < pl1.score))',
+              { userId },
+            ),
+        'lossesCount',
       )
-      .leftJoinAndSelect('gp.player1', 'pl1')
-      .leftJoinAndSelect('pl1.user', 'u1')
-      .leftJoinAndSelect('gp.player2', 'pl2')
-      .leftJoinAndSelect('pl2.user', 'u2')
-      .leftJoinAndSelect('gp.questions', 'q')
-      .leftJoinAndSelect('gp.answers', 'a')
-      .where('gp.id = :gameId', { gameId })
-      .getRawOne();
+      .addSelect(
+        (qb) =>
+          qb
+            .select(`count(*)`)
+            .from(GamePairEntity, 'g')
+            .leftJoin('g.player1', 'pl1')
+            .leftJoin('pl1.user', 'u1')
+            .leftJoin('g.player2', 'pl2')
+            .leftJoin('pl2.user', 'u2')
 
-    //console.log(gamePair);
-    //writeSql(gamePair);
+            .where(
+              '((u1.id = :userId and pl1.score = pl2.score ) or (u2.id = :userId and pl2.score = pl1.score))',
+              { userId },
+            ),
+        'drawsCount',
+      )
+      .leftJoinAndSelect('p.user', 'u')
+      .where('u.id = :userId', { userId })
+      .getRawMany();
 
-    if (!gamePair) return { code: ResultCode.NotFound };
-
-    if (gamePair.u1_id !== userId && gamePair.u2_id !== userId)
-      return { code: ResultCode.Forbidden };
-
-    let secondPlayerProgress = null;
-
-    if (gamePair.pl1_id && gamePair.pl2_id) {
-      secondPlayerProgress = {
-        answers: gamePair.player2Answers ?? [],
-        player: {
-          id: gamePair.u2_id,
-          login: gamePair.u2_login,
-        },
-        score: gamePair.pl2_score,
-      };
-    }
-
+    const avgScores = Number(myStatistic[0].sumScore) / myStatistic.length;
     return {
-      code: ResultCode.Success,
-      data: {
-        id: gamePair.gp_id,
-        firstPlayerProgress: {
-          answers: gamePair.player1Answers ?? [],
-          player: {
-            id: gamePair.u1_id,
-            login: gamePair.u1_login,
-          },
-          score: gamePair.pl1_score,
-        },
-        secondPlayerProgress: secondPlayerProgress,
-        questions: gamePair.questions,
-        status: gamePair.gp_status,
-        pairCreatedDate: gamePair.gp_pairCreatedDate,
-        startGameDate: gamePair.gp_startGameDate,
-        finishGameDate: gamePair.gp_finishGameDate,
-      },
+      sumScore: Number(myStatistic[0].sumScore),
+      avgScores: avgScores,
+      gamesCount: myStatistic.length,
+      winsCount: Number(myStatistic[0].winsCount),
+      lossesCount: Number(myStatistic[0].lossesCount),
+      drawsCount: Number(myStatistic[0].drawsCount),
     };
   }
 }

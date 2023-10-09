@@ -161,3 +161,60 @@ export const AnswerEntityModel = {
 };
 
 export const createAnswerDto = { answer: expect.any(String) };
+
+export const getAllMyFinishedGames = {
+  pagesCount: 1,
+  page: 1,
+  pageSize: 10,
+  totalCount: 2,
+  items: [
+    {
+      id: expect.any(String),
+      firstPlayerProgress: {
+        answers: expect.arrayContaining([]),
+        player: {
+          id: expect.any(String),
+          login: 'leo0',
+        },
+        score: 5,
+      },
+      secondPlayerProgress: {
+        answers: expect.arrayContaining([]),
+        player: {
+          id: expect.any(String),
+          login: 'leo1',
+        },
+        score: 4,
+      },
+      questions: expect.arrayContaining([]),
+      status: GameStatusEnum.Finished,
+      pairCreatedDate: expect.any(String),
+      startGameDate: expect.any(String),
+      finishGameDate: expect.any(String),
+    },
+    {
+      id: expect.any(String),
+      firstPlayerProgress: {
+        answers: expect.arrayContaining([]),
+        player: {
+          id: expect.any(String),
+          login: 'leo0',
+        },
+        score: 6,
+      },
+      secondPlayerProgress: {
+        answers: expect.arrayContaining([]),
+        player: {
+          id: expect.any(String),
+          login: 'leo1',
+        },
+        score: 5,
+      },
+      questions: expect.arrayContaining([]),
+      status: GameStatusEnum.Finished,
+      pairCreatedDate: expect.any(String),
+      startGameDate: expect.any(String),
+      finishGameDate: expect.any(String),
+    },
+  ],
+};

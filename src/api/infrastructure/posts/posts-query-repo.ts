@@ -119,15 +119,7 @@ export class PostsQueryRepo {
         return false;
       }
 
-      // console.log(
-      //   'blog id in getPostById in post query',
-      //   post.p_blog,
-      //   post.b_id,
-      // );
-
       const blog = await this.blogsRepository.getBlogById(post.p_blog);
-
-      // console.log('post in getPostById in post query', post);
 
       if (blog.blogBanInfo.isBanned) {
         return false;
@@ -172,10 +164,6 @@ export class PostsQueryRepo {
     );
 
     const skipSize = paginatedQuery.skipSize;
-
-    //const sortBy = 'addedAt';
-
-    // console.log(paginatedQuery.pageSize);
 
     const posts = await this.postsRepo
       .createQueryBuilder('p')
@@ -251,10 +239,6 @@ export class PostsQueryRepo {
       .offset(skipSize)
       .getRawMany();
 
-    // writeSql(posts);
-
-    //console.log('posts in getPosts in post query repo', posts);
-
     const totalCount = Number(posts[0].totalCount);
 
     const pagesCount = paginatedQuery.totalPages(totalCount);
@@ -285,11 +269,6 @@ export class PostsQueryRepo {
       query.sortDirection,
     );
     const skipSize = paginatedQuery.skipSize;
-
-    // console.log(
-    //   'pageSize in getPostsByBlogId in post query',
-    //   paginatedQuery.pageSize,
-    // );
 
     const posts = await this.postsRepo
       .createQueryBuilder('p')
@@ -360,8 +339,6 @@ export class PostsQueryRepo {
         'newestLikes',
       )
       .leftJoinAndSelect('p.blog', 'b')
-      //.leftJoinAndSelect('b.owner', 'u')
-      //.leftJoinAndSelect('u.banInfo', 'ub')
       .leftJoinAndSelect('b.blogBanInfo', 'bbi')
       .where('b.id = :blogId', { blogId: blogId })
       .andWhere(`bbi.isBanned = false`)

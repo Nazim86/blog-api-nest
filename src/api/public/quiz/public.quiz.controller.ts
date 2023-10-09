@@ -22,7 +22,7 @@ import { CustomParseUUIDPipe } from '../../../exception-handler/custom-parse-uui
 import { GamesQueryRepo } from '../../infrastructure/quiz/games.query.repo';
 
 @UseGuards(AccessTokenGuard)
-@Controller('pair-game-quiz/pairs')
+@Controller('pair-game-quiz')
 export class PublicQuizController {
   constructor(
     private readonly createConnectionService: CreateConnectionService,
@@ -32,50 +32,46 @@ export class PublicQuizController {
     private commandBus: CommandBus,
   ) {}
 
-  @Get('my')
+  @Get('pairs/my')
   async getAllMyGames(@Query() query, @UserId() userId: string) {
-    const result = await this.gamesQueryRepo.getAllMyGames(query, userId);
-    console.log(result);
-    return result;
+    //console.log(result);
+    return await this.gamesQueryRepo.getAllMyGames(query, userId);
   }
 
-  @Get('my-current')
+  @Get('users/my-statistic')
+  async getMyStatistic(@UserId() userId: string) {
+    //console.log(result);
+    return await this.quizQueryRepository.getMyStatistic(userId);
+  }
+  @Get('pairs/my-current')
   async getMyCurrentGame(@UserId() userId: string) {
     const gameByUserId =
       await this.quizRepository.getGamePairByUserIdAndGameStatus(userId); // is this anti pattern to call from repository directly
 
     if (!gameByUserId) return exceptionHandler(ResultCode.NotFound);
 
-    const game = await this.quizQueryRepository.getGamePairById(
+    const game = await this.gamesQueryRepo.getGamePairById(
       gameByUserId.id,
       userId,
     );
 
-    // console.log(game);
-
-    // console.log(gameByUserId.id);
-
     if (game.code !== ResultCode.Success) return exceptionHandler(game.code);
 
     return game.data;
   }
 
-  @Get(':id')
+  @Get('pairs/:id')
   async getGameById(
     @Param('id', new CustomParseUUIDPipe()) gamePairId: string,
     @UserId() userId: string,
   ) {
-    const game = await this.quizQueryRepository.getGamePairById(
-      gamePairId,
-      userId,
-    );
-    //, new CustomParseUUIDPipe()
+    const game = await this.gamesQueryRepo.getGamePairById(gamePairId, userId);
     if (game.code !== ResultCode.Success) return exceptionHandler(game.code);
 
     return game.data;
   }
 
-  @Post('connection')
+  @Post('pairs/connection')
   @HttpCode(200)
   async createConnection(@UserId() userId: string) {
     const gamePairId = await this.createConnectionService.createConnection(
@@ -86,24 +82,22 @@ export class PublicQuizController {
       return exceptionHandler(gamePairId.code);
     }
 
-    const game = await this.quizQueryRepository.getGamePairById(
+    const game = await this.gamesQueryRepo.getGamePairById(
       gamePairId.data,
       userId,
     );
 
     if (game.code !== ResultCode.Success) return exceptionHandler(game.code);
 
-    //console.log(result);
     return game.data;
   }
 
-  @Post('my-current/answers')
+  @Post('pairs/my-current/answers')
   @HttpCode(200)
   async createAnswers(
     @UserId() userId,
     @Body() createAnswerDto: CreateAnswerDto,
   ) {
-    //console.log(createAnswerDto);
     const answerId = await this.commandBus.execute(
       new CreateAnswerCommand(userId, createAnswerDto),
     );
