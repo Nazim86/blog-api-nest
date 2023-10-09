@@ -7,6 +7,7 @@ import { AnswersEntity } from '../../entities/quiz/answers.entity';
 import { QuestionsEntity } from '../../entities/quiz/questions.entity';
 import { GameQuery } from '../../../common/gameQuery';
 import { ResultCode } from '../../../exception-handler/result-code-enum';
+import { GameStatusEnum } from '../../../enums/game-status-enum';
 
 @Injectable()
 export class GamesQueryRepo {
@@ -142,8 +143,8 @@ export class GamesQueryRepo {
       .leftJoinAndSelect('pl1.user', 'u1')
       .leftJoinAndSelect('gp.player2', 'pl2')
       .leftJoinAndSelect('pl2.user', 'u2')
-
       .where('(u1.id = :userId or u2.id = :userId)', { userId })
+      .andWhere('gp.status = :status', { status: GameStatusEnum.Finished })
       .orderBy(`gp.${paginatedQuery.sortBy}`, paginatedQuery.sortDirection)
       .limit(paginatedQuery.pageSize)
       .offset(skipSize)

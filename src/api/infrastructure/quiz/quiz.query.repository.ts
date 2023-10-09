@@ -93,7 +93,7 @@ export class QuizQueryRepository {
     const avgScores = Number(myStatistic[0].sumScore) / myStatistic.length;
     return {
       sumScore: Number(myStatistic[0].sumScore),
-      avgScores: avgScores,
+      avgScores: Math.round(avgScores * 100) / 100,
       gamesCount: myStatistic.length,
       winsCount: Number(myStatistic[0].winsCount),
       lossesCount: Number(myStatistic[0].lossesCount),
