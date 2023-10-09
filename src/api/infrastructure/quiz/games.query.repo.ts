@@ -144,7 +144,10 @@ export class GamesQueryRepo {
       .leftJoinAndSelect('gp.player2', 'pl2')
       .leftJoinAndSelect('pl2.user', 'u2')
       .where('(u1.id = :userId or u2.id = :userId)', { userId })
-      .andWhere('gp.status = :status', { status: GameStatusEnum.Finished })
+      .andWhere('(gp.status = :statusFinished or gp.status = :statusActive)', {
+        statusFinished: GameStatusEnum.Finished,
+        statusActive: GameStatusEnum.Active,
+      })
       .orderBy(`gp.${paginatedQuery.sortBy}`, paginatedQuery.sortDirection)
       .limit(paginatedQuery.pageSize)
       .offset(skipSize)
