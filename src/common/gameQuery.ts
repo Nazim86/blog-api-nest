@@ -10,5 +10,13 @@ export class GameQuery extends Pagination<PaginationType> {
   ) {
     super(pageNumber, pageSize, sortDirection);
     this.sortBy = sortBy;
+    if (
+      sortDirection === SortDirection.ASC ||
+      sortDirection === SortDirection.ASC.toLowerCase()
+    ) {
+      this.sortDirection = SortDirection.ASC;
+    } else {
+      this.sortDirection = SortDirection.DESC;
+    }
   }
 }
