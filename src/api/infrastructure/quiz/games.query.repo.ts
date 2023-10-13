@@ -115,8 +115,8 @@ export class GamesQueryRepo {
                 .leftJoin('a.player', 'pl')
                 .leftJoin('pl.user', 'u')
                 .where('u.id = :userId', { userId })
-                .andWhere('agp.status = gp.status')
-                .orderBy('a.addedAt', 'ASC');
+                .andWhere('agp.status = gp.status');
+              //.orderBy('a.addedAt', 'ASC');
             }, 'agg'),
         'player1Answers',
       )
@@ -137,8 +137,8 @@ export class GamesQueryRepo {
                 .leftJoin('a.player', 'pl')
                 .leftJoin('pl.user', 'u')
                 .where('u.id = :userId', { userId })
-                .andWhere('agp.status = gp.status')
-                .orderBy('a.addedAt', 'ASC');
+                .andWhere('agp.status = gp.status');
+              //.orderBy('a.addedAt', 'ASC');
             }, 'agg'),
         'player2Answers',
       )
