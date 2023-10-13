@@ -21,7 +21,7 @@ export class GamesQueryRepo {
       return {
         id: game.gp_id,
         firstPlayerProgress: {
-          answers: game.player1Answers,
+          answers: game.player1Answers ?? [],
           player: {
             id: game.u1_id,
             login: game.u1_login,
@@ -29,7 +29,7 @@ export class GamesQueryRepo {
           score: game.pl1_score,
         },
         secondPlayerProgress: {
-          answers: game.player2Answers,
+          answers: game.player2Answers ?? [],
           player: {
             id: game.u2_id,
             login: game.u2_login,
@@ -156,9 +156,9 @@ export class GamesQueryRepo {
       .offset(skipSize)
       .getRawMany();
 
-    console.log(games);
-    console.log(games[0].player1Answers);
-    console.log(games[1].player1Answers);
+    // console.log(games);
+    // console.log(games[0].player1Answers);
+    // console.log(games[1].player1Answers);
 
     const totalCount = Number(games[0].totalCount);
 
