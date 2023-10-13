@@ -115,7 +115,8 @@ export class GamesQueryRepo {
                 .leftJoin('a.player', 'pl')
                 .leftJoin('pl.user', 'u')
                 .where('u.id = :userId', { userId })
-                .andWhere('agp.status = gp.status');
+                .andWhere('agp.status = gp.status')
+                .andWhere('agp.id = gp.id');
               //.orderBy('a.addedAt', 'ASC');
             }, 'agg'),
         'player1Answers',
@@ -137,7 +138,9 @@ export class GamesQueryRepo {
                 .leftJoin('a.player', 'pl')
                 .leftJoin('pl.user', 'u')
                 .where('u.id = :userId', { userId })
-                .andWhere('agp.status = gp.status');
+                .andWhere('agp.status = gp.status')
+                .andWhere('agp.id = gp.id');
+
               //.orderBy('a.addedAt', 'ASC');
             }, 'agg'),
         'player2Answers',
@@ -156,7 +159,7 @@ export class GamesQueryRepo {
       .offset(skipSize)
       .getRawMany();
 
-    // console.log(games);
+    console.log(games);
     // console.log(games[0].player1Answers);
     // console.log(games[1].player1Answers);
 

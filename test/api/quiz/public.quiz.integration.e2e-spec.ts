@@ -358,7 +358,7 @@ describe('Super Admin quiz testing', () => {
       });
 
       //console.log(games.body);
-      console.log(games.body.items);
+      //console.log(games.body.items);
       //console.log(games.body.items[0].firstPlayerProgress);
       // console.log(games.body.items[0].secondPlayerProgress);
       //console.log(games.body.items[1].firstPlayerProgress);
