@@ -10,6 +10,8 @@ async function bootstrap() {
 
   const app = appSettings(rawApp);
 
+  app.enableCors();
+
   const config = new DocumentBuilder()
     .setTitle('Blogs example')
     .setDescription('The blogs API description')

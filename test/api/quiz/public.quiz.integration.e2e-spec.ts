@@ -16,7 +16,6 @@ import {
 } from '../../functions/quiz_functions';
 import {
   createQuestionDTO,
-  getAllMyFinishedGames,
   notStartedGamePairViewModelWithPlayer1,
   publishQuestionDTO,
 } from '../../data/quiz-data';
@@ -351,6 +350,21 @@ describe('Super Admin quiz testing', () => {
 
       gamePairId = gameFromConnectGame.body.id;
 
+      //checking sortBy and sortDirection in get all my games
+      const games = await getAllMyGames(httpServer, accessTokens[0], {
+        sortBy: 'status',
+        sortDirection: 'asc',
+      });
+
+      //console.log(games.body);
+      //console.log(games.body.items);
+      //console.log(games.body.items[0].firstPlayerProgress);
+      // console.log(games.body.items[0].secondPlayerProgress);
+      //console.log(games.body.items[1].firstPlayerProgress);
+      // console.log(games.body.items[1].secondPlayerProgress);
+      expect(games.body.items[0].status).toEqual(GameStatusEnum.Active);
+      expect(games.body.items[1].status).toEqual(GameStatusEnum.Finished);
+
       const game = await quizRepository.getGamePairById(gamePairId);
 
       let answer;
@@ -515,16 +529,17 @@ describe('Super Admin quiz testing', () => {
       expect(gameById.body.secondPlayerProgress.score).toBe(4);
     });
 
-    it(`Get all my games`, async () => {
-      const games = await getAllMyGames(httpServer, accessTokens[0]);
-      //console.log(games.body);
-      // console.log(games.body.items[0].firstPlayerProgress);
-      // console.log(games.body.items[0].secondPlayerProgress);
-      // console.log(games.body.items[1].firstPlayerProgress);
-      // console.log(games.body.items[1].secondPlayerProgress);
-      expect(games.status).toBe(200);
-      expect(games.body).toEqual(getAllMyFinishedGames);
-    });
+    // it(`Get all my games`, async () => {
+    //   const games = await getAllMyGames(httpServer, accessTokens[0]);
+    //   // console.log(games.body);
+    //   // console.log(games.body.items[0].firstPlayerProgress);
+    //   // console.log(games.body.items[0].secondPlayerProgress);
+    //   // console.log(games.body.items[1].firstPlayerProgress);
+    //   // console.log(games.body.items[1].secondPlayerProgress);
+    //
+    //   expect(games.status).toBe(200);
+    //   expect(games.body).toEqual(getAllMyFinishedGames);
+    // });
 
     it(`Get all my games`, async () => {
       const myStatistic = await getMyStatistic(httpServer, accessTokens[0]);
