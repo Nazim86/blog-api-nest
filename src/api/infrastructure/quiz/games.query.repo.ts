@@ -116,21 +116,13 @@ export class GamesQueryRepo {
             'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"')))`,
             )
             .from((qb) => {
-              return (
-                qb
-                  .select(`a."questionId", a."answerStatus",a."addedAt"`)
-                  .from(AnswersEntity, 'a')
-                  .leftJoin('a.gamePairs', 'agp')
-                  .leftJoin('agp.player1', 'pl1')
-                  .leftJoin('pl1.user', 'u1')
-                  .where('u1.id = :userId', { userId })
-                  // .leftJoin('a.player', 'pl')
-                  // .leftJoin('pl.user', 'u')
-                  //.where('u.id = :userId', { userId })
-                  //.andWhere('agp.status = gp.status')
-                  .andWhere('agp.id = gp.id')
-                  .orderBy('a.addedAt', 'ASC')
-              );
+              return qb
+                .select(`a."questionId", a."answerStatus",a."addedAt"`)
+                .from(GamePairEntity, 'agp')
+                .leftJoin('agp.player1', 'pl1')
+                .leftJoin('pl1.answers', 'a')
+                .andWhere('agp.id = gp.id')
+                .orderBy('a.addedAt', 'ASC');
             }, 'agg'),
         'player1Answers',
       )
@@ -139,29 +131,77 @@ export class GamesQueryRepo {
           qb
             .select(
               `jsonb_agg(json_build_object('questionId',cast(agg."questionId" as varchar),
-              'answerStatus',agg."answerStatus",'addedAt',to_char(
+              'answerStatus',agg."answerStatus",'addedAt', to_char(
             agg."addedAt"::timestamp at time zone 'UTC',
-            'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') ))`,
+            'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"')))`,
             )
             .from((qb) => {
-              return (
-                qb
-                  .select(`a."questionId", a."answerStatus",a."addedAt"`)
-                  .from(AnswersEntity, 'a')
-                  .leftJoin('a.gamePairs', 'agp')
-                  .leftJoin('agp.player2', 'pl2')
-                  .leftJoin('pl2.user', 'u2')
-                  .where('u2.id = :userId', { userId })
-                  // .leftJoin('a.player', 'pl')
-                  // .leftJoin('pl.user', 'u')
-                  // .where('u.id = :userId', { userId })
-                  //.andWhere('agp.status = gp.status')
-                  .andWhere('agp.id = gp.id')
-                  .orderBy('a.addedAt', 'ASC')
-              );
+              return qb
+                .select(`a."questionId", a."answerStatus",a."addedAt"`)
+                .from(GamePairEntity, 'agp')
+                .leftJoin('agp.player2', 'pl2')
+                .leftJoin('pl2.answers', 'a')
+                .andWhere('agp.id = gp.id')
+                .orderBy('a.addedAt', 'ASC');
             }, 'agg'),
         'player2Answers',
       )
+      // .addSelect(
+      //   (qb) =>
+      //     qb
+      //       .select(
+      //         `jsonb_agg(json_build_object('questionId',cast(agg."questionId" as varchar),
+      //         'answerStatus',agg."answerStatus",'addedAt', to_char(
+      //       agg."addedAt"::timestamp at time zone 'UTC',
+      //       'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"')))`,
+      //       )
+      //       .from((qb) => {
+      //         return (
+      //           qb
+      //             .select(`a."questionId", a."answerStatus",a."addedAt"`)
+      //             .from(AnswersEntity, 'a')
+      //             .leftJoin('a.gamePairs', 'agp')
+      //             .leftJoin('agp.player1', 'pl1')
+      //             .leftJoin('pl1.user', 'u1')
+      //             .where('u1.id = :userId', { userId })
+      //             // .leftJoin('a.player', 'pl')
+      //             // .leftJoin('pl.user', 'u')
+      //             //.where('u.id = :userId', { userId })
+      //             //.andWhere('agp.status = gp.status')
+      //             .andWhere('agp.id = gp.id')
+      //             .orderBy('a.addedAt', 'ASC')
+      //         );
+      //       }, 'agg'),
+      //   'player1Answers',
+      // )
+      // .addSelect(
+      //   (qb) =>
+      //     qb
+      //       .select(
+      //         `jsonb_agg(json_build_object('questionId',cast(agg."questionId" as varchar),
+      //         'answerStatus',agg."answerStatus",'addedAt',to_char(
+      //       agg."addedAt"::timestamp at time zone 'UTC',
+      //       'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') ))`,
+      //       )
+      //       .from((qb) => {
+      //         return (
+      //           qb
+      //             .select(`a."questionId", a."answerStatus",a."addedAt"`)
+      //             .from(AnswersEntity, 'a')
+      //             .leftJoin('a.gamePairs', 'agp')
+      //             .leftJoin('agp.player2', 'pl2')
+      //             .leftJoin('pl2.user', 'u2')
+      //             .where('u2.id = :userId', { userId })
+      //             // .leftJoin('a.player', 'pl')
+      //             // .leftJoin('pl.user', 'u')
+      //             // .where('u.id = :userId', { userId })
+      //             //.andWhere('agp.status = gp.status')
+      //             .andWhere('agp.id = gp.id')
+      //             .orderBy('a.addedAt', 'ASC')
+      //         );
+      //       }, 'agg'),
+      //   'player2Answers',
+      // )
       .leftJoinAndSelect('gp.player1', 'pl1')
       .leftJoinAndSelect('pl1.user', 'u1')
       .leftJoinAndSelect('gp.player2', 'pl2')
