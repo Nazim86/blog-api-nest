@@ -116,16 +116,18 @@ export class GamesQueryRepo {
             'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"')))`,
             )
             .from((qb) => {
-              return qb
-                .select(`a."questionId", a."answerStatus",a."addedAt"`)
-                .from(AnswersEntity, 'a')
-                .leftJoin('a.gamePairs', 'agp')
-                .leftJoin('a.player', 'pl')
-                .leftJoin('pl.user', 'u')
-                .where('u.id = :userId', { userId })
-                .andWhere('agp.status = gp.status')
-                .andWhere('agp.id = gp.id')
-                .orderBy('a.addedAt', 'ASC');
+              return (
+                qb
+                  .select(`a."questionId", a."answerStatus",a."addedAt"`)
+                  .from(AnswersEntity, 'a')
+                  .leftJoin('a.gamePairs', 'agp')
+                  .leftJoin('a.player', 'pl')
+                  .leftJoin('pl.user', 'u')
+                  .where('u.id = :userId', { userId })
+                  //.andWhere('agp.status = gp.status')
+                  .andWhere('agp.id = gp.id')
+                  .orderBy('a.addedAt', 'ASC')
+              );
             }, 'agg'),
         'player1Answers',
       )
@@ -139,16 +141,18 @@ export class GamesQueryRepo {
             'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') ))`,
             )
             .from((qb) => {
-              return qb
-                .select(`a."questionId", a."answerStatus",a."addedAt"`)
-                .from(AnswersEntity, 'a')
-                .leftJoin('a.gamePairs', 'agp')
-                .leftJoin('a.player', 'pl')
-                .leftJoin('pl.user', 'u')
-                .where('u.id = :userId', { userId })
-                .andWhere('agp.status = gp.status')
-                .andWhere('agp.id = gp.id')
-                .orderBy('a.addedAt', 'ASC');
+              return (
+                qb
+                  .select(`a."questionId", a."answerStatus",a."addedAt"`)
+                  .from(AnswersEntity, 'a')
+                  .leftJoin('a.gamePairs', 'agp')
+                  .leftJoin('a.player', 'pl')
+                  .leftJoin('pl.user', 'u')
+                  .where('u.id = :userId', { userId })
+                  //.andWhere('agp.status = gp.status')
+                  .andWhere('agp.id = gp.id')
+                  .orderBy('a.addedAt', 'ASC')
+              );
             }, 'agg'),
         'player2Answers',
       )
