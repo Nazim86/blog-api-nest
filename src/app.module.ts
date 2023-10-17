@@ -182,7 +182,7 @@ export const localConfigTypeOrm: TypeOrmModuleOptions = {
     ScheduleModule.forRoot(),
     AuthModule,
     UsersModule,
-    TypeOrmModule.forRoot(localConfigTypeOrm),
+    TypeOrmModule.forRoot(neonConfigForTypeOrm),
     TypeOrmModule.forFeature(entities),
     MailModule,
     CqrsModule,
