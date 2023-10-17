@@ -129,7 +129,7 @@ export class GamesQueryRepo {
                   //.where('u.id = :userId', { userId })
                   //.andWhere('agp.status = gp.status')
                   .andWhere('agp.id = gp.id')
-                //.orderBy('a.addedAt', 'ASC')
+                  .orderBy('a.addedAt', 'ASC')
               );
             }, 'agg'),
         'player1Answers',
@@ -157,7 +157,7 @@ export class GamesQueryRepo {
                   // .where('u.id = :userId', { userId })
                   //.andWhere('agp.status = gp.status')
                   .andWhere('agp.id = gp.id')
-                //.orderBy('a.addedAt', 'ASC')
+                  .orderBy('a.addedAt', 'ASC')
               );
             }, 'agg'),
         'player2Answers',
