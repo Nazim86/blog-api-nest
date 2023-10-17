@@ -121,9 +121,12 @@ export class GamesQueryRepo {
                   .select(`a."questionId", a."answerStatus",a."addedAt"`)
                   .from(AnswersEntity, 'a')
                   .leftJoin('a.gamePairs', 'agp')
-                  .leftJoin('a.player', 'pl')
-                  .leftJoin('pl.user', 'u')
-                  .where('u.id = :userId', { userId })
+                  .leftJoin('agp.player1', 'pl1')
+                  .leftJoin('pl1.user', 'u1')
+                  .where('u1.id = :userId', { userId })
+                  // .leftJoin('a.player', 'pl')
+                  // .leftJoin('pl.user', 'u')
+                  //.where('u.id = :userId', { userId })
                   //.andWhere('agp.status = gp.status')
                   .andWhere('agp.id = gp.id')
                 //.orderBy('a.addedAt', 'ASC')
@@ -146,9 +149,12 @@ export class GamesQueryRepo {
                   .select(`a."questionId", a."answerStatus",a."addedAt"`)
                   .from(AnswersEntity, 'a')
                   .leftJoin('a.gamePairs', 'agp')
-                  .leftJoin('a.player', 'pl')
-                  .leftJoin('pl.user', 'u')
-                  .where('u.id = :userId', { userId })
+                  .leftJoin('agp.player2', 'pl2')
+                  .leftJoin('pl2.user', 'u2')
+                  .where('u2.id = :userId', { userId })
+                  // .leftJoin('a.player', 'pl')
+                  // .leftJoin('pl.user', 'u')
+                  // .where('u.id = :userId', { userId })
                   //.andWhere('agp.status = gp.status')
                   .andWhere('agp.id = gp.id')
                 //.orderBy('a.addedAt', 'ASC')
@@ -171,7 +177,7 @@ export class GamesQueryRepo {
       .offset(skipSize)
       .getRawMany();
 
-    console.log(games);
+    //console.log(games);
     // console.log(games[0].player1Answers);
     // console.log(games[1].player1Answers);
 
