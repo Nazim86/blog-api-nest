@@ -63,6 +63,14 @@ export class GamesQueryRepo {
       query.sortDirection,
     );
 
+    // let sortBy = null;
+    //
+    // if (sortBy !== paginatedQuery.sortBy) {
+    //   sortBy = paginatedQuery.sortBy;
+    // } else {
+    //   sortBy = 'pairCreatedDate';
+    // }
+
     console.log(paginatedQuery.sortBy);
     const skipSize = paginatedQuery.skipSize;
 
@@ -154,6 +162,7 @@ export class GamesQueryRepo {
         statusActive: GameStatusEnum.Active,
       })
       .orderBy(`gp.${paginatedQuery.sortBy}`, paginatedQuery.sortDirection)
+      .addOrderBy('gp.pairCreatedDate', 'DESC')
       .limit(paginatedQuery.pageSize)
       .offset(skipSize)
       .getRawMany();

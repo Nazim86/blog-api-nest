@@ -113,8 +113,6 @@ export class PostsQueryRepo {
         .where('p.id = :postId', { postId: postId })
         .getRawOne();
 
-      console.log(post);
-
       if (!post) {
         return false;
       }
