@@ -16,6 +16,16 @@ export class QuizQueryRepository {
     @InjectRepository(Users) private readonly usersRepo: Repository<Users>,
   ) {}
 
+  private sortDirectionEnum(sortDirection): SortDirection {
+    if (
+      sortDirection === SortDirection.ASC ||
+      sortDirection === SortDirection.ASC.toLowerCase()
+    ) {
+      return (sortDirection = SortDirection.ASC);
+    } else {
+      return (sortDirection = SortDirection.DESC);
+    }
+  }
   private topUsersMapping(topUsers) {
     return topUsers.map((user) => {
       //const avgScores = Number(user.sumScore) / topUsers.length;
@@ -263,22 +273,23 @@ export class QuizQueryRepository {
     console.log(sortArray);
     let sortBy, sortDirection;
 
-    sortArray.forEach((sortString) => {
-      [sortBy, sortDirection] = sortString.split(' ');
+    if (Array.isArray(sortArray)) {
+      sortArray.forEach((sortString) => {
+        [sortBy, sortDirection] = sortString.split(' ');
 
-      console.log(sortBy, sortDirection);
+        console.log(sortBy, sortDirection);
 
-      if (
-        sortDirection === SortDirection.ASC ||
-        sortDirection === SortDirection.ASC.toLowerCase()
-      ) {
-        sortDirection = SortDirection.ASC;
-      } else {
-        sortDirection = SortDirection.DESC;
-      }
+        sortDirection = this.sortDirectionEnum(sortDirection);
+
+        queryBuilder.addOrderBy(`"${sortBy}" `, sortDirection);
+      });
+    } else {
+      [sortBy, sortDirection] = sortArray.split(' ');
+
+      sortDirection = this.sortDirectionEnum(sortDirection);
 
       queryBuilder.addOrderBy(`"${sortBy}" `, sortDirection);
-    });
+    }
 
     // console.log(queryBuilder);
 

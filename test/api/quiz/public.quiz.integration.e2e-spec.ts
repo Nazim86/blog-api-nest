@@ -552,7 +552,7 @@ describe('Super Admin quiz testing', () => {
       const topUsers = await getTopUsers(httpServer, accessTokens[0], {
         //pageNumber: 2,
         pageSize: 2,
-        sort: ['lossesCount desc', 'gamesCount desc'],
+        sort: 'lossesCount desc',
       });
       return topUsers;
     });

@@ -1,6 +1,9 @@
 export class TopUsersQuery {
   constructor(
-    public readonly sort: string[] = ['avgScores desc', 'sumScore desc'], //public readonly sortDirection: SortDirection = SortDirection.DESC,
+    public readonly sort: string[] | string = [
+      'avgScores desc',
+      'sumScore desc',
+    ], //public readonly sortDirection: SortDirection = SortDirection.DESC,
     public pageNumber: number = 1,
     public readonly pageSize: number = 10,
   ) {
