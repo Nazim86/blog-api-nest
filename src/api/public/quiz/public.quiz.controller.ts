@@ -43,6 +43,12 @@ export class PublicQuizController {
     //console.log(result);
     return await this.quizQueryRepository.getMyStatistic(userId);
   }
+
+  @Get('users/top')
+  async getTopUsers(@Query() query) {
+    //console.log(result);
+    return await this.quizQueryRepository.getTopUsers(query);
+  }
   @Get('pairs/my-current')
   async getMyCurrentGame(@UserId() userId: string) {
     const gameByUserId =

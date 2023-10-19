@@ -105,3 +105,10 @@ export const getMyStatistic = (httpServer, accessToken: string) => {
     .auth(accessToken, { type: 'bearer' })
     .send();
 };
+
+export const getTopUsers = (httpServer, accessToken: string) => {
+  return request(httpServer)
+    .get(`/pair-game-quiz/users/top`)
+    .auth(accessToken, { type: 'bearer' })
+    .send();
+};

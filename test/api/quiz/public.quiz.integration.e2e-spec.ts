@@ -11,6 +11,7 @@ import {
   getCurrentGame,
   getGameById,
   getMyStatistic,
+  getTopUsers,
   publishQuestion,
   sendAnswer,
 } from '../../functions/quiz_functions';
@@ -533,10 +534,10 @@ describe('Super Admin quiz testing', () => {
     it(`Get all my games`, async () => {
       const games = await getAllMyGames(httpServer, accessTokens[0]);
       // console.log(games.body);
-      console.log(games.body.items[0].firstPlayerProgress);
-      console.log(games.body.items[0].secondPlayerProgress);
-      console.log(games.body.items[1].firstPlayerProgress);
-      console.log(games.body.items[1].secondPlayerProgress);
+      // console.log(games.body.items[0].firstPlayerProgress);
+      // console.log(games.body.items[0].secondPlayerProgress);
+      // console.log(games.body.items[1].firstPlayerProgress);
+      // console.log(games.body.items[1].secondPlayerProgress);
 
       expect(games.status).toBe(200);
       expect(games.body).toEqual(getAllMyFinishedGames);
@@ -545,6 +546,11 @@ describe('Super Admin quiz testing', () => {
     it(`Get all my games`, async () => {
       const myStatistic = await getMyStatistic(httpServer, accessTokens[0]);
       return myStatistic;
+    });
+
+    it(`Get Top users`, async () => {
+      const topUsers = await getTopUsers(httpServer, accessTokens[0]);
+      return topUsers;
     });
   });
 });
