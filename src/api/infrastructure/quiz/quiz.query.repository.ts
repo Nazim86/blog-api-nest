@@ -276,8 +276,10 @@ export class QuizQueryRepository {
       } else {
         sortDirection = SortDirection.DESC;
       }
+
+      queryBuilder.addOrderBy(`"${sortBy}" `, sortDirection);
     });
-    queryBuilder.addOrderBy(`"${sortBy}" `, sortDirection);
+
     // console.log(queryBuilder);
 
     const topUsers = await queryBuilder
@@ -286,6 +288,8 @@ export class QuizQueryRepository {
       .getRawMany();
 
     //console.log(topUsers);
+    console.log(topUsers[0].totalCount);
+    console.log(paginatedQuery.pageSize);
 
     const totalCount = Number(topUsers[0].totalCount);
 

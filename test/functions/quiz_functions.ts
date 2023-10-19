@@ -106,9 +106,10 @@ export const getMyStatistic = (httpServer, accessToken: string) => {
     .send();
 };
 
-export const getTopUsers = (httpServer, accessToken: string) => {
+export const getTopUsers = (httpServer, accessToken: string, query?) => {
   return request(httpServer)
     .get(`/pair-game-quiz/users/top`)
     .auth(accessToken, { type: 'bearer' })
+    .query(query)
     .send();
 };

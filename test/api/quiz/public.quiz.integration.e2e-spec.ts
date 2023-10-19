@@ -549,7 +549,11 @@ describe('Super Admin quiz testing', () => {
     });
 
     it(`Get Top users`, async () => {
-      const topUsers = await getTopUsers(httpServer, accessTokens[0]);
+      const topUsers = await getTopUsers(httpServer, accessTokens[0], {
+        //pageNumber: 2,
+        pageSize: 2,
+        sort: ['lossesCount desc', 'gamesCount desc'],
+      });
       return topUsers;
     });
   });
