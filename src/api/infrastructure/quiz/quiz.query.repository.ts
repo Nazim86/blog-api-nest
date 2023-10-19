@@ -268,7 +268,10 @@ export class QuizQueryRepository {
 
       console.log(sortBy, sortDirection);
 
-      if (sortDirection === SortDirection.ASC.toLowerCase()) {
+      if (
+        sortDirection === SortDirection.ASC ||
+        sortDirection === SortDirection.ASC.toLowerCase()
+      ) {
         sortDirection = SortDirection.ASC;
       } else {
         sortDirection = SortDirection.DESC;
@@ -282,13 +285,22 @@ export class QuizQueryRepository {
       .offset(skipSize)
       .getRawMany();
 
-    console.log(topUsers);
+    //console.log(topUsers);
 
     const totalCount = Number(topUsers[0].totalCount);
 
     const pagesCount = paginatedQuery.totalPages(totalCount);
 
     const mappedTopUsers = await this.topUsersMapping(topUsers);
-    console.log(mappedTopUsers);
+
+    // console.log(mappedTopUsers);
+
+    return {
+      pagesCount: pagesCount,
+      page: Number(paginatedQuery.pageNumber),
+      pageSize: Number(paginatedQuery.pageSize),
+      totalCount: totalCount,
+      items: mappedTopUsers,
+    };
   }
 }

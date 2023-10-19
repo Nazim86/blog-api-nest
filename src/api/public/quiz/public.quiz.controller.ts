@@ -21,7 +21,6 @@ import { CreateAnswerCommand } from './applications,use-cases/create.answer.use-
 import { CustomParseUUIDPipe } from '../../../exception-handler/custom-parse-uuid-pipe';
 import { GamesQueryRepo } from '../../infrastructure/quiz/games.query.repo';
 
-@UseGuards(AccessTokenGuard)
 @Controller('pair-game-quiz')
 export class PublicQuizController {
   constructor(
@@ -31,13 +30,13 @@ export class PublicQuizController {
     private readonly gamesQueryRepo: GamesQueryRepo,
     private commandBus: CommandBus,
   ) {}
-
+  @UseGuards(AccessTokenGuard)
   @Get('pairs/my')
   async getAllMyGames(@Query() query, @UserId() userId: string) {
     //console.log(result);
     return await this.gamesQueryRepo.getAllMyGames(query, userId);
   }
-
+  @UseGuards(AccessTokenGuard)
   @Get('users/my-statistic')
   async getMyStatistic(@UserId() userId: string) {
     //console.log(result);
@@ -47,8 +46,12 @@ export class PublicQuizController {
   @Get('users/top')
   async getTopUsers(@Query() query) {
     //console.log(result);
-    return await this.quizQueryRepository.getTopUsers(query);
+    const result = await this.quizQueryRepository.getTopUsers(query);
+    console.log(result);
+    return result;
   }
+
+  @UseGuards(AccessTokenGuard)
   @Get('pairs/my-current')
   async getMyCurrentGame(@UserId() userId: string) {
     const gameByUserId =
@@ -65,7 +68,7 @@ export class PublicQuizController {
 
     return game.data;
   }
-
+  @UseGuards(AccessTokenGuard)
   @Get('pairs/:id')
   async getGameById(
     @Param('id', new CustomParseUUIDPipe()) gamePairId: string,
@@ -76,7 +79,7 @@ export class PublicQuizController {
 
     return game.data;
   }
-
+  @UseGuards(AccessTokenGuard)
   @Post('pairs/connection')
   @HttpCode(200)
   async createConnection(@UserId() userId: string) {
@@ -97,7 +100,7 @@ export class PublicQuizController {
 
     return game.data;
   }
-
+  @UseGuards(AccessTokenGuard)
   @Post('pairs/my-current/answers')
   @HttpCode(200)
   async createAnswers(
