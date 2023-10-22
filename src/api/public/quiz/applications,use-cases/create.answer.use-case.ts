@@ -102,31 +102,6 @@ export class CreateAnswerUseCase extends BaseTransaction<
         bonusPlayer.score += 1;
       }
 
-      // if (
-      //   gamePair.player1.playerStatistics.score ===
-      //   gamePair.player2.playerStatistics.score
-      // ) {
-      //   gamePair.player1.playerStatistics.winningStatus =
-      //     WinningStatusEnum.Draw;
-      //   gamePair.player2.playerStatistics.winningStatus =
-      //     WinningStatusEnum.Draw;
-      // }
-      //
-      // if (
-      //   gamePair.player1.playerStatistics.score >
-      //   gamePair.player2.playerStatistics.score
-      // ) {
-      //   gamePair.player1.playerStatistics.winningStatus =
-      //     WinningStatusEnum.Winner;
-      //   gamePair.player2.playerStatistics.winningStatus =
-      //     WinningStatusEnum.Loser;
-      // } else {
-      //   gamePair.player1.playerStatistics.winningStatus =
-      //     WinningStatusEnum.Loser;
-      //   gamePair.player2.playerStatistics.winningStatus =
-      //     WinningStatusEnum.Winner;
-      // }
-
       gamePair.status = GameStatusEnum.Finished;
       gamePair.finishGameDate = new Date().toISOString();
 

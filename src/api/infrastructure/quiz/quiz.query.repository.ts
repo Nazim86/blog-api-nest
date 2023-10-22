@@ -32,8 +32,8 @@ export class QuizQueryRepository {
 
       return {
         sumScore: Number(user.sumScore),
-        avgScores: user.avgScores, //Math.round(avgScores * 100) / 100,
-        gamesCount: user.gamesCount,
+        avgScores: Number(user.avgScores), //Math.round(avgScores * 100) / 100,
+        gamesCount: Number(user.gamesCount),
         winsCount: Number(user.winsCount),
         lossesCount: Number(user.lossesCount),
         drawsCount: Number(user.drawsCount),
@@ -78,7 +78,6 @@ export class QuizQueryRepository {
             .from(PlayersEntity, 'p')
             .leftJoin('p.user', 'plu')
             .where('plu.id = u.id'),
-        //.where('u.id = :userId', { userId }),
         'avgScores',
       )
       .addSelect(
@@ -131,9 +130,6 @@ export class QuizQueryRepository {
       .where('u.id = :userId', { userId })
       .getRawMany();
 
-    // console.log(myStatistic);
-
-    // const avgScores = Number(myStatistic[0].sumScore) / myStatistic.length;
     return {
       sumScore: Number(myStatistic[0].sumScore),
       avgScores: myStatistic[0].avgScores, //Math.round(avgScores * 100) / 100,
@@ -151,30 +147,19 @@ export class QuizQueryRepository {
       query.pageSize,
     );
 
-    // const sortArray = paginatedQuery.sort;
-    // const sortObject = {};
-    //
-    // for (const item of sortArray) {
-    //   const [key, value] = item.split(' ');
-    //   sortObject[key] = value.toUpperCase();
-    // }
-    //
-    // const sortJson = JSON.stringify(sortObject);
-    //
-    // console.log(sortJson);
-
     const skipSize = paginatedQuery.skipSize;
 
-    const queryBuilder = this.playersRepo
-      .createQueryBuilder('p')
+    const queryBuilder = this.usersRepo
+      .createQueryBuilder('u')
       .addSelect(
-        (qb) =>
-          qb
-            .select(`count(*)`)
-            .from(PlayersEntity, 'p')
-            .leftJoin('p.user', 'plu')
-            .where('plu.id = u.id'),
-        //.where('u.id = :userId', { userId }),
+        (qb) => qb.select(`count(*)`).from(Users, 'user'),
+        //     .leftJoin('user.player', 'pl')
+        //     .where('pl.gamePair is not null'),
+        // // .leftJoin('u.player', 'pl')
+        // .leftJoin('pl.gamePair', 'gp')
+        // //.where('plu1.id = u.id')
+        // .where('gp.id is not null'),
+        // .where('u.id = :userId', { userId }),
         'totalCount',
       )
       .addSelect(
@@ -219,10 +204,6 @@ export class QuizQueryRepository {
             .where(
               '((plu1.id = u.id and pl1.score > pl2.score ) or (plu2.id = u.id and pl2.score >pl1.score))',
             ),
-        // .where(
-        //   '((u1.id = :userId and pl1.score > pl2.score ) or (u2.id = :userId and pl2.score >pl1.score))',
-        //   { userId },
-        // ),
         'winsCount',
       )
       .addSelect(
@@ -237,11 +218,6 @@ export class QuizQueryRepository {
             .where(
               '((plu1.id = u.id and pl1.score < pl2.score ) or (plu2.id = u.id and pl2.score < pl1.score))',
             ),
-
-        // .where(
-        //   '((u1.id = :userId and pl1.score < pl2.score ) or (u2.id = :userId and pl2.score < pl1.score))',
-        //   { userId },
-        // ),
         'lossesCount',
       )
 
@@ -257,20 +233,11 @@ export class QuizQueryRepository {
             .where(
               '((plu1.id = u.id and pl1.score = pl2.score ) or (plu2.id = u.id and pl2.score = pl1.score))',
             ),
-
-        // .where(
-        //   '((u1.id = :userId and pl1.score = pl2.score ) or (u2.id = :userId and pl2.score = pl1.score))',
-        //   { userId },
-        // ),
         'drawsCount',
-      )
-      .leftJoinAndSelect('p.user', 'u')
-      .where('p.gamePair is not null');
+      );
 
-    //console.log(queryBuilder);
     const sortArray = paginatedQuery.sort;
 
-    console.log(sortArray);
     let sortBy, sortDirection;
 
     if (Array.isArray(sortArray)) {
@@ -291,24 +258,18 @@ export class QuizQueryRepository {
       queryBuilder.addOrderBy(`"${sortBy}" `, sortDirection);
     }
 
-    // console.log(queryBuilder);
-
     const topUsers = await queryBuilder
       .limit(paginatedQuery.pageSize)
       .offset(skipSize)
       .getRawMany();
 
-    //console.log(topUsers);
-    console.log(topUsers[0].totalCount);
-    console.log(paginatedQuery.pageSize);
+    console.log(topUsers);
 
     const totalCount = Number(topUsers[0].totalCount);
 
     const pagesCount = paginatedQuery.totalPages(totalCount);
 
     const mappedTopUsers = await this.topUsersMapping(topUsers);
-
-    // console.log(mappedTopUsers);
 
     return {
       pagesCount: pagesCount,
