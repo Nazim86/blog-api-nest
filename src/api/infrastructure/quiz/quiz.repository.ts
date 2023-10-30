@@ -23,6 +23,10 @@ export class QuizRepository {
     return this.playersRepo.save(player);
   }
 
+  async saveGame(game: GamePairEntity) {
+    return this.gamePairRepo.save(game);
+  }
+
   async getGamePairByUserId(userId: string): Promise<GamePairEntity> {
     //console.log(result);
     return await this.gamePairRepo

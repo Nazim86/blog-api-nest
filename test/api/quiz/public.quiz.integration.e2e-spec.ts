@@ -30,6 +30,7 @@ import { GamePairEntity } from '../../../src/api/entities/quiz/gamePair.entity';
 import { QuizRepository } from '../../../src/api/infrastructure/quiz/quiz.repository';
 import { DataSource } from 'typeorm';
 import { AnswersEnum } from '../../../src/enums/answers-enum';
+import { ht } from 'date-fns/locale';
 
 async function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -555,6 +556,78 @@ describe('Super Admin quiz testing', () => {
         sort: 'lossesCount desc',
       });
       return topUsers;
+    });
+
+    it(`After one of players answered to all questions 10 sec. 
+    countdown begin and after game ends`, async () => {
+      await connectUserToGame(httpServer, accessTokens[2]);
+      const gameConnecting = await connectUserToGame(
+        httpServer,
+        accessTokens[3],
+      );
+
+      gamePairId = gameConnecting.body.id;
+
+      const game = await quizRepository.getGamePairById(gamePairId);
+
+      for (let i = 0; i < 5; i++) {
+        const answerResult = await sendAnswer(
+          httpServer,
+          {
+            answer: game.questions[i].correctAnswers[0],
+          },
+          accessTokens[2],
+        );
+
+        expect(answerResult.status).toBe(200);
+
+        if (i === 4) {
+          const gameByPlayer1 = await getCurrentGame(
+            httpServer,
+            accessTokens[2],
+          );
+
+          expect(gameByPlayer1.status).toBe(200);
+        }
+
+        if (i === 0) {
+          await sendAnswer(
+            httpServer,
+            {
+              answer: game.questions[i].correctAnswers[0],
+            },
+            accessTokens[3],
+          );
+        }
+      }
+    });
+
+    it(`send answer from other player during 10 sec.`, async () => {
+      const game = await quizRepository.getGamePairById(gamePairId);
+
+      await sendAnswer(
+        httpServer,
+        {
+          answer: game.questions[2].correctAnswers[0],
+        },
+        accessTokens[3],
+      );
+
+      await delay(4000);
+
+      const gameById = await getGameById(
+        httpServer,
+        accessTokens[2],
+        gamePairId,
+      );
+
+      console.log(gameById.body);
+
+      const gameByPlayer1 = await getCurrentGame(httpServer, accessTokens[2]);
+
+      console.log(gameByPlayer1.body, gameByPlayer1.status);
+
+      expect(gameByPlayer1.statusCode).toBe(404);
     });
   });
 });

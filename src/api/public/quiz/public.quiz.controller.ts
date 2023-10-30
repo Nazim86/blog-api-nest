@@ -46,9 +46,7 @@ export class PublicQuizController {
   @Get('users/top')
   async getTopUsers(@Query() query) {
     //console.log(result);
-    const result = await this.quizQueryRepository.getTopUsers(query);
-    console.log(result);
-    return result;
+    return await this.quizQueryRepository.getTopUsers(query);
   }
 
   @UseGuards(AccessTokenGuard)

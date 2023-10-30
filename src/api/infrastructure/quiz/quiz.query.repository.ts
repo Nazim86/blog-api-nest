@@ -263,7 +263,7 @@ export class QuizQueryRepository {
       .offset(skipSize)
       .getRawMany();
 
-    console.log(topUsers);
+    //console.log(topUsers);
 
     const totalCount = Number(topUsers[0].totalCount);
 
