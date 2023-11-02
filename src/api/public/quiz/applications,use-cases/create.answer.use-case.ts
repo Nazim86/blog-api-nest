@@ -8,8 +8,8 @@ import { AnswersEnum } from '../../../../enums/answers-enum';
 import { BaseTransaction } from '../../../../common/baseTransaction';
 import { DataSource, EntityManager } from 'typeorm';
 import { TransactionRepository } from '../../../infrastructure/common/transaction.repository';
-import { log } from 'handlebars';
-import { Cron, CronExpression, Timeout } from '@nestjs/schedule';
+
+import { map, take, timer } from "rxjs";
 
 export class CreateAnswerCommand {
   constructor(public userId: string, public createAnswerDto: CreateAnswerDto) {}
@@ -42,9 +42,48 @@ export class CreateAnswerUseCase extends BaseTransaction<
     );
   }
 
+  private startCountdownForPlayer(userId: string) {
+    const countdownTimer$ = timer(4000).pipe(
+      take(1),
+      map(async () => {
+        const gamePair =
+          await this.quizRepository.getGamePairByUserIdAndGameStatusActive(userId);
+
+        if (!gamePair) return;
+
+        //console.log(gamePair);
+
+        let bonusPlayer = gamePair.player1;
+        if (gamePair.player2.score > 0 && gamePair.player1.user.id === userId) {
+          bonusPlayer = gamePair.player2;
+          bonusPlayer.score += 1;
+        }
+
+        if (gamePair.player1.score > 0 && gamePair.player2.user.id === userId) {
+          bonusPlayer = gamePair.player1;
+          bonusPlayer.score += 1;
+        }
+
+        gamePair.status = GameStatusEnum.Finished;
+        gamePair.finishGameDate = new Date().toISOString();
+
+        await this.quizRepository.savePlayer(bonusPlayer);
+        const result = await this.quizRepository.saveGame(gamePair);
+
+        // await this.transactionRepository.save(bonusPlayer, manager);
+        // const result = await this.transactionRepository.save(gamePair, manager);
+
+        return { bonusPlayer: bonusPlayer, gamePair: gamePair };
+      })
+    );
+
+    countdownTimer$.subscribe();
+  }
+
+
   //@Timeout(4000) // 10 seconds in milliseconds
   //@Cron('*/10 * * * * *')
-  @Cron(new Date(Date.now() + 10 * 1000))
+  //@Cron(new Date(Date.now() + 10 * 1000))
   private async gameEndAfterCountDown(userId: string, manager?: EntityManager) {
     console.log('countdown function', userId);
     const gamePair =
@@ -171,7 +210,7 @@ export class CreateAnswerUseCase extends BaseTransaction<
       // setTimeout(() => {
       //   this.gameEndAfterCountDown(lastPlayer.user.id, manager);
       // }, 4000);
-      const unsaved = this.gameEndAfterCountDown(lastPlayer.user.id, manager);
+      const unsaved = this.startCountdownForPlayer(lastPlayer.user.id);
       // await this.quizRepository.savePlayer(unsaved.bonusPlayer);
       // const result = await this.quizRepository.saveGame(unsaved.gamePair);
       // await this.transactionRepository.save(unsaved.bonusPlayer, manager);
