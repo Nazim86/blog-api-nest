@@ -120,4 +120,20 @@ export class QuizRepository {
       .andWhere('gp.id = :gamePairId', { gamePairId: gamePairId })
       .getMany();
   }
+
+  async getActiveGames() {
+    return this.gamePairRepo
+      .createQueryBuilder('gp')
+      .leftJoinAndSelect('gp.player1', 'pl1')
+      .leftJoinAndSelect('pl1.user', 'u1')
+      .leftJoinAndSelect('pl1.answers', 'pl1a')
+      .leftJoinAndSelect('gp.player2', 'pl2')
+      .leftJoinAndSelect('pl2.user', 'u2')
+      .leftJoinAndSelect('pl2.answers', 'pl2a')
+      .leftJoinAndSelect('gp.questions', 'q')
+      .where('gp.status = :gameStatusActive', {
+        gameStatusActive: GameStatusEnum.Active,
+      })
+      .getMany();
+  }
 }

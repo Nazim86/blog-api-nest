@@ -32,5 +32,5 @@ export class PlayersEntity {
   gamePair: GamePairEntity;
 
   @OneToMany(() => AnswersEntity, (a) => a.player)
-  answers: AnswersEntity;
+  answers: AnswersEntity[];
 }

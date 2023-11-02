@@ -91,6 +91,7 @@ import { CreateGamePairUseCase } from './api/public/quiz/applications,use-cases/
 import { TransactionRepository } from './api/infrastructure/common/transaction.repository';
 import { PlayersEntity } from './api/entities/quiz/players.entity';
 import { GamesQueryRepo } from './api/infrastructure/quiz/games.query.repo';
+import { FinishGameUseCase } from './api/public/quiz/applications,use-cases/finishGame.use-case';
 
 const useCases = [
   BlogCreateUseCase,
@@ -130,6 +131,7 @@ const useCases = [
   CreateGamePairUseCase,
   UpdateGamePairUseCase,
   CreateAnswerUseCase,
+  FinishGameUseCase,
 ];
 
 const entities = [
@@ -182,7 +184,7 @@ export const localConfigTypeOrm: TypeOrmModuleOptions = {
     ScheduleModule.forRoot(),
     AuthModule,
     UsersModule,
-    TypeOrmModule.forRoot(neonConfigForTypeOrm),
+    TypeOrmModule.forRoot(localConfigTypeOrm),
     TypeOrmModule.forFeature(entities),
     MailModule,
     CqrsModule,
