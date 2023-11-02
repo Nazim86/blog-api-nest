@@ -42,9 +42,9 @@ export class CreateAnswerUseCase extends BaseTransaction<
     );
   }
 
-  @Timeout(4000) // 10 seconds in milliseconds
+  //@Timeout(4000) // 10 seconds in milliseconds
   //@Cron('*/10 * * * * *')
-  //@Cron(new Date(Date.now() + 4 * 1000))
+  @Cron(new Date(Date.now() + 10 * 1000))
   private async gameEndAfterCountDown(userId: string, manager?: EntityManager) {
     console.log('countdown function', userId);
     const gamePair =
