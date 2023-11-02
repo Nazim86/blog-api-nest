@@ -9,7 +9,7 @@ import { BaseTransaction } from '../../../../common/baseTransaction';
 import { DataSource, EntityManager } from 'typeorm';
 import { TransactionRepository } from '../../../infrastructure/common/transaction.repository';
 import { log } from 'handlebars';
-import { Cron, Timeout } from '@nestjs/schedule';
+import { Cron, CronExpression, Timeout } from '@nestjs/schedule';
 
 export class CreateAnswerCommand {
   constructor(public userId: string, public createAnswerDto: CreateAnswerDto) {}
@@ -35,23 +35,24 @@ export class CreateAnswerUseCase extends BaseTransaction<
   //   })
   // }
 
+  running;
   async countDown(userId, manager?) {
     return new Promise((resolve) =>
-      setTimeout(
-        async () => resolve(await this.gameEndAfterCountDown(userId)),
-        4000,
-      ),
+      setTimeout(() => resolve(this.gameEndAfterCountDown(userId)), 4000),
     );
   }
 
   @Timeout(4000) // 10 seconds in milliseconds
+  //@Cron('*/10 * * * * *')
   //@Cron(new Date(Date.now() + 4 * 1000))
   private async gameEndAfterCountDown(userId: string, manager?: EntityManager) {
     console.log('countdown function', userId);
     const gamePair =
       await this.quizRepository.getGamePairByUserIdAndGameStatusActive(userId);
 
-    console.log(gamePair);
+    if (!gamePair) return;
+
+    //console.log(gamePair);
 
     let bonusPlayer = gamePair.player1;
     if (gamePair.player2.score > 0 && gamePair.player1.user.id === userId) {
@@ -86,7 +87,7 @@ export class CreateAnswerUseCase extends BaseTransaction<
         command.userId,
       );
 
-    console.log(gamePair);
+    //console.log(gamePair);
 
     if (!gamePair) return { code: ResultCode.Forbidden };
 
@@ -135,13 +136,6 @@ export class CreateAnswerUseCase extends BaseTransaction<
     const answerLengthInGame = gamePair.answers.length;
 
     //console.log(newAnswer);
-    if (answers.length === 4 && gamePair.answers.length < 9) {
-      setTimeout(async () => {
-        await this.gameEndAfterCountDown(lastPlayer.user.id, manager);
-      }, 4000);
-
-      //this.gameEndAfterCountDown(lastPlayer.user.id);
-    }
 
     //console.log(answerLengthInGame);
 
@@ -171,6 +165,18 @@ export class CreateAnswerUseCase extends BaseTransaction<
     }
 
     gamePair.answers.push(newAnswer);
+
+    if (answers.length === 4 && gamePair.answers.length < 9) {
+      //await this.countDown(lastPlayer.user.id);
+      // setTimeout(() => {
+      //   this.gameEndAfterCountDown(lastPlayer.user.id, manager);
+      // }, 4000);
+      const unsaved = this.gameEndAfterCountDown(lastPlayer.user.id, manager);
+      // await this.quizRepository.savePlayer(unsaved.bonusPlayer);
+      // const result = await this.quizRepository.saveGame(unsaved.gamePair);
+      // await this.transactionRepository.save(unsaved.bonusPlayer, manager);
+      // await this.transactionRepository.save(unsaved.gamePair, manager);
+    }
 
     await this.transactionRepository.save(gamePair, manager);
 
