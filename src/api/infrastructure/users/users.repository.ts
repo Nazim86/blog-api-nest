@@ -127,15 +127,6 @@ export class UsersRepository {
   }
 
   async findBloggerBannedUser(userId: string, blogId: string) {
-    //console.log(bannedUser);
-    //   await this.dataSource.query(
-    //   `Select * from public.users_ban_by_blogger ubb
-    //           Left join public.users u on
-    //           ubb."userId" = u."id"
-    //           Where ubb."userId"=$1 and ubb."blogId"=$2 and ubb."isBanned" = $3`,
-    //   [userId, blogId, true],
-    // );
-
     return await this.usersBanByBloggerRepo
       .createQueryBuilder('ubb')
       .leftJoinAndSelect('ubb.user', 'u')

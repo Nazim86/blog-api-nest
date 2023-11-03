@@ -28,7 +28,6 @@ export class ResendEmailUseCase implements ICommandHandler<ResendEmailCommand> {
       return false;
     }
 
-    //console.log('ends here');
     const newCode = uuid();
 
     const newExpirationDate = add(new Date(), {
@@ -40,8 +39,6 @@ export class ResendEmailUseCase implements ICommandHandler<ResendEmailCommand> {
     user.emailConfirmation.emailExpiration = newExpirationDate;
 
     await this.usersRepository.saveEmailConfirmation(user.emailConfirmation);
-
-    //console.log('email-resending:', user);
 
     this.mailService.sendUserConfirmationEmail(newCode, user.email, user.login);
 

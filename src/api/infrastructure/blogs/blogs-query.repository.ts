@@ -164,8 +164,6 @@ export class BlogsQueryRepo {
       mappedBlog = this.blogsMapping(blog);
     }
 
-    // console.log('blog after map', mappedBlog);
-
     return {
       pagesCount: paginatedQuery.totalPages(totalCount),
       page: Number(paginatedQuery.pageNumber),

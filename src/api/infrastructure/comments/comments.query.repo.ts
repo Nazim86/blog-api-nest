@@ -143,8 +143,6 @@ export class CommentsQueryRepo {
       .offset(skipSize)
       .getRawMany();
 
-    //console.log(comments);
-
     const totalCount = Number(comments[0].totalCount);
 
     const pagesCount = paginatedQuery.totalPages(totalCount);
@@ -206,8 +204,6 @@ export class CommentsQueryRepo {
 
       const user = await this.usersRepository.findUserById(comment.c_userId);
 
-      //console.log(user);
-
       if (user.banInfo.isBanned) {
         return null;
       }
@@ -247,8 +243,6 @@ export class CommentsQueryRepo {
     );
 
     const skipSize = paginatedQuery.skipSize;
-
-    console.log(paginatedQuery.sortBy, paginatedQuery.sortDirection);
 
     const comments = await this.comentsRepo
       .createQueryBuilder('c')
@@ -310,11 +304,7 @@ export class CommentsQueryRepo {
       .offset(skipSize)
       .getRawMany();
 
-    // console.log(' comment in comment query', comments);
-
     const totalCount = Number(comments[0].totalCount);
-
-    console.log(totalCount);
 
     const pagesCount = paginatedQuery.totalPages(totalCount);
 
@@ -324,8 +314,6 @@ export class CommentsQueryRepo {
       comments,
       myStatus,
     );
-
-    console.log(' mapped comment in comment query', mappedCommentsForBlog);
 
     return {
       pagesCount: pagesCount,

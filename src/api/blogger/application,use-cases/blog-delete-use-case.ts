@@ -16,7 +16,7 @@ export class BlogDeleteUseCase {
 
     if (!blog) return { code: ResultCode.NotFound };
 
-    //if (blog.owner.id !== command.userId) return { code: ResultCode.Forbidden };
+    if (blog.owner.id !== command.userId) return { code: ResultCode.Forbidden };
 
     const isBlogDeleted = await this.blogRepository.deleteBlogById(
       command.blogId,

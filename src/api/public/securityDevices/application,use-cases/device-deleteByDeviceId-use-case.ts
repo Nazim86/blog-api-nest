@@ -15,8 +15,6 @@ export class DeviceDeleteByIdUseCase {
       command.deviceId,
     );
 
-    //console.log('device in DeviceDeleteByIdUseCase', device);
-
     if (!device) return { code: ResultCode.NotFound };
 
     if (device && device.user.id !== command.userId) {

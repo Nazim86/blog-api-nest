@@ -26,7 +26,7 @@ export class PostCreateUseCase {
 
     if (!blog) return { code: ResultCode.NotFound };
 
-    // if (blog.owner.id !== command.userId) return { code: ResultCode.Forbidden };
+    if (blog.owner.id !== command.userId) return { code: ResultCode.Forbidden };
 
     const newPost = new Posts();
     newPost.title = command.createPostDto.title;

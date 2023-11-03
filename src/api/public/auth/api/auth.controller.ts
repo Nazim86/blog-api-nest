@@ -70,8 +70,6 @@ export class AuthController {
       new ResendEmailCommand(emailDto),
     );
 
-    //console.log(isEmailSent);
-
     if (!isEmailSent) {
       const errorMessage = {
         message: [{ message: 'wrong email', field: 'email' }],
@@ -128,8 +126,6 @@ export class AuthController {
       '20m',
     );
 
-    //console.log(headers['user-agent']);
-    // const ipAddress = req.ip;
     const deviceName = headers['user-agent'] ?? 'chrome';
 
     await this.commandBus.execute(

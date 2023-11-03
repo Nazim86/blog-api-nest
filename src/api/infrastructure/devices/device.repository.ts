@@ -113,17 +113,4 @@ export class DeviceRepository {
     if (!isTokenValid) return false;
     return true;
   }
-
-  // async deleteOldSession() {
-  //   try {
-  //     const query = { expiration: { $lte: new Date().getTime() } };
-  //     if (!query) {
-  //       return;
-  //     }
-  //     const result = await this.DeviceModel.deleteMany({ query });
-  //     console.log(`${result.deletedCount} expired tokens deleted`);
-  //   } catch (err) {
-  //     console.error(err);
-  //   }
-  // }
 }

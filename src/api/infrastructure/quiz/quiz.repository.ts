@@ -28,7 +28,6 @@ export class QuizRepository {
   }
 
   async getGamePairByUserId(userId: string): Promise<GamePairEntity> {
-    //console.log(result);
     return await this.gamePairRepo
       .createQueryBuilder('gp')
       .leftJoinAndSelect('gp.player1', 'pl1')
@@ -44,7 +43,6 @@ export class QuizRepository {
   async getGamePairByUserIdAndGameStatus(
     userId: string,
   ): Promise<GamePairEntity> {
-    //console.log(result);
     return await this.gamePairRepo
       .createQueryBuilder('gp')
       .leftJoinAndSelect('gp.player1', 'pl1')

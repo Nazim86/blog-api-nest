@@ -100,9 +100,7 @@ export class SaBloggerBlogsController {
     if (postId.code !== ResultCode.Success) {
       return exceptionHandler(postId.code);
     }
-    const result = await this.postQueryRepo.getPostById(postId.data);
-    //console.log(result);
-    return result;
+    return await this.postQueryRepo.getPostById(postId.data);
   }
 
   @HttpCode(204)

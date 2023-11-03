@@ -50,24 +50,13 @@ export class CreateUsersUseCase extends BaseTransaction<CreateUserDto, string> {
     user = await this.transactionRepository.save(user, manager);
     await this.transactionRepository.save(usersBanBySA, manager);
     await this.transactionRepository.save(usersBanByBlogger, manager);
-    //console.log(user);
-    //console.log(result);
     return user.id;
-    // const newUser = await manager.create(User, data);
-    // const userBalance = await manager.create(Balance, { userId: newUser.id });
-    // return {
-    //   userId: newUser.id,
-    //   balanceId: userBalance.id,
-    // };
   }
 
   // this is a function that allows us to use other "transaction" classes
   // inside of any other "main" transaction, i.e. without creating a new DB transaction
 
   async execute(command: CreateUsersCommand) {
-    // const userWithBanInfo: UserWithBanInfo =
-    //   await this.createUserTransaction.run(command.createUserDto);
-
     return super.run(command.createUserDto); //userWithBanInfo.user.id;
   }
 }

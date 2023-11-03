@@ -39,14 +39,10 @@ export class CreateConnectionService {
       newPlayer,
     );
 
-    //console.log(player);
-
     const gamePairByStatus: GamePairEntity =
       await this.quizRepository.getGamePairByStatus(
         GameStatusEnum.PendingSecondPlayer,
       );
-
-    //console.log(gamePairByStatus);
 
     let gamePairId;
 

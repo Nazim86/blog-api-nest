@@ -20,17 +20,17 @@ import { BanBlogCommand } from './use-cases/ban-blog-use-case';
 import { BanBlogInputModel } from './inputModel/banBlog-input-model';
 import { RoleEnum } from '../../../enums/role-enum';
 
-@Controller('saTemproray/blogs')
+@Controller('sa/blogs')
 @UseGuards(BasicAuthGuard)
 export class SuperAdminBlogsController {
   constructor(
     private commandBus: CommandBus,
     private readonly blogsQueryRepo: BlogsQueryRepo,
   ) {}
-  // @Get()
-  // async getBlogs(@Query() query: BlogPagination<PaginationType>) {
-  //   return await this.blogsQueryRepo.getBlog(query, RoleEnum.SA);
-  // }
+  @Get()
+  async getBlogs(@Query() query: BlogPagination<PaginationType>) {
+    return await this.blogsQueryRepo.getBlog(query, RoleEnum.SA);
+  }
 
   @Put(':blogId/bind-with-user/:userId')
   @HttpCode(204)

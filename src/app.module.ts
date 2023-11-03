@@ -122,8 +122,6 @@ const useCases = [
   RegistrationConfirmationUseCase,
   DeviceDeleteByIdUseCase,
   DeleteDevicesUseCase,
-  //CreateUserTransaction,
-  //CreateBlogTransaction,
   CreateQuestionUseCase,
   UpdateQuestionUseCase,
   PublishQuestionUseCase,

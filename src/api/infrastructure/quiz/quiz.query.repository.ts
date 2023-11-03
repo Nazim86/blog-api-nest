@@ -51,7 +51,6 @@ export class QuizQueryRepository {
       .leftJoinAndSelect('a.question', 'q')
       .where('a.id = :id', { id: answerId })
       .getOne();
-    //console.log(answer);
     return {
       questionId: answer.question.id,
       answerStatus: answer.answerStatus,
@@ -244,8 +243,6 @@ export class QuizQueryRepository {
       sortArray.forEach((sortString) => {
         [sortBy, sortDirection] = sortString.split(' ');
 
-        console.log(sortBy, sortDirection);
-
         sortDirection = this.sortDirectionEnum(sortDirection);
 
         queryBuilder.addOrderBy(`"${sortBy}" `, sortDirection);
@@ -262,8 +259,6 @@ export class QuizQueryRepository {
       .limit(paginatedQuery.pageSize)
       .offset(skipSize)
       .getRawMany();
-
-    //console.log(topUsers);
 
     const totalCount = Number(topUsers[0].totalCount);
 

@@ -32,16 +32,17 @@ export class UserQueryRepo {
 
   private userMappingForSA = (newUser): UserViewType[] => {
     return newUser.map((user): UserViewType => {
+      console.log('usersss', user);
       return {
         id: user.id,
         login: user.login,
         email: user.email,
         createdAt: user.createdAt,
-        // banInfo: {
-        //   isBanned: user.banInfo.isBanned,
-        //   banDate: user.banInfo.banDate,
-        //   banReason: user.banInfo.banReason,
-        // },
+        banInfo: {
+          isBanned: user.banInfo.isBanned,
+          banDate: user.banInfo.banDate,
+          banReason: user.banInfo.banReason,
+        },
       };
     });
   };
@@ -167,8 +168,6 @@ export class UserQueryRepo {
       .take(paginatedQuery.pageSize)
       .getManyAndCount();
 
-    //console.log(getUsers[0]);
-
     const totalCount = Number(getUsers[1]);
 
     const pagesCount = paginatedQuery.totalPages(totalCount);
@@ -177,7 +176,6 @@ export class UserQueryRepo {
 
     if (requestType === RoleEnum.SA) {
       mappedUsers = this.userMappingForSA(getUsers[0]);
-      //console.log('mapped Users', mappedUsers);
     } else {
       mappedUsers = this.userMapping(getUsers[0]);
     }
@@ -198,18 +196,16 @@ export class UserQueryRepo {
       .where('u.id=:id', { id })
       .getOne();
 
-    // console.log(user);
-
     return {
       id: user.id,
       login: user.login,
       email: user.email,
       createdAt: user.createdAt,
-      // banInfo: {
-      //   isBanned: user.banInfo.isBanned,
-      //   banDate: user.banInfo.banDate,
-      //   banReason: user.banInfo.banReason,
-      // },
+      banInfo: {
+        isBanned: user.banInfo.isBanned,
+        banDate: user.banInfo.banDate,
+        banReason: user.banInfo.banReason,
+      },
     };
   }
 }

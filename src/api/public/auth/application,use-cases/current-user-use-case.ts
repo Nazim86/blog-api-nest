@@ -11,7 +11,6 @@ export class CurrentUserUseCase {
   constructor(private readonly usersRepository: UsersRepository) {}
   async execute(command: CurrentUserCommand): Promise<CurrentUserType> {
     const user = await this.usersRepository.findUserById(command.userId);
-    //console.log(user);
     return {
       email: user.email,
       login: user.login,

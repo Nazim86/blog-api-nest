@@ -27,12 +27,6 @@ export class PostLikeUpdateUseCase {
 
     const user = await this.userRepository.findUserById(command.userId);
 
-    // let login = 'undefined';
-    //
-    // if (user) {
-    //   login = user.login;
-    // }
-
     const postLike = await this.likesRepository.findPostLike(post.id, user.id);
 
     if (!user) return false;
@@ -45,21 +39,9 @@ export class PostLikeUpdateUseCase {
       newPostLike.status = command.createPostLikeDto.likeStatus;
       await this.likesRepository.savePostLike(newPostLike);
     } else {
-      // postLike.post = post;
-      // postLike.user = user;
       postLike.status = command.createPostLikeDto.likeStatus;
       await this.likesRepository.savePostLike(postLike);
     }
-
-    // console.log('new Like', result1);
-    // console.log('updating like', result2);
-    // await this.likesRepository.createPostLike(
-    //   command.postId,
-    //   command.userId,
-    //   command.createPostLikeDto,
-    // );
-
-    // console.log(newPostLike);
 
     return true;
   }

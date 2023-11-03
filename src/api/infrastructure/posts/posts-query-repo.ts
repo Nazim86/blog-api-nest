@@ -346,8 +346,6 @@ export class PostsQueryRepo {
       .offset(skipSize)
       .getRawMany();
 
-    console.log('posts in getPostsByBlogId', posts);
-
     if (!posts || posts.length === 0) return false;
 
     const totalCount = Number(posts[0].totalCount);
