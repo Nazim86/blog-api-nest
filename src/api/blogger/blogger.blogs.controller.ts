@@ -100,9 +100,10 @@ export class BloggerBlogsController {
       return exceptionHandler(ResultCode.BadRequest, errorMessage);
     }
 
-    await this.commandBus.execute(new SaveImageCommand(wallpaper.buffer));
-
-    console.log(metadata);
+    return await this.commandBus.execute(
+      new SaveImageCommand(wallpaper.buffer),
+    );
+    //console.log(metadata);
   }
 
   @Post()
