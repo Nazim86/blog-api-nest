@@ -12,6 +12,7 @@ export class FinishGameUseCase {
 
   @Cron(CronExpression.EVERY_SECOND)
   async execute() {
+    console.log('cron in quiz');
     const activeGames = await this.quizRepo.getActiveGames();
 
     activeGames.map(async (g) => {

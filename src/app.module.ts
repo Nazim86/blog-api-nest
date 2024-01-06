@@ -92,6 +92,8 @@ import { TransactionRepository } from './api/infrastructure/common/transaction.r
 import { PlayersEntity } from './api/entities/quiz/players.entity';
 import { GamesQueryRepo } from './api/infrastructure/quiz/games.query.repo';
 import { FinishGameUseCase } from './api/public/quiz/applications,use-cases/finishGame.use-case';
+import { S3StorageAdapter } from './common/s3-storage-adapter';
+import { SaveImageUseCase } from './api/blogger/application,use-cases/save-image-use-case';
 
 const useCases = [
   BlogCreateUseCase,
@@ -130,6 +132,7 @@ const useCases = [
   UpdateGamePairUseCase,
   CreateAnswerUseCase,
   FinishGameUseCase,
+  SaveImageUseCase,
 ];
 
 const entities = [
@@ -224,6 +227,7 @@ export const localConfigTypeOrm: TypeOrmModuleOptions = {
     CreateConnectionService,
     TransactionRepository,
     GamesQueryRepo,
+    S3StorageAdapter,
     ...useCases,
   ],
   exports: [TypeOrmModule],

@@ -8,7 +8,9 @@ import {
   Post,
   Put,
   Query,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { QueryPaginationType } from '../../types/query-pagination-type';
 import { BlogsViewType } from '../infrastructure/blogs/types/blogs-view-type';
@@ -33,6 +35,11 @@ import { PostDeleteCommand } from './application,use-cases/post-delete-use-case'
 import { BlogRepository } from '../infrastructure/blogs/blog.repository';
 import { CommentsQueryRepo } from '../infrastructure/comments/comments.query.repo';
 import { RoleEnum } from '../../enums/role-enum';
+import { FileInterceptor } from '@nestjs/platform-express';
+import sharp from 'sharp';
+import { SaveImageCommand } from './application,use-cases/save-image-use-case';
+
+//import * as sharp from 'sharp';
 
 @UseGuards(AccessTokenGuard)
 @Controller('blogger/blogs')
@@ -72,6 +79,30 @@ export class BloggerBlogsController {
     @UserId() userId: string,
   ) {
     return await this.postQueryRepo.getPostsByBlogId(query, blogId, userId);
+  }
+
+  @Post(':blogId/images/wallpaper')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadWallpaperBlog(
+    @Param('blogId') blogId: string,
+    @UploadedFile() wallpaper: Express.Multer.File,
+  ) {
+    const metadata = await sharp(wallpaper.buffer).metadata();
+    if (
+      metadata.size <= 100000 ||
+      metadata.width === 1028 ||
+      metadata.height === 312
+    ) {
+      const errorMessage = {
+        message: [{ message: 'Wrong size of image', field: 'image' }],
+      };
+      //throw new BadRequestException(errorMessage);
+      return exceptionHandler(ResultCode.BadRequest, errorMessage);
+    }
+
+    await this.commandBus.execute(new SaveImageCommand(wallpaper.buffer));
+
+    console.log(metadata);
   }
 
   @Post()

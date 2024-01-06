@@ -20,6 +20,7 @@ import { AppModule } from '../../../src/app.module';
 import { appSettings } from '../../../src/app.settings';
 import { nameField } from '../../data/400 error-data';
 import { deleteBlogById, getBlogById } from '../../functions/blog_functions';
+import { join } from 'path';
 
 describe('Blogger blog testing', () => {
   let app: INestApplication;
@@ -52,7 +53,7 @@ describe('Blogger blog testing', () => {
     const users = [];
     const blog = [];
     let post;
-    let comment;
+    //let comment;
 
     it('should wipe all data in db', async () => {
       const response = await request(httpServer).delete('/testing/all-data');
@@ -204,7 +205,6 @@ describe('Blogger blog testing', () => {
       const result = await request(app.getHttpServer())
         .get('/blogger/blogs/comments')
         .auth(accessToken[0], { type: 'bearer' });
-      console.log('comment in test for blogger', result.body);
       expect(result.status).toBe(200);
       expect(result.body).toEqual(commentForBloggerWithPagination);
     });
@@ -227,6 +227,24 @@ describe('Blogger blog testing', () => {
         .auth(accessToken[0], { type: 'bearer' });
       expect(result.status).toBe(200);
       expect(result.body).toEqual(commentForBloggerWithPagination);
+    });
+
+    it(`Sending image`, async () => {
+      const imagePath = join(__dirname, 'wallpaper.jpg');
+      const blogId = blog[0].id;
+
+      //console.log(imagePath);
+
+      const result = await request(app.getHttpServer())
+        .post(`/blogger/blogs/${blogId}/images/wallpaper`)
+        .set('Authorization', `Bearer ${accessToken[0]}`)
+        //.auth(accessToken[0], { type: 'bearer' })
+        .attach('file', imagePath);
+
+      expect(result.status).toBe(201);
+      console.log('body', result.body);
+
+      // await new Promise((resolve) => setTimeout(resolve, 5000));
     });
 
     it(`Blogger delete blog by id`, async () => {
