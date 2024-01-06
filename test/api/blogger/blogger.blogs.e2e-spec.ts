@@ -53,7 +53,7 @@ describe('Blogger blog testing', () => {
     const users = [];
     const blog = [];
     let post;
-    //let comment;
+    let comment;
 
     it('should wipe all data in db', async () => {
       const response = await request(httpServer).delete('/testing/all-data');
