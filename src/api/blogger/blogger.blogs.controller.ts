@@ -39,8 +39,6 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import sharp from 'sharp';
 import { SaveImageCommand } from './application,use-cases/save-image-use-case';
 
-//import * as sharp from 'sharp';
-
 @UseGuards(AccessTokenGuard)
 @Controller('blogger/blogs')
 export class BloggerBlogsController {
