@@ -83,25 +83,52 @@ export class BloggerBlogsController {
 
   @Post(':blogId/images/wallpaper')
   @UseInterceptors(FileInterceptor('file'))
-  async uploadWallpaperBlog(
+  async uploadWallpaperForBlog(
     @Param('blogId') blogId: string,
     @UploadedFile() wallpaper: Express.Multer.File,
+    @UserId() userId: string,
   ) {
     const metadata = await sharp(wallpaper.buffer).metadata();
     if (
       metadata.size <= 100000 ||
-      metadata.width === 1028 ||
-      metadata.height === 312
+      metadata.width !== 1028 ||
+      metadata.height !== 312
     ) {
       const errorMessage = {
-        message: [{ message: 'Wrong size of image', field: 'image' }],
+        message: [{ message: 'Wrong size of image', field: 'wallpaper' }],
       };
       //throw new BadRequestException(errorMessage);
       return exceptionHandler(ResultCode.BadRequest, errorMessage);
     }
 
     return await this.commandBus.execute(
-      new SaveImageCommand(wallpaper.buffer),
+      new SaveImageCommand(wallpaper.buffer, userId, blogId),
+    );
+    //console.log(metadata);
+  }
+
+  @Post(':blogId/images/main')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadMainImageForBlog(
+    @Param('blogId') blogId: string,
+    @UploadedFile() mainImage: Express.Multer.File,
+    @UserId() userId: string,
+  ) {
+    const metadata = await sharp(mainImage.buffer).metadata();
+    if (
+      metadata.size <= 100000 ||
+      metadata.width !== 156 ||
+      metadata.height !== 156
+    ) {
+      const errorMessage = {
+        message: [{ message: 'Wrong size of image', field: 'main image' }],
+      };
+      //throw new BadRequestException(errorMessage);
+      return exceptionHandler(ResultCode.BadRequest, errorMessage);
+    }
+
+    return await this.commandBus.execute(
+      new SaveImageCommand(mainImage.buffer, userId, blogId),
     );
     //console.log(metadata);
   }
