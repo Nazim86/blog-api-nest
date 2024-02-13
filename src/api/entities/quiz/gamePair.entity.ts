@@ -41,7 +41,4 @@ export class GamePairEntity {
 
   @ManyToMany(() => AnswersEntity, (a) => a.gamePairs)
   answers: AnswersEntity[];
-
-  // @OneToMany(() => PlayersEntity, (pls) => pls.gamePair)
-  // playerScore: PlayersEntity;
 }

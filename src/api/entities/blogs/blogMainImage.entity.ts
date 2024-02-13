@@ -3,12 +3,13 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Blogs } from '../blogs/blogs.entity';
+import { Blogs } from './blogs.entity';
 
-@Entity({ name: 'images' })
-export class Images {
+@Entity({ name: 'blogMainImage' })
+export class BlogMainImage {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -16,21 +17,15 @@ export class Images {
   url: string;
 
   @Column({ type: 'varchar' })
-  width: string;
+  width: number;
 
   @Column({ type: 'varchar' })
-  height: string;
+  height: number;
 
   @Column({ type: 'varchar' })
-  fileSize: string;
+  fileSize: number;
 
-  @Column({ type: 'varchar' })
-  imageType: string;
-
-  @Column({ type: 'varchar' })
-  test: string;
-
-  @ManyToOne(() => Blogs, (b) => b.images, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Blogs, (b) => b.mainImage, { onDelete: 'CASCADE' })
   @JoinColumn()
   blogs: Blogs;
 }

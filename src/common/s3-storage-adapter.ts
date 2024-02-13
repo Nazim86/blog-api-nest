@@ -19,8 +19,7 @@ export class S3StorageAdapter {
     });
   }
 
-  async saveImage(imageBuffer: Buffer) {
-    const key = 'images/original-wallpaper.jpg';
+  async saveImage(imageBuffer: Buffer, key: string) {
     const command = new PutObjectCommand({
       Bucket: 'nazimych',
       Key: key,

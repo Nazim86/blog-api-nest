@@ -37,9 +37,7 @@ import { CommentsQueryRepo } from '../infrastructure/comments/comments.query.rep
 import { RoleEnum } from '../../enums/role-enum';
 import { FileInterceptor } from '@nestjs/platform-express';
 import sharp from 'sharp';
-import { SaveImageCommand } from './application,use-cases/save-image-use-case';
-
-//import * as sharp from 'sharp';
+import { BlogWallpaperImageCommand } from './application,use-cases/blog-wallpaper-image-use-case';
 
 @UseGuards(AccessTokenGuard)
 @Controller('blogger/blogs')
@@ -101,10 +99,11 @@ export class BloggerBlogsController {
       return exceptionHandler(ResultCode.BadRequest, errorMessage);
     }
 
+    const filename = wallpaper.filename;
+
     return await this.commandBus.execute(
-      new SaveImageCommand(wallpaper.buffer, userId, blogId),
+      new BlogWallpaperImageCommand(wallpaper.buffer, userId, blogId, filename),
     );
-    //console.log(metadata);
   }
 
   @Post(':blogId/images/main')
@@ -127,9 +126,9 @@ export class BloggerBlogsController {
       return exceptionHandler(ResultCode.BadRequest, errorMessage);
     }
 
-    return await this.commandBus.execute(
-      new SaveImageCommand(mainImage.buffer, userId, blogId),
-    );
+    // return await this.commandBus.execute(
+    //   new BlogWallpaperImageCommand(mainImage.buffer, userId, blogId),
+    // );
     //console.log(metadata);
   }
 

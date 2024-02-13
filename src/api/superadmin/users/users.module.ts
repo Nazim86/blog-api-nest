@@ -12,6 +12,7 @@ import { EmailConfirmation } from '../../entities/users/email-confirmation.entit
 import { PasswordRecovery } from '../../entities/users/password-recovery.entity';
 import { UsersBanByBlogger } from '../../entities/users/usersBanByBlogger.entity';
 import { BlogBanInfo } from '../../entities/blogs/blogBanInfo.entity';
+import { BlogWallpaperImage } from '../../entities/blogs/blogWallpaperImage.entity';
 
 @Module({
   imports: [
@@ -24,16 +25,11 @@ import { BlogBanInfo } from '../../entities/blogs/blogBanInfo.entity';
       EmailConfirmation,
       PasswordRecovery,
       UsersBanByBlogger,
-      //PlayersEntity,
       BlogBanInfo,
+      BlogWallpaperImage, // TODO: why this need to be here
     ]),
   ],
-  providers: [
-    UsersRepository,
-    //QuizRepository,
-    IsUserAlreadyExistConstraint,
-    BlogRepository,
-  ],
+  providers: [UsersRepository, IsUserAlreadyExistConstraint, BlogRepository],
   exports: [UsersRepository, BlogRepository],
 })
 export class UsersModule {}

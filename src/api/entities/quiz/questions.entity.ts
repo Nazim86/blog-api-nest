@@ -30,10 +30,6 @@ export class QuestionsEntity {
   @Column({ type: 'varchar', nullable: true })
   updatedAt: string;
 
-  // @ManyToOne(() => PlayersEntity, { onDelete: 'CASCADE' })
-  // @JoinColumn()
-  // player: PlayersEntity;
-
   @OneToMany(() => AnswersEntity, (a) => a.question, { nullable: true })
   playerAnswer: AnswersEntity[];
 
@@ -43,7 +39,4 @@ export class QuestionsEntity {
   })
   @JoinTable()
   gamePairs: GamePairEntity[];
-
-  // @ManyToOne(() => GamePairEntity, (gp) => gp.question)
-  // gamePair: GamePairEntity;
 }

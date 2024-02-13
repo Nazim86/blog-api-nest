@@ -18,9 +18,6 @@ export class PlayersEntity {
   @Column({ type: 'int', default: 0 })
   score: number;
 
-  // @Column({ type: 'enum', enum: WinningStatusEnum })
-  // winningStatus: WinningStatusEnum;
-
   @ManyToOne(() => Users, (u) => u.player, { onDelete: 'CASCADE' })
   @JoinColumn()
   user: Users;

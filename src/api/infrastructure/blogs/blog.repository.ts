@@ -3,14 +3,17 @@ import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { Blogs } from '../../entities/blogs/blogs.entity';
 import { BlogBanInfo } from '../../entities/blogs/blogBanInfo.entity';
+import { BlogWallpaperImage } from '../../entities/blogs/blogWallpaperImage.entity';
 
 @Injectable()
 export class BlogRepository {
   constructor(
-    @InjectDataSource() private dataSource: DataSource,
+    //@InjectDataSource() private dataSource: DataSource,
     @InjectRepository(Blogs) private readonly blogsRepo: Repository<Blogs>,
     @InjectRepository(BlogBanInfo)
     private readonly blogBanInfoRepo: Repository<BlogBanInfo>,
+    @InjectRepository(BlogWallpaperImage)
+    private readonly blogWallpaperRepo: Repository<BlogWallpaperImage>,
   ) {}
 
   async saveBlog(blog: Blogs) {
@@ -38,6 +41,18 @@ export class BlogRepository {
       console.log('error', e);
       return null;
     }
+  }
+
+  async findWallpaper(blogId: string) {
+    return this.blogWallpaperRepo
+      .createQueryBuilder('bw')
+      .leftJoinAndSelect('bw.blogs', 'b')
+      .where('b.id = :id', { id: blogId })
+      .getOne();
+  }
+
+  async saveWallpaperData(wallpaperData: BlogWallpaperImage) {
+    return this.blogWallpaperRepo.save(wallpaperData);
   }
 
   // async bindBlogWithUser(userId: string, login: string, blogId: string) {

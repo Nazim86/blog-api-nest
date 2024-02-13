@@ -59,9 +59,9 @@ import { RegistrationConfirmationUseCase } from './api/public/auth/application,u
 import { DeviceDeleteByIdUseCase } from './api/public/securityDevices/application,use-cases/device-deleteByDeviceId-use-case';
 import { DeleteDevicesUseCase } from './api/public/securityDevices/application,use-cases/delete-devices-use-case';
 import { UsersBanBySa } from './api/entities/users/users-ban-by-sa.entity';
-import { EmailConfirmation } from './api/entities/users/email-confirmation';
+import { EmailConfirmation } from './api/entities/users/email-confirmation.entity';
 import { Users } from './api/entities/users/user.entity';
-import { PasswordRecovery } from './api/entities/users/password-recovery';
+import { PasswordRecovery } from './api/entities/users/password-recovery.entity';
 import { Posts } from './api/entities/posts/posts.entity';
 import { CommentLike } from './api/entities/like/commentLike.entity';
 import { Comments } from './api/entities/comments/comments.entity';
@@ -93,7 +93,9 @@ import { PlayersEntity } from './api/entities/quiz/players.entity';
 import { GamesQueryRepo } from './api/infrastructure/quiz/games.query.repo';
 import { FinishGameUseCase } from './api/public/quiz/applications,use-cases/finishGame.use-case';
 import { S3StorageAdapter } from './common/s3-storage-adapter';
-import { SaveImageUseCase } from './api/blogger/application,use-cases/save-image-use-case';
+import { BlogWallpaperImageUseCase } from './api/blogger/application,use-cases/blog-wallpaper-image-use-case';
+import { BlogWallpaperImage } from './api/entities/blogs/blogWallpaperImage.entity';
+import { BlogMainImage } from './api/entities/blogs/blogMainImage.entity';
 
 const useCases = [
   BlogCreateUseCase,
@@ -132,7 +134,7 @@ const useCases = [
   UpdateGamePairUseCase,
   CreateAnswerUseCase,
   FinishGameUseCase,
-  SaveImageUseCase,
+  BlogWallpaperImageUseCase,
 ];
 
 const entities = [
@@ -152,6 +154,8 @@ const entities = [
   AnswersEntity,
   QuestionsEntity,
   PlayersEntity,
+  BlogMainImage,
+  BlogWallpaperImage,
 ];
 
 export const neonConfigForTypeOrm: TypeOrmModuleOptions = {
@@ -164,7 +168,7 @@ export const neonConfigForTypeOrm: TypeOrmModuleOptions = {
   ssl: true,
   database: process.env.PG_DATABASE,
   autoLoadEntities: true,
-  synchronize: true,
+  synchronize: false,
 };
 
 export const localConfigTypeOrm: TypeOrmModuleOptions = {
@@ -176,7 +180,7 @@ export const localConfigTypeOrm: TypeOrmModuleOptions = {
   password: 'sa',
   database: 'blog-api-nest-rawSql',
   autoLoadEntities: true,
-  synchronize: true,
+  synchronize: false,
 };
 
 @Module({
