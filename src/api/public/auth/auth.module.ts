@@ -26,11 +26,9 @@ import { Users } from '../../entities/users/user.entity';
 import { UsersBanBySa } from '../../entities/users/users-ban-by-sa.entity';
 import { Devices } from '../../entities/devices/devices.entity';
 import { Blogs } from '../../entities/blogs/blogs.entity';
-import { EmailConfirmation } from '../../entities/users/email-confirmation';
-import { PasswordRecovery } from '../../entities/users/password-recovery';
+import { EmailConfirmation } from '../../entities/users/email-confirmation.entity';
+import { PasswordRecovery } from '../../entities/users/password-recovery.entity';
 import { UsersBanByBlogger } from '../../entities/users/usersBanByBlogger.entity';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { APP_GUARD } from '@nestjs/core';
 
 const useCases = [DeviceCreateUseCase, DeviceUpdateUseCase];
 @Module({

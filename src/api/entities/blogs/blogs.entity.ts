@@ -11,6 +11,7 @@ import { BlogBanInfo } from './blogBanInfo.entity';
 import { Users } from '../users/user.entity';
 import { UsersBanByBlogger } from '../users/usersBanByBlogger.entity';
 import { Posts } from '../posts/posts.entity';
+import { Images } from '../images/images.entity';
 
 @Entity({ name: 'blogs' })
 export class Blogs {
@@ -51,4 +52,7 @@ export class Blogs {
 
   @OneToMany(() => UsersBanByBlogger, (ubb) => ubb.blog)
   usersBanByBlogger: UsersBanByBlogger;
+
+  @OneToMany(() => Images, (i) => i.blogs)
+  images: Images;
 }

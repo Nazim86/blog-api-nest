@@ -6,7 +6,7 @@ import { MailService } from '../../../../mail/mail.service';
 import { ResultCode } from '../../../../exception-handler/result-code-enum';
 import { Result } from '../../../../exception-handler/result-type';
 import { add } from 'date-fns';
-import { PasswordRecovery } from '../../../entities/users/password-recovery';
+import { PasswordRecovery } from '../../../entities/users/password-recovery.entity';
 
 export class SendRecoveryCodeCommand {
   constructor(public emailDto: EmailDto) {}

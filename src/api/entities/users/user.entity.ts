@@ -6,8 +6,8 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { UsersBanBySa } from './users-ban-by-sa.entity';
-import { EmailConfirmation } from './email-confirmation';
-import { PasswordRecovery } from './password-recovery';
+import { EmailConfirmation } from './email-confirmation.entity';
+import { PasswordRecovery } from './password-recovery.entity';
 import { CommentLike } from '../like/commentLike.entity';
 import { PostLike } from '../like/postLike.entity';
 import { Devices } from '../devices/devices.entity';
@@ -80,14 +80,4 @@ export class Users {
 
   @OneToMany(() => PlayersEntity, (pls) => pls.user)
   player: PlayersEntity;
-
-  // @OneToMany(() => GamePairEntity, (g) => g.player1)
-  // games1: GamePairEntity[];
-  //
-  // @OneToMany(() => GamePairEntity, (g) => g.player2)
-  // games2: GamePairEntity[];
-
-  // @OneToOne(() => PlayersEntity, (p) => p.user)
-  // @JoinColumn()
-  // player: PlayersEntity;
 }

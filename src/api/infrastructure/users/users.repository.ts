@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { Users } from '../../entities/users/user.entity';
-import { EmailConfirmation } from '../../entities/users/email-confirmation';
+import { EmailConfirmation } from '../../entities/users/email-confirmation.entity';
 import { UsersBanBySa } from '../../entities/users/users-ban-by-sa.entity';
-import { PasswordRecovery } from '../../entities/users/password-recovery';
+import { PasswordRecovery } from '../../entities/users/password-recovery.entity';
 import { UsersBanByBlogger } from '../../entities/users/usersBanByBlogger.entity';
 
 @Injectable()

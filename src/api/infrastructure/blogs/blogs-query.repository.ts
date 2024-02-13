@@ -61,6 +61,7 @@ export class BlogsQueryRepo {
       if (!foundBlog || foundBlog.blogBanInfo.isBanned) {
         return false;
       }
+
       return {
         id: foundBlog.id,
         name: foundBlog.name,

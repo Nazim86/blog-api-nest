@@ -5,7 +5,7 @@ import { CommandHandler } from '@nestjs/cqrs';
 import { MailService } from '../../../../mail/mail.service';
 import { UsersRepository } from '../../../infrastructure/users/users.repository';
 import { Users } from '../../../entities/users/user.entity';
-import { EmailConfirmation } from '../../../entities/users/email-confirmation';
+import { EmailConfirmation } from '../../../entities/users/email-confirmation.entity';
 import { v4 as uuid } from 'uuid';
 import { add } from 'date-fns';
 import { UsersBanBySa } from '../../../entities/users/users-ban-by-sa.entity';
