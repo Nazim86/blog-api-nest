@@ -4,9 +4,9 @@ import { ResultCode } from '../../../exception-handler/result-code-enum';
 import { BlogRepository } from '../../infrastructure/blogs/blog.repository';
 import sharp from 'sharp';
 import { join } from 'path';
-import { BlogWallpaperImage } from '../../entities/blogs/blogWallpaperImage.entity';
+import { BlogMainImage } from '../../entities/blogs/blogMainImage.entity';
 
-export class BlogWallpaperImageCommand {
+export class BlogMainImageCommand {
   constructor(
     public imageBuffer: Buffer,
     public userId: string,
@@ -15,13 +15,13 @@ export class BlogWallpaperImageCommand {
   ) {}
 }
 
-@CommandHandler(BlogWallpaperImageCommand)
-export class BlogWallpaperImageUseCase {
+@CommandHandler(BlogMainImageCommand)
+export class BlogMainImageUseCase {
   constructor(
     private readonly s3StorageAdapter: S3StorageAdapter,
     private readonly blogsRepo: BlogRepository,
   ) {}
-  async execute(command: BlogWallpaperImageCommand) {
+  async execute(command: BlogMainImageCommand) {
     const blog = await this.blogsRepo.getBlogById(command.blogId);
 
     if (blog.owner.id !== command.userId) {
@@ -30,31 +30,28 @@ export class BlogWallpaperImageUseCase {
 
     const metadata = await sharp(command.imageBuffer.buffer).metadata();
 
-    const key = `blog/images/wallpaper/${blog.id}_${command.filename}`;
+    const key = `blog/image/main/${blog.id}_${command.filename}`;
 
     await this.s3StorageAdapter.saveImage(command.imageBuffer, key);
 
     const url = join('https://nazimych.s3.eu-north-1.amazonaws.com', key);
 
-    let blogWallpaperData = await this.blogsRepo.findWallpaper(command.blogId);
+    const blogMainImages: BlogMainImage[] = await this.blogsRepo.findImages(
+      command.blogId,
+    );
 
-    if (!blogWallpaperData) {
-      blogWallpaperData = new BlogWallpaperImage();
+    let blogMainImage;
+
+    if (!blogMainImages.length) {
+      blogMainImage = new BlogMainImage();
     }
 
-    blogWallpaperData.url = url;
-    blogWallpaperData.height = metadata.height;
-    blogWallpaperData.width = metadata.width;
-    blogWallpaperData.fileSize = metadata.size;
-    blogWallpaperData.blogs = blog;
+    blogMainImage.url = url;
+    blogMainImage.height = metadata.height;
+    blogMainImage.width = metadata.width;
+    blogMainImage.fileSize = metadata.size;
+    blogMainImage.blogs = blog;
 
-    return this.blogsRepo.saveWallpaperData(blogWallpaperData);
-
-    // return {
-    //   url: url,
-    //   width: metadata.width,
-    //   height: metadata.height,
-    //   fileSize: metadata.size,
-    // };
+    return this.blogsRepo.saveMainImage(blogMainImage);
   }
 }

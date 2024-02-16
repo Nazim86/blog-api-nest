@@ -4,15 +4,18 @@ import { QueryPaginationType } from '../../../types/query-pagination-type';
 import { PaginationType } from '../../../common/pagination';
 import { BlogPagination } from './blog-pagination';
 import { RoleEnum } from '../../../enums/role-enum';
-import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { Blogs } from '../../entities/blogs/blogs.entity';
+import { BlogWallpaperImage } from '../../entities/blogs/blogWallpaperImage.entity';
+import { BlogMainImage } from '../../entities/blogs/blogMainImage.entity';
 
 @Injectable()
 export class BlogsQueryRepo {
   constructor(
-    @InjectDataSource() private dataSource: DataSource,
     @InjectRepository(Blogs) private readonly blogsRepo: Repository<Blogs>,
+    @InjectRepository(BlogMainImage)
+    private readonly blogMainRepo: Repository<BlogMainImage>,
   ) {}
 
   private blogsMapping = (array): BlogsViewType[] => {
@@ -48,6 +51,44 @@ export class BlogsQueryRepo {
       };
     });
   };
+
+  private blogImages = (
+    wallpaper: BlogWallpaperImage,
+    mainImages: BlogMainImage[],
+  ) => {
+    return {
+      wallpaper: {
+        url: wallpaper.url,
+        width: wallpaper.width,
+        height: wallpaper.height,
+        fileSize: wallpaper.fileSize,
+      },
+      main: mainImages.map((mainImage) => {
+        return {
+          url: mainImage.url,
+          width: mainImage.width,
+          height: mainImage.height,
+          fileSize: mainImage.fileSize,
+        };
+      }),
+    };
+  };
+
+  async getImages(blogId: string) {
+    const blog: Blogs = await this.blogsRepo
+      .createQueryBuilder('b')
+      .leftJoinAndSelect('b.wallpaperImage', 'bw')
+      .where('b.id = :blogId', { blogId })
+      .getOne();
+
+    const mainImages: BlogMainImage[] = await this.blogMainRepo
+      .createQueryBuilder('bm')
+      .leftJoinAndSelect('bm.blogs', 'b')
+      .where('b.id = :blogId', { blogId })
+      .getMany();
+
+    return this.blogImages(blog.wallpaperImage, mainImages);
+  }
 
   async getBlogById(id: string): Promise<BlogsViewType | boolean> {
     try {

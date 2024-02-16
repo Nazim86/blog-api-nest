@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import { join } from 'path';
-import sharp from 'sharp';
 
 @Injectable()
 export class S3StorageAdapter {
@@ -27,27 +25,6 @@ export class S3StorageAdapter {
       ContentType: 'image/jpeg',
       ACL: 'public-read',
     });
-    await this.s3Client.send(command);
-
-    const url = join('https://nazimych.s3.eu-north-1.amazonaws.com', key);
-
-    const metadata = await sharp(imageBuffer).metadata();
-
-    return {
-      wallpaper: {
-        url: url,
-        width: metadata.width,
-        height: metadata.height,
-        fileSize: metadata.size,
-      },
-      main: [
-        {
-          url: 'string',
-          width: 0,
-          height: 0,
-          fileSize: 0,
-        },
-      ],
-    };
+    return this.s3Client.send(command);
   }
 }

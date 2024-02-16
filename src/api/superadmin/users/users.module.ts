@@ -13,6 +13,7 @@ import { PasswordRecovery } from '../../entities/users/password-recovery.entity'
 import { UsersBanByBlogger } from '../../entities/users/usersBanByBlogger.entity';
 import { BlogBanInfo } from '../../entities/blogs/blogBanInfo.entity';
 import { BlogWallpaperImage } from '../../entities/blogs/blogWallpaperImage.entity';
+import { BlogMainImage } from '../../entities/blogs/blogMainImage.entity';
 
 @Module({
   imports: [
@@ -26,7 +27,8 @@ import { BlogWallpaperImage } from '../../entities/blogs/blogWallpaperImage.enti
       PasswordRecovery,
       UsersBanByBlogger,
       BlogBanInfo,
-      BlogWallpaperImage, // TODO: why this need to be here
+      BlogWallpaperImage, // TODO: why this need to be
+      BlogMainImage, // TODO: why this need to be
     ]),
   ],
   providers: [UsersRepository, IsUserAlreadyExistConstraint, BlogRepository],

@@ -96,6 +96,7 @@ import { S3StorageAdapter } from './common/s3-storage-adapter';
 import { BlogWallpaperImageUseCase } from './api/blogger/application,use-cases/blog-wallpaper-image-use-case';
 import { BlogWallpaperImage } from './api/entities/blogs/blogWallpaperImage.entity';
 import { BlogMainImage } from './api/entities/blogs/blogMainImage.entity';
+import { BlogMainImageUseCase } from './api/blogger/application,use-cases/blog-main-image-use-case';
 
 const useCases = [
   BlogCreateUseCase,
@@ -135,6 +136,7 @@ const useCases = [
   CreateAnswerUseCase,
   FinishGameUseCase,
   BlogWallpaperImageUseCase,
+  BlogMainImageUseCase,
 ];
 
 const entities = [

@@ -38,6 +38,7 @@ import { RoleEnum } from '../../enums/role-enum';
 import { FileInterceptor } from '@nestjs/platform-express';
 import sharp from 'sharp';
 import { BlogWallpaperImageCommand } from './application,use-cases/blog-wallpaper-image-use-case';
+import { BlogMainImageCommand } from './application,use-cases/blog-main-image-use-case';
 
 @UseGuards(AccessTokenGuard)
 @Controller('blogger/blogs')
@@ -101,9 +102,11 @@ export class BloggerBlogsController {
 
     const filename = wallpaper.filename;
 
-    return await this.commandBus.execute(
+    await this.commandBus.execute(
       new BlogWallpaperImageCommand(wallpaper.buffer, userId, blogId, filename),
     );
+
+    return this.blogQueryRepo.getImages(blogId);
   }
 
   @Post(':blogId/images/main')
@@ -126,10 +129,13 @@ export class BloggerBlogsController {
       return exceptionHandler(ResultCode.BadRequest, errorMessage);
     }
 
-    // return await this.commandBus.execute(
-    //   new BlogWallpaperImageCommand(mainImage.buffer, userId, blogId),
-    // );
-    //console.log(metadata);
+    const filename = mainImage.filename;
+
+    await this.commandBus.execute(
+      new BlogMainImageCommand(mainImage.buffer, userId, blogId, filename),
+    );
+
+    return this.blogQueryRepo.getImages(blogId);
   }
 
   @Post()

@@ -1,19 +1,21 @@
 import { Injectable } from '@nestjs/common';
-import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { Blogs } from '../../entities/blogs/blogs.entity';
 import { BlogBanInfo } from '../../entities/blogs/blogBanInfo.entity';
 import { BlogWallpaperImage } from '../../entities/blogs/blogWallpaperImage.entity';
+import { BlogMainImage } from '../../entities/blogs/blogMainImage.entity';
 
 @Injectable()
 export class BlogRepository {
   constructor(
-    //@InjectDataSource() private dataSource: DataSource,
     @InjectRepository(Blogs) private readonly blogsRepo: Repository<Blogs>,
     @InjectRepository(BlogBanInfo)
     private readonly blogBanInfoRepo: Repository<BlogBanInfo>,
     @InjectRepository(BlogWallpaperImage)
     private readonly blogWallpaperRepo: Repository<BlogWallpaperImage>,
+    @InjectRepository(BlogMainImage)
+    private readonly blogMainImageRepo: Repository<BlogMainImage>,
   ) {}
 
   async saveBlog(blog: Blogs) {
@@ -43,7 +45,7 @@ export class BlogRepository {
     }
   }
 
-  async findWallpaper(blogId: string) {
+  async findWallpaper(blogId: string): Promise<BlogWallpaperImage> {
     return this.blogWallpaperRepo
       .createQueryBuilder('bw')
       .leftJoinAndSelect('bw.blogs', 'b')
@@ -51,8 +53,19 @@ export class BlogRepository {
       .getOne();
   }
 
+  async findImages(blogId: string): Promise<BlogMainImage[]> {
+    return this.blogMainImageRepo
+      .createQueryBuilder('bm')
+      .leftJoinAndSelect('bm.blogs', 'b')
+      .where('b.id = :id', { id: blogId })
+      .getMany();
+  }
+
   async saveWallpaperData(wallpaperData: BlogWallpaperImage) {
     return this.blogWallpaperRepo.save(wallpaperData);
+  }
+  async saveMainImage(mainImage: BlogMainImage) {
+    return this.blogMainImageRepo.save(mainImage);
   }
 
   // async bindBlogWithUser(userId: string, login: string, blogId: string) {
