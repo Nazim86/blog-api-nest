@@ -182,7 +182,7 @@ export const localConfigTypeOrm: TypeOrmModuleOptions = {
   password: 'sa',
   database: 'blog-api-nest-rawSql',
   autoLoadEntities: true,
-  synchronize: false,
+  synchronize: true,
 };
 
 @Module({

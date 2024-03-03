@@ -4,15 +4,14 @@ import { LikeEnum } from '../../public/like/like.enum';
 import { QueryPaginationType } from '../../../types/query-pagination-type';
 import { Pagination, PaginationType } from '../../../common/pagination';
 import { BlogRepository } from '../blogs/blog.repository';
-import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { Posts } from '../../entities/posts/posts.entity';
 import { PostLike } from '../../entities/like/postLike.entity';
 
 @Injectable()
 export class PostsQueryRepo {
   constructor(
-    @InjectDataSource() private dataSource: DataSource,
     private readonly blogsRepository: BlogRepository,
     @InjectRepository(Posts) private readonly postsRepo: Repository<Posts>,
   ) {}

@@ -63,14 +63,15 @@ export class BlogsQueryRepo {
         height: wallpaper.height,
         fileSize: wallpaper.fileSize,
       },
-      main: mainImages.map((mainImage) => {
-        return {
-          url: mainImage.url,
-          width: mainImage.width,
-          height: mainImage.height,
-          fileSize: mainImage.fileSize,
-        };
-      }),
+      main:
+        mainImages.map((mainImage) => {
+          return {
+            url: mainImage.url,
+            width: mainImage.width,
+            height: mainImage.height,
+            fileSize: mainImage.fileSize,
+          };
+        }) ?? null,
     };
   };
 
@@ -96,9 +97,12 @@ export class BlogsQueryRepo {
         .createQueryBuilder('b')
         .leftJoinAndSelect('b.owner', 'u')
         .leftJoinAndSelect('b.blogBanInfo', 'bbi')
+        .leftJoinAndSelect('b.wallpaperImage', 'bw')
+        .leftJoinAndSelect('b.mainImage', 'bm')
         .where('b.id = :blogId', { blogId: id })
         .getOne();
 
+      console.log('foundBlog', foundBlog);
       if (!foundBlog || foundBlog.blogBanInfo.isBanned) {
         return false;
       }
@@ -110,8 +114,13 @@ export class BlogsQueryRepo {
         websiteUrl: foundBlog.websiteUrl,
         createdAt: foundBlog.createdAt,
         isMembership: foundBlog.isMembership,
+        images: {
+          main: foundBlog.mainImage,
+          wallpaper: foundBlog.wallpaperImage,
+        },
       };
     } catch (e) {
+      console.log('e in getBlogById blogquery', e);
       return false;
     }
   }

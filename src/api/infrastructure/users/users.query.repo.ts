@@ -32,7 +32,6 @@ export class UserQueryRepo {
 
   private userMappingForSA = (newUser): UserViewType[] => {
     return newUser.map((user): UserViewType => {
-      console.log('usersss', user);
       return {
         id: user.id,
         login: user.login,

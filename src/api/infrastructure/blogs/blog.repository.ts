@@ -52,7 +52,6 @@ export class BlogRepository {
       .where('b.id = :id', { id: blogId })
       .getOne();
   }
-
   async findImages(blogId: string): Promise<BlogMainImage[]> {
     return this.blogMainImageRepo
       .createQueryBuilder('bm')

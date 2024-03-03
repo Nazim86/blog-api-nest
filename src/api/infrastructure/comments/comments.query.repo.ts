@@ -229,7 +229,6 @@ export class CommentsQueryRepo {
         },
       };
     } catch (e) {
-      console.log('error in getComment in commentsQueryRepo', e);
       return null;
     }
   }
