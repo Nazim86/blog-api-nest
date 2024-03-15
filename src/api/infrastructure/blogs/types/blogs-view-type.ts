@@ -1,5 +1,16 @@
-import { BlogMainImage } from '../../../entities/blogs/blogMainImage.entity';
-import { BlogWallpaperImage } from '../../../entities/blogs/blogWallpaperImage.entity';
+export type BlogWallpaperImageType = {
+  url: string;
+  width: number;
+  height: number;
+  fileSize: number;
+};
+
+export type BlogMainImageType = {
+  url: string;
+  width: number;
+  height: number;
+  fileSize: number;
+};
 
 export type BlogsViewType = {
   id: string;
@@ -8,7 +19,7 @@ export type BlogsViewType = {
   websiteUrl: string;
   createdAt: string;
   isMembership: boolean;
-  images?: { main: BlogMainImage[]; wallpaper: BlogWallpaperImage };
+  images?: { wallpaper: BlogWallpaperImageType; main: BlogMainImageType[] };
   blogOwnerInfo?: {
     userId: string;
     userLogin: string;

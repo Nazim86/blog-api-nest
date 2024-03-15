@@ -167,13 +167,6 @@ describe('Blogger blog testing', () => {
       //expect(result.body).toEqual(returnedCreatedPost);
     });
 
-    //TODO Like post
-    // it(`like post`, async () => {
-    //   //console.log(post);
-    //   const result = await likePost(httpServer, post.id, [accessToken[0]]);
-    //   //expect(result).toBe(201);
-    // });
-
     it(`Get posts by blogId`, async () => {
       const result = await request(app.getHttpServer())
         .get(`/blogger/blogs/${blog[0].id}/posts`)
@@ -195,7 +188,6 @@ describe('Blogger blog testing', () => {
         .auth(accessToken[0], { type: 'bearer' })
         .send(commentCreatingData);
 
-      comment = result.body;
       expect(result.status).toBe(201);
       expect(result.body).toEqual(createdComment);
     });
@@ -240,9 +232,20 @@ describe('Blogger blog testing', () => {
         //.auth(accessToken[0], { type: 'bearer' })
         .attach('file', imagePath);
 
+      console.log(result.body);
       expect(result.status).toBe(201);
 
       // await new Promise((resolve) => setTimeout(resolve, 5000));
+    });
+
+    it(`Get posts by blogId`, async () => {
+      const result = await request(app.getHttpServer()).get(
+        `/blogs/${blog[0].id}`,
+      );
+      //.auth(accessToken[0], { type: 'bearer' });
+
+      console.log(result.body.images.main);
+      expect(result.status).toBe(200);
     });
 
     it(`Blogger delete blog by id`, async () => {

@@ -58,7 +58,7 @@ export class BlogsQueryRepo {
   ) => {
     const wallpaperImage = wallpaper
       ? {
-          id: wallpaper.id,
+          // id: wallpaper.id,
           url: wallpaper.url,
           width: wallpaper.width,
           height: wallpaper.height,
@@ -123,9 +123,19 @@ export class BlogsQueryRepo {
         .where('b.id = :blogId', { blogId: id })
         .getOne();
 
+      const blogMainImages: BlogMainImage[] = await this.blogMainRepo
+        .createQueryBuilder('bm')
+        .where('bm.blogs = :blogId', { blogId: id })
+        .getMany();
+
       if (!foundBlog || foundBlog.blogBanInfo.isBanned) {
         return false;
       }
+
+      // console.log('foundBlog in getBlogById', foundBlog);
+      // console.log('blogMainImage in getBlogById', blogMainImages);
+
+      const images = this.blogImages(foundBlog.wallpaperImage, blogMainImages);
 
       return {
         id: foundBlog.id,
@@ -134,10 +144,7 @@ export class BlogsQueryRepo {
         websiteUrl: foundBlog.websiteUrl,
         createdAt: foundBlog.createdAt,
         isMembership: foundBlog.isMembership,
-        images: {
-          main: foundBlog.mainImage,
-          wallpaper: foundBlog.wallpaperImage,
-        },
+        images: images,
       };
     } catch (e) {
       console.log('e in getBlogById blogquery', e);

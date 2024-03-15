@@ -23,6 +23,10 @@ export class BlogWallpaperImageUseCase {
   async execute(command: BlogWallpaperImageCommand) {
     const blog = await this.blogsRepo.getBlogById(command.blogId);
 
+    if (!blog) {
+      return { code: ResultCode.NotFound };
+    }
+
     if (blog.owner.id !== command.userId) {
       return { code: ResultCode.Forbidden };
     }
@@ -47,13 +51,12 @@ export class BlogWallpaperImageUseCase {
     blogWallpaperData.fileSize = metadata.size;
     blogWallpaperData.blogs = blog;
 
-    return this.blogsRepo.saveWallpaperData(blogWallpaperData);
-
-    // return {
-    //   url: url,
-    //   width: metadata.width,
-    //   height: metadata.height,
-    //   fileSize: metadata.size,
-    // };
+    const savedWallpaper = await this.blogsRepo.saveWallpaperData(
+      blogWallpaperData,
+    );
+    return {
+      code: ResultCode.Success,
+      data: savedWallpaper,
+    };
   }
 }

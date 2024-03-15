@@ -23,6 +23,10 @@ export class BlogMainImageUseCase {
   async execute(command: BlogMainImageCommand) {
     const blog = await this.blogsRepo.getBlogById(command.blogId);
 
+    if (!blog) {
+      return { code: ResultCode.NotFound };
+    }
+
     if (blog.owner.id !== command.userId) {
       return { code: ResultCode.Forbidden };
     }
@@ -51,6 +55,11 @@ export class BlogMainImageUseCase {
     blogMainImage.fileSize = metadata.size;
     blogMainImage.blogs = blog;
 
-    return this.blogsRepo.saveMainImage(blogMainImage);
+    const savedImage = await this.blogsRepo.saveMainImage(blogMainImage);
+
+    return {
+      code: ResultCode.Success,
+      data: savedImage,
+    };
   }
 }

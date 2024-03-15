@@ -9,6 +9,7 @@ import {
 import { PostLike } from '../like/postLike.entity';
 import { Comments } from '../comments/comments.entity';
 import { Blogs } from '../blogs/blogs.entity';
+import { PostMainImage } from './postMainImage.entity';
 
 @Entity({ name: 'posts' })
 export class Posts {
@@ -42,4 +43,7 @@ export class Posts {
 
   @OneToMany(() => Comments, (c) => c.post)
   comment: Comments;
+
+  @OneToMany(() => PostMainImage, (pi) => pi.post)
+  mainImage: PostMainImage[];
 }

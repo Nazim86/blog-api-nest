@@ -40,6 +40,7 @@ import { BlogWallpaperImageCommand } from './application,use-cases/blog-wallpape
 import { BlogMainImageCommand } from './application,use-cases/blog-main-image-use-case';
 import { ImageValidator } from '../../exception-handler/validators/imageValidator';
 import { exceptionImageFactory } from '../../exception-handler/exceptionImage.factory';
+import { PostMainImageCommand } from './application,use-cases/post-main-image-use-case';
 
 @UseGuards(AccessTokenGuard)
 @Controller('blogger/blogs')
@@ -102,9 +103,13 @@ export class BloggerBlogsController {
   ) {
     const filename = wallpaper.originalname;
 
-    await this.commandBus.execute(
+    const uploadResult = await this.commandBus.execute(
       new BlogWallpaperImageCommand(wallpaper.buffer, userId, blogId, filename),
     );
+
+    if (uploadResult.code !== ResultCode.Success) {
+      return exceptionHandler(uploadResult.code);
+    }
 
     return await this.blogQueryRepo.getImages(blogId);
   }
@@ -131,9 +136,53 @@ export class BloggerBlogsController {
   ) {
     const filename = mainImage.originalname;
 
-    await this.commandBus.execute(
+    const uploadResult = await this.commandBus.execute(
       new BlogMainImageCommand(mainImage.buffer, userId, blogId, filename),
     );
+
+    if (uploadResult.code !== ResultCode.Success) {
+      return exceptionHandler(uploadResult.code);
+    }
+
+    return this.blogQueryRepo.getImages(blogId);
+  }
+
+  @Post(':blogId/posts/:postId/images/main')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadMainImageForPost(
+    @Param('blogId') blogId: string,
+    @Param('postId') postId: string,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new ImageValidator({
+            allowedExtensions: ['jpg', 'jpeg', 'png'],
+            maxSize: 100000,
+            width: 940,
+            height: 432,
+          }),
+        ],
+        exceptionFactory: exceptionImageFactory,
+      }),
+    )
+    mainImage: Express.Multer.File,
+    @UserId() userId: string,
+  ) {
+    const filename = mainImage.originalname;
+
+    const uploadResult = await this.commandBus.execute(
+      new PostMainImageCommand(
+        mainImage.buffer,
+        userId,
+        blogId,
+        postId,
+        filename,
+      ),
+    );
+
+    if (uploadResult.code !== ResultCode.Success) {
+      return exceptionHandler(uploadResult.code);
+    }
 
     return this.blogQueryRepo.getImages(blogId);
   }

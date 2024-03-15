@@ -2,12 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { Posts } from '../../entities/posts/posts.entity';
+import { PostMainImage } from '../../entities/posts/postMainImage.entity';
 
 @Injectable()
 export class PostRepository {
   constructor(
     @InjectDataSource() private dataSource: DataSource,
     @InjectRepository(Posts) private readonly postsRepo: Repository<Posts>,
+    @InjectRepository(PostMainImage)
+    private readonly postMainImageRepo: Repository<PostMainImage>,
   ) {}
 
   async savePost(post: Posts) {
@@ -25,6 +28,23 @@ export class PostRepository {
     } catch (e) {
       return null;
     }
+  }
+
+  async findImages(postId: string) {
+    try {
+      const images = await this.postMainImageRepo
+        .createQueryBuilder('pmi')
+        .where('pmi.post = :postId', { postId: postId })
+        .getMany();
+
+      return images;
+    } catch (e) {
+      return [];
+    }
+  }
+
+  async saveMainImage(image: PostMainImage) {
+    return this.postMainImageRepo.save(image);
   }
 
   async deletePostById(id: string): Promise<boolean> {

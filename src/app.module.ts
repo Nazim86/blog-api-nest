@@ -97,6 +97,8 @@ import { BlogWallpaperImageUseCase } from './api/blogger/application,use-cases/b
 import { BlogWallpaperImage } from './api/entities/blogs/blogWallpaperImage.entity';
 import { BlogMainImage } from './api/entities/blogs/blogMainImage.entity';
 import { BlogMainImageUseCase } from './api/blogger/application,use-cases/blog-main-image-use-case';
+import { PostMainImageUseCase } from './api/blogger/application,use-cases/post-main-image-use-case';
+import { PostMainImage } from './api/entities/posts/postMainImage.entity';
 
 const useCases = [
   BlogCreateUseCase,
@@ -137,6 +139,7 @@ const useCases = [
   FinishGameUseCase,
   BlogWallpaperImageUseCase,
   BlogMainImageUseCase,
+  PostMainImageUseCase,
 ];
 
 const entities = [
@@ -158,6 +161,7 @@ const entities = [
   PlayersEntity,
   BlogMainImage,
   BlogWallpaperImage,
+  PostMainImage,
 ];
 
 export const neonConfigForTypeOrm: TypeOrmModuleOptions = {
