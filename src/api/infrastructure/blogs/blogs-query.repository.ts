@@ -56,13 +56,17 @@ export class BlogsQueryRepo {
     wallpaper: BlogWallpaperImage,
     mainImages: BlogMainImage[],
   ) => {
+    const wallpaperImage = wallpaper
+      ? {
+          id: wallpaper.id,
+          url: wallpaper.url,
+          width: wallpaper.width,
+          height: wallpaper.height,
+          fileSize: wallpaper.fileSize,
+        }
+      : null;
     return {
-      wallpaper: {
-        url: wallpaper.url,
-        width: wallpaper.width,
-        height: wallpaper.height,
-        fileSize: wallpaper.fileSize,
-      },
+      wallpaper: wallpaperImage,
       main:
         mainImages.map((mainImage) => {
           return {
@@ -78,17 +82,34 @@ export class BlogsQueryRepo {
   async getImages(blogId: string) {
     const blog: Blogs = await this.blogsRepo
       .createQueryBuilder('b')
+      // .addSelect(
+      //   (qb) =>
+      //     qb
+      //       .select('json_agg(mainImage)', 'image_urls')
+      //       .from(BlogMainImage, 'mi')
+      //       .where('mi.blogs.id = b.id'),
+      //   'blog_main_images',
+      // )
       .leftJoinAndSelect('b.wallpaperImage', 'bw')
       .where('b.id = :blogId', { blogId })
       .getOne();
 
-    const mainImages: BlogMainImage[] = await this.blogMainRepo
+    const blogMainImages: BlogMainImage[] = await this.blogMainRepo
       .createQueryBuilder('bm')
-      .leftJoinAndSelect('bm.blogs', 'b')
-      .where('b.id = :blogId', { blogId })
+      //.leftJoinAndSelect('bm.blogs', 'b')
+      .where('bm.blogs = :blogId', { blogId })
       .getMany();
 
-    return this.blogImages(blog.wallpaperImage, mainImages);
+    // .createQueryBuilder('blog')
+    //     .leftJoinAndSelect('blog.images', 'images')
+    //     .select('json_agg(images.url)', 'image_urls')
+    //     .where('blog.id = :blogId', { blogId })
+    //     .groupBy('blog.id')
+    //     .getRawOne();
+
+    //console.log('blog in getImages', blogMainImages);
+
+    return this.blogImages(blog.wallpaperImage, blogMainImages);
   }
 
   async getBlogById(id: string): Promise<BlogsViewType | boolean> {
@@ -102,7 +123,6 @@ export class BlogsQueryRepo {
         .where('b.id = :blogId', { blogId: id })
         .getOne();
 
-      console.log('foundBlog', foundBlog);
       if (!foundBlog || foundBlog.blogBanInfo.isBanned) {
         return false;
       }

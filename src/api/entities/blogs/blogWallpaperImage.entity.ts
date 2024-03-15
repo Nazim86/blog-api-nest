@@ -15,13 +15,13 @@ export class BlogWallpaperImage {
   @Column({ type: 'varchar' })
   url: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'int' })
   width: number;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'int' })
   height: number;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'int' })
   fileSize: number;
 
   @OneToOne(() => Blogs, (b) => b.wallpaperImage, { onDelete: 'CASCADE' })

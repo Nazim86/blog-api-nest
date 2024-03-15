@@ -3,7 +3,6 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Blogs } from './blogs.entity';
@@ -16,13 +15,13 @@ export class BlogMainImage {
   @Column({ type: 'varchar' })
   url: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'int' })
   width: number;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'int' })
   height: number;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'int' })
   fileSize: number;
 
   @ManyToOne(() => Blogs, (b) => b.mainImage, { onDelete: 'CASCADE' })

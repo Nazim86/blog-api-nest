@@ -3,7 +3,6 @@ import { S3StorageAdapter } from '../../../common/s3-storage-adapter';
 import { ResultCode } from '../../../exception-handler/result-code-enum';
 import { BlogRepository } from '../../infrastructure/blogs/blog.repository';
 import sharp from 'sharp';
-import { join } from 'path';
 import { BlogWallpaperImage } from '../../entities/blogs/blogWallpaperImage.entity';
 
 export class BlogWallpaperImageCommand {
@@ -30,11 +29,11 @@ export class BlogWallpaperImageUseCase {
 
     const metadata = await sharp(command.imageBuffer.buffer).metadata();
 
-    const key = `blog/images/wallpaper/${blog.id}_${command.filename}`;
+    const key = `blog/wallpaper/${blog.id}_${command.filename}`;
 
     await this.s3StorageAdapter.saveImage(command.imageBuffer, key);
 
-    const url = join('https://nazimych.s3.eu-north-1.amazonaws.com', key);
+    const url = 'https://nazimych.s3.eu-north-1.amazonaws.com/' + key;
 
     let blogWallpaperData = await this.blogsRepo.findWallpaper(command.blogId);
 

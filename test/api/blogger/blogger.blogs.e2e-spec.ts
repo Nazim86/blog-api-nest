@@ -53,7 +53,6 @@ describe('Blogger blog testing', () => {
     const users = [];
     const blog = [];
     let post;
-    let comment;
 
     it('should wipe all data in db', async () => {
       const response = await request(httpServer).delete('/testing/all-data');
@@ -229,8 +228,8 @@ describe('Blogger blog testing', () => {
       expect(result.body).toEqual(commentForBloggerWithPagination);
     });
 
-    it(`Sending image`, async () => {
-      const imagePath = join(__dirname, 'wallpaper.jpg');
+    it(`Sending wallpaper image`, async () => {
+      const imagePath = join(__dirname, 'wallpaper_1028_312.jpg');
       const blogId = blog[0].id;
 
       //console.log(imagePath);
@@ -242,7 +241,6 @@ describe('Blogger blog testing', () => {
         .attach('file', imagePath);
 
       expect(result.status).toBe(201);
-      console.log('body', result.body);
 
       // await new Promise((resolve) => setTimeout(resolve, 5000));
     });

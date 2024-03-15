@@ -5,6 +5,7 @@ import {
   Get,
   HttpCode,
   Param,
+  ParseFilePipe,
   Post,
   Put,
   Query,
@@ -32,20 +33,19 @@ import { Result } from '../../exception-handler/result-type';
 import { PostCreateCommand } from './application,use-cases/post-create-use-case';
 import { PostUpdateCommand } from './application,use-cases/post-update-use-case';
 import { PostDeleteCommand } from './application,use-cases/post-delete-use-case';
-import { BlogRepository } from '../infrastructure/blogs/blog.repository';
 import { CommentsQueryRepo } from '../infrastructure/comments/comments.query.repo';
 import { RoleEnum } from '../../enums/role-enum';
 import { FileInterceptor } from '@nestjs/platform-express';
-import sharp from 'sharp';
 import { BlogWallpaperImageCommand } from './application,use-cases/blog-wallpaper-image-use-case';
 import { BlogMainImageCommand } from './application,use-cases/blog-main-image-use-case';
+import { ImageValidator } from '../../exception-handler/validators/imageValidator';
+import { exceptionImageFactory } from '../../exception-handler/exceptionImage.factory';
 
 @UseGuards(AccessTokenGuard)
 @Controller('blogger/blogs')
 export class BloggerBlogsController {
   constructor(
     private commandBus: CommandBus,
-    private readonly blogsRepository: BlogRepository,
     private readonly blogQueryRepo: BlogsQueryRepo,
     private readonly postQueryRepo: PostsQueryRepo,
     private readonly commentsQueryRepo: CommentsQueryRepo,
@@ -84,52 +84,52 @@ export class BloggerBlogsController {
   @UseInterceptors(FileInterceptor('file'))
   async uploadWallpaperForBlog(
     @Param('blogId') blogId: string,
-    @UploadedFile() wallpaper: Express.Multer.File,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new ImageValidator({
+            allowedExtensions: ['jpg', 'jpeg', 'png'],
+            maxSize: 100000,
+            width: 1028,
+            height: 312,
+          }),
+        ],
+        exceptionFactory: exceptionImageFactory,
+      }),
+    )
+    wallpaper: Express.Multer.File,
     @UserId() userId: string,
   ) {
-    const metadata = await sharp(wallpaper.buffer).metadata();
-    if (
-      metadata.size <= 100000 ||
-      metadata.width !== 1028 ||
-      metadata.height !== 312
-    ) {
-      const errorMessage = {
-        message: [{ message: 'Wrong size of image', field: 'wallpaper' }],
-      };
-      //throw new BadRequestException(errorMessage);
-      return exceptionHandler(ResultCode.BadRequest, errorMessage);
-    }
-
-    const filename = wallpaper.filename;
+    const filename = wallpaper.originalname;
 
     await this.commandBus.execute(
       new BlogWallpaperImageCommand(wallpaper.buffer, userId, blogId, filename),
     );
 
-    return this.blogQueryRepo.getImages(blogId);
+    return await this.blogQueryRepo.getImages(blogId);
   }
 
   @Post(':blogId/images/main')
   @UseInterceptors(FileInterceptor('file'))
   async uploadMainImageForBlog(
     @Param('blogId') blogId: string,
-    @UploadedFile() mainImage: Express.Multer.File,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new ImageValidator({
+            allowedExtensions: ['jpg', 'jpeg', 'png'],
+            maxSize: 100000,
+            width: 156,
+            height: 156,
+          }),
+        ],
+        exceptionFactory: exceptionImageFactory,
+      }),
+    )
+    mainImage: Express.Multer.File,
     @UserId() userId: string,
   ) {
-    const metadata = await sharp(mainImage.buffer).metadata();
-    if (
-      metadata.size <= 100000 ||
-      metadata.width !== 156 ||
-      metadata.height !== 156
-    ) {
-      const errorMessage = {
-        message: [{ message: 'Wrong size of image', field: 'main image' }],
-      };
-      //throw new BadRequestException(errorMessage);
-      return exceptionHandler(ResultCode.BadRequest, errorMessage);
-    }
-
-    const filename = mainImage.filename;
+    const filename = mainImage.originalname;
 
     await this.commandBus.execute(
       new BlogMainImageCommand(mainImage.buffer, userId, blogId, filename),
