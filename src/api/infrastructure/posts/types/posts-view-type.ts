@@ -20,4 +20,10 @@ export type PostsViewType = {
   blogName: string | null;
   createdAt: string;
   extendedLikesInfo: ExtendedLikesInfoType;
+  images: {
+    url: string;
+    width: number;
+    height: number;
+    fileSize: number;
+  }[];
 };

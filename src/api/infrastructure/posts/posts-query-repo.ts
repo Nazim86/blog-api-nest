@@ -8,12 +8,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Posts } from '../../entities/posts/posts.entity';
 import { PostLike } from '../../entities/like/postLike.entity';
+import { PostMainImage } from '../../entities/posts/postMainImage.entity';
 
 @Injectable()
 export class PostsQueryRepo {
   constructor(
     private readonly blogsRepository: BlogRepository,
     @InjectRepository(Posts) private readonly postsRepo: Repository<Posts>,
+    @InjectRepository(PostMainImage)
+    private readonly postMainImageRepo: Repository<PostMainImage>,
   ) {}
 
   private async postViewMapping(
@@ -41,8 +44,27 @@ export class PostsQueryRepo {
           myStatus: myStatus,
           newestLikes: post.newestLikes ?? [],
         },
+        images: { main: post.mainImages ?? [] },
       };
     });
+  }
+
+  async getImages(postId: string) {
+    const postMainImage = await this.postMainImageRepo
+      .createQueryBuilder('pmi')
+      .where('pmi.post = :postId', { postId })
+      .getMany();
+
+    const mappedImages = postMainImage.map((image) => {
+      return {
+        url: image.url,
+        width: image.width,
+        height: image.height,
+        fileSize: image.fileSize,
+      };
+    });
+
+    return { main: mappedImages };
   }
 
   async getPostById(postId: string, userId?: string | undefined) {
@@ -81,6 +103,21 @@ export class PostsQueryRepo {
               .andWhere(`pl.status = 'Dislike'`)
               .andWhere('ub.isBanned = false'),
           'dislikesCount',
+        )
+        .addSelect(
+          (qb) =>
+            qb
+              .select(
+                `jsonb_agg(json_build_object('url', agg.url, 'width', agg.width, 'height', agg.height, 'fileSize', agg."fileSize"))`,
+              )
+              .from((qb) => {
+                return qb
+                  .select(`*`)
+                  .from(PostMainImage, 'pmi')
+                  .where('pmi.post = p.id');
+              }, 'agg'),
+
+          'mainImages',
         )
         .addSelect(
           (qb) =>
@@ -142,6 +179,7 @@ export class PostsQueryRepo {
           myStatus: myStatus,
           newestLikes: post.newestLikes ?? [],
         },
+        images: { main: post.mainImages ?? [] },
       };
     } catch (e) {
       console.log(e);
@@ -310,6 +348,21 @@ export class PostsQueryRepo {
             .andWhere(`pl.status = 'Dislike' `)
             .andWhere('ub.isBanned = false'),
         'dislikesCount',
+      )
+      .addSelect(
+        (qb) =>
+          qb
+            .select(
+              `jsonb_agg(json_build_object('url', agg.url, 'width', agg.width, 'height', agg.height, 'fileSize', agg."fileSize"))`,
+            )
+            .from((qb) => {
+              return qb
+                .select(`*`)
+                .from(PostMainImage, 'pmi')
+                .where('pmi.post = p.id');
+            }, 'agg'),
+
+        'mainImages',
       )
       .addSelect(
         (qb) =>

@@ -78,8 +78,8 @@ export class PostsController {
     }
 
     // PostsViewType | boolean
-    const getPost = await this.postQueryRepo.getPostById(postId, userId);
-
+    const getPost: any = await this.postQueryRepo.getPostById(postId, userId);
+    //console.log('post in post by id', getPost.images);
     if (!getPost) {
       return exceptionHandler(ResultCode.NotFound);
     }

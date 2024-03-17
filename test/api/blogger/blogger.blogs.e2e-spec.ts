@@ -163,6 +163,7 @@ describe('Blogger blog testing', () => {
         .send(newPostCreatingData);
       //console.log(blog[0].id);
       post = result.body;
+      //console.log('post in create blog test', post);
       expect(result.status).toBe(201);
       //expect(result.body).toEqual(returnedCreatedPost);
     });
@@ -220,7 +221,7 @@ describe('Blogger blog testing', () => {
       expect(result.body).toEqual(commentForBloggerWithPagination);
     });
 
-    it(`Sending wallpaper image`, async () => {
+    it(`Sending wallpaper image for blog`, async () => {
       const imagePath = join(__dirname, 'wallpaper_1028_312.jpg');
       const blogId = blog[0].id;
 
@@ -229,10 +230,26 @@ describe('Blogger blog testing', () => {
       const result = await request(app.getHttpServer())
         .post(`/blogger/blogs/${blogId}/images/wallpaper`)
         .set('Authorization', `Bearer ${accessToken[0]}`)
-        //.auth(accessToken[0], { type: 'bearer' })
         .attach('file', imagePath);
 
-      console.log(result.body);
+      //console.log(result.body);
+      expect(result.status).toBe(201);
+
+      // await new Promise((resolve) => setTimeout(resolve, 5000));
+    });
+
+    it(`Sending main image for blog`, async () => {
+      const imagePath = join(__dirname, 'wallpaper_156_156.jpg');
+      const blogId = blog[0].id;
+
+      //console.log(imagePath);
+
+      const result = await request(app.getHttpServer())
+        .post(`/blogger/blogs/${blogId}/images/main`)
+        .set('Authorization', `Bearer ${accessToken[0]}`)
+        .attach('file', imagePath);
+
+      //console.log(result.body);
       expect(result.status).toBe(201);
 
       // await new Promise((resolve) => setTimeout(resolve, 5000));
@@ -244,7 +261,16 @@ describe('Blogger blog testing', () => {
       );
       //.auth(accessToken[0], { type: 'bearer' });
 
-      console.log(result.body.images.main);
+      //console.log(result.body.images.main);
+      expect(result.status).toBe(200);
+    });
+
+    it(`Get blogs`, async () => {
+      const result = await request(app.getHttpServer()).get(`/blogs`);
+      //.auth(accessToken[0], { type: 'bearer' });
+
+      console.log(result.body.items[0].images);
+      console.log(result.body.items[1].images);
       expect(result.status).toBe(200);
     });
 

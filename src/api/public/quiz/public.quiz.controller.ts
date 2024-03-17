@@ -33,19 +33,16 @@ export class PublicQuizController {
   @UseGuards(AccessTokenGuard)
   @Get('pairs/my')
   async getAllMyGames(@Query() query, @UserId() userId: string) {
-    //console.log(result);
     return await this.gamesQueryRepo.getAllMyGames(query, userId);
   }
   @UseGuards(AccessTokenGuard)
   @Get('users/my-statistic')
   async getMyStatistic(@UserId() userId: string) {
-    //console.log(result);
     return await this.quizQueryRepository.getMyStatistic(userId);
   }
 
   @Get('users/top')
   async getTopUsers(@Query() query) {
-    //console.log(result);
     return await this.quizQueryRepository.getTopUsers(query);
   }
 

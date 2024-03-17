@@ -18,8 +18,15 @@ export class BlogsQueryRepo {
     private readonly blogMainRepo: Repository<BlogMainImage>,
   ) {}
 
-  private blogsMapping = (array): BlogsViewType[] => {
+  private blogsMapping = (array, mainImages): BlogsViewType[] => {
+    let mainImagesForBlog: BlogMainImage[];
+
     return array.map((blog): BlogsViewType => {
+      if (mainImages) {
+        mainImagesForBlog = mainImages.filter(
+          (image) => image.blogs.id === blog.id,
+        );
+      }
       return {
         id: blog.id,
         name: blog.name,
@@ -27,12 +34,33 @@ export class BlogsQueryRepo {
         websiteUrl: blog.websiteUrl,
         createdAt: blog.createdAt,
         isMembership: blog.isMembership,
+        images: {
+          wallpaper: {
+            url: blog.wallpaperImage.url,
+            width: blog.wallpaperImage.width,
+            height: blog.wallpaperImage.height,
+            fileSize: blog.wallpaperImage.fileSize,
+          },
+          main: mainImagesForBlog
+            ? mainImagesForBlog.map((image) => {
+                return {
+                  url: image.url,
+                  width: image.width,
+                  height: image.height,
+                  fileSize: image.fileSize,
+                };
+              })
+            : [],
+        },
       };
     });
   };
 
-  private blogsMappingForSA = (array) => {
+  private blogsMappingForSA = (array, mainImages) => {
     return array.map((blog) => {
+      const mainImagesForBlog = mainImages.filter(
+        (image) => image.blogs === blog.id,
+      );
       return {
         id: blog.id,
         name: blog.name,
@@ -47,6 +75,24 @@ export class BlogsQueryRepo {
         banInfo: {
           isBanned: blog.blogBanInfo.isBanned,
           banDate: blog.blogBanInfo.banDate,
+        },
+        images: {
+          wallpaper: {
+            url: blog.wallpaperImage.url,
+            width: blog.wallpaperImage.width,
+            height: blog.wallpaperImage.height,
+            fileSize: blog.wallpaperImage.fileSize,
+          },
+          main: mainImagesForBlog
+            ? mainImagesForBlog.map((image) => {
+                return {
+                  url: image.url,
+                  width: image.width,
+                  height: image.height,
+                  fileSize: image.fileSize,
+                };
+              })
+            : [],
         },
       };
     });
@@ -96,7 +142,6 @@ export class BlogsQueryRepo {
 
     const blogMainImages: BlogMainImage[] = await this.blogMainRepo
       .createQueryBuilder('bm')
-      //.leftJoinAndSelect('bm.blogs', 'b')
       .where('bm.blogs = :blogId', { blogId })
       .getMany();
 
@@ -191,6 +236,7 @@ export class BlogsQueryRepo {
         .createQueryBuilder('b')
         .leftJoinAndSelect('b.owner', 'o')
         .leftJoinAndSelect('b.blogBanInfo', 'bbi')
+        .leftJoinAndSelect('b.wallpaperImage', 'bw')
         .where(
           `${
             isBanned01 === true || isBanned01 === false
@@ -215,6 +261,7 @@ export class BlogsQueryRepo {
         .createQueryBuilder('b')
         .leftJoinAndSelect('b.owner', 'o')
         .leftJoinAndSelect('b.blogBanInfo', 'bbi')
+        .leftJoinAndSelect('b.wallpaperImage', 'bw')
         .where(
           `${
             isBanned01 === true || isBanned01 === false
@@ -234,12 +281,18 @@ export class BlogsQueryRepo {
       blog = blog[0];
     }
 
+    const blogMainImages: BlogMainImage[] = await this.blogMainRepo
+      .createQueryBuilder('bm')
+      .leftJoinAndSelect('bm.blogs', 'b')
+      //.where('bm.blogs = :blogId', { blogId: blog[0].id })
+      .getMany();
+
     let mappedBlog: BlogsViewType[];
 
     if (requestRole === RoleEnum.SA) {
-      mappedBlog = this.blogsMappingForSA(blog);
+      mappedBlog = this.blogsMappingForSA(blog, blogMainImages);
     } else {
-      mappedBlog = this.blogsMapping(blog);
+      mappedBlog = this.blogsMapping(blog, blogMainImages);
     }
 
     return {

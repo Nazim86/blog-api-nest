@@ -26,6 +26,10 @@ export class DeleteController {
     await this.dataSource.query(`Delete from public.comments`);
     await this.dataSource.query(`Delete from public.post_like`);
     await this.dataSource.query(`Delete from public.users_ban_by_blogger`);
+    await this.dataSource.query(`Delete from public."blogWallpaper"`);
+    await this.dataSource.query(`Delete from public."postMainImage"`);
+    await this.dataSource.query(`Delete from public."blogMainImage"`);
+
     //await this.dataSource.query(`Delete from public.players`);
 
     return;

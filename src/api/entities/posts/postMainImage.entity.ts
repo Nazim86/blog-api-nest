@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 import { Posts } from './posts.entity';
 
-@Entity({ name: 'blogMainImage' })
+@Entity({ name: 'postMainImage' })
 export class PostMainImage {
   @PrimaryGeneratedColumn('uuid')
   id: string;

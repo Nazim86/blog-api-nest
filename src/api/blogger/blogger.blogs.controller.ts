@@ -184,7 +184,7 @@ export class BloggerBlogsController {
       return exceptionHandler(uploadResult.code);
     }
 
-    return this.blogQueryRepo.getImages(blogId);
+    return this.postQueryRepo.getImages(postId);
   }
 
   @Post()

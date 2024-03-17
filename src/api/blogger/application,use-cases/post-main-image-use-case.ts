@@ -30,7 +30,7 @@ export class PostMainImageUseCase {
       return { code: ResultCode.NotFound };
     }
 
-    if (blog.owner.id !== command.userId || blog.post.id !== command.postId) {
+    if (blog.owner.id !== command.userId) {
       return { code: ResultCode.Forbidden };
     }
 

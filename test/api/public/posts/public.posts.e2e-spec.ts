@@ -22,7 +22,7 @@ import {
   setNonePost,
 } from '../../../functions/post_functions';
 import { LikeEnum } from '../../../../src/api/public/like/like.enum';
-import { banBlog, getBlogById } from '../../../functions/blog_functions';
+import { join } from 'path';
 
 describe('Public posts testing', () => {
   let app: INestApplication;
@@ -463,6 +463,36 @@ describe('Public posts testing', () => {
           expect(post.extendedLikesInfo.myStatus).toBe(LikeEnum.Like);
         }
       }
+    });
+
+    it(`Sending main image for blog`, async () => {
+      const imagePath = join(__dirname, 'wallpaper_940_432.jpg');
+      const blogId = blogs[0].id;
+      const postId = posts[0].id;
+
+      //console.log(imagePath);
+
+      const result = await request(app.getHttpServer())
+        .post(`/blogger/blogs/${blogId}/posts/${postId}/images/main`)
+        .set('Authorization', `Bearer ${accessTokens[0]}`)
+        .attach('file', imagePath);
+
+      expect(result.status).toBe(201);
+
+      // await new Promise((resolve) => setTimeout(resolve, 5000));
+    });
+
+    it(`Getting post by id`, async () => {
+      const postId = posts[0].id;
+      const result = await request(app.getHttpServer()).get(`/posts/${postId}`);
+
+      // console.log(result.body.images.main.length);
+      //
+      // console.log(result.body);
+      // console.log(result.body.images);
+      expect(result.status).toBe(200);
+
+      // await new Promise((resolve) => setTimeout(resolve, 5000));
     });
 
     // it(`Shouldn't return banned blog post and return 404 `, async () => {
