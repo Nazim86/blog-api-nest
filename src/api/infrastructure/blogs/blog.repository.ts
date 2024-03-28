@@ -32,6 +32,7 @@ export class BlogRepository {
         .createQueryBuilder('b')
         .leftJoinAndSelect('b.owner', 'o')
         .leftJoinAndSelect('b.blogBanInfo', 'bbi')
+        .leftJoinAndSelect('b.subscribeBlog', 'sb')
         .where('b.id = :id', { id: blogId })
         .getOne();
 

@@ -99,6 +99,10 @@ import { BlogMainImage } from './api/entities/blogs/blogMainImage.entity';
 import { BlogMainImageUseCase } from './api/blogger/application,use-cases/blog-main-image-use-case';
 import { PostMainImageUseCase } from './api/blogger/application,use-cases/post-main-image-use-case';
 import { PostMainImage } from './api/entities/posts/postMainImage.entity';
+import { UnsubscribeBlogUseCase } from './api/public/blogs/application/blog-unsubscribe-use-case';
+import { SubscribeBlogUseCase } from './api/public/blogs/application/blog-subscribe-use-case';
+import { SubscribeBlog } from './api/entities/blogs/subscribeBlog.entity';
+import { BlogSubscribeRepository } from './api/infrastructure/blogs/blog-subscribe.repository';
 
 const useCases = [
   BlogCreateUseCase,
@@ -140,6 +144,8 @@ const useCases = [
   BlogWallpaperImageUseCase,
   BlogMainImageUseCase,
   PostMainImageUseCase,
+  UnsubscribeBlogUseCase,
+  SubscribeBlogUseCase,
 ];
 
 const entities = [
@@ -162,6 +168,7 @@ const entities = [
   BlogMainImage,
   BlogWallpaperImage,
   PostMainImage,
+  SubscribeBlog,
 ];
 
 export const neonConfigForTypeOrm: TypeOrmModuleOptions = {
@@ -238,6 +245,7 @@ export const localConfigTypeOrm: TypeOrmModuleOptions = {
     TransactionRepository,
     GamesQueryRepo,
     S3StorageAdapter,
+    BlogSubscribeRepository,
     ...useCases,
   ],
   exports: [TypeOrmModule],

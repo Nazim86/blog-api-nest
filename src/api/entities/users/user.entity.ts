@@ -15,6 +15,7 @@ import { Comments } from '../comments/comments.entity';
 import { Blogs } from '../blogs/blogs.entity';
 import { UsersBanByBlogger } from './usersBanByBlogger.entity';
 import { PlayersEntity } from '../quiz/players.entity';
+import { SubscribeBlog } from '../blogs/subscribeBlog.entity';
 
 @Entity({ name: 'users' })
 export class Users {
@@ -80,4 +81,7 @@ export class Users {
 
   @OneToMany(() => PlayersEntity, (pls) => pls.user)
   player: PlayersEntity;
+
+  @OneToMany(() => SubscribeBlog, (sb) => sb.user)
+  subscribeBlog: SubscribeBlog[];
 }

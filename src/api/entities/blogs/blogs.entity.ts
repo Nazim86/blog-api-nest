@@ -13,6 +13,7 @@ import { UsersBanByBlogger } from '../users/usersBanByBlogger.entity';
 import { Posts } from '../posts/posts.entity';
 import { BlogWallpaperImage } from './blogWallpaperImage.entity';
 import { BlogMainImage } from './blogMainImage.entity';
+import { SubscribeBlog } from './subscribeBlog.entity';
 
 @Entity({ name: 'blogs' })
 export class Blogs {
@@ -34,14 +35,7 @@ export class Blogs {
   @Column({ type: 'boolean' })
   isMembership: boolean;
 
-  @OneToOne(
-    () => BlogBanInfo,
-    (bbi) => bbi.blog,
-    //   {
-    //   cascade: true,
-    //   onUpdate: 'CASCADE',
-    // }
-  )
+  @OneToOne(() => BlogBanInfo, (bbi) => bbi.blog)
   blogBanInfo: BlogBanInfo;
 
   @ManyToOne(() => Users, (u) => u.blogs, { onDelete: 'CASCADE' })
@@ -59,4 +53,7 @@ export class Blogs {
 
   @OneToMany(() => BlogWallpaperImage, (i) => i.blogs)
   mainImage: BlogMainImage[];
+
+  @OneToMany(() => SubscribeBlog, (sb) => sb.blog)
+  subscribeBlog: SubscribeBlog[];
 }
