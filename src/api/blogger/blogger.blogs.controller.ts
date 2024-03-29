@@ -196,7 +196,7 @@ export class BloggerBlogsController {
       new BlogCreateCommand(userId, createBlogDto),
     );
 
-    return await this.blogQueryRepo.getBlogById(blogId);
+    return await this.blogQueryRepo.getBlogById(blogId, userId);
   }
 
   @Post(':id/posts')

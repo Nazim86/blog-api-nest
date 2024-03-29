@@ -1,3 +1,5 @@
+import { Subscription } from '../../../../enums/subscription-enum';
+
 export type BlogWallpaperImageType = {
   url: string;
   width: number;
@@ -28,4 +30,6 @@ export type BlogsViewType = {
     isBanned: boolean;
     banDate: string;
   };
+  currentUserSubscriptionStatus: Subscription;
+  subscribersCount: number;
 };

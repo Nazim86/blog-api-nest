@@ -7,8 +7,9 @@ import { RoleEnum } from '../../../enums/role-enum';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Blogs } from '../../entities/blogs/blogs.entity';
-import { BlogWallpaperImage } from '../../entities/blogs/blogWallpaperImage.entity';
 import { BlogMainImage } from '../../entities/blogs/blogMainImage.entity';
+import { SubscribeBlog } from '../../entities/blogs/subscribeBlog.entity';
+import { Subscription } from '../../../enums/subscription-enum';
 
 @Injectable()
 export class BlogsQueryRepo {
@@ -21,7 +22,7 @@ export class BlogsQueryRepo {
   private blogsMapping = (array, mainImages): BlogsViewType[] => {
     let mainImagesForBlog: BlogMainImage[];
 
-    return array.map((blog): BlogsViewType => {
+    return array.map((blog) => {
       if (mainImages) {
         mainImagesForBlog = mainImages.filter(
           (image) => image.blogs.id === blog.id,
@@ -35,12 +36,14 @@ export class BlogsQueryRepo {
         createdAt: blog.createdAt,
         isMembership: blog.isMembership,
         images: {
-          wallpaper: {
-            url: blog.wallpaperImage.url,
-            width: blog.wallpaperImage.width,
-            height: blog.wallpaperImage.height,
-            fileSize: blog.wallpaperImage.fileSize,
-          },
+          wallpaper: blog.wallpaper
+            ? {
+                url: blog.wallpaperImage.url,
+                width: blog.wallpaperImage.width,
+                height: blog.wallpaperImage.height,
+                fileSize: blog.wallpaperImage.fileSize,
+              }
+            : null,
           main: mainImagesForBlog
             ? mainImagesForBlog.map((image) => {
                 return {
@@ -98,17 +101,14 @@ export class BlogsQueryRepo {
     });
   };
 
-  private blogImages = (
-    wallpaper: BlogWallpaperImage,
-    mainImages: BlogMainImage[],
-  ) => {
-    const wallpaperImage = wallpaper
+  private blogImages = (blog, mainImages: BlogMainImage[]) => {
+    const wallpaperImage = blog.bw_url
       ? {
           // id: wallpaper.id,
-          url: wallpaper.url,
-          width: wallpaper.width,
-          height: wallpaper.height,
-          fileSize: wallpaper.fileSize,
+          url: blog.bw_url,
+          width: blog.bw_width,
+          height: blog.bw_height,
+          fileSize: blog.bw_fileSize,
         }
       : null;
     return {
@@ -145,51 +145,76 @@ export class BlogsQueryRepo {
       .where('bm.blogs = :blogId', { blogId })
       .getMany();
 
-    // .createQueryBuilder('blog')
-    //     .leftJoinAndSelect('blog.images', 'images')
-    //     .select('json_agg(images.url)', 'image_urls')
-    //     .where('blog.id = :blogId', { blogId })
-    //     .groupBy('blog.id')
-    //     .getRawOne();
-
-    //console.log('blog in getImages', blogMainImages);
-
     return this.blogImages(blog.wallpaperImage, blogMainImages);
   }
 
-  async getBlogById(id: string): Promise<BlogsViewType | boolean> {
+  async getBlogById(
+    blogId: string,
+    userId?: string,
+  ): Promise<BlogsViewType | boolean> {
     try {
-      const foundBlog = await this.blogsRepo
+      const foundBlog: any = await this.blogsRepo
         .createQueryBuilder('b')
         .leftJoinAndSelect('b.owner', 'u')
         .leftJoinAndSelect('b.blogBanInfo', 'bbi')
         .leftJoinAndSelect('b.wallpaperImage', 'bw')
+        .addSelect(
+          (qb) =>
+            qb
+              .select('sb.status')
+              .from(SubscribeBlog, 'sb')
+              .where('sb.blogId = b.id')
+              .andWhere('sb.userId = :userId', { userId: userId }),
+          'subscribe_status',
+        )
+        .addSelect(
+          (qb) =>
+            qb
+              .select('count(*)')
+              .from(SubscribeBlog, 'sb')
+              .where('sb.blogId = :blogId', { blogId })
+              .andWhere('sb.status = :status', {
+                status: Subscription.Subscribed,
+              }),
+          'subscribersCount',
+        )
+        //.loadRelationCountAndMap('b.subscribersCount', 'b.subscribeBlog')
+        // .leftJoinAndMapOne(
+        //   'b.blogSubscribed',
+        //   'b.subscribeBlog',
+        //   'sb',
+        //   'sb.userId= :userId',
+        //   { userId },
+        // )
         .leftJoinAndSelect('b.mainImage', 'bm')
-        .where('b.id = :blogId', { blogId: id })
-        .getOne();
+        .where('b.id = :blogId', { blogId })
+        .getRawOne();
+
+      console.log('foundBlog in getBlogById blogquery', foundBlog);
 
       const blogMainImages: BlogMainImage[] = await this.blogMainRepo
         .createQueryBuilder('bm')
-        .where('bm.blogs = :blogId', { blogId: id })
+        .where('bm.blogs = :blogId', { blogId })
         .getMany();
 
-      if (!foundBlog || foundBlog.blogBanInfo.isBanned) {
+      if (!foundBlog || foundBlog.bbi_isBanned) {
         return false;
       }
 
-      // console.log('foundBlog in getBlogById', foundBlog);
-      // console.log('blogMainImage in getBlogById', blogMainImages);
-
-      const images = this.blogImages(foundBlog.wallpaperImage, blogMainImages);
+      const images = this.blogImages(foundBlog, blogMainImages);
 
       return {
-        id: foundBlog.id,
-        name: foundBlog.name,
-        description: foundBlog.description,
-        websiteUrl: foundBlog.websiteUrl,
-        createdAt: foundBlog.createdAt,
-        isMembership: foundBlog.isMembership,
+        id: foundBlog.b_id,
+        name: foundBlog.b_name,
+        description: foundBlog.b_description,
+        websiteUrl: foundBlog.b_websiteUrl,
+        createdAt: foundBlog.b_createdAt,
+        isMembership: foundBlog.b_isMembership,
         images: images,
+        currentUserSubscriptionStatus: foundBlog.subscribe_status
+          ? foundBlog.subscribe_status
+          : Subscription.None,
+        subscribersCount: Number(foundBlog.subscribersCount),
       };
     } catch (e) {
       console.log('e in getBlogById blogquery', e);

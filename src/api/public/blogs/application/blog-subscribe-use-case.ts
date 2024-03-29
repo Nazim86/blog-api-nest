@@ -4,6 +4,7 @@ import { BlogRepository } from '../../../infrastructure/blogs/blog.repository';
 import { UsersRepository } from '../../../infrastructure/users/users.repository';
 import { Subscription } from '../../../../enums/subscription-enum';
 import { BlogSubscribeRepository } from '../../../infrastructure/blogs/blog-subscribe.repository';
+import { ResultCode } from '../../../../exception-handler/result-code-enum';
 
 export class SubscribeBlogCommand {
   constructor(public userId: string, public blogId: string) {}
@@ -19,11 +20,11 @@ export class SubscribeBlogUseCase {
   async execute(command: SubscribeBlogCommand) {
     const user = await this.usersRepository.findUserById(command.userId);
 
-    if (!user) return false;
+    if (!user) return { code: ResultCode.NotFound };
 
     const blog = await this.blogRepository.getBlogById(command.blogId);
 
-    if (!blog) return false;
+    if (!blog) return { code: ResultCode.NotFound };
 
     const subscription = new SubscribeBlog();
     subscription.id = user.id;

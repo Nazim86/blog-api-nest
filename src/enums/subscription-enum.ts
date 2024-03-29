@@ -1,4 +1,5 @@
 export enum Subscription {
-  Subscribed = 'subscribed',
-  Unsubscribed = 'unsubscribed',
+  Subscribed = 'Subscribed',
+  Unsubscribed = 'Unsubscribed',
+  None = 'None',
 }

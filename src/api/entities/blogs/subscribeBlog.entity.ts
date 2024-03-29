@@ -16,7 +16,7 @@ export class SubscribeBlog {
   @Column({ type: 'varchar' })
   status: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   telegramId: string;
 
   @ManyToOne(() => Blogs, (b) => b.subscribeBlog, { onDelete: 'CASCADE' })
