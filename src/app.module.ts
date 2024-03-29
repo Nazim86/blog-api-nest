@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-export const configModule = ConfigModule.forRoot({ isGlobal: true });
+
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { BloggerBlogsController } from './api/blogger/blogger.blogs.controller';
@@ -103,6 +103,8 @@ import { UnsubscribeBlogUseCase } from './api/public/blogs/application/blog-unsu
 import { SubscribeBlogUseCase } from './api/public/blogs/application/blog-subscribe-use-case';
 import { SubscribeBlog } from './api/entities/blogs/subscribeBlog.entity';
 import { BlogSubscribeRepository } from './api/infrastructure/blogs/blog-subscribe.repository';
+import { TelegramAdapter } from './api/infrastructure/adapters/telegram.adapter';
+import { TelegramController } from './api/telegram/telegram.controller';
 
 const useCases = [
   BlogCreateUseCase,
@@ -170,7 +172,10 @@ const entities = [
   PostMainImage,
   SubscribeBlog,
 ];
-
+export const configModule = ConfigModule.forRoot({
+  isGlobal: true,
+  envFilePath: process.env.NODE_ENV === 'development' ? '.env' : 'prod.env',
+});
 export const neonConfigForTypeOrm: TypeOrmModuleOptions = {
   type: 'postgres',
   host: process.env.PG_HOST, //localhost
@@ -222,6 +227,7 @@ export const localConfigTypeOrm: TypeOrmModuleOptions = {
     SaBloggerBlogsController,
     SAQuizQuestionsController,
     PublicQuizController,
+    TelegramController,
   ],
   providers: [
     AppService,
@@ -246,6 +252,7 @@ export const localConfigTypeOrm: TypeOrmModuleOptions = {
     GamesQueryRepo,
     S3StorageAdapter,
     BlogSubscribeRepository,
+    TelegramAdapter,
     ...useCases,
   ],
   exports: [TypeOrmModule],

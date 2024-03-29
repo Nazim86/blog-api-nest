@@ -14,10 +14,14 @@ import { UsersBanByBlogger } from '../../entities/users/usersBanByBlogger.entity
 import { BlogBanInfo } from '../../entities/blogs/blogBanInfo.entity';
 import { BlogWallpaperImage } from '../../entities/blogs/blogWallpaperImage.entity';
 import { BlogMainImage } from '../../entities/blogs/blogMainImage.entity';
+import { ConfigModule } from '@nestjs/config';
+import process from 'process';
 
 @Module({
   imports: [
-    configModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     TypeOrmModule.forFeature([
       Users,
       UsersBanBySa,
@@ -27,8 +31,8 @@ import { BlogMainImage } from '../../entities/blogs/blogMainImage.entity';
       PasswordRecovery,
       UsersBanByBlogger,
       BlogBanInfo,
-      BlogWallpaperImage, // TODO: why this need to be
-      BlogMainImage, // TODO: why this need to be
+      BlogWallpaperImage,
+      BlogMainImage,
     ]),
   ],
   providers: [UsersRepository, IsUserAlreadyExistConstraint, BlogRepository],
