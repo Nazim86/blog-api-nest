@@ -138,14 +138,14 @@ export class BlogsQueryRepo {
       // )
       .leftJoinAndSelect('b.wallpaperImage', 'bw')
       .where('b.id = :blogId', { blogId })
-      .getOne();
+      .getRawOne();
 
     const blogMainImages: BlogMainImage[] = await this.blogMainRepo
       .createQueryBuilder('bm')
       .where('bm.blogs = :blogId', { blogId })
       .getMany();
 
-    return this.blogImages(blog.wallpaperImage, blogMainImages);
+    return this.blogImages(blog, blogMainImages);
   }
 
   async getBlogById(
