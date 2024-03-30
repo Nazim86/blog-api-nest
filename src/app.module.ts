@@ -105,6 +105,8 @@ import { SubscribeBlog } from './api/entities/blogs/subscribeBlog.entity';
 import { BlogSubscribeRepository } from './api/infrastructure/blogs/blog-subscribe.repository';
 import { TelegramAdapter } from './api/infrastructure/adapters/telegram.adapter';
 import { TelegramController } from './api/telegram/telegram.controller';
+import { TelegramAddNotificationUseCase } from './api/telegram/use-cases/telegramAddNotification-use-case';
+import { TelegramAuthLinkUseCase } from './api/telegram/use-cases/telegramAuthLinkQuery-use-case';
 
 const useCases = [
   BlogCreateUseCase,
@@ -148,6 +150,8 @@ const useCases = [
   PostMainImageUseCase,
   UnsubscribeBlogUseCase,
   SubscribeBlogUseCase,
+  TelegramAddNotificationUseCase,
+  TelegramAuthLinkUseCase,
 ];
 
 const entities = [

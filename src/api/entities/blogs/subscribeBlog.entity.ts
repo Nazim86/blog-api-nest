@@ -16,8 +16,11 @@ export class SubscribeBlog {
   @Column({ type: 'varchar' })
   status: string;
 
-  @Column({ type: 'varchar', nullable: true })
-  telegramId: string;
+  @Column({ type: 'bigint', nullable: true })
+  telegramId: number;
+
+  @Column('uuid', { name: 'subscriber_code', nullable: true })
+  subscriberCode: string;
 
   @ManyToOne(() => Blogs, (b) => b.subscribeBlog, { onDelete: 'CASCADE' })
   @JoinColumn()

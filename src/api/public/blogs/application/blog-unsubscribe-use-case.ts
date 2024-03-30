@@ -1,4 +1,3 @@
-import { SubscribeBlog } from '../../../entities/blogs/subscribeBlog.entity';
 import { CommandHandler } from '@nestjs/cqrs';
 import { BlogRepository } from '../../../infrastructure/blogs/blog.repository';
 import { UsersRepository } from '../../../infrastructure/users/users.repository';
@@ -26,7 +25,7 @@ export class UnsubscribeBlogUseCase {
 
     if (!blog) return { code: ResultCode.NotFound };
 
-    const subscription = await this.subscribeBlogRepo.findSubscription(
+    const subscription = await this.subscribeBlogRepo.findSubscriptionForUser(
       user.id,
       blog.id,
     );
