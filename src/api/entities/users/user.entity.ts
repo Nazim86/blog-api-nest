@@ -16,6 +16,7 @@ import { Blogs } from '../blogs/blogs.entity';
 import { UsersBanByBlogger } from './usersBanByBlogger.entity';
 import { PlayersEntity } from '../quiz/players.entity';
 
+//test
 @Entity({ name: 'users' })
 export class Users {
   @PrimaryGeneratedColumn('uuid')
